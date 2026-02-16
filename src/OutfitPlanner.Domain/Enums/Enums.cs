@@ -1,0 +1,91 @@
+namespace OutfitPlanner.Domain.Enums;
+
+public enum ClothingType
+{
+    Top,
+    Bottom,
+    Dress,
+    Outerwear,
+    Footwear,
+    Accessory,
+    Undergarment,
+    Swimwear,
+    Activewear
+}
+
+public enum OccasionType
+{
+    Casual,
+    BusinessCasual,
+    Formal,
+    Athletic,
+    Social,
+    Work,
+    Date,
+    Travel
+}
+
+public enum Season
+{
+    Spring,
+    Summer,
+    Autumn,
+    Winter,
+    AllSeason
+}
+
+public enum StylePreference
+{
+    Minimalist,
+    Classic,
+    Bohemian,
+    Streetwear,
+    Professional,
+    Athleisure,
+    Eclectic,
+    Vintage
+}
+
+public enum PrivacyLevel
+{
+    Private,
+    Friends,
+    Community,
+    Public
+}
+
+public enum ItemRole
+{
+    Primary,
+    Secondary,
+    Accent
+}
+
+public enum PollStatus
+{
+    Active,
+    Closed,
+    Expired
+}
+
+public enum OutfitStatus
+{
+    Active,
+    Archived,
+    Deleted
+}
+
+public enum FabricType
+{
+    Cotton,
+    Polyester,
+    Wool,
+    Silk,
+    Linen,
+    Leather,
+    Denim,
+    Nylon,
+    Spandex,
+    Rayon,
+    Other
+}
