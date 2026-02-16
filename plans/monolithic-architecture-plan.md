@@ -16,46 +16,46 @@ graph TB
         Services[Services]
         State[NgRx State]
     end
-    
+
     subgraph Backend [.NET 9 Monolith]
         API[API Layer - Controllers]
         App[Application Layer - CQRS Handlers]
         Domain[Domain Layer - Entities]
         Infra[Infrastructure Layer]
     end
-    
+
     subgraph Data [Data Storage]
-        PG[(PostgreSQL)]
+        SQL[(SQL Server)]
         Cache[(In-Memory Cache)]
         Storage[Blob Storage]
     end
-    
+
     UI --> Components
     Components --> Services
     Services --> State
     State --> API
-    
+
     API --> App
     App --> Domain
     App --> Infra
-    Infra --> PG
+    Infra --> SQL
     Infra --> Cache
     Infra --> Storage
 ```
 
 ### Technology Stack
 
-| Layer | Technology |
-|-------|------------|
-| Backend Framework | ASP.NET Core 9 Web API |
-| ORM | Entity Framework Core 9 |
-| Database | PostgreSQL |
-| Caching | In-Memory Cache / Redis optional |
-| Authentication | JWT Bearer + ASP.NET Identity |
-| Frontend Framework | Angular 17+ |
-| State Management | NgRx Store + Effects |
-| UI Framework | Bootstrap 5 / Angular Material |
-| Image Storage | Local File System / Azure Blob Storage |
+| Layer              | Technology                             |
+| ------------------ | -------------------------------------- |
+| Backend Framework  | ASP.NET Core 9 Web API                 |
+| ORM                | Entity Framework Core 9                |
+| Database           | SQL Server                             |
+| Caching            | In-Memory Cache / Redis optional       |
+| Authentication     | JWT Bearer + ASP.NET Identity          |
+| Frontend Framework | Angular 17+                            |
+| State Management   | NgRx Store + Effects                   |
+| UI Framework       | Bootstrap 5 / Angular Material         |
+| Image Storage      | Local File System / Azure Blob Storage |
 
 ---
 
@@ -157,7 +157,8 @@ src/outfit-planner-ui/
 ### Phase 1: Backend Foundation
 
 #### 1.1 Domain Layer Implementation
-- [ ] Create User entity with style profile and preferences
+
+- [ ] Create User entity inheriting from IdentityUser with style profile and preferences
 - [ ] Create ClothingItem entity with tags and metadata
 - [ ] Create Outfit entity with items and relationships
 - [ ] Create ValidationPoll entity for social features
@@ -167,7 +168,8 @@ src/outfit-planner-ui/
 - [ ] Define repository interfaces
 
 #### 1.2 Infrastructure Layer Implementation
-- [ ] Configure PostgreSQL DbContext with EF Core
+
+- [ ] Configure SQL Server DbContext with EF Core
 - [ ] Create entity configurations with Fluent API
 - [ ] Implement generic repository pattern
 - [ ] Implement specific repositories: UserRepository, ClothingItemRepository, OutfitRepository
@@ -177,6 +179,7 @@ src/outfit-planner-ui/
 - [ ] Implement image storage service
 
 #### 1.3 Application Layer Implementation
+
 - [ ] Set up MediatR for CQRS
 - [ ] Configure AutoMapper profiles
 - [ ] Create DTOs for all entities
@@ -187,6 +190,7 @@ src/outfit-planner-ui/
 - [ ] Implement social commands: CreatePoll, VoteOnPoll
 
 #### 1.4 API Layer Implementation
+
 - [ ] Configure JWT Bearer authentication
 - [ ] Create AuthController with register/login endpoints
 - [ ] Create WardrobeController with CRUD endpoints
@@ -200,6 +204,7 @@ src/outfit-planner-ui/
 ### Phase 2: Frontend Foundation
 
 #### 2.1 Core Module Setup
+
 - [ ] Create AuthGuard for protected routes
 - [ ] Create AuthInterceptor for JWT tokens
 - [ ] Create ErrorInterceptor for error handling
@@ -207,16 +212,19 @@ src/outfit-planner-ui/
 - [ ] Configure environment settings
 
 #### 2.2 Domain Layer Setup
+
 - [ ] Define all entity interfaces matching backend DTOs
 - [ ] Create repository interfaces
 - [ ] Define use case classes
 
 #### 2.3 Data Layer Setup
+
 - [ ] Implement API data sources for each entity
 - [ ] Implement repository classes
 - [ ] Create mappers for DTO to entity conversion
 
 #### 2.4 State Management Setup
+
 - [ ] Configure NgRx Store
 - [ ] Create actions for all operations
 - [ ] Create reducers for state slices
@@ -226,6 +234,7 @@ src/outfit-planner-ui/
 ### Phase 3: Feature Implementation
 
 #### 3.1 Authentication Feature
+
 - [ ] Backend: Implement user registration with style preferences
 - [ ] Backend: Implement login with JWT generation
 - [ ] Frontend: Create login page component
@@ -233,6 +242,7 @@ src/outfit-planner-ui/
 - [ ] Frontend: Implement token refresh mechanism
 
 #### 3.2 Wardrobe Management Feature
+
 - [ ] Backend: Implement clothing item CRUD operations
 - [ ] Backend: Implement image upload and processing
 - [ ] Backend: Implement wardrobe analytics endpoint
@@ -242,6 +252,7 @@ src/outfit-planner-ui/
 - [ ] Frontend: Create analytics dashboard component
 
 #### 3.3 Outfit Generation Feature
+
 - [ ] Backend: Implement outfit generation algorithm
 - [ ] Backend: Implement weather integration service
 - [ ] Backend: Implement calendar integration placeholder
@@ -252,6 +263,7 @@ src/outfit-planner-ui/
 - [ ] Frontend: Create saved outfits component
 
 #### 3.4 Social Validation Feature
+
 - [ ] Backend: Implement poll creation and management
 - [ ] Backend: Implement voting system
 - [ ] Backend: Implement trend analysis placeholder
@@ -262,18 +274,21 @@ src/outfit-planner-ui/
 ### Phase 4: Integration and Polish
 
 #### 4.1 API Integration
+
 - [ ] Connect frontend services to backend APIs
 - [ ] Implement proper error handling
 - [ ] Add loading states and indicators
 - [ ] Implement optimistic updates where appropriate
 
 #### 4.2 UI/UX Polish
+
 - [ ] Implement responsive design
 - [ ] Add animations and transitions
 - [ ] Implement accessibility features
 - [ ] Add loading skeletons
 
 #### 4.3 Testing
+
 - [ ] Write unit tests for domain entities
 - [ ] Write unit tests for application handlers
 - [ ] Write integration tests for API endpoints
@@ -281,6 +296,7 @@ src/outfit-planner-ui/
 - [ ] Write E2E tests for critical flows
 
 #### 4.4 Documentation
+
 - [ ] Document API endpoints
 - [ ] Document component library
 - [ ] Create deployment guide
@@ -300,43 +316,44 @@ erDiagram
     Users ||--o{ WearEvents : records
     Users ||--|| UserStyleProfiles : has
     Users ||--|| UserPreferences : has
-    
+
     ClothingItems ||--o{ ClothingTags : has
     ClothingItems ||--o{ OutfitItems : included_in
     ClothingItems ||--o{ WearEvents : tracked_in
-    
+
     Outfits ||--o{ OutfitItems : contains
     Outfits ||--o{ OutfitFeedback : receives
     Outfits ||--o{ PollOptions : featured_in
-    
+
     ValidationPolls ||--o{ PollOptions : has
     ValidationPolls ||--o{ Votes : receives
-    
+
     PollOptions ||--o{ Votes : receives
-    
+
     Users {
-        uuid id PK
+        uniqueidentifier id PK
         string email UK
         string username UK
         string password_hash
         string name
-        datetime created_at
-        datetime last_login
+        datetimeoffset created_at
+        datetimeoffset last_login
+        string Note "Inherits from IdentityUser"
     }
-    
+
     UserStyleProfiles {
-        uuid id PK
-        uuid user_id FK
+        uniqueidentifier id PK
+        uniqueidentifier user_id FK
         string style
-        string[] preferred_colors
+        nvarchar(max) preferred_colors
         string fit_preferences
         int comfort_priority
         boolean accepts_trends
     }
-    
+
     ClothingItems {
-        uuid id PK
-        uuid user_id FK
+        uniqueidentifier id PK
+        uniqueidentifier user_id FK
         string name
         string type
         string category
@@ -348,71 +365,71 @@ erDiagram
         date purchase_date
         string condition
         string image_url
-        boolean is_active
-        datetime last_worn
+        bit is_active
+        datetimeoffset last_worn
         int wear_count
-        datetime created_at
+        datetimeoffset created_at
     }
-    
+
     Outfits {
-        uuid id PK
-        uuid user_id FK
+        uniqueidentifier id PK
+        uniqueidentifier user_id FK
         string name
         string occasion
         string weather_condition
         string season
         int comfort_rating
         int style_rating
-        datetime created_at
-        datetime last_worn
+        datetimeoffset created_at
+        datetimeoffset last_worn
         int times_worn
         string status
     }
-    
+
     OutfitItems {
-        uuid id PK
-        uuid outfit_id FK
-        uuid clothing_item_id FK
+        uniqueidentifier id PK
+        uniqueidentifier outfit_id FK
+        uniqueidentifier clothing_item_id FK
         string item_role
         int layering_order
-        boolean is_essential
+        bit is_essential
     }
-    
+
     ValidationPolls {
-        uuid id PK
-        uuid user_id FK
+        uniqueidentifier id PK
+        uniqueidentifier user_id FK
         string question
-        jsonb context
-        datetime created_at
+        nvarchar(max) context
+        datetimeoffset created_at
         datetime expires_at
         string status
     }
-    
+
     PollOptions {
-        uuid id PK
-        uuid poll_id FK
-        uuid outfit_id FK
+        uniqueidentifier id PK
+        uniqueidentifier poll_id FK
+        uniqueidentifier outfit_id FK
         string description
         int display_order
     }
-    
+
     Votes {
         uuid id PK
-        uuid poll_id FK
-        uuid option_id FK
-        uuid voter_id FK
+        uniqueidentifier poll_id FK
+        uniqueidentifier option_id FK
+        uniqueidentifier voter_id FK
         int rating
         string comment
-        boolean is_anonymous
+        bit is_anonymous
         datetime created_at
     }
-    
+
     WearEvents {
         uuid id PK
         uuid user_id FK
         uuid clothing_item_id FK
         uuid outfit_id FK
-        datetime worn_at
+        datetimeoffset worn_at
         int duration_minutes
         string weather_condition
         int rating
@@ -425,56 +442,62 @@ erDiagram
 ## API Endpoints Summary
 
 ### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Authenticate user |
-| POST | `/api/auth/refresh` | Refresh access token |
-| POST | `/api/auth/logout` | Logout user |
+
+| Method | Endpoint             | Description          |
+| ------ | -------------------- | -------------------- |
+| POST   | `/api/auth/register` | Register new user    |
+| POST   | `/api/auth/login`    | Authenticate user    |
+| POST   | `/api/auth/refresh`  | Refresh access token |
+| POST   | `/api/auth/logout`   | Logout user          |
 
 ### Wardrobe Management
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/wardrobe/items` | Get all clothing items |
-| GET | `/api/wardrobe/items/{id}` | Get single item |
-| POST | `/api/wardrobe/items` | Add new clothing item |
-| PUT | `/api/wardrobe/items/{id}` | Update clothing item |
-| DELETE | `/api/wardrobe/items/{id}` | Delete clothing item |
-| POST | `/api/wardrobe/items/{id}/wear` | Record item wear |
-| GET | `/api/wardrobe/analysis` | Get wardrobe analytics |
+
+| Method | Endpoint                        | Description            |
+| ------ | ------------------------------- | ---------------------- |
+| GET    | `/api/wardrobe/items`           | Get all clothing items |
+| GET    | `/api/wardrobe/items/{id}`      | Get single item        |
+| POST   | `/api/wardrobe/items`           | Add new clothing item  |
+| PUT    | `/api/wardrobe/items/{id}`      | Update clothing item   |
+| DELETE | `/api/wardrobe/items/{id}`      | Delete clothing item   |
+| POST   | `/api/wardrobe/items/{id}/wear` | Record item wear       |
+| GET    | `/api/wardrobe/analysis`        | Get wardrobe analytics |
 
 ### Outfit Management
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/outfits` | Get user outfits |
-| GET | `/api/outfits/{id}` | Get single outfit |
-| POST | `/api/outfits/generate` | Generate outfit suggestions |
-| POST | `/api/outfits` | Save new outfit |
-| PUT | `/api/outfits/{id}` | Update outfit |
-| DELETE | `/api/outfits/{id}` | Delete outfit |
-| GET | `/api/outfits/today` | Get todays outfit suggestion |
-| POST | `/api/outfits/{id}/wear` | Record outfit wear |
+
+| Method | Endpoint                 | Description                  |
+| ------ | ------------------------ | ---------------------------- |
+| GET    | `/api/outfits`           | Get user outfits             |
+| GET    | `/api/outfits/{id}`      | Get single outfit            |
+| POST   | `/api/outfits/generate`  | Generate outfit suggestions  |
+| POST   | `/api/outfits`           | Save new outfit              |
+| PUT    | `/api/outfits/{id}`      | Update outfit                |
+| DELETE | `/api/outfits/{id}`      | Delete outfit                |
+| GET    | `/api/outfits/today`     | Get todays outfit suggestion |
+| POST   | `/api/outfits/{id}/wear` | Record outfit wear           |
 
 ### Social Features
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/social/polls` | Get user polls |
-| GET | `/api/social/polls/{id}` | Get single poll |
-| POST | `/api/social/polls` | Create validation poll |
-| POST | `/api/social/polls/{id}/vote` | Vote on poll |
-| GET | `/api/social/trends/local` | Get local trends |
+
+| Method | Endpoint                      | Description            |
+| ------ | ----------------------------- | ---------------------- |
+| GET    | `/api/social/polls`           | Get user polls         |
+| GET    | `/api/social/polls/{id}`      | Get single poll        |
+| POST   | `/api/social/polls`           | Create validation poll |
+| POST   | `/api/social/polls/{id}/vote` | Vote on poll           |
+| GET    | `/api/social/trends/local`    | Get local trends       |
 
 ### Weather
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/weather/current` | Get current weather |
-| GET | `/api/weather/forecast` | Get weather forecast |
+
+| Method | Endpoint                | Description          |
+| ------ | ----------------------- | -------------------- |
+| GET    | `/api/weather/current`  | Get current weather  |
+| GET    | `/api/weather/forecast` | Get weather forecast |
 
 ---
 
 ## Key Design Decisions
 
 ### 1. Monolithic Architecture Rationale
+
 - **Simplified Deployment**: Single deployment unit reduces operational complexity
 - **Reduced Latency**: In-process communication eliminates network overhead
 - **Easier Development**: Simpler debugging and local development setup
@@ -482,18 +505,21 @@ erDiagram
 - **Transaction Management**: ACID transactions across all domain entities
 
 ### 2. Clean Architecture Benefits
+
 - **Testability**: Business logic isolated from infrastructure
 - **Maintainability**: Clear separation of concerns
 - **Flexibility**: Can evolve to microservices if needed
 - **Independence**: Domain layer has no external dependencies
 
 ### 3. CQRS Pattern
+
 - **Performance**: Optimized read and write paths
 - **Scalability**: Can scale queries independently
 - **Clarity**: Clear intent for each operation
 - **Validation**: Command-specific validation rules
 
 ### 4. Angular Architecture
+
 - **Domain-Driven**: Frontend mirrors backend domain structure
 - **Reactive State**: Predictable state management with NgRx
 - **Modularity**: Feature-based organization
@@ -504,8 +530,9 @@ erDiagram
 ## Development Workflow
 
 ### Getting Started
+
 1. Clone repository
-2. Configure PostgreSQL connection string in `appsettings.json`
+2. Configure SQL Server connection string in `appsettings.json`
 3. Run `dotnet ef database update` to create database
 4. Run `dotnet run` from `src/OutfitPlanner.Api`
 5. Navigate to `src/outfit-planner-ui`
@@ -513,6 +540,7 @@ erDiagram
 7. Run `ng serve`
 
 ### Development Commands
+
 ```bash
 # Backend
 dotnet build                          # Build solution

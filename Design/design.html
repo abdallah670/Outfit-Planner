@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  /* --- DESIGN SYSTEM TOKENS --- */
+  :root {
+    /* Colors */
+    --bg-color: #FAFAFA;
+    --surface-color: #FFFFFF;
+    --primary-color: #F8B4C4;
+    --secondary-color: #9CAF88;
+    --text-primary: #2D3436;
+    --text-secondary: #636E72;
+    --border-color: #DFE6E9;
+    --error-color: #E17055;
+    --warning-color: #FDCB6E;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+
+    /* Radius */
+    --radius-card: 12px;
+    --radius-btn: 8px;
+    --radius-chip: 16px;
+
+    /* Shadows */
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  body {
+    background-color: var(--bg-color);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding: 40px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  h3 { font-size: 18px; font-weight: 600; margin: 0 0 16px 0; }
+  p { margin: 0; }
+
+  /* --- COMPONENT: Clothing Item Card --- */
+  .clothing-card {
+    background: var(--surface-color);
+    width: 180px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .clothing-card:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-elevated);
+  }
+  .card-image {
+    width: 100%;
+    height: 180px;
+    background-color: #eee; /* Placeholder for image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+  .card-details { padding: var(--space-md); }
+  .item-name { font-size: 14px; font-weight: 500; margin-bottom: var(--space-xs); }
+  .color-dot {
+    width: 12px; height: 12px; border-radius: 50%; background-color: #1e3799; display: inline-block;
+  }
+  .badge-count {
+    position: absolute; top: var(--space-sm); right: var(--space-sm);
+    background: var(--surface-color); padding: 2px 8px;
+    border-radius: var(--radius-chip); font-size: 12px; font-weight: 600;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* --- COMPONENT: Outfit Suggestion Card --- */
+  .outfit-card {
+    background: var(--surface-color);
+    width: 200px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  .match-badge {
+    background-color: var(--secondary-color);
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: var(--radius-chip);
+    align-self: flex-start;
+    margin-bottom: var(--space-xs);
+  }
+  .stack-item {
+    height: 40px; background: #f0f0f0; border-radius: 4px; margin-bottom: 4px;
+  }
+  .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--radius-btn);
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: var(--space-sm);
+    color: #2D3436;
+  }
+
+  /* --- COMPONENT: Weather Widget --- */
+  .weather-widget {
+    width: 280px;
+    height: 120px;
+    background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+    border-radius: var(--radius-card);
+    padding: var(--space-lg);
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-elevated);
+  }
+  .weather-main h2 { font-size: 32px; margin: 0; font-weight: 700; }
+  .weather-detail { font-size: 12px; opacity: 0.9; }
+
+  /* --- COMPONENT: Poll Card --- */
+  .poll-card {
+    background: var(--surface-color);
+    width: 400px;
+    padding: var(--space-lg);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-elevated);
+  }
+  .poll-options { display: flex; gap: var(--space-md); margin-top: var(--space-md); }
+  .poll-option { flex: 1; text-align: center; }
+  .option-img { height: 120px; background: #eee; border-radius: 8px; margin-bottom: var(--space-sm); }
+  .time-badge {
+    background: var(--warning-color); color: var(--text-primary);
+    padding: 4px 8px; border-radius: var(--radius-chip); font-size: 12px; float: right;
+  }
+</style>
+</head>
+<body>
+
+  <div class="clothing-card">
+    <span class="badge-count">5x</span>
+    <div class="card-image"><img src="https://placehold.co/180x180/e0e0e0/999?text=Coat" alt="Item"></div>
+    <div class="card-details">
+      <div class="item-name">Classic Trench</div>
+      <span class="color-dot" style="background-color: #C4A484;"></span>
+    </div>
+  </div>
+
+  <div class="outfit-card">
+    <div style="display:flex; justify-content:space-between;">
+      <h3>Brunch Look</h3>
+      <span class="match-badge">92% Match</span>
+    </div>
+    <div class="stack-item"></div>
+    <div class="stack-item"></div>
+    <div class="stack-item"></div>
+    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">🌤️ 22°C Perfect</div>
+    <button class="btn-primary">Wear Today</button>
+  </div>
+
+  <div class="weather-widget">
+    <div class="weather-main">
+      <h2>72°</h2>
+      <div>New York</div>
+    </div>
+    <div style="text-align: right;">
+      <div style="font-size: 24px;">🌤️</div>
+      <div class="weather-detail">Feels like 75°</div>
+      <div class="weather-detail">H: 45%</div>
+    </div>
+  </div>
+
+  <div class="poll-card">
+    <span class="time-badge">2h left</span>
+    <h3>Date Night Outfit?</h3>
+    <div class="poll-options">
+      <div class="poll-option">
+        <div class="option-img"></div>
+        <strong>Option A</strong>
+        <p style="color:var(--text-secondary); font-size:12px;">45 votes</p>
+        <button class="btn-primary" style="margin-top:8px; background:white; border:1px solid #DFE6E9;">Vote</button>
+      </div>
+      <div class="poll-option">
+        <div class="option-img"></div>
+        <strong>Option B</strong>
+        <p style="color:var(--text-secondary); font-size:12px;">30 votes</p>
+        <button class="btn-primary" style="margin-top:8px; background:white; border:1px solid #DFE6E9;">Vote</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
