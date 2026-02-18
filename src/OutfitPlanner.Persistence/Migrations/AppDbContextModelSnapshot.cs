@@ -47,6 +47,22 @@ namespace OutfitPlanner.Persistence.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "5765715a-93be-4628-86f7-b12e35a1a1f1",
+                            ConcurrencyStamp = "ece01a6a-4caf-4a95-a704-9f03712e7fbb",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "76208571-0083-4a8b-9149-8d769c0d9c02",
+                            ConcurrencyStamp = "bd9a512a-b188-467d-9fd9-875f09673ac3",
+                            Name = "Planner",
+                            NormalizedName = "PLANNER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

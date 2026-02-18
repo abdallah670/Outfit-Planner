@@ -1,0 +1,51 @@
+@import '../login/login.scss';
+
+.name-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .input-group {
+    flex: 1;
+    margin-bottom: 0; // Handled by row gap
+  }
+}
+
+.glass-card {
+  max-width: 580px; // Slightly wider for double inputs
+  padding: 3.5rem 2.5rem; // Adjusted padding for better fit
+}
+
+// Staggered entrance animations for form groups
+.auth-form > div,
+.auth-form > .name-row > .input-group {
+  opacity: 0;
+  animation: slide-up-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@for $i from 1 through 6 {
+  .auth-form {
+    & > div:nth-child(#{$i}),
+    & > .name-row > div:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
+}
+
+@keyframes slide-up-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 540px) {
+  .name-row {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
