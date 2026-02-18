@@ -191,3 +191,4 @@ C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests
 C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\bin\Debug\net9.0\OutfitPlanner.Persistence.pdb
 C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.sourcelink.json
 C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.InMemory.dll

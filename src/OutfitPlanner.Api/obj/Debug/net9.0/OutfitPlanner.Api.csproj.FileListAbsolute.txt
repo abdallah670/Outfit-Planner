@@ -203,3 +203,4 @@ C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\zh-Hans\M
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\OutfitPlanner.Persistence.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\OutfitPlanner.Persistence.pdb
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Scalar.AspNetCore.dll

@@ -1,0 +1,101 @@
+<div class="auth-container">
+  <!-- Interactive Mesh Gradient -->
+  <div class="mesh-gradient">
+    <div class="mesh-blob blob-1"></div>
+    <div class="mesh-blob blob-2"></div>
+    <div class="mesh-blob blob-3"></div>
+  </div>
+
+  <!-- Global Noise Overlay -->
+  <div class="noise-overlay"></div>
+
+  <div class="glass-card">
+    <div class="glass-header">
+      <div class="logo-container">
+        <div class="logo-icon">✨</div>
+      </div>
+      <h2>Join the Club</h2>
+      <p>Start your fashion journey today</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="name-row">
+        <div class="input-group">
+          <label for="firstName">First Name</label>
+          <div class="input-wrapper">
+            <input type="text" id="firstName" formControlName="firstName" placeholder="Jane" />
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="lastName">Last Name</label>
+          <div class="input-wrapper">
+            <input type="text" id="lastName" formControlName="lastName" placeholder="Doe" />
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="input-group"
+        [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+      >
+        <label for="email">Email</label>
+        <div class="input-wrapper">
+          <span class="icon">✉️</span>
+          <input type="email" id="email" formControlName="email" placeholder="jane@example.com" />
+        </div>
+        @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+          <span class="error-msg">Valid email is required</span>
+        }
+      </div>
+
+      <div
+        class="input-group"
+        [class.error]="
+          registerForm.get('userName')?.invalid && registerForm.get('userName')?.touched
+        "
+      >
+        <label for="userName">Username</label>
+        <div class="input-wrapper">
+          <span class="icon">👤</span>
+          <input
+            type="text"
+            id="userName"
+            formControlName="userName"
+            placeholder="fashionista_123"
+          />
+        </div>
+        @if (registerForm.get('userName')?.invalid && registerForm.get('userName')?.touched) {
+          <span class="error-msg">Username required (min 6 chars)</span>
+        }
+      </div>
+
+      <div
+        class="input-group"
+        [class.error]="
+          registerForm.get('password')?.invalid && registerForm.get('password')?.touched
+        "
+      >
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <span class="icon">🔒</span>
+          <input type="password" id="password" formControlName="password" placeholder="••••••••" />
+        </div>
+        @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+          <span class="error-msg">Min 6 characters required</span>
+        }
+      </div>
+
+      <button type="submit" class="auth-btn" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <span class="loader"></span>
+        } @else {
+          Create Account
+        }
+      </button>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a routerLink="/login">Log in</a></p>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1333,6 +1333,22 @@
           "buildTransitive/Mono.TextTemplating.targets": {}
         }
       },
+      "Scalar.AspNetCore/2.12.41": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Scalar.AspNetCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Scalar.AspNetCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "Serilog/4.3.0": {
         "type": "package",
         "compile": {
@@ -4492,6 +4508,25 @@
         "readme.md"
       ]
     },
+    "Scalar.AspNetCore/2.12.41": {
+      "sha512": "uO90maY4ayqLHq+LFPKgRxPBlI8GPYOLLv5VkPvenG75p7pQ8lUb3jpQWxe02GeKgivyxlxJ1tNsIlCpHg1S6w==",
+      "type": "package",
+      "path": "scalar.aspnetcore/2.12.41",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net10.0/Scalar.AspNetCore.dll",
+        "lib/net10.0/Scalar.AspNetCore.xml",
+        "lib/net8.0/Scalar.AspNetCore.dll",
+        "lib/net8.0/Scalar.AspNetCore.xml",
+        "lib/net9.0/Scalar.AspNetCore.dll",
+        "lib/net9.0/Scalar.AspNetCore.xml",
+        "scalar.aspnetcore.2.12.41.nupkg.sha512",
+        "scalar.aspnetcore.nuspec"
+      ]
+    },
     "Serilog/4.3.0": {
       "sha512": "+cDryFR0GRhsGOnZSKwaDzRRl4MupvJ42FhCE4zhQRVanX0Jpg6WuCBk59OVhVDPmab1bB+nRykAnykYELA9qQ==",
       "type": "package",
@@ -5869,7 +5904,9 @@
       "Microsoft.EntityFrameworkCore.Design >= 9.0.2",
       "OutfitPlanner.Application >= 1.0.0",
       "OutfitPlanner.Infrastructure >= 1.0.0",
-      "Serilog.AspNetCore >= 10.0.0"
+      "Scalar.AspNetCore >= 2.12.41",
+      "Serilog.AspNetCore >= 10.0.0",
+      "Serilog.Sinks.File >= 7.0.0"
     ]
   },
   "packageFolders": {
@@ -5943,9 +5980,17 @@
             "target": "Package",
             "version": "[9.0.2, )"
           },
+          "Scalar.AspNetCore": {
+            "target": "Package",
+            "version": "[2.12.41, )"
+          },
           "Serilog.AspNetCore": {
             "target": "Package",
             "version": "[10.0.0, )"
+          },
+          "Serilog.Sinks.File": {
+            "target": "Package",
+            "version": "[7.0.0, )"
           }
         },
         "imports": [

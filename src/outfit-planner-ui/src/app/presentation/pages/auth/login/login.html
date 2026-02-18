@@ -1,0 +1,79 @@
+<div class="auth-container">
+  <!-- Interactive Mesh Gradient -->
+  <div class="mesh-gradient">
+    <div class="mesh-blob blob-1"></div>
+    <div class="mesh-blob blob-2"></div>
+    <div class="mesh-blob blob-3"></div>
+  </div>
+
+  <!-- Global Noise Overlay -->
+  <div class="noise-overlay"></div>
+
+  <div class="glass-card">
+    <div class="glass-header">
+      <div class="logo-container">
+        <div class="logo-icon">👗</div>
+      </div>
+      <h2>Welcome Back</h2>
+      <p>Your fashion sanctuary awaits</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div
+        class="input-group"
+        [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+      >
+        <label for="email">Email</label>
+        <div class="input-wrapper">
+          <span class="icon">✉️</span>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="style@planner.com"
+            autocomplete="email"
+          />
+        </div>
+        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          <span class="error-msg">Please enter a valid email</span>
+        }
+      </div>
+
+      <div
+        class="input-group"
+        [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+      >
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <span class="icon">🔒</span>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+          />
+        </div>
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <span class="error-msg">Password is required (min 6 chars)</span>
+        }
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
+      </div>
+
+      <button type="submit" class="auth-btn" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <span class="loader"></span>
+        } @else {
+          Login
+        }
+      </button>
+
+      <div class="auth-footer">
+        <p>New here? <a routerLink="/register">Create an account</a></p>
+      </div>
+    </form>
+  </div>
+</div>

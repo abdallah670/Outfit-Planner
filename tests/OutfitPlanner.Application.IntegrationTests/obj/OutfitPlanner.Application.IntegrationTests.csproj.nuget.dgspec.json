@@ -369,6 +369,9 @@
               },
               "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
                 "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj"
+              },
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
               }
             }
           }
@@ -392,6 +395,10 @@
             "FluentAssertions": {
               "target": "Package",
               "version": "[8.8.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[9.0.2, )"
             },
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
