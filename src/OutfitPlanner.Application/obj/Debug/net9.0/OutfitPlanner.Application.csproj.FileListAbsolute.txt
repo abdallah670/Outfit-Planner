@@ -13,3 +13,4 @@ c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\O
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\refint\OutfitPlanner.Application.dll
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.pdb
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\ref\OutfitPlanner.Application.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.sourcelink.json

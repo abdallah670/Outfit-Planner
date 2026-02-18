@@ -9,6 +9,9 @@ public class User : IdentityUser
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? LastLogin { get; set; }
     
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiration { get; set; }
+    
     // Navigation properties
     public UserStyleProfile? StyleProfile { get; set; }
     public UserPreferences? Preferences { get; set; }
@@ -20,7 +23,7 @@ public class User : IdentityUser
 
 public class UserStyleProfile : BaseEntity
 {
-    public Guid UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;
     // public User User { get; set; } = null!; // Circular reference handling might be needed in configurations
     
     public StylePreference Style { get; set; }
@@ -33,7 +36,7 @@ public class UserStyleProfile : BaseEntity
 
 public class UserPreferences : BaseEntity
 {
-    public Guid UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;
     // public User User { get; set; } = null!;
 
     public bool ShareOutfitsAnonymously { get; set; }

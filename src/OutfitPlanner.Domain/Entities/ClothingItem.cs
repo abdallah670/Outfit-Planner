@@ -1,4 +1,5 @@
 using OutfitPlanner.Domain.Enums;
+using OutfitPlanner.Domain.ValueObjects;
 
 namespace OutfitPlanner.Domain.Entities;
 
@@ -14,7 +15,7 @@ public class ClothingItem : BaseEntity
     public List<string> SecondaryColors { get; set; } = new();
     public FabricType Fabric { get; set; }
     public string Brand { get; set; } = string.Empty;
-    public decimal PurchasePrice { get; set; }
+    public Money PurchasePrice { get; set; } = Money.From(0, "USD");
     public DateTime? PurchaseDate { get; set; }
     public string Size { get; set; } = string.Empty;
     public string Condition { get; set; } = "good"; // Enum or string? Diagram says string with default 'good'

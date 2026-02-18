@@ -15,3 +15,6 @@ c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\refint\OutfitPlanner.Infrastructure.dll
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.pdb
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\ref\OutfitPlanner.Infrastructure.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.sourcelink.json
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Persistence.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Persistence.pdb
