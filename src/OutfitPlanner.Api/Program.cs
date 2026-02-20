@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using OutfitPlanner.Infrastructure;
+using OutfitPlanner.Api.Middleware;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -27,6 +28,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+// Add Request Logging Middleware
+app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -39,6 +44,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 // Redirect to Scalar API Reference
 app.MapGet("/", () => Results.Redirect("/scalar/v1"));
