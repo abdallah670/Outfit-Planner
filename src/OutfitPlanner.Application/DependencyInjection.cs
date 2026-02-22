@@ -1,4 +1,8 @@
 
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace outfitplanner.Application
 {
     public static class DependencyInjection

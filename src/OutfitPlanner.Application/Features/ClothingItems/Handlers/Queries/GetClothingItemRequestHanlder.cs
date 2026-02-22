@@ -1,5 +1,11 @@
 
 
+using AutoMapper;
+using MediatR;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.DTOs.Wardrobe;
+using OutfitPlanner.Application.Features.ClothingItems.Requests.Queries;
+
 namespace OutfitPlanner.Application.Features.ClothingItems.Handlers.Queries{
 
 public class GetClothingItemByIdRequestHanlder : IRequestHandler<GetClothingItemByIdRequest, ClothingItemDto>
