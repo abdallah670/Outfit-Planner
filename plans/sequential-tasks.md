@@ -27,10 +27,10 @@
 - [x] Configure database migrations
 - [x] Implement JWT authentication service
 - [x] Implement `UnitOfWork` pattern
-- [ ] **Task 1**: Implement `ExceptionMiddleware` (currently empty stub)
-- [ ] **Task 2**: Implement `RequestLoggingMiddleware` (currently empty stub)
-- [ ] **Task 3**: Implement image storage service (`ImageProcessingService`)
-- [ ] **Task 4**: Implement email service (`EmailService`)
+- [x] **Task 1**: Implement `ExceptionMiddleware` (currently empty stub)
+- [x] **Task 2**: Implement `RequestLoggingMiddleware` (currently empty stub)
+- [x] **Task 3**: Implement image storage service (`ImageProcessingService`)
+- [x] **Task 4**: Implement email service (`EmailService`)
 
 ### 1.3 Application Layer — CQRS (🔧 **This is the biggest gap**)
 
@@ -40,16 +40,16 @@
 
 #### Bug Fixes (Do These First):
 
-- [ ] **Task 5**: Fix `GetClothingItemRequestHandler` — add `async` keyword to `Handle` method
-- [ ] **Task 6**: Fix duplicate class name — rename class in `GetClothingItemListRequest.cs` from `GetClothingItemRequest` to `GetClothingItemListRequest`
-- [ ] **Task 7**: Fix `GetClothingItemListRequest` return type — should return `List<ClothingItemListDto>` not `ClothingItemDto`
-- [ ] **Task 8**: Add missing `using` statements in handler and request files
-- [ ] **Task 9**: Fix `WardrobeController.GetById` — references non-existent `GetClothingItemByIdRequest`, should be `GetClothingItemRequest`
+- [x] **Task 5**: Fix `GetClothingItemRequestHandler` — add `async` keyword to `Handle` method
+- [x] **Task 6**: Fix duplicate class name — rename class in `GetClothingItemListRequest.cs` from `GetClothingItemRequest` to `GetClothingItemListRequest`
+- [x] **Task 7**: Fix `GetClothingItemListRequest` return type — should return `List<ClothingItemListDto>` not `ClothingItemDto`
+- [x] **Task 8**: Add missing `using` statements in handler and request files
+- [x] **Task 9**: Fix `WardrobeController.GetById` — references non-existent `GetClothingItemByIdRequest`, should be `GetClothingItemRequest`
 
 #### Wardrobe Queries:
 
-- [/] **Task 10**: Fix `GetClothingItemRequestHandler` (get single item by ID — exists but buggy)
-- [ ] **Task 11**: Create `GetClothingItemListRequestHandler` (get all items for a user)
+- [x] **Task 10**: Fix `GetClothingItemRequestHandler` (get single item by ID — exists but buggy)
+- [] **Task 11**: Create `GetClothingItemListRequestHandler` (get all items for a user)
 - [ ] **Task 12**: Create `GetClothingItemsByCategoryRequest` + Handler
 
 #### Wardrobe Commands:
