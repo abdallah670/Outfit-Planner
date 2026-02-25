@@ -9,4 +9,5 @@ public class ClothingItemListDto
     public string PrimaryColor { get; set; } = string.Empty;
     public string ThumbnailUrl { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; }
+    public string? ImageUrl { get;  set; }
 }

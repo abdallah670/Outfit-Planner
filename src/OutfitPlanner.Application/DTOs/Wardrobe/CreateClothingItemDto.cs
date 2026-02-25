@@ -1,13 +1,13 @@
 namespace OutfitPlanner.Application.DTOs.Wardrobe;
 
-public class UpdateClothingItemRequest
+public class CreateClothingItemDto
 {
     public string Name { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;         // ClothingType enum as string
     public string Category { get; set; } = string.Empty;
     public string PrimaryColor { get; set; } = string.Empty;
     public List<string> SecondaryColors { get; set; } = new();
-    public string Fabric { get; set; } = string.Empty;
+    public string Fabric { get; set; } = string.Empty;       // FabricType enum as string
     public string Brand { get; set; } = string.Empty;
     public decimal PurchasePrice { get; set; }
     public string Currency { get; set; } = "USD";
@@ -17,5 +17,6 @@ public class UpdateClothingItemRequest
     public string ImageUrl { get; set; } = string.Empty;
     public string ThumbnailUrl { get; set; } = string.Empty;
     public string MaintenanceNotes { get; set; } = string.Empty;
-    public List<string> Tags { get; set; } = new();
+    public List<string> Tags { get; set; } = new();           // Tag names only — server creates the ClothingTag entities
+    
 }

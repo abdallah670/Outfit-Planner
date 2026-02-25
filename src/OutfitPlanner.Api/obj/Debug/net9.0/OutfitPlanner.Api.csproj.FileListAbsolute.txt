@@ -204,3 +204,9 @@ C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\zh-Hant\M
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\OutfitPlanner.Persistence.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\OutfitPlanner.Persistence.pdb
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Scalar.AspNetCore.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\SixLabors.ImageSharp.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\swae.build.ex.cache
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\OutfitPlanner.Api.xml

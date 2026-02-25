@@ -52,6 +52,7 @@ public class UnitOfWork : IUnitOfWork
         Votes = votes;
         UserPreferences = userPreferences;
     }
+    
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

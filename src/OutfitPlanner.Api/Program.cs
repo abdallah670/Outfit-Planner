@@ -2,6 +2,8 @@ using Scalar.AspNetCore;
 using OutfitPlanner.Infrastructure;
 using OutfitPlanner.Api.Middleware;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using System.Reflection;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -14,6 +16,39 @@ builder.Host.UseSerilog();
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new() { Title = "Outfit Planner API", Version = "v1" });
+    
+    // Set the comments path for the Swagger JSON and UI.
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
+
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -38,6 +73,12 @@ if (app.Environment.IsDevelopment())
     app.UseCors("AllowAll");
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Outfit Planner API v1");
+        options.RoutePrefix = "swagger";
+    });
 }
 
 app.UseHttpsRedirection();
@@ -46,9 +87,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-// Redirect to Scalar API Reference
-app.MapGet("/", () => Results.Redirect("/scalar/v1"));
-app.MapGet("/api", () => Results.Redirect("/scalar/v1"));
+// Redirect to Swagger UI instead of Scalar for free documentation
+app.MapGet("/", () => Results.Redirect("/swagger"));
+app.MapGet("/api", () => Results.Redirect("/swagger"));
 
 app.MapControllers();
 
