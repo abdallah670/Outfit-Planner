@@ -1,11 +1,11 @@
 using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.DTOs.Wardrobe;
-using OutfitPlanner.Domain.Entities;
-using OutfitPlanner.Domain.Enums;
-using OutfitPlanner.Domain.ValueObjects;
+using OutfitPlanner.Application.Features.ClothingItems.Requests.Commands;
+using OutfitPlanner.Application.Features.ClothingItems.Requests.Queries;
+using OutfitPlanner.Application.Responses;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -27,160 +27,177 @@ public class WardrobeController : ControllerBase
 
     private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-    // [HttpGet]
-    // public async Task<ActionResult<IEnumerable<ClothingItemDto>>> GetAll()
-    // {
-    //     var userId = GetUserId();
-    //     var items = await _mediator.Send(new GetAllClothingItemsRequest(userId));
-    //     return Ok(items.Select(MapToDto));
-    // }
-
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ClothingItemDto>> GetById(Guid id)
+    /// <summary>
+    /// Gets all clothing items for the authenticated user
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(List<ClothingItemListDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<List<ClothingItemListDto>>> GetAll()
     {
-        var item = await _mediator.Send(new GetClothingItemByIdRequest(id));
-        if (item == null || item.UserId != GetUserId())
-            return NotFound();
-        return Ok(MapToDto(item));
+        var userId = GetUserId();
+        var items = await _mediator.Send(new GetClothingItemListRequest { UserId = userId });
+        return Ok(items);
     }
 
-    // [HttpGet("category/{category}")]
-    // public async Task<ActionResult<IEnumerable<ClothingItemDto>>> GetByCategory(string category)
-    // {
-    //     var userId = GetUserId();
-    //     var items = await _clothingItemRepository.GetByCategoryAsync(userId, category);
-    //     return Ok(items.Select(MapToDto));
-    // }
+    /// <summary>
+    /// Gets a specific clothing item by ID
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(ClothingItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ClothingItemDto>> GetById(Guid id)
+    {
+        var userId = GetUserId();
+        var item = await _mediator.Send(new GetClothingItemByIdRequest { Id = id, UserId = userId });
+        return Ok(item);
+    }
 
-    // [HttpPost]
-    // public async Task<ActionResult<ClothingItemDto>> Create([FromBody] CreateClothingItemRequest request)
-    // {
-    //     var userId = GetUserId();
+    /// <summary>
+    /// Gets clothing items filtered by category
+    /// </summary>
+    [HttpGet("category/{category}")]
+    [ProducesResponseType(typeof(List<ClothingItemListDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<List<ClothingItemListDto>>> GetByCategory(string category)
+    {
+        var userId = GetUserId();
+        var items = await _mediator.Send(new GetClothingItemsByCategoryRequest
+        {
+            UserId = userId,
+            Category = category
+        });
+        return Ok(items);
+    }
 
-    //     var item = new ClothingItem
-    //     {
-    //         UserId = userId,
-    //         Name = request.Name,
-    //         Type = Enum.Parse<ClothingType>(request.Type, true),
-    //         Category = request.Category,
-    //         PrimaryColor = request.PrimaryColor,
-    //         SecondaryColors = request.SecondaryColors,
-    //         Fabric = Enum.Parse<FabricType>(request.Fabric, true),
-    //         Brand = request.Brand,
-    //         PurchasePrice = Money.From(request.PurchasePrice, request.Currency),
-    //         PurchaseDate = request.PurchaseDate,
-    //         Size = request.Size,
-    //         Condition = request.Condition,
-    //         ImageUrl = request.ImageUrl,
-    //         ThumbnailUrl = request.ThumbnailUrl,
-    //         MaintenanceNotes = request.MaintenanceNotes,
-    //         Tags = request.Tags.Select(t => new ClothingTag
-    //         {
-    //             Name = t,
-    //             Source = "manual",
-    //             Confidence = 1.0m
-    //         }).ToList()
-    //     };
+    /// <summary>
+    /// Creates a new clothing item
+    /// </summary>
+    [HttpPost]
+    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] CreateClothingItemDto request)
+    {
+        var userId = GetUserId();
+        var command = new CreateClothingItemCommand
+        {
+            UserId = userId,
+            Request = request
+        };
+        var response = await _mediator.Send(command);
 
-    //     await _clothingItemRepository.AddAsync(item);
-    //     await _unitOfWork.SaveChangesAsync();
+        if (!response.Success)
+            return BadRequest(response);
 
-    //     _logger.LogInformation("User {UserId} created clothing item {ItemId}", userId, item.Id);
-    //     return CreatedAtAction(nameof(GetById), new { id = item.Id }, MapToDto(item));
-    // }
+        _logger.LogInformation("User {UserId} created clothing item {ItemId}", userId, response.Id);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+    }
 
-    // [HttpPut("{id:guid}")]
-    // public async Task<ActionResult<ClothingItemDto>> Update(Guid id, [FromBody] UpdateClothingItemRequest request)
-    // {
-    //     var item = await _clothingItemRepository.GetByIdAsync(id);
-    //     if (item == null || item.UserId != GetUserId())
-    //         return NotFound();
+    /// <summary>
+    /// Updates an existing clothing item
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(ClothingItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ClothingItemDto>> Update(Guid id, [FromBody] UpdateClothingItemDto request)
+    {
+        var userId = GetUserId();
+        var command = new UpdateClothingItemCommand
+        {
+            Id = id,
+            UserId = userId,
+            Request = request
+        };
+        var result = await _mediator.Send(command);
+        _logger.LogInformation("User {UserId} updated clothing item {ItemId}", GetUserId(), id);
+        return Ok(result);
+    }
 
-    //     item.Name = request.Name;
-    //     item.Type = Enum.Parse<ClothingType>(request.Type, true);
-    //     item.Category = request.Category;
-    //     item.PrimaryColor = request.PrimaryColor;
-    //     item.SecondaryColors = request.SecondaryColors;
-    //     item.Fabric = Enum.Parse<FabricType>(request.Fabric, true);
-    //     item.Brand = request.Brand;
-    //     item.PurchasePrice = Money.From(request.PurchasePrice, request.Currency);
-    //     item.PurchaseDate = request.PurchaseDate;
-    //     item.Size = request.Size;
-    //     item.Condition = request.Condition;
-    //     item.ImageUrl = request.ImageUrl;
-    //     item.ThumbnailUrl = request.ThumbnailUrl;
-    //     item.MaintenanceNotes = request.MaintenanceNotes;
+    /// <summary>
+    /// Soft deletes a clothing item
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        var userId = GetUserId();
+        var command = new DeleteClothingItemCommand
+        {
+            Id = id,
+            UserId = userId
+        };
+        var response = await _mediator.Send(command);
 
-    //     await _clothingItemRepository.UpdateAsync(item);
-    //     await _unitOfWork.SaveChangesAsync();
+        if (!response.Success)
+            return NotFound(response);
 
-    //     _logger.LogInformation("User {UserId} updated clothing item {ItemId}", GetUserId(), id);
-    //     return Ok(MapToDto(item));
-    // }
+        _logger.LogInformation("User {UserId} soft-deleted clothing item {ItemId}", GetUserId(), id);
+        return NoContent();
+    }
 
-    // [HttpDelete("{id:guid}")]
-    // public async Task<ActionResult> Delete(Guid id)
-    // {
-    //     var item = await _clothingItemRepository.GetByIdAsync(id);
-    //     if (item == null || item.UserId != GetUserId())
-    //         return NotFound();
+    /// <summary>
+    /// Records a wear event for a clothing item
+    /// </summary>
+    [HttpPost("{id:guid}/wear")]
+    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<BaseCommandResponse>> RecordWear(Guid id, [FromBody] RecordWearDto dto)
+    {
+        var userId = GetUserId();
 
-    //     item.IsActive = false; // Soft delete
-    //     await _clothingItemRepository.UpdateAsync(item);
-    //     await _unitOfWork.SaveChangesAsync();
+        // Ensure DTO matches route parameter
+        if (dto.ClothingItemId != id)
+        {
+            return BadRequest(new BaseCommandResponse
+            {
+                Success = false,
+                Message = "Clothing item ID in route does not match DTO"
+            });
+        }
 
-    //     _logger.LogInformation("User {UserId} soft-deleted clothing item {ItemId}", GetUserId(), id);
-    //     return NoContent();
-    // }
+        var command = new RecordWearCommand
+        {
+            UserId = userId,
+            Request = dto
+        };
+        var response = await _mediator.Send(command);
 
-    // [HttpPost("{id:guid}/wear")]
-    // public async Task<ActionResult<ClothingItemDto>> RecordWear(Guid id)
-    // {
-    //     var item = await _clothingItemRepository.GetByIdAsync(id);
-    //     if (item == null || item.UserId != GetUserId())
-    //         return NotFound();
+        if (!response.Success)
+            return BadRequest(response);
 
-    //     item.WearCount++;
-    //     item.LastWorn = DateTimeOffset.UtcNow;
-    //     await _clothingItemRepository.UpdateAsync(item);
-    //     await _unitOfWork.SaveChangesAsync();
+        return Ok(response);
+    }
 
-    //     _logger.LogInformation("User {UserId} recorded wear for item {ItemId} (count: {Count})", GetUserId(), id, item.WearCount);
-    //     return Ok(MapToDto(item));
-    // }
+    /// <summary>
+    /// Quick wear - just records that the item was worn now
+    /// </summary>
+    [HttpPost("{id:guid}/wear/quick")]
+    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<BaseCommandResponse>> QuickWear(Guid id)
+    {
+        var userId = GetUserId();
+        var dto = new RecordWearDto
+        {
+            ClothingItemId = id,
+            WornAt = DateTimeOffset.UtcNow
+        };
 
-    // // --- Mapping ---
+        var command = new RecordWearCommand { UserId = userId, Request = dto };
+        var response = await _mediator.Send(command);
 
-    // private static ClothingItemDto MapToDto(ClothingItem item) => new()
-    // {
-    //     Id = item.Id,
-    //     UserId = item.UserId,
-    //     Name = item.Name,
-    //     Type = item.Type.ToString(),
-    //     Category = item.Category,
-    //     PrimaryColor = item.PrimaryColor,
-    //     SecondaryColors = item.SecondaryColors,
-    //     Fabric = item.Fabric.ToString(),
-    //     Brand = item.Brand,
-    //     PurchasePrice = item.PurchasePrice.Amount,
-    //     Currency = item.PurchasePrice.Currency,
-    //     PurchaseDate = item.PurchaseDate,
-    //     Size = item.Size,
-    //     Condition = item.Condition,
-    //     ImageUrl = item.ImageUrl,
-    //     ThumbnailUrl = item.ThumbnailUrl,
-    //     IsActive = item.IsActive,
-    //     LastWorn = item.LastWorn,
-    //     WearCount = item.WearCount,
-    //     LastWashed = item.LastWashed,
-    //     MaintenanceNotes = item.MaintenanceNotes,
-    //     Tags = item.Tags.Select(t => new ClothingTagDto
-    //     {
-    //         Id = t.Id,
-    //         Name = t.Name,
-    //         Source = t.Source,
-    //         Confidence = t.Confidence
-    //     }).ToList(),
-    //     CreatedAt = item.CreatedAt
-    // };
+        if (!response.Success)
+            return BadRequest(response);
+
+        return Ok(response);
+    }
 }

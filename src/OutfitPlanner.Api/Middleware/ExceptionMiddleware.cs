@@ -1,3 +1,10 @@
+
+using Microsoft.AspNetCore.Http;
+using OutfitPlanner.Application.Exceptions;
+using System;
+using System.Net;
+using System.Text.Json;
+using System.Threading.Tasks;
 namespace OutfitPlanner.Api.Middleware{
     public class ExceptionMiddleware
     {
@@ -19,22 +26,22 @@ namespace OutfitPlanner.Api.Middleware{
         }
         private async Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
         {
-            context.Response.ContentType = "application/json";
+            httpContext.Response.ContentType = "application/json";
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
-            string result = JsonConvert.SerializeObject(new ErrorDeatils 
+            string result = JsonSerializer.Serialize(new ErrorDetails 
                 { 
-                    ErrorMessage = exception.Message, 
+                    ErrorMessage = ex.Message, 
                     ErrorType = "Failure" 
                 });
 
-            switch (exception)
+            switch (ex)
             {
                 case BadRequestException badRequestException:
                     statusCode = HttpStatusCode.BadRequest;
                     break;
                 case ValidationException validationException:
                     statusCode = HttpStatusCode.BadRequest;
-                    result = JsonConvert.SerializeObject(validationException.Errors);
+                    result = JsonSerializer.Serialize(validationException.Errors);
                     break;
                 case NotFoundException notFoundException:
                     statusCode = HttpStatusCode.NotFound;
@@ -42,12 +49,12 @@ namespace OutfitPlanner.Api.Middleware{
                 default:
                     break;
             }
-            context.Response.StatusCode = (int)statusCode;
-            return context.Response.WriteAsync(result);
+            httpContext.Response.StatusCode = (int)statusCode;
+            await httpContext.Response.WriteAsync(result);
             
         }
     }
-      public class ErrorDeatils
+    public class ErrorDetails
     {
         public string ErrorType { get; set; }
         public string ErrorMessage { get; set; }

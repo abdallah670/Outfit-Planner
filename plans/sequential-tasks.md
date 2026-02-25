@@ -49,22 +49,22 @@
 #### Wardrobe Queries:
 
 - [x] **Task 10**: Fix `GetClothingItemRequestHandler` (get single item by ID — exists but buggy)
-- [] **Task 11**: Create `GetClothingItemListRequestHandler` (get all items for a user)
-- [ ] **Task 12**: Create `GetClothingItemsByCategoryRequest` + Handler
+- [x] **Task 11**: Create `GetClothingItemListRequestHandler` (get all items for a user)
+- [x] **Task 12**: Create `GetClothingItemsByCategoryRequest` + Handler
 
 #### Wardrobe Commands:
 
-- [ ] **Task 13**: Create `CreateClothingItemCommand` + `CreateClothingItemCommandHandler`
-- [ ] **Task 14**: Create `UpdateClothingItemCommand` + `UpdateClothingItemCommandHandler`
-- [ ] **Task 15**: Create `DeleteClothingItemCommand` + `DeleteClothingItemCommandHandler` (soft delete)
-- [ ] **Task 16**: Create `RecordWearCommand` + `RecordWearCommandHandler`
+- [x] **Task 13**: Create `CreateClothingItemCommand` + `CreateClothingItemCommandHandler`
+- [x] **Task 14**: Create `UpdateClothingItemCommand` + `UpdateClothingItemCommandHandler`
+- [x] **Task 15**: Create `DeleteClothingItemCommand` + `DeleteClothingItemCommandHandler` (soft delete)
+- [x] **Task 16**: Create `RecordWearCommand` + `RecordWearCommandHandler`
 
 #### Wardrobe DTOs & Validators:
 
-- [ ] **Task 17**: Create `CreateClothingItemDto` (exists in DTOs folder but mapping is commented out)
-- [ ] **Task 18**: Create `UpdateClothingItemDto` (exists but mapping is commented out)
-- [ ] **Task 19**: Create FluentValidation validators for Create/Update commands
-- [ ] **Task 20**: Update `MappingProfile.cs` — uncomment and complete all mappings
+- [x] **Task 17**: Create `CreateClothingItemDto` (exists in DTOs folder but mapping is commented out)
+- [x] **Task 18**: Create `UpdateClothingItemDto` (exists but mapping is commented out)
+- [x]  **Task 19**: Create FluentValidation validators for Create/Update commands
+- [x] **Task 20**: Update `MappingProfile.cs` — uncomment and complete all mappings
 
 #### Outfit Queries & Commands:
 

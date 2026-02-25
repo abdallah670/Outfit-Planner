@@ -15,5 +15,7 @@ public interface IUnitOfWork : IDisposable
     IPollOptionRepository PollOptions { get; }
     IVoteRepository Votes { get; }
     IUserPreferencesRepository UserPreferences { get; }
+
+  
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

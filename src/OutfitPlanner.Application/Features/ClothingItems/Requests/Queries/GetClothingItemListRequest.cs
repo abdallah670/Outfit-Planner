@@ -1,11 +1,11 @@
 using MediatR;
 using OutfitPlanner.Application.DTOs.Wardrobe;
 
-namespace OutfitPlanner.Application.Features.ClothingItems.Requests.Queries{
-
-public class GetClothingItemListRequest : IRequest<List<ClothingItemDto>>
+namespace OutfitPlanner.Application.Features.ClothingItems.Requests.Queries
 {
-   public string UserId{set;get;}
-
-}
+    public class GetClothingItemListRequest : IRequest<List<ClothingItemListDto>>
+    {
+        
+        public string UserId { get; set; }
+    }
 }

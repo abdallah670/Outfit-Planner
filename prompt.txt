@@ -1,0 +1,11 @@
+Generate integration tests for the `UpdateClothingItemCommandHandler` to ensure the update functionality is fully covered. After completing the tests, switch to Architect mode to review the following `RecordWearCommand` class definition. Evaluate if this is the correct implementation for recording a wear event using MediatR and identify the specific domain entity this command targets.
+
+```csharp
+namespace OutfitPlanner.Application.Features.ClothingItems.Requests.Commands;
+
+public class RecordWearCommand : IRequest<Unit>
+{
+    public Guid ClothingItemId { get; set; }
+    public string UserId { get; set; }
+    public DateTimeOffset WornAt { get; set; }
+}

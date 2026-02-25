@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "JkzJHBjYVM4=",
+  "dgSpecHash": "YhOSfdbruRE=",
   "success": true,
   "projectFilePath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
   "expectedPackageFiles": [
@@ -36,6 +36,7 @@
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.entityframeworkcore.design\\9.0.2\\microsoft.entityframeworkcore.design.9.0.2.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\9.0.2\\microsoft.entityframeworkcore.relational.9.0.2.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\9.0.2\\microsoft.entityframeworkcore.sqlserver.9.0.2.nupkg.sha512",
+    "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\10.0.3\\microsoft.extensions.caching.abstractions.10.0.3.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.caching.memory\\9.0.2\\microsoft.extensions.caching.memory.9.0.2.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.configuration\\10.0.3\\microsoft.extensions.configuration.10.0.3.nupkg.sha512",
@@ -78,6 +79,10 @@
     "C:\\Users\\abdallh\\.nuget\\packages\\serilog.sinks.debug\\3.0.0\\serilog.sinks.debug.3.0.0.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\serilog.sinks.file\\7.0.0\\serilog.sinks.file.7.0.0.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\sixlabors.imagesharp\\3.1.12\\sixlabors.imagesharp.3.1.12.nupkg.sha512",
+    "C:\\Users\\abdallh\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
+    "C:\\Users\\abdallh\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
+    "C:\\Users\\abdallh\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
+    "C:\\Users\\abdallh\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.5.0\\swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\system.clientmodel\\1.0.0\\system.clientmodel.1.0.0.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\system.collections.immutable\\7.0.0\\system.collections.immutable.7.0.0.nupkg.sha512",
