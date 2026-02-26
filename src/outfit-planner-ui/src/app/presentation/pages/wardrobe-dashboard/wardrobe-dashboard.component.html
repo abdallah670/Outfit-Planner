@@ -1,73 +1,110 @@
 <div class="dashboard-wrapper">
   <div class="content-container">
-    <header class="page-header">
-      <div class="header-text">
-        <h1 class="gradient-text">My Wardrobe</h1>
-        <p class="subtitle">Curate your style and track your wears</p>
-      </div>
-
-      <div class="header-actions">
-        <button mat-fab extended color="primary" class="add-btn" routerLink="/wardrobe/add">
-          <i class="fa-solid fa-plus me-2"></i>
-          <span>Add Clothing</span>
-        </button>
-      </div>
-    </header>
-
-    @if (stats(); as currentStats) {
-      <section class="stats-overview">
-        <div class="stat-card">
-          <span class="stat-label">Total Items</span>
-          <span class="stat-big-value">{{ currentStats.totalItems }}</span>
+    <div class="dashboard-layout">
+      <!-- Filters Sidebar -->
+      <aside class="sidebar-filters glass-card fade-in">
+        <div class="sidebar-header">
+          <h3>Filters</h3>
+          <button (click)="clearFilters()" class="clear-btn">Clear All</button>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Estimated Value</span>
-          <span class="stat-big-value">{{ currentStats.totalCost | currency }}</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Collection Type</span>
-          <span class="stat-big-value">Premium</span>
-        </div>
-      </section>
-    }
 
-    <mat-tab-group class="modern-tabs" (selectedTabChange)="onTabChange($event)">
-      <mat-tab label="ALL ITEMS"></mat-tab>
-      <mat-tab label="TOPS"></mat-tab>
-      <mat-tab label="BOTTOMS"></mat-tab>
-      <mat-tab label="OUTERWEAR"></mat-tab>
-      <mat-tab label="FOOTWEAR"></mat-tab>
-    </mat-tab-group>
-
-    <div class="main-content">
-      @if (loading()) {
-        <div class="loading-overlay">
-          <mat-spinner diameter="60" color="accent"></mat-spinner>
+        <div class="filter-section">
+          <label>Category</label>
+          <div class="filter-grid">
+            <button
+              *ngFor="let cat of categories"
+              [class.active]="activeCategory() === cat"
+              (click)="setCategory(cat)"
+              class="filter-chip"
+            >
+              {{ cat }}
+            </button>
+          </div>
         </div>
-      }
 
-      <div class="items-grid">
-        @for (item of items(); track item.id) {
-          <app-clothing-card
-            [item]="item"
-            (delete)="onDelete($event)"
-            (recordWear)="onRecordWear($event)"
-          ></app-clothing-card>
-        } @empty {
-          @if (!loading()) {
-            <div class="empty-state">
-              <div class="empty-icon-wrapper">
-                <i class="fa-solid fa-boxes-stacked"></i>
-              </div>
-              <h3>Nothing here yet</h3>
-              <p>Your wardrobe is waiting for its first masterpiece.</p>
-              <button mat-stroked-button color="accent" routerLink="/wardrobe/add">
-                Add your first item
-              </button>
+        <div class="filter-section">
+          <label>Color</label>
+          <div class="filter-grid">
+            <button
+              *ngFor="let color of colors"
+              [class.active]="activeColor() === color"
+              (click)="setColor(color)"
+              class="filter-chip"
+            >
+              {{ color }}
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <label>Season</label>
+          <div class="filter-grid">
+            <button
+              *ngFor="let season of seasons"
+              [class.active]="activeSeason() === season"
+              (click)="setSeason(season)"
+              class="filter-chip"
+            >
+              {{ season }}
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <label>Occasion</label>
+          <div class="filter-grid">
+            <button
+              *ngFor="let occ of occasions"
+              [class.active]="activeOccasion() === occ"
+              (click)="setOccasion(occ)"
+              class="filter-chip"
+            >
+              {{ occ }}
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <header class="page-header">
+          <div class="header-text">
+            <h1 class="gradient-text">Wardrobe Manager</h1>
+            <p class="subtitle">Organize and Manage Your Collection</p>
+          </div>
+          <button mat-flat-button color="primary" class="add-btn" routerLink="/wardrobe/new">
+            <i class="fa-solid fa-plus me-2"></i>
+            ADD ITEM
+          </button>
+        </header>
+
+        <section class="items-section">
+          <div *ngIf="loading()" class="loading-overlay">
+            <mat-spinner diameter="48"></mat-spinner>
+          </div>
+
+          <div class="items-grid" *ngIf="!loading() && items().length > 0">
+            <app-clothing-card
+              *ngFor="let item of items(); trackBy: item.id"
+              [item]="item"
+              (delete)="onDelete(item.id)"
+              (recordWear)="onRecordWear(item.id)"
+            ></app-clothing-card>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state fade-in" *ngIf="!loading() && items().length === 0">
+            <div class="empty-icon-wrapper">
+              <i class="fa-solid fa-boxes-stacked"></i>
             </div>
-          }
-        }
-      </div>
+            <h3>No pieces found</h3>
+            <p>Try adjusting your filters or add a new masterpiece to your vault.</p>
+            <button mat-stroked-button color="primary" routerLink="/wardrobe/new">
+              ADD YOUR FIRST ITEM
+            </button>
+          </div>
+        </section>
+      </main>
     </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Signal } from '@angular/core';
+import { Component, OnInit, inject, Signal, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
@@ -41,8 +41,8 @@ export class WardrobeDashboardComponent implements OnInit {
   private store = inject(Store<{ wardrobe: WardrobeState }>);
   private snackBar = inject(MatSnackBar);
 
-  // Explicit typing for Signal to help compiler
-  items: Signal<ClothingItem[]> = toSignal(this.store.select(selectAllItems), {
+  // Wardrobe Items from Store
+  allItems: Signal<ClothingItem[]> = toSignal(this.store.select(selectAllItems), {
     initialValue: [] as ClothingItem[],
   });
   loading: Signal<boolean> = toSignal(this.store.select(selectWardrobeLoading), {
@@ -52,21 +52,69 @@ export class WardrobeDashboardComponent implements OnInit {
     initialValue: { totalItems: 0, totalCost: 0 } as WardrobeStats,
   });
 
+  // Filter Signals
+  activeCategory = signal<string>('All');
+  activeColor = signal<string>('All');
+  activeSeason = signal<string>('All');
+  activeOccasion = signal<string>('All');
+
+  // Filter Options
+  categories = ['All', 'Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Shoes', 'Accessories'];
+  colors = ['All', 'Black', 'White', 'Blue', 'Red', 'Green', 'Pink', 'Beige'];
+  seasons = ['All', 'Spring', 'Summer', 'Fall', 'Winter'];
+  occasions = ['All', 'Casual', 'Work', 'Formal', 'Sport'];
+
+  // Computed Filtered Items
+  items = computed(() => {
+    return this.allItems().filter((item) => {
+      // Design 'Category' maps to App 'type'
+      const categoryMatch =
+        this.activeCategory() === 'All' ||
+        item.type.toLowerCase() === this.activeCategory().toLowerCase() ||
+        (this.activeCategory() === 'Shoes' && item.type.toLowerCase() === 'footwear');
+
+      // Design 'Color' maps to App 'primaryColor'
+      const colorMatch =
+        this.activeColor() === 'All' ||
+        item.primaryColor.toLowerCase().includes(this.activeColor().toLowerCase());
+
+      // Design 'Occasion' maps to App 'category'
+      const occasionMatch =
+        this.activeOccasion() === 'All' ||
+        item.category.toLowerCase() === this.activeOccasion().toLowerCase();
+
+      // Season is currently not in the entity, so we skip it or match all
+      const seasonMatch = true;
+
+      return categoryMatch && colorMatch && occasionMatch && seasonMatch;
+    });
+  });
+
   ngOnInit() {
     this.store.dispatch(WardrobeActions.loadClothingItems());
   }
 
-  onTabChange(event: any) {
-    const label = event.tab.textLabel;
-    if (label === 'ALL ITEMS') {
-      this.store.dispatch(WardrobeActions.loadClothingItems());
-    } else {
-      this.store.dispatch(
-        WardrobeActions.loadClothingItemsByCategory({
-          category: label.charAt(0) + label.slice(1).toLowerCase(),
-        }),
-      );
-    }
+  setCategory(category: string) {
+    this.activeCategory.set(category);
+  }
+
+  setColor(color: string) {
+    this.activeColor.set(color);
+  }
+
+  setSeason(season: string) {
+    this.activeSeason.set(season);
+  }
+
+  setOccasion(occasion: string) {
+    this.activeOccasion.set(occasion);
+  }
+
+  clearFilters() {
+    this.activeCategory.set('All');
+    this.activeColor.set('All');
+    this.activeSeason.set('All');
+    this.activeOccasion.set('All');
   }
 
   onDelete(id: string) {
