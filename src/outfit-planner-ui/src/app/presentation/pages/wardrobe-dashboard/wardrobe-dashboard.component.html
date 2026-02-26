@@ -85,7 +85,7 @@
 
           <div class="items-grid" *ngIf="!loading() && items().length > 0">
             <app-clothing-card
-              *ngFor="let item of items(); trackBy: item.id"
+              *ngFor="let item of items(); trackBy: trackByItem"
               [item]="item"
               (delete)="onDelete(item.id)"
               (recordWear)="onRecordWear(item.id)"

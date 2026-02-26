@@ -11,7 +11,7 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'wardrobe', component: WardrobeDashboardComponent },
-  { path: 'wardrobe/add', component: AddClothingItemComponent },
+  { path: 'wardrobe/new', component: AddClothingItemComponent },
   { path: 'wardrobe/edit/:id', component: AddClothingItemComponent },
   { path: 'wardrobe/:id', component: ClothingItemDetail },
 ];

@@ -139,4 +139,8 @@ export class WardrobeDashboardComponent implements OnInit {
     this.store.dispatch(WardrobeActions.recordWear({ id }));
     (this.snackBar as any).open(`Wear recorded!`, 'Sweet!', { duration: 3000 });
   }
+
+  trackByItem(index: number, item: ClothingItem): string {
+    return item.id;
+  }
 }
