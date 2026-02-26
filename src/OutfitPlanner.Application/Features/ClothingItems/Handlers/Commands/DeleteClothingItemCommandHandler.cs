@@ -57,9 +57,9 @@ public class DeleteClothingItemCommandHandler : IRequestHandler<DeleteClothingIt
                 throw new Exceptions.UnauthorizedAccessException("You are not authorized to delete this clothing item");
             }
 
-            // Delete the item
-            await _unitOfWork.ClothingItems.RemoveAsync(clothingItem);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            // Soft delete the item
+            clothingItem.IsActive = false;
+            await _unitOfWork.ClothingItems.UpdateAsync(clothingItem);
 
             response.Success = true;
             response.Message = "Clothing item deleted successfully";

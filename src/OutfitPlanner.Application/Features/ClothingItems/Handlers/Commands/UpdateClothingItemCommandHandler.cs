@@ -12,26 +12,27 @@ public class UpdateClothingItemCommandHandler : IRequestHandler<UpdateClothingIt
 {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UpdateClothingItemCommandHandler> _logger;
+        private readonly IMapper _mapper;
 
-        private readonly  IMapper mapper;
         public UpdateClothingItemCommandHandler(IUnitOfWork unitOfWork,
          ILogger<UpdateClothingItemCommandHandler> logger, IMapper mapper)
          {
-             this.mapper = mapper;
-        
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-        }
-        
+             _mapper = mapper;
+             _unitOfWork = unitOfWork;
+             _logger = logger;
+         }
+         
     public async Task<ClothingItemDto> Handle(UpdateClothingItemCommand request, CancellationToken cancellationToken)
     {
         var validator = new UpdateClothingItemCommandValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            _logger.LogWarning("Validation failed for update clothing item request for user with ID {UserId}", request.UserId);
+            var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+            _logger.LogWarning("Validation failed for update clothing item request for user with ID {UserId}. Errors: {Errors}", request.UserId, errors);
             throw new OutfitPlanner.Application.Exceptions.ValidationException(validationResult);
         }
+
         var clothingItem = await _unitOfWork.ClothingItems.GetByIdAsync(request.Id);
         if (clothingItem == null)
         {
@@ -43,10 +44,11 @@ public class UpdateClothingItemCommandHandler : IRequestHandler<UpdateClothingIt
             _logger.LogWarning("User {UserId} attempted to update clothing item {ClothingItemId} belonging to another user", request.UserId, request.Id);
             throw new Exceptions.UnauthorizedAccessException("You are not authorized to update this clothing item");
         }
-        mapper.Map(request.Request, clothingItem);
-        clothingItem.Type = Enum.Parse<Domain.Enums.ClothingType>(request.Request.Type);
+
+        _mapper.Map(request.Request, clothingItem);
+        
         await _unitOfWork.SaveChangesAsync();
-        return mapper.Map<ClothingItemDto>(clothingItem);
+        return _mapper.Map<ClothingItemDto>(clothingItem);
         
     }
 }

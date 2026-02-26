@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
@@ -10,18 +11,20 @@ using OutfitPlanner.Domain.Entities;
 
 namespace OutfitPlanner.Application.Features.ClothingItems.Handlers.Commands;
 
-public class RecordWearCommandHandler : IRequestHandler<RecordWearCommand, BaseCommandResponse>
+public class RecordWearCommandHandler : IRequestHandler<RecordWearCommand, ClothingItemDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<RecordWearCommandHandler> _logger;
+    private readonly IMapper _mapper;
 
-    public RecordWearCommandHandler(IUnitOfWork unitOfWork, ILogger<RecordWearCommandHandler> logger)
+    public RecordWearCommandHandler(IUnitOfWork unitOfWork, ILogger<RecordWearCommandHandler> logger, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _mapper = mapper;
     }
 
-    public async Task<BaseCommandResponse> Handle(RecordWearCommand request, CancellationToken cancellationToken)
+    public async Task<ClothingItemDto> Handle(RecordWearCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -72,12 +75,7 @@ public class RecordWearCommandHandler : IRequestHandler<RecordWearCommand, BaseC
             _logger.LogInformation("Recorded wear for clothing item {ClothingItemId}, new wear count: {WearCount}", 
                 request.Request.ClothingItemId, clothingItem.WearCount);
 
-            return new BaseCommandResponse
-            {
-                Success = true,
-                Message = "Wear event recorded successfully",
-                Id = wearEvent.Id
-            };
+            return _mapper.Map<ClothingItemDto>(clothingItem);
         }
         catch (NotFoundException)
         {

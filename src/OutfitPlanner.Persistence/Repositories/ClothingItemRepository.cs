@@ -14,7 +14,7 @@ public class ClothingItemRepository : GenericRepository<ClothingItem>, IClothing
     public async Task<IEnumerable<ClothingItem>> GetByUserIdAsync(string userId)
     {
         return await _dbSet
-            .Where(i => i.UserId == userId)
+            .Where(i => i.UserId == userId && i.IsActive)
             .Include(i => i.Tags)
             .ToListAsync();
     }
@@ -22,7 +22,7 @@ public class ClothingItemRepository : GenericRepository<ClothingItem>, IClothing
     public async Task<IEnumerable<ClothingItem>> GetByCategoryAsync(string userId, string category)
     {
         return await _dbSet
-            .Where(i => i.UserId == userId && i.Category == category)
+            .Where(i => i.UserId == userId && i.Category == category && i.IsActive)
             .Include(i => i.Tags)
             .ToListAsync();
     }

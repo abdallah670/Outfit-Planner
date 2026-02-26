@@ -3981,11 +3981,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "projectUniqueName": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "projectName": "OutfitPlanner.Infrastructure",
-      "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-      "outputPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\obj\\",
+      "outputPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -4009,8 +4009,8 @@
             "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
               "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
             },
-            "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
-              "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
+            "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
+              "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
             }
           }
         }

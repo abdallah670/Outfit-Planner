@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outfit Planner - UI Design</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    html, body { height: 100%; }
+    body { overflow-x: auto; background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%); }
+    .device-frame { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 0 0 12px #1a1a1a; background: #1a1a1a; position: relative; overflow: hidden; }
+    .device-frame::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 40%; height: 28px; background: #1a1a1a; border-radius: 0 0 20px 20px; z-index: 10; }
+    .device-screen { border-radius: 32px; overflow: hidden; background: white; }
+    .desktop { width: 560px; aspect-ratio: 16/10; }
+    .tablet { width: 320px; aspect-ratio: 4/5; }
+    .mobile { width: 240px; aspect-ratio: 9/16; }
+    .device-container { display: flex; align-items: center; justify-content: center; gap: 32px; padding: 40px; }
+    .scale-up { animation: scaleIn 0.8s ease-out; }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .stagger-1 { animation-delay: 0s; }
+    .stagger-2 { animation-delay: 0.15s; }
+    .stagger-3 { animation-delay: 0.3s; }
+    .app-demo { display: flex; flex-direction: column; height: 100%; background: white; }
+    .demo-header { padding: 12px 16px; border-bottom: 1px solid #dfe6e9; background: white; display: flex; align-items: center; gap: 8px; }
+    .demo-nav { padding: 8px 16px; border-bottom: 1px solid #dfe6e9; display: flex; gap: 12px; background: white; }
+    .demo-nav-tab { font-size: 11px; padding: 6px 12px; border-radius: 4px; color: #636e72; transition: all 0.2s; }
+    .demo-nav-tab.active { color: #f8b4c4; border-bottom: 2px solid #f8b4c4; }
+    .demo-content { flex: 1; overflow: hidden; padding: 12px; background: #fafafa; }
+    .demo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .demo-item { aspect-ratio: 1; border-radius: 8px; background: linear-gradient(135deg, #f8b4c4 0%, #9caf88 100%); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .demo-card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .demo-btn { background: #f8b4c4; color: white; padding: 8px 12px; border-radius: 6px; font-size: 10px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
+    .demo-btn:hover { background: #f5a0b3; transform: translateY(-1px); }
+    .filter-bar { display: flex; gap: 6px; padding: 8px; background: white; border-radius: 8px; overflow-x: auto; }
+    .filter-tag { background: #f8f8f8; padding: 4px 8px; border-radius: 12px; font-size: 9px; color: #636e72; white-space: nowrap; }
+    .filter-tag.active { background: #f8b4c4; color: white; }
+    .header-layout { display: flex; align-items: center; justify-content: space-between; }
+    .logo-icon { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, #f8b4c4 0%, #9caf88 100%); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .title { font-size: 14px; font-weight: 700; color: #2d3436; margin: 0; }
+    .subtitle { font-size: 12px; font-weight: 500; color: #636e72; margin: 0; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 40px 20px; max-width: 1400px; margin: 0 auto; }
+    .feature-card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; }
+    .feature-icon { font-size: 40px; margin-bottom: 12px; }
+    .feature-title { font-size: 16px; font-weight: 600; color: #2d3436; margin-bottom: 8px; }
+    .feature-desc { font-size: 13px; color: #636e72; line-height: 1.5; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div class="w-full h-full flex flex-col"><!-- Header Section -->
+   <header class="text-center pt-12 pb-8 px-4">
+    <h1 class="text-4xl font-bold text-[#2d3436] mb-3">Outfit Planner</h1>
+    <p class="text-lg text-[#636e72]">Beautiful wardrobe &amp; outfit management design</p>
+   </header><!-- Device Mockups Section -->
+   <div class="flex-1 overflow-auto flex items-center justify-center">
+    <div class="device-container"><!-- Desktop View (Center - Large) -->
+     <div class="scale-up stagger-1">
+      <div class="device-frame desktop">
+       <div class="device-screen">
+        <div class="app-demo">
+         <div class="demo-header header-layout">
+          <div style="display: flex; align-items: center; gap: 8px;">
+           <div class="logo-icon">
+            👗
+           </div>
+           <p class="title">Outfit Planner</p>
+          </div>
+          <div style="display: flex; gap: 8px; font-size: 11px; color: #636e72;"><span>24 items</span> <span style="color: #dfe6e9;">•</span> <span>8 outfits</span>
+          </div>
+         </div>
+         <div class="demo-nav">
+          <div class="demo-nav-tab active">
+           My Wardrobe
+          </div>
+          <div class="demo-nav-tab">
+           My Outfits
+          </div>
+          <div class="demo-nav-tab">
+           Create
+          </div>
+         </div>
+         <div class="demo-content">
+          <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+           <div style="flex: 0 0 100px;">
+            <div class="filter-bar" style="flex-direction: column; gap: 6px;">
+             <div class="filter-tag active">
+              All
+             </div>
+             <div class="filter-tag">
+              Tops
+             </div>
+             <div class="filter-tag">
+              Dresses
+             </div>
+             <div class="filter-tag">
+              Shoes
+             </div>
+            </div>
+           </div>
+           <div style="flex: 1;">
+            <div class="demo-grid" style="grid-template-columns: repeat(4, 1fr);">
+             <div class="demo-item">
+              👕
+             </div>
+             <div class="demo-item">
+              👖
+             </div>
+             <div class="demo-item">
+              👗
+             </div>
+             <div class="demo-item">
+              👟
+             </div>
+             <div class="demo-item">
+              🧥
+             </div>
+             <div class="demo-item">
+              👜
+             </div>
+             <div class="demo-item">
+              👕
+             </div>
+             <div class="demo-item">
+              👖
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+      <p style="text-align: center; margin-top: 12px; font-size: 12px; color: #636e72; font-weight: 500;">Desktop</p>
+     </div><!-- Tablet View (Right - Medium) -->
+     <div class="scale-up stagger-2">
+      <div class="device-frame tablet">
+       <div class="device-screen">
+        <div class="app-demo">
+         <div class="demo-header header-layout">
+          <div style="display: flex; align-items: center; gap: 6px;">
+           <div class="logo-icon" style="width: 20px; height: 20px; font-size: 10px;">
+            👗
+           </div>
+           <p class="title" style="font-size: 12px;">Planner</p>
+          </div>
+         </div>
+         <div class="demo-nav" style="gap: 8px; padding: 6px 12px;">
+          <div class="demo-nav-tab active" style="font-size: 10px; padding: 4px 8px;">
+           Wardrobe
+          </div>
+          <div class="demo-nav-tab" style="font-size: 10px; padding: 4px 8px;">
+           Outfits
+          </div>
+         </div>
+         <div class="demo-content" style="padding: 10px;">
+          <div class="demo-grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">
+           <div class="demo-item" style="font-size: 16px;">
+            👕
+           </div>
+           <div class="demo-item" style="font-size: 16px;">
+            👖
+           </div>
+           <div class="demo-item" style="font-size: 16px;">
+            👗
+           </div>
+           <div class="demo-item" style="font-size: 16px;">
+            👟
+           </div>
+           <div class="demo-item" style="font-size: 16px;">
+            🧥
+           </div>
+           <div class="demo-item" style="font-size: 16px;">
+            👜
+           </div>
+          </div><button class="demo-btn" style="width: 100%; margin-top: 12px; font-size: 9px;">+ Add Item</button>
+         </div>
+        </div>
+       </div>
+      </div>
+      <p style="text-align: center; margin-top: 8px; font-size: 11px; color: #636e72; font-weight: 500;">Tablet</p>
+     </div><!-- Mobile View (Left - Small) -->
+     <div class="scale-up stagger-3">
+      <div class="device-frame mobile">
+       <div class="device-screen">
+        <div class="app-demo">
+         <div class="demo-header" style="padding: 10px 12px;">
+          <div class="logo-icon" style="width: 18px; height: 18px; font-size: 9px;">
+           👗
+          </div>
+          <p class="title" style="font-size: 11px; margin-left: 6px;">Planner</p>
+         </div>
+         <div class="demo-nav" style="gap: 4px; padding: 6px 10px;">
+          <div class="demo-nav-tab active" style="font-size: 9px; padding: 4px 6px;">
+           Wardrobe
+          </div>
+          <div class="demo-nav-tab" style="font-size: 9px; padding: 4px 6px;">
+           Outfits
+          </div>
+         </div>
+         <div class="demo-content" style="padding: 8px;">
+          <div class="demo-grid" style="grid-template-columns: repeat(2, 1fr); gap: 4px;">
+           <div class="demo-item" style="font-size: 12px;">
+            👕
+           </div>
+           <div class="demo-item" style="font-size: 12px;">
+            👖
+           </div>
+           <div class="demo-item" style="font-size: 12px;">
+            👗
+           </div>
+           <div class="demo-item" style="font-size: 12px;">
+            👟
+           </div>
+          </div><button class="demo-btn" style="width: 100%; margin-top: 10px; font-size: 8px;">+ Add</button>
+         </div>
+        </div>
+       </div>
+      </div>
+      <p style="text-align: center; margin-top: 8px; font-size: 10px; color: #636e72; font-weight: 500;">Mobile</p>
+     </div>
+    </div>
+   </div><!-- Features Section -->
+   <div class="pb-12 px-4">
+    <div class="feature-grid">
+     <div class="feature-card">
+      <div class="feature-icon">
+       👕
+      </div>
+      <div class="feature-title">
+       Smart Wardrobe
+      </div>
+      <div class="feature-desc">
+       Organize clothing by category, color, season &amp; occasion with intuitive filtering
+      </div>
+     </div>
+     <div class="feature-card">
+      <div class="feature-icon">
+       ✨
+      </div>
+      <div class="feature-title">
+       Create Outfits
+      </div>
+      <div class="feature-desc">
+       Mix and match items to design complete outfit combinations
+      </div>
+     </div>
+     <div class="feature-card">
+      <div class="feature-icon">
+       📱
+      </div>
+      <div class="feature-title">
+       All Devices
+      </div>
+      <div class="feature-desc">
+       Seamlessly use on desktop, tablet, and mobile devices
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="app" class="h-full w-full flex flex-col">
+   <!-- Toast Container -->
+   <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div><!-- Header -->
+   <header class="bg-white card-shadow px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-3">
+     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F8B4C4] to-[#9CAF88] flex items-center justify-center">
+      <span class="text-white text-xl">👗</span>
+     </div>
+     <h1 id="app-title" class="text-2xl font-bold text-[#2D3436]">Outfit Planner</h1>
+    </div>
+    <div class="flex items-center gap-4">
+     <div id="stats-summary" class="hidden md:flex items-center gap-4 text-sm text-[#636E72]">
+      <span id="total-items-stat">0 items</span> <span class="w-1 h-1 bg-[#DFE6E9] rounded-full"></span> <span id="total-outfits-stat">0 outfits</span>
+     </div>
+    </div>
+   </header><!-- Navigation Tabs -->
+   <nav class="bg-white border-b border-[#DFE6E9] px-6 flex-shrink-0">
+    <div class="flex gap-8">
+     <button id="tab-wardrobe" class="py-4 text-sm font-medium text-[#636E72] tab-active" onclick="switchTab('wardrobe')"> My Wardrobe </button> <button id="tab-outfits" class="py-4 text-sm font-medium text-[#636E72]" onclick="switchTab('outfits')"> My Outfits </button> <button id="tab-create" class="py-4 text-sm font-medium text-[#636E72]" onclick="switchTab('create')"> Create Outfit </button>
+    </div>
+   </nav><!-- Main Content -->
+   <main class="flex-1 overflow-auto p-6">
+    <!-- Wardrobe View -->
+    <section id="view-wardrobe" class="max-w-7xl mx-auto">
+     <div class="flex flex-col lg:flex-row gap-6">
+      <!-- Filters Sidebar -->
+      <aside class="lg:w-64 flex-shrink-0">
+       <div class="bg-white rounded-xl card-shadow p-4 sticky top-0">
+        <h3 class="font-semibold text-[#2D3436] mb-4">Filters</h3><!-- Category Filter -->
+        <div class="mb-4">
+         <label class="text-sm font-medium text-[#636E72] mb-2 block">Category</label>
+         <div class="flex flex-wrap gap-2" id="category-filters">
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72] active" data-filter="category" data-value="all">All</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="category" data-value="tops">Tops</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="category" data-value="bottoms">Bottoms</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="category" data-value="dresses">Dresses</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="category" data-value="outerwear">Outerwear</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="category" data-value="shoes">Shoes</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="category" data-value="accessories">Accessories</button>
+         </div>
+        </div><!-- Color Filter -->
+        <div class="mb-4">
+         <label class="text-sm font-medium text-[#636E72] mb-2 block">Color</label>
+         <div class="flex flex-wrap gap-2" id="color-filters">
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72] active" data-filter="color" data-value="all">All</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="color" data-value="black">Black</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="color" data-value="white">White</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="color" data-value="blue">Blue</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="color" data-value="red">Red</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="color" data-value="green">Green</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="color" data-value="pink">Pink</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="color" data-value="beige">Beige</button>
+         </div>
+        </div><!-- Season Filter -->
+        <div class="mb-4">
+         <label class="text-sm font-medium text-[#636E72] mb-2 block">Season</label>
+         <div class="flex flex-wrap gap-2" id="season-filters">
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72] active" data-filter="season" data-value="all">All</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="season" data-value="spring">🌸 Spring</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="season" data-value="summer">☀️ Summer</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="season" data-value="fall">🍂 Fall</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="season" data-value="winter">❄️ Winter</button>
+         </div>
+        </div><!-- Occasion Filter -->
+        <div>
+         <label class="text-sm font-medium text-[#636E72] mb-2 block">Occasion</label>
+         <div class="flex flex-wrap gap-2" id="occasion-filters">
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72] active" data-filter="occasion" data-value="all">All</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="occasion" data-value="casual">Casual</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="occasion" data-value="work">Work</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="occasion" data-value="formal">Formal</button> <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-[#F8F8F8] text-[#636E72]" data-filter="occasion" data-value="sport">Sport</button>
+         </div>
+        </div><button onclick="clearFilters()" class="w-full mt-4 py-2 text-sm font-medium text-[#636E72] hover:text-[#2D3436] transition"> Clear All Filters </button>
+       </div>
+      </aside><!-- Wardrobe Grid -->
+      <div class="flex-1">
+       <div class="flex items-center justify-between mb-4">
+        <h2 id="wardrobe-title" class="text-xl font-semibold text-[#2D3436]">My Wardrobe</h2><button onclick="openAddItemModal()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"> <span>+</span> Add Item </button>
+       </div>
+       <div id="wardrobe-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <!-- Items will be rendered here -->
+       </div>
+       <div id="wardrobe-empty" class="hidden text-center py-16">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-[#F8F8F8] flex items-center justify-center">
+         <span class="text-4xl">👕</span>
+        </div>
+        <h3 class="text-lg font-medium text-[#2D3436] mb-2">Your wardrobe is empty</h3>
+        <p class="text-[#636E72] mb-4">Start by adding some clothing items!</p><button onclick="openAddItemModal()" class="btn-primary text-white px-6 py-2 rounded-lg text-sm font-medium transition"> Add Your First Item </button>
+       </div>
+      </div>
+     </div>
+    </section><!-- Outfits View -->
+    <section id="view-outfits" class="hidden max-w-7xl mx-auto">
+     <div class="flex items-center justify-between mb-6">
+      <h2 id="outfits-title" class="text-xl font-semibold text-[#2D3436]">My Outfits</h2><button onclick="switchTab('create')" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition"> <span>+</span> Create Outfit </button>
+     </div>
+     <div id="outfits-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Outfits will be rendered here -->
+     </div>
+     <div id="outfits-empty" class="hidden text-center py-16">
+      <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-[#F8F8F8] flex items-center justify-center">
+       <span class="text-4xl">✨</span>
+      </div>
+      <h3 class="text-lg font-medium text-[#2D3436] mb-2">No outfits yet</h3>
+      <p class="text-[#636E72] mb-4">Create your first outfit combination!</p><button onclick="switchTab('create')" class="btn-primary text-white px-6 py-2 rounded-lg text-sm font-medium transition"> Create Your First Outfit </button>
+     </div>
+    </section><!-- Create Outfit View -->
+    <section id="view-create" class="hidden max-w-7xl mx-auto">
+     <h2 class="text-xl font-semibold text-[#2D3436] mb-6">Create New Outfit</h2>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Outfit Builder -->
+      <div class="bg-white rounded-xl card-shadow p-6">
+       <div class="mb-4">
+        <label class="text-sm font-medium text-[#636E72] mb-2 block">Outfit Name</label> <input type="text" id="outfit-name-input" placeholder="e.g., Casual Friday" class="w-full px-4 py-2 rounded-lg border border-[#DFE6E9] focus:outline-none focus:border-[#F8B4C4] text-[#2D3436]">
+       </div>
+       <div class="mb-4">
+        <label class="text-sm font-medium text-[#636E72] mb-2 block">Occasion</label> <select id="outfit-occasion-select" class="w-full px-4 py-2 rounded-lg border border-[#DFE6E9] focus:outline-none focus:border-[#F8B4C4] text-[#2D3436]"> <option value="casual">Casual</option> <option value="work">Work</option> <option value="formal">Formal</option> <option value="sport">Sport</option> </select>
+       </div>
+       <div class="mb-4">
+        <label class="text-sm font-medium text-[#636E72] mb-2 block">Season</label> <select id="outfit-season-select" class="w-full px-4 py-2 rounded-lg border border-[#DFE6E9] focus:outline-none focus:border-[#F8B4C4] text-[#2D3436]"> <option value="spring">🌸 Spring</option> <option value="summer">☀️ Summer</option> <option value="fall">🍂 Fall</option> <option value="winter">❄️ Winter</option> </select>
+       </div>
+       <div>
+        <label class="text-sm font-medium text-[#636E72] mb-2 block">Selected Items (<span id="selected-count">0</span>)</label>
+        <div id="outfit-drop-zone" class="outfit-drop-zone min-h-[200px] rounded-xl p-4 flex flex-wrap gap-3 content-start">
+         <p id="drop-zone-placeholder" class="w-full text-center text-[#636E72] text-sm py-8">Click items below to add them to your outfit</p>
+        </div>
+       </div><button onclick="saveOutfit()" id="save-outfit-btn" class="w-full mt-4 btn-secondary text-white py-3 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed" disabled> Save Outfit </button>
+      </div><!-- Available Items -->
+      <div class="bg-white rounded-xl card-shadow p-6">
+       <h3 class="font-semibold text-[#2D3436] mb-4">Select Items from Wardrobe</h3>
+       <div id="available-items-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[500px] overflow-y-auto">
+        <!-- Available items will be rendered here -->
+       </div>
+       <div id="available-items-empty" class="hidden text-center py-8">
+        <p class="text-[#636E72]">Add items to your wardrobe first!</p><button onclick="switchTab('wardrobe'); openAddItemModal();" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium mt-2 transition"> Add Items </button>
+       </div>
+      </div>
+     </div>
+    </section>
+   </main><!-- Add Item Modal -->
+   <div id="add-item-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/40 modal-overlay" onclick="closeAddItemModal()"></div>
+    <div class="relative bg-white rounded-2xl card-shadow-lg w-full max-w-md p-6 max-h-[90%] overflow-y-auto">
+     <button onclick="closeAddItemModal()" class="absolute top-4 right-4 text-[#636E72] hover:text-[#2D3436] text-xl">×</button>
+     <h3 class="text-xl font-semibold text-[#2D3436] mb-6">Add New Item</h3>
+     <form id="add-item-form" onsubmit="handleAddItem(event)">
+      <div class="mb-4">
+       <label class="text-sm font-medium text-[#636E72] mb-2 block">Item Name *</label> <input type="text" id="item-name" required placeholder="e.g., Blue Denim Jacket" class="w-full px-4 py-2 rounded-lg border border-[#DFE6E9] focus:outline-none focus:border-[#F8B4C4] text-[#2D3436]">
+      </div>
+      <div class="mb-4">
+       <label class="text-sm font-medium text-[#636E72] mb-2 block">Category *</label> <select id="item-category" required class="w-full px-4 py-2 rounded-lg border border-[#DFE6E9] focus:outline-none focus:border-[#F8B4C4] text-[#2D3436]"> <option value="">Select category</option> <option value="tops">Tops</option> <option value="bottoms">Bottoms</option> <option value="dresses">Dresses</option> <option value="outerwear">Outerwear</option> <option value="shoes">Shoes</option> <option value="accessories">Accessories</option> </select>
+      </div>
+      <div class="mb-4">
+       <label class="text-sm font-medium text-[#636E72] mb-2 block">Color *</label> <select id="item-color" required class="w-full px-4 py-2 rounded-lg border border-[#DFE6E9] focus:outline-none focus:border-[#F8B4C4] text-[#2D3436]"> <option value="">Select color</option> <option value="black">Black</option> <option value="white">White</option> <option value="blue">Blue</option> <option value="red">Red</option> <option value="green">Green</option> <option value="pink">Pink</option> <option value="beige">Beige</option> </select>
+      </div>
+      <div class="mb-4">
+       <label class="text-sm font-medium text-[#636E72] mb-2 block">Season</label> <select id="item-season" class="w-full px-4 py-2 rounded-lg border border-[#DFE6E9] focus:outline-none focus:border-[#F8B4C4] text-[#2D3436]"> <option value="spring">🌸 Spring</option> <option value="summer">☀️ Summer</option> <option value="fall">🍂 Fall</option> <option value="winter">❄️ Winter</option> </select>
+      </div>
+      <div class="mb-6">
+       <label class="text-sm font-medium text-[#636E72] mb-2 block">Occasion</label> <select id="item-occasion" class="w-full px-4 py-2 rounded-lg border border-[#DFE6E9] focus:outline-none focus:border-[#F8B4C4] text-[#2D3436]"> <option value="casual">Casual</option> <option value="work">Work</option> <option value="formal">Formal</option> <option value="sport">Sport</option> </select>
+      </div><button type="submit" id="add-item-submit-btn" class="w-full btn-primary text-white py-3 rounded-lg font-medium transition"> Add to Wardrobe </button>
+     </form>
+    </div>
+   </div><!-- Delete Confirmation Modal -->
+   <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/40 modal-overlay" onclick="closeDeleteModal()"></div>
+    <div class="relative bg-white rounded-2xl card-shadow-lg w-full max-w-sm p-6">
+     <h3 class="text-lg font-semibold text-[#2D3436] mb-2">Delete Item?</h3>
+     <p class="text-[#636E72] mb-6">This action cannot be undone.</p>
+     <div class="flex gap-3">
+      <button onclick="closeDeleteModal()" class="flex-1 py-2 rounded-lg border border-[#DFE6E9] text-[#636E72] font-medium hover:bg-[#F8F8F8] transition">Cancel</button> <button onclick="confirmDelete()" id="confirm-delete-btn" class="flex-1 py-2 rounded-lg bg-[#E17055] text-white font-medium hover:bg-[#D65D43] transition">Delete</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      app_title: 'Outfit Planner',
+      wardrobe_section_title: 'My Wardrobe',
+      outfits_section_title: 'My Outfits',
+      background_color: '#FAFAFA',
+      surface_color: '#FFFFFF',
+      text_color: '#2D3436',
+      primary_color: '#F8B4C4',
+      secondary_color: '#9CAF88'
+    };
+
+    // Application state
+    let allData = [];
+    let wardrobeItems = [];
+    let outfits = [];
+    let currentFilters = { category: 'all', color: 'all', season: 'all', occasion: 'all' };
+    let selectedOutfitItems = [];
+    let itemToDelete = null;
+    let isLoading = false;
+
+    // Category emoji mapping
+    const categoryEmojis = {
+      tops: '👕',
+      bottoms: '👖',
+      dresses: '👗',
+      outerwear: '🧥',
+      shoes: '👟',
+      accessories: '👜'
+    };
+
+    // Color background mapping
+    const colorBackgrounds = {
+      black: 'bg-gray-800',
+      white: 'bg-gray-100',
+      blue: 'bg-blue-200',
+      red: 'bg-red-200',
+      green: 'bg-green-200',
+      pink: 'bg-pink-200',
+      beige: 'bg-amber-100'
+    };
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgColor = type === 'success' ? 'bg-[#9CAF88]' : type === 'error' ? 'bg-[#E17055]' : 'bg-[#FDCB6E]';
+      toast.className = `toast ${bgColor} text-white px-4 py-3 rounded-lg card-shadow-md text-sm font-medium`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('[id^="tab-"]').forEach(t => t.classList.remove('tab-active'));
+      document.querySelectorAll('[id^="view-"]').forEach(v => v.classList.add('hidden'));
+      document.getElementById(`tab-${tab}`).classList.add('tab-active');
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+      if (tab === 'create') {
+        renderAvailableItems();
+      }
+    }
+
+    // Filter handling
+    function setupFilterListeners() {
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const filterType = chip.dataset.filter;
+          const value = chip.dataset.value;
+          currentFilters[filterType] = value;
+          document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          renderWardrobeGrid();
+        });
+      });
+    }
+
+    function clearFilters() {
+      currentFilters = { category: 'all', color: 'all', season: 'all', occasion: 'all' };
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.classList.remove('active');
+        if (chip.dataset.value === 'all') chip.classList.add('active');
+      });
+      renderWardrobeGrid();
+    }
+
+    // Wardrobe rendering
+    function renderWardrobeGrid() {
+      const grid = document.getElementById('wardrobe-grid');
+      const empty = document.getElementById('wardrobe-empty');
+      let filtered = wardrobeItems.filter(item => {
+        if (currentFilters.category !== 'all' && item.category !== currentFilters.category) return false;
+        if (currentFilters.color !== 'all' && item.color !== currentFilters.color) return false;
+        if (currentFilters.season !== 'all' && item.season !== currentFilters.season) return false;
+        if (currentFilters.occasion !== 'all' && item.occasion !== currentFilters.occasion) return false;
+        return true;
+      });
+      if (wardrobeItems.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p class="col-span-full text-center text-[#636E72] py-8">No items match your filters</p>';
+        return;
+      }
+      const existingCards = new Map([...grid.children].map(el => [el.dataset.itemId, el]));
+      filtered.forEach(item => {
+        if (existingCards.has(item.__backendId)) {
+          existingCards.delete(item.__backendId);
+        } else {
+          const card = createItemCard(item);
+          grid.appendChild(card);
+        }
+      });
+      existingCards.forEach(el => el.remove());
+    }
+
+    function createItemCard(item) {
+      const card = document.createElement('div');
+      card.dataset.itemId = item.__backendId;
+      card.className = `clothing-item bg-white rounded-xl card-shadow overflow-hidden cursor-pointer group`;
+      card.innerHTML = `
+        <div class="aspect-square ${colorBackgrounds[item.color] || 'bg-gray-100'} flex items-center justify-center relative">
+          <span class="text-5xl">${item.emoji || categoryEmojis[item.category] || '👔'}</span>
+          <button onclick="event.stopPropagation(); openDeleteModal('${item.__backendId}')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 text-[#E17055] opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-lg hover:bg-white">×</button>
+        </div>
+        <div class="p-3">
+          <h4 class="font-medium text-[#2D3436] text-sm truncate">${item.name}</h4>
+          <p class="text-xs text-[#636E72] capitalize">${item.category} • ${item.color}</p>
+        </div>
+      `;
+      return card;
+    }
+
+    // Outfits rendering
+    function renderOutfitsGrid() {
+      const grid = document.getElementById('outfits-grid');
+      const empty = document.getElementById('outfits-empty');
+      if (outfits.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      const existingCards = new Map([...grid.children].map(el => [el.dataset.outfitId, el]));
+      outfits.forEach(outfit => {
+        if (existingCards.has(outfit.__backendId)) {
+          existingCards.delete(outfit.__backendId);
+        } else {
+          const card = createOutfitCard(outfit);
+          grid.appendChild(card);
+        }
+      });
+      existingCards.forEach(el => el.remove());
+    }
+
+    function createOutfitCard(outfit) {
+      const itemIds = outfit.outfit_items ? outfit.outfit_items.split(',') : [];
+      const items = itemIds.map(id => wardrobeItems.find(i => i.__backendId === id)).filter(Boolean);
+      const card = document.createElement('div');
+      card.dataset.outfitId = outfit.__backendId;
+      card.className = 'bg-white rounded-xl card-shadow overflow-hidden group';
+      card.innerHTML = `
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-semibold text-[#2D3436]">${outfit.name}</h4>
+            <button onclick="openDeleteModal('${outfit.__backendId}')" class="w-8 h-8 rounded-full text-[#E17055] opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-lg hover:bg-[#FFF5F5]">×</button>
+          </div>
+          <div class="flex flex-wrap gap-2 mb-3">
+            ${items.slice(0, 6).map(item => `
+              <div class="w-12 h-12 rounded-lg ${colorBackgrounds[item.color] || 'bg-gray-100'} flex items-center justify-center">
+                <span class="text-xl">${item.emoji || categoryEmojis[item.category] || '👔'}</span>
+              </div>
+            `).join('')}
+            ${items.length > 6 ? `<div class="w-12 h-12 rounded-lg bg-[#F8F8F8] flex items-center justify-center text-sm text-[#636E72] font-medium">+${items.length - 6}</div>` : ''}
+          </div>
+          <div class="flex gap-2 text-xs">
+            <span class="px-2 py-1 rounded-full bg-[#F8F8F8] text-[#636E72] capitalize">${outfit.occasion || 'casual'}</span>
+            <span class="px-2 py-1 rounded-full bg-[#F8F8F8] text-[#636E72] capitalize">${outfit.season || 'spring'}</span>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    // Create outfit functionality
+    function renderAvailableItems() {
+      const grid = document.getElementById('available-items-grid');
+      const empty = document.getElementById('available-items-empty');
+      if (wardrobeItems.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      grid.innerHTML = wardrobeItems.map(item => `
+        <div class="aspect-square rounded-lg ${colorBackgrounds[item.color] || 'bg-gray-100'} flex items-center justify-center cursor-pointer transition hover:ring-2 hover:ring-[#F8B4C4] ${selectedOutfitItems.includes(item.__backendId) ? 'ring-2 ring-[#F8B4C4]' : ''}" 
+             onclick="toggleOutfitItem('${item.__backendId}')"
+             title="${item.name}">
+          <span class="text-2xl">${item.emoji || categoryEmojis[item.category] || '👔'}</span>
+        </div>
+      `).join('');
+    }
+
+    function toggleOutfitItem(itemId) {
+      const index = selectedOutfitItems.indexOf(itemId);
+      if (index > -1) {
+        selectedOutfitItems.splice(index, 1);
+      } else {
+        selectedOutfitItems.push(itemId);
+      }
+      updateOutfitDropZone();
+      renderAvailableItems();
+    }
+
+    function updateOutfitDropZone() {
+      const zone = document.getElementById('outfit-drop-zone');
+      const placeholder = document.getElementById('drop-zone-placeholder');
+      const countSpan = document.getElementById('selected-count');
+      const saveBtn = document.getElementById('save-outfit-btn');
+      countSpan.textContent = selectedOutfitItems.length;
+      if (selectedOutfitItems.length === 0) {
+        placeholder.classList.remove('hidden');
+        zone.innerHTML = '';
+        zone.appendChild(placeholder);
+        saveBtn.disabled = true;
+        return;
+      }
+      placeholder.classList.add('hidden');
+      saveBtn.disabled = false;
+      zone.innerHTML = selectedOutfitItems.map(id => {
+        const item = wardrobeItems.find(i => i.__backendId === id);
+        if (!item) return '';
+        return `
+          <div class="w-16 h-16 rounded-lg ${colorBackgrounds[item.color] || 'bg-gray-100'} flex items-center justify-center relative group">
+            <span class="text-2xl">${item.emoji || categoryEmojis[item.category] || '👔'}</span>
+            <button onclick="toggleOutfitItem('${id}')" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#E17055] text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition">×</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function saveOutfit() {
+      const nameInput = document.getElementById('outfit-name-input');
+      const occasionSelect = document.getElementById('outfit-occasion-select');
+      const seasonSelect = document.getElementById('outfit-season-select');
+      const name = nameInput.value.trim();
+      if (!name) {
+        showToast('Please enter an outfit name', 'error');
+        return;
+      }
+      if (selectedOutfitItems.length === 0) {
+        showToast('Please select at least one item', 'error');
+        return;
+      }
+      if (allData.length >= 999) {
+        showToast('Maximum limit reached. Please delete some items first.', 'error');
+        return;
+      }
+      const saveBtn = document.getElementById('save-outfit-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+      const result = await window.dataSdk.create({
+        type: 'outfit',
+        name: name,
+        category: '',
+        color: '',
+        season: seasonSelect.value,
+        occasion: occasionSelect.value,
+        emoji: '✨',
+        created_at: new Date().toISOString(),
+        outfit_items: selectedOutfitItems.join(',')
+      });
+      saveBtn.textContent = 'Save Outfit';
+      if (result.isOk) {
+        showToast('Outfit saved successfully!');
+        nameInput.value = '';
+        selectedOutfitItems = [];
+        updateOutfitDropZone();
+        renderAvailableItems();
+        switchTab('outfits');
+      } else {
+        showToast('Failed to save outfit', 'error');
+        saveBtn.disabled = false;
+      }
+    }
+
+    // Add item modal
+    function openAddItemModal() {
+      document.getElementById('add-item-modal').classList.remove('hidden');
+      document.getElementById('add-item-form').reset();
+    }
+
+    function closeAddItemModal() {
+      document.getElementById('add-item-modal').classList.add('hidden');
+    }
+
+    async function handleAddItem(e) {
+      e.preventDefault();
+      if (allData.length >= 999) {
+        showToast('Maximum limit reached. Please delete some items first.', 'error');
+        return;
+      }
+      const btn = document.getElementById('add-item-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+      const category = document.getElementById('item-category').value;
+      const result = await window.dataSdk.create({
+        type: 'clothing',
+        name: document.getElementById('item-name').value.trim(),
+        category: category,
+        color: document.getElementById('item-color').value,
+        season: document.getElementById('item-season').value,
+        occasion: document.getElementById('item-occasion').value,
+        emoji: categoryEmojis[category] || '👔',
+        created_at: new Date().toISOString(),
+        outfit_items: ''
+      });
+      btn.disabled = false;
+      btn.textContent = 'Add to Wardrobe';
+      if (result.isOk) {
+        showToast('Item added to wardrobe!');
+        closeAddItemModal();
+      } else {
+        showToast('Failed to add item', 'error');
+      }
+    }
+
+    // Delete functionality
+    function openDeleteModal(id) {
+      itemToDelete = id;
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+      itemToDelete = null;
+      document.getElementById('delete-modal').classList.add('hidden');
+    }
+
+    async function confirmDelete() {
+      if (!itemToDelete) return;
+      const item = allData.find(d => d.__backendId === itemToDelete);
+      if (!item) {
+        closeDeleteModal();
+        return;
+      }
+      const btn = document.getElementById('confirm-delete-btn');
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
+      const result = await window.dataSdk.delete(item);
+      btn.disabled = false;
+      btn.textContent = 'Delete';
+      if (result.isOk) {
+        showToast('Item deleted');
+        closeDeleteModal();
+      } else {
+        showToast('Failed to delete item', 'error');
+      }
+    }
+
+    // Update stats
+    function updateStats() {
+      document.getElementById('total-items-stat').textContent = `${wardrobeItems.length} items`;
+      document.getElementById('total-outfits-stat').textContent = `${outfits.length} outfits`;
+    }
+
+    // Data handler
+    const dataHandler = {
+      onDataChanged(data) {
+        allData = data;
+        wardrobeItems = data.filter(d => d.type === 'clothing');
+        outfits = data.filter(d => d.type === 'outfit');
+        renderWardrobeGrid();
+        renderOutfitsGrid();
+        updateStats();
+        if (document.getElementById('view-create').classList.contains('hidden') === false) {
+          renderAvailableItems();
+          updateOutfitDropZone();
+        }
+      }
+    };
+
+    // Config change handler
+    async function onConfigChange(config) {
+      const appTitle = document.getElementById('app-title');
+      const wardrobeTitle = document.getElementById('wardrobe-title');
+      const outfitsTitle = document.getElementById('outfits-title');
+      if (appTitle) appTitle.textContent = config.app_title || defaultConfig.app_title;
+      if (wardrobeTitle) wardrobeTitle.textContent = config.wardrobe_section_title || defaultConfig.wardrobe_section_title;
+      if (outfitsTitle) outfitsTitle.textContent = config.outfits_section_title || defaultConfig.outfits_section_title;
+      document.body.style.backgroundColor = config.background_color || defaultConfig.background_color;
+      document.querySelectorAll('.bg-white').forEach(el => {
+        el.style.backgroundColor = config.surface_color || defaultConfig.surface_color;
+      });
+      document.querySelectorAll('.btn-primary').forEach(el => {
+        el.style.backgroundColor = config.primary_color || defaultConfig.primary_color;
+      });
+      document.querySelectorAll('.btn-secondary').forEach(el => {
+        el.style.backgroundColor = config.secondary_color || defaultConfig.secondary_color;
+      });
+    }
+
+    // Initialize
+    async function init() {
+      setupFilterListeners();
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+              { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+              { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+              { get: () => config.primary_color || defaultConfig.primary_color, set: (v) => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+              { get: () => config.secondary_color || defaultConfig.secondary_color, set: (v) => { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['app_title', config.app_title || defaultConfig.app_title],
+            ['wardrobe_section_title', config.wardrobe_section_title || defaultConfig.wardrobe_section_title],
+            ['outfits_section_title', config.outfits_section_title || defaultConfig.outfits_section_title]
+          ])
+        });
+      }
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize data SDK');
+        }
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d3fca83447b648e',t:'MTc3MjExMjU2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

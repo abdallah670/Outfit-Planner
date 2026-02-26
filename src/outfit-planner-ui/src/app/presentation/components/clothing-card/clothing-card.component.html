@@ -1,0 +1,51 @@
+<mat-card class="clothing-card glass-card">
+  <div class="card-image-wrapper">
+    <img
+      mat-card-image
+      [src]="item.imageUrl || 'assets/placeholder-clothes.png'"
+      [alt]="item.name"
+      class="clothing-image"
+    />
+    <div class="card-overlay">
+      <button
+        mat-icon-button
+        class="quick-action-btn"
+        matTooltip="Record Wear"
+        (click)="onRecordWear($event)"
+      >
+        <i class="fa-solid fa-circle-check"></i>
+      </button>
+    </div>
+  </div>
+
+  <mat-card-header>
+    <div mat-card-avatar class="color-indicator" [style.background-color]="item.primaryColor"></div>
+    <mat-card-title>{{ item.name }}</mat-card-title>
+    <mat-card-subtitle>{{ item.brand || 'No Brand' }} • {{ item.type }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="stats-row">
+      <div class="stat-item">
+        <i class="fa-solid fa-clock-rotate-left stat-icon"></i>
+        <span class="stat-value">{{ item.wearCount }} wears</span>
+      </div>
+      <div class="stat-item" *ngIf="item.lastWorn">
+        <i class="fa-regular fa-calendar-check stat-icon"></i>
+        <span class="stat-value">{{ item.lastWorn | date: 'shortDate' }}</span>
+      </div>
+    </div>
+
+    <mat-chip-set class="category-chips">
+      <mat-chip>{{ item.category }}</mat-chip>
+      <mat-chip *ngIf="item.size" class="size-chip">{{ item.size }}</mat-chip>
+    </mat-chip-set>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-button color="primary" [routerLink]="['/wardrobe', item.id]">DETAILS</button>
+    <button mat-icon-button color="warn" (click)="onDelete($event)">
+      <i class="fa-regular fa-trash-can"></i>
+    </button>
+  </mat-card-actions>
+</mat-card>

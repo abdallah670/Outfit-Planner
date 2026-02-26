@@ -15,6 +15,7 @@ using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
 using OutfitPlanner.Persistence;
 using OutfitPlanner.Persistence.Repositories;
+using OutfitPlanner.Application.Profiles;
 
 namespace OutfitPlanner.Application.IntegrationTests.ClothingItems;
 
@@ -39,28 +40,7 @@ public class ClothingItemTests : IDisposable
         // Add AutoMapper with proper mappings
         var mapperConfig = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<ClothingItem, ClothingItemDto>()
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()))
-                .ForMember(dest => dest.Fabric, opt => opt.MapFrom(src => src.Fabric.ToString()))
-                .ForMember(dest => dest.PurchasePrice, opt => opt.MapFrom(src => src.PurchasePrice.Amount))
-                .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.PurchasePrice.Currency));
-            cfg.CreateMap<ClothingTag, ClothingTagDto>();
-            // Add mapping for UpdateClothingItemRequest -> ClothingItem
-            cfg.CreateMap<UpdateClothingItemDto, ClothingItem>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.UserId, opt => opt.Ignore())
-                .ForMember(dest => dest.User, opt => opt.Ignore())
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => Enum.Parse<Domain.Enums.ClothingType>(src.Type)))
-                .ForMember(dest => dest.Fabric, opt => opt.MapFrom(src => Enum.Parse<Domain.Enums.FabricType>(src.Fabric)))
-                .ForMember(dest => dest.PurchasePrice, opt => opt.MapFrom(src => Domain.ValueObjects.Money.From(src.PurchasePrice, src.Currency)))
-                .ForMember(dest => dest.IsActive, opt => opt.Ignore())
-                .ForMember(dest => dest.LastWorn, opt => opt.Ignore())
-                .ForMember(dest => dest.WearCount, opt => opt.Ignore())
-                .ForMember(dest => dest.LastWashed, opt => opt.Ignore())
-                .ForMember(dest => dest.Tags, opt => opt.Ignore())
-                .ForMember(dest => dest.OutfitItems, opt => opt.Ignore())
-                .ForMember(dest => dest.WearEvents, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+            cfg.AddProfile<MappingProfile>();
         });
         services.AddSingleton<IMapper>(mapperConfig.CreateMapper());
 
@@ -111,7 +91,7 @@ public class ClothingItemTests : IDisposable
         // Arrange
         var userId = Guid.NewGuid().ToString();
         var logger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var handler = new CreateClothingItemCommandHandler(logger, _unitOfWork);
+        var handler = new CreateClothingItemCommandHandler(logger, _unitOfWork, _mapper);
 
         var command = new CreateClothingItemCommand
         {
@@ -120,13 +100,11 @@ public class ClothingItemTests : IDisposable
         };
 
         // Act - Cast to interface to use explicit implementation
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> handlerInterface = handler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> handlerInterface = handler;
         var result = await handlerInterface.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Success.Should().BeTrue("clothing item creation should succeed with valid data");
-        result.Message.Should().Be("Clothing item created successfully");
         result.Id.Should().NotBe(Guid.Empty, "a valid ID should be generated");
     }
 
@@ -136,7 +114,7 @@ public class ClothingItemTests : IDisposable
         // Arrange
         var userId = Guid.NewGuid().ToString();
         var logger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var handler = new CreateClothingItemCommandHandler(logger, _unitOfWork);
+        var handler = new CreateClothingItemCommandHandler(logger, _unitOfWork, _mapper);
 
         var command = new CreateClothingItemCommand
         {
@@ -145,7 +123,7 @@ public class ClothingItemTests : IDisposable
         };
 
         // Act
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> handlerInterface = handler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> handlerInterface = handler;
         var result = await handlerInterface.Handle(command, CancellationToken.None);
 
         // Assert - Verify item was persisted
@@ -166,7 +144,7 @@ public class ClothingItemTests : IDisposable
         
         // First create an item
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         
         var createCommand = new CreateClothingItemCommand
         {
@@ -174,14 +152,14 @@ public class ClothingItemTests : IDisposable
             Request = CreateValidRequest("Green Jacket", "Outerwear")
         };
         
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
         
         // Now get the item - constructor order: repository, logger, mapper
         var getLogger = _serviceProvider.GetRequiredService<ILogger<GetClothingItemByIdRequestHanlder>>();
         var getHandler = new GetClothingItemByIdRequestHanlder(_unitOfWork.ClothingItems, getLogger, _mapper);
         
-        var getRequest = new GetClothingItemByIdRequest { Id = createResult.Id };
+        var getRequest = new GetClothingItemByIdRequest { Id = createResult.Id, UserId = userId };
 
         // Act
         IRequestHandler<GetClothingItemByIdRequest, ClothingItemDto> getHandlerInterface = getHandler;
@@ -208,8 +186,7 @@ public class ClothingItemTests : IDisposable
         // Note: The handler wraps NotFoundException in BadRequestException due to the catch-all exception handler
         IRequestHandler<GetClothingItemByIdRequest, ClothingItemDto> getHandlerInterface = getHandler;
         var act = async () => await getHandlerInterface.Handle(getRequest, CancellationToken.None);
-        await act.Should().ThrowAsync<OutfitPlanner.Application.Exceptions.BadRequestException>()
-            .WithMessage("*error occurred while retrieving*");
+        await act.Should().ThrowAsync<OutfitPlanner.Application.Exceptions.NotFoundException>();
     }
 
     [Fact]
@@ -218,7 +195,7 @@ public class ClothingItemTests : IDisposable
         // Arrange
         var userId = Guid.NewGuid().ToString();
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
 
         var command = new CreateClothingItemCommand
         {
@@ -227,18 +204,18 @@ public class ClothingItemTests : IDisposable
         };
 
         // Act - Create
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(command, CancellationToken.None);
 
         // Assert - Create
-        createResult.Success.Should().BeTrue();
+        createResult.Should().NotBeNull();
         createResult.Id.Should().NotBe(Guid.Empty);
 
         // Act - Get
         var getLogger = _serviceProvider.GetRequiredService<ILogger<GetClothingItemByIdRequestHanlder>>();
         var getHandler = new GetClothingItemByIdRequestHanlder(_unitOfWork.ClothingItems, getLogger, _mapper);
         IRequestHandler<GetClothingItemByIdRequest, ClothingItemDto> getHandlerInterface = getHandler;
-        var getResult = await getHandlerInterface.Handle(new GetClothingItemByIdRequest { Id = createResult.Id }, CancellationToken.None);
+         var getResult = await getHandlerInterface.Handle(new GetClothingItemByIdRequest { Id = createResult.Id, UserId = userId }, CancellationToken.None);
 
         // Assert - Get
         getResult.Should().NotBeNull();
@@ -256,11 +233,11 @@ public class ClothingItemTests : IDisposable
         // Arrange
         var userId = Guid.NewGuid().ToString();
         var logger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var handler = new CreateClothingItemCommandHandler(logger, _unitOfWork);
+        var handler = new CreateClothingItemCommandHandler(logger, _unitOfWork, _mapper);
 
         var types = new[] { "Top", "Bottom", "Dress", "Outerwear", "Footwear", "Accessory" };
 
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> handlerInterface = handler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> handlerInterface = handler;
         
         foreach (var type in types)
         {
@@ -274,7 +251,8 @@ public class ClothingItemTests : IDisposable
             var result = await handlerInterface.Handle(command, CancellationToken.None);
 
             // Assert
-            result.Success.Should().BeTrue($"creation should succeed for type {type}");
+            result.Should().NotBeNull();
+
         }
 
         // Verify all items were created
@@ -295,15 +273,16 @@ public class ClothingItemTests : IDisposable
 
         // Create a clothing item first
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         var createCommand = new CreateClothingItemCommand
         {
             UserId = userId,
             Request = CreateValidRequest("Item to Delete", "Top")
         };
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
-        createResult.Success.Should().BeTrue();
+        createResult.Should().NotBeNull();
+
 
         // Act - Delete the item
         var deleteLogger = _serviceProvider.GetRequiredService<ILogger<DeleteClothingItemCommandHandler>>();
@@ -375,13 +354,13 @@ public class ClothingItemTests : IDisposable
 
         // Create item for user1
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         var createCommand = new CreateClothingItemCommand
         {
             UserId = userId1,
             Request = CreateValidRequest("User1's Item", "Top")
         };
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
 
         // Act - Try to delete user1's item as user2
@@ -416,15 +395,16 @@ public class ClothingItemTests : IDisposable
 
         // Create a clothing item first
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         var createCommand = new CreateClothingItemCommand
         {
             UserId = userId,
             Request = CreateValidRequest("Original Item", "Top")
         };
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
-        createResult.Success.Should().BeTrue();
+        createResult.Should().NotBeNull();
+
 
         // Act - Update the item
         var updateLogger = _serviceProvider.GetRequiredService<ILogger<UpdateClothingItemCommandHandler>>();
@@ -508,13 +488,13 @@ public class ClothingItemTests : IDisposable
 
         // Create item for user1
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         var createCommand = new CreateClothingItemCommand
         {
             UserId = userId1,
             Request = CreateValidRequest("User1's Item", "Top")
         };
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
 
         // Act - Try to update user1's item as user2
@@ -558,13 +538,13 @@ public class ClothingItemTests : IDisposable
 
         // Create a clothing item first
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         var createCommand = new CreateClothingItemCommand
         {
             UserId = userId,
             Request = CreateValidRequest("Original Item", "Top")
         };
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
 
         // Act - Try to update with invalid data (empty name)
@@ -606,8 +586,8 @@ public class ClothingItemTests : IDisposable
 
         // Create multiple clothing items
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
 
         var items = new[]
         {
@@ -676,8 +656,8 @@ public class ClothingItemTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
 
         // Create items for user1
         var command1 = new CreateClothingItemCommand
@@ -722,8 +702,8 @@ public class ClothingItemTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
 
         // Create items with different categories
         var casualCommand = new CreateClothingItemCommand
@@ -799,8 +779,8 @@ public class ClothingItemTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
 
         var command = new CreateClothingItemCommand
         {
@@ -832,8 +812,8 @@ public class ClothingItemTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
 
         // Create multiple casual items
         var casualItems = new[] { "Casual T-Shirt", "Casual Jeans", "Casual Sneakers" };
@@ -883,8 +863,8 @@ public class ClothingItemTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
 
         // Create casual item for user1
         var command1 = new CreateClothingItemCommand
@@ -948,7 +928,7 @@ public class ClothingItemTests : IDisposable
 
         // Create a clothing item first
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         var createCommand = new CreateClothingItemCommand
         {
             UserId = userId,
@@ -963,13 +943,14 @@ public class ClothingItemTests : IDisposable
                 ImageUrl = "https://example.com/test.jpg"
             }
         };
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
-        createResult.Success.Should().BeTrue();
+        createResult.Should().NotBeNull();
+
 
         // Act - Record wear
         var recordWearLogger = _serviceProvider.GetRequiredService<ILogger<RecordWearCommandHandler>>();
-        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger);
+        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper);
         var recordWearCommand = new RecordWearCommand
         {
             UserId = userId,
@@ -988,9 +969,7 @@ public class ClothingItemTests : IDisposable
 
         // Assert
         result.Should().NotBeNull();
-        result.Success.Should().BeTrue();
-        result.Message.Should().Be("Wear event recorded successfully");
-        result.Id.Should().NotBe(Guid.Empty);
+        result.Id.Should().Be(createResult.Id);
 
         // Verify wear event was created
         var wearEvents = await _unitOfWork.WearEvents.GetAllAsync();
@@ -1020,7 +999,7 @@ public class ClothingItemTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         var recordWearLogger = _serviceProvider.GetRequiredService<ILogger<RecordWearCommandHandler>>();
-        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger);
+        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper);
         var recordWearCommand = new RecordWearCommand
         {
             UserId = userId,
@@ -1050,7 +1029,7 @@ public class ClothingItemTests : IDisposable
 
         // Create item for user1
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         var createCommand = new CreateClothingItemCommand
         {
             UserId = userId1,
@@ -1065,12 +1044,12 @@ public class ClothingItemTests : IDisposable
                 ImageUrl = "https://example.com/test.jpg"
             }
         };
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
 
         // Act - Try to record wear for user1's item as user2
         var recordWearLogger = _serviceProvider.GetRequiredService<ILogger<RecordWearCommandHandler>>();
-        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger);
+        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper);
         var recordWearCommand = new RecordWearCommand
         {
             UserId = userId2,
@@ -1108,7 +1087,7 @@ public class ClothingItemTests : IDisposable
 
         // Create a clothing item
         var createLogger = _serviceProvider.GetRequiredService<ILogger<CreateClothingItemCommandHandler>>();
-        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork);
+        var createHandler = new CreateClothingItemCommandHandler(createLogger, _unitOfWork, _mapper);
         var createCommand = new CreateClothingItemCommand
         {
             UserId = userId,
@@ -1123,12 +1102,12 @@ public class ClothingItemTests : IDisposable
                 ImageUrl = "https://example.com/test.jpg"
             }
         };
-        IRequestHandler<CreateClothingItemCommand, BaseCommandResponse> createHandlerInterface = createHandler;
+        IRequestHandler<CreateClothingItemCommand, ClothingItemDto> createHandlerInterface = createHandler;
         var createResult = await createHandlerInterface.Handle(createCommand, CancellationToken.None);
 
         // Act - Try to record wear with future date (invalid)
         var recordWearLogger = _serviceProvider.GetRequiredService<ILogger<RecordWearCommandHandler>>();
-        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger);
+        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper);
         var recordWearCommand = new RecordWearCommand
         {
             UserId = userId,

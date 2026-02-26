@@ -1,13 +1,13 @@
-c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\bin\Debug\net9.0\OutfitPlanner.Domain.deps.json
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\bin\Debug\net9.0\OutfitPlanner.Domain.dll
+c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\bin\Debug\net9.0\OutfitPlanner.Domain.deps.json
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\bin\Debug\net9.0\OutfitPlanner.Domain.pdb
+c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.csproj.AssemblyReference.cache
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.GeneratedMSBuildEditorConfig.editorconfig
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.AssemblyInfoInputs.cache
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.AssemblyInfo.cs
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.csproj.CoreCompileInputs.cache
+c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.sourcelink.json
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.dll
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\refint\OutfitPlanner.Domain.dll
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.pdb
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\ref\OutfitPlanner.Domain.dll
-C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.csproj.AssemblyReference.cache
-C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.sourcelink.json
