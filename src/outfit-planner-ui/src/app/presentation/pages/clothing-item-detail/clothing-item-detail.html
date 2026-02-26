@@ -8,7 +8,7 @@
     <!-- Header Section -->
     <header class="bento-item header-section glass">
       <button mat-icon-button routerLink="/wardrobe" class="back-btn" aria-label="Back to Wardrobe">
-        <mat-icon>arrow_back</mat-icon>
+        <i class="fa-solid fa-arrow-left"></i>
       </button>
       <div class="header-content">
         <h1 class="item-title">{{ clothingItem.name }}</h1>
@@ -23,11 +23,11 @@
               class="edit-btn"
               [routerLink]="['/wardrobe/edit', item()?.id]"
             >
-              <mat-icon>edit</mat-icon>
+              <i class="fa-solid fa-pen-to-square me-2"></i>
               Edit Item
             </button>
             <button mat-stroked-button color="warn" class="delete-btn" (click)="onDelete()">
-              <mat-icon>delete</mat-icon>
+              <i class="fa-solid fa-trash-can me-2"></i>
               Delete
             </button>
           </div>
@@ -59,19 +59,19 @@
         <div class="info-group">
           <span class="info-label">Type</span>
           <span class="info-value"
-            ><mat-icon class="sm-icon">category</mat-icon> {{ clothingItem.type }}</span
+            ><i class="fa-solid fa-tags sm-icon"></i> {{ clothingItem.type }}</span
           >
         </div>
         <div class="info-group">
           <span class="info-label">Category</span>
           <span class="info-value"
-            ><mat-icon class="sm-icon">label</mat-icon> {{ clothingItem.category }}</span
+            ><i class="fa-solid fa-tag sm-icon"></i> {{ clothingItem.category }}</span
           >
         </div>
         <div class="info-group">
           <span class="info-label">Fabric</span>
           <span class="info-value"
-            ><mat-icon class="sm-icon">texture</mat-icon> {{ clothingItem.fabric }}</span
+            ><i class="fa-solid fa-layer-group sm-icon"></i> {{ clothingItem.fabric }}</span
           >
         </div>
         <div class="info-group">
@@ -86,14 +86,14 @@
       <h2 class="section-title">Usage Stats</h2>
       <div class="stats-container">
         <div class="stat-card">
-          <div class="stat-icon"><mat-icon>checkroom</mat-icon></div>
+          <div class="stat-icon"><i class="fa-solid fa-shirt"></i></div>
           <div class="stat-data">
             <span class="stat-number">{{ clothingItem.wearCount }}</span>
             <span class="stat-label">Wears</span>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon"><mat-icon>calendar_today</mat-icon></div>
+          <div class="stat-icon"><i class="fa-regular fa-calendar-check"></i></div>
           <div class="stat-data">
             <span class="stat-number date">{{
               clothingItem.lastWorn ? (clothingItem.lastWorn | date: 'MMM d, y') : 'Never'
@@ -102,7 +102,7 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon"><mat-icon>star_border</mat-icon></div>
+          <div class="stat-icon"><i class="fa-regular fa-star"></i></div>
           <div class="stat-data">
             <span
               class="stat-number condition-badge"

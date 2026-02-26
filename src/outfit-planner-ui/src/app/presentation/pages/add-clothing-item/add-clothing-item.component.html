@@ -2,7 +2,7 @@
   <div class="form-container glass-card">
     <header class="form-header">
       <button mat-icon-button routerLink="/wardrobe" class="back-btn">
-        <mat-icon>arrow_back</mat-icon>
+        <i class="fa-solid fa-arrow-left"></i>
       </button>
       <div class="header-text">
         <h1>New Masterpiece</h1>
@@ -17,7 +17,7 @@
           <div class="image-preview" [class.has-image]="imagePreview()">
             <img *ngIf="imagePreview()" [src]="imagePreview()" alt="Preview" />
             <div *ngIf="!imagePreview()" class="upload-placeholder">
-              <mat-icon>add_a_photo</mat-icon>
+              <i class="fa-solid fa-camera"></i>
               <span>Upload Image</span>
             </div>
             <input
@@ -34,7 +34,7 @@
               class="upload-fab"
               (click)="fileInput.click()"
             >
-              <mat-icon>upload</mat-icon>
+              <i class="fa-solid fa-cloud-arrow-up"></i>
             </button>
           </div>
         </div>
@@ -142,7 +142,7 @@
           [disabled]="clothingForm.invalid"
           class="submit-btn text-white"
         >
-          <mat-icon>check</mat-icon>
+          <i class="fa-solid fa-check me-2"></i>
           SAVE ITEM
         </button>
       </div>

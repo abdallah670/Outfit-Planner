@@ -33,6 +33,13 @@
 
 .back-btn {
   background: rgba(255, 255, 255, 0.05);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 1.1rem;
+  }
 }
 
 .form-header h1 {
@@ -96,10 +103,9 @@
   opacity: 0.4;
 }
 
-.upload-placeholder mat-icon {
+.upload-placeholder i {
   font-size: 48px;
-  width: 48px;
-  height: 48px;
+  margin-bottom: 12px;
 }
 
 .upload-fab {
