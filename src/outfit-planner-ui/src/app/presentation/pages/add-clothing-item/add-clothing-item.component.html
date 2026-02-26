@@ -1,0 +1,151 @@
+<div class="page-wrapper">
+  <div class="form-container glass-card">
+    <header class="form-header">
+      <button mat-icon-button routerLink="/wardrobe" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-text">
+        <h1>New Masterpiece</h1>
+        <p>Add a new item to your luxury collection</p>
+      </div>
+    </header>
+
+    <form [formGroup]="clothingForm" (ngSubmit)="onSubmit()" class="modern-form">
+      <div class="form-grid">
+        <!-- Image Upload Section -->
+        <div class="image-upload-section">
+          <div class="image-preview" [class.has-image]="imagePreview()">
+            <img *ngIf="imagePreview()" [src]="imagePreview()" alt="Preview" />
+            <div *ngIf="!imagePreview()" class="upload-placeholder">
+              <mat-icon>add_a_photo</mat-icon>
+              <span>Upload Image</span>
+            </div>
+            <input
+              type="file"
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              hidden
+            />
+            <button
+              type="button"
+              mat-mini-fab
+              color="accent"
+              class="upload-fab"
+              (click)="fileInput.click()"
+            >
+              <mat-icon>upload</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="details-section">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Item Name</mat-label>
+            <input matInput formControlName="name" placeholder="e.g., Midnight Silk Blazer" />
+            <mat-error *ngIf="clothingForm.get('name')?.hasError('required')"
+              >Name is required</mat-error
+            >
+          </mat-form-field>
+
+          <div class="row">
+            <mat-form-field appearance="outline">
+              <mat-label>Type</mat-label>
+              <mat-select formControlName="type">
+                @for (type of clothingTypes; track type) {
+                  <mat-option [value]="type">{{ type }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category">
+                @for (cat of categories; track cat) {
+                  <mat-option [value]="cat">{{ cat }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="row">
+            <mat-form-field appearance="outline">
+              <mat-label>Fabric</mat-label>
+              <mat-select formControlName="fabric">
+                @for (f of fabricTypes; track f) {
+                  <mat-option [value]="f">{{ f }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Condition</mat-label>
+              <mat-select formControlName="condition">
+                @for (cond of conditions; track cond) {
+                  <mat-option [value]="cond">{{ cond | titlecase }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="row">
+            <mat-form-field appearance="outline">
+              <mat-label>Brand</mat-label>
+              <input matInput formControlName="brand" placeholder="e.g., Armani" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Primary Color</mat-label>
+              <div class="color-input-wrapper">
+                <input matInput formControlName="primaryColor" placeholder="#000000" />
+                <input
+                  type="color"
+                  [value]="clothingForm.get('primaryColor')?.value"
+                  (input)="onColorChange($event)"
+                  class="color-picker"
+                />
+              </div>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              rows="3"
+              placeholder="Tell us about this piece..."
+            ></textarea>
+          </mat-form-field>
+
+          <div class="row">
+            <mat-form-field appearance="outline">
+              <mat-label>Price</mat-label>
+              <input matInput type="number" formControlName="purchasePrice" prefix="$" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Size</mat-label>
+              <input matInput formControlName="size" placeholder="L, 42, etc." />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button mat-button type="button" routerLink="/wardrobe" class="cancel-btn">CANCEL</button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="clothingForm.invalid"
+          class="submit-btn text-white"
+        >
+          <mat-icon>check</mat-icon>
+          SAVE ITEM
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

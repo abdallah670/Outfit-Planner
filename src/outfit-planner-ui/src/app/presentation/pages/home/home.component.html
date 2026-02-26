@@ -1,0 +1,87 @@
+<div class="home-layout">
+  <app-navbar></app-navbar>
+
+  <main class="content-grid">
+    <div class="main-content">
+      <!-- Hero Section -->
+      <section class="hero-section glass-card">
+        <div class="hero-text">
+          <h1>Intelligent Wardrobe Manager</h1>
+          <p>
+            AI-powered outfit recommendations tailored to your style, weather, and schedule. Start
+            planning your week effortlessly.
+          </p>
+          <button mat-flat-button color="primary" class="cta-btn" routerLink="/wardrobe">
+            Get Started <i class="fa-solid fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- Virtual Closet Section -->
+      <section class="virtual-closet">
+        <div class="section-header">
+          <h2>Virtual Closet</h2>
+          <mat-chip-listbox class="filter-chips">
+            @for (cat of categories; track cat) {
+              <mat-chip-option
+                [selected]="cat === selectedCategory"
+                (selectionChange)="selectCategory(cat)"
+              >
+                {{ cat }}
+              </mat-chip-option>
+            }
+          </mat-chip-listbox>
+        </div>
+
+        <div class="items-grid">
+          @for (item of items().slice(0, 5); track item.id) {
+            <app-clothing-card [item]="item"></app-clothing-card>
+          }
+        </div>
+      </section>
+
+      <!-- Trending Outfits Section -->
+      <section class="trending-section">
+        <div class="section-header">
+          <h2>Trending Outfits</h2>
+          <button mat-button color="primary">View All</button>
+        </div>
+        <div class="trending-grid">
+          <div class="trending-card glass-card">
+            <img src="assets/trending-1.png" alt="Style 1" />
+            <div class="card-footer">
+              <span class="author">Sarah J.</span>
+              <span class="likes"><i class="fa-regular fa-heart"></i> 245</span>
+            </div>
+          </div>
+          <div class="trending-card glass-card">
+            <img src="assets/trending-2.png" alt="Style 2" />
+            <div class="card-footer">
+              <span class="author">Mina K.</span>
+              <span class="likes"><i class="fa-regular fa-heart"></i> 189</span>
+            </div>
+          </div>
+          <div class="trending-card glass-card">
+            <img src="assets/trending-3.png" alt="Style 3" />
+            <div class="card-footer">
+              <span class="author">David R.</span>
+              <span class="likes"><i class="fa-regular fa-heart"></i> 132</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <app-weather-widget></app-weather-widget>
+      <app-daily-pick></app-daily-pick>
+      <app-wardrobe-health></app-wardrobe-health>
+    </aside>
+  </main>
+
+  <!-- FAB -->
+  <button mat-fab color="accent" class="fab-btn" routerLink="/wardrobe/add">
+    <i class="fa-solid fa-plus fab-icon"></i>
+  </button>
+</div>

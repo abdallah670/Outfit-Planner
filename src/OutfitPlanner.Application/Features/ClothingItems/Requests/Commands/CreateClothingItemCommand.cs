@@ -4,7 +4,7 @@ using OutfitPlanner.Application.Responses;
 
 namespace OutfitPlanner.Application.Features.ClothingItems.Requests.Commands;
 
-public class CreateClothingItemCommand : IRequest<BaseCommandResponse>
+public class CreateClothingItemCommand : IRequest<ClothingItemDto>
 {
     public string UserId { get; set; } = string.Empty;
     public CreateClothingItemDto Request { get; set; }

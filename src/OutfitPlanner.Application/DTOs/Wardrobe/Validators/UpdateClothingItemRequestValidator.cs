@@ -93,6 +93,9 @@ public class UpdateClothingItemRequestValidator : AbstractValidator<UpdateClothi
 
     private static bool BeValidUrl(string url)
     {
+        if (string.IsNullOrEmpty(url)) return true;
+        if (url.StartsWith("uploads/") || url.StartsWith("/uploads/")) return true;
+        
         return Uri.TryCreate(url, UriKind.Absolute, out var result) 
                && (result.Scheme == Uri.UriSchemeHttp || result.Scheme == Uri.UriSchemeHttps);
     }

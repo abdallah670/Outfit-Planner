@@ -1,0 +1,120 @@
+:host {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+:host:hover {
+  transform: translateY(-8px);
+}
+
+.clothing-card {
+  height: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-image-wrapper {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+}
+
+.clothing-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.clothing-card:hover .clothing-image {
+  transform: scale(1.1);
+}
+
+.card-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.clothing-card:hover .card-overlay {
+  opacity: 1;
+}
+
+.quick-action-btn {
+  background: rgba(96, 165, 250, 0.8) !important; // Simplified from var for now
+  color: white !important;
+  backdrop-filter: blur(4px);
+}
+
+.color-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+mat-card-header {
+  padding: 16px;
+}
+
+mat-card-title {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  font-size: 1.1rem;
+}
+
+mat-card-content {
+  padding: 0 16px 16px;
+  flex-grow: 1;
+}
+
+.stats-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.stat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.category-chips {
+  margin-top: 8px;
+}
+
+::ng-deep .mat-mdc-chip {
+  --mdc-chip-container-height: 24px;
+  font-size: 0.75rem !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+mat-card-actions {
+  padding: 8px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+button {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

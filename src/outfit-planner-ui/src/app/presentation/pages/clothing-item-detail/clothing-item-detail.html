@@ -1,0 +1,148 @@
+<div class="detail-container pattern-bg">
+  <div *ngIf="loading()" class="loading-overlay">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading vault details...</p>
+  </div>
+
+  <div *ngIf="item() as clothingItem" class="bento-grid fade-in">
+    <!-- Header Section -->
+    <header class="bento-item header-section glass">
+      <button mat-icon-button routerLink="/wardrobe" class="back-btn" aria-label="Back to Wardrobe">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-content">
+        <h1 class="item-title">{{ clothingItem.name }}</h1>
+        <p class="item-brand">{{ clothingItem.brand || 'Unbranded' }}</p>
+      </div>
+      <div class="header-actions">
+        @if (item()) {
+          <div class="action-buttons">
+            <button
+              mat-stroked-button
+              color="primary"
+              class="edit-btn"
+              [routerLink]="['/wardrobe/edit', item()?.id]"
+            >
+              <mat-icon>edit</mat-icon>
+              Edit Item
+            </button>
+            <button mat-stroked-button color="warn" class="delete-btn" (click)="onDelete()">
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+          </div>
+        }
+      </div>
+    </header>
+
+    <!-- Main Image Section -->
+    <div class="bento-item image-section glass">
+      <div class="image-wrapper">
+        <img
+          [src]="clothingItem.imageUrl || 'assets/placeholder-clothing.svg'"
+          [alt]="clothingItem.name"
+          class="main-image"
+          (error)="imageError = true; $event.target.src = 'assets/placeholder-clothing.svg'"
+        />
+        <div
+          class="color-badge"
+          [style.backgroundColor]="clothingItem.primaryColor"
+          [title]="clothingItem.primaryColor"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Key Info Section -->
+    <div class="bento-item info-section glass">
+      <h2 class="section-title">Classifications</h2>
+      <div class="info-grid">
+        <div class="info-group">
+          <span class="info-label">Type</span>
+          <span class="info-value"
+            ><mat-icon class="sm-icon">category</mat-icon> {{ clothingItem.type }}</span
+          >
+        </div>
+        <div class="info-group">
+          <span class="info-label">Category</span>
+          <span class="info-value"
+            ><mat-icon class="sm-icon">label</mat-icon> {{ clothingItem.category }}</span
+          >
+        </div>
+        <div class="info-group">
+          <span class="info-label">Fabric</span>
+          <span class="info-value"
+            ><mat-icon class="sm-icon">texture</mat-icon> {{ clothingItem.fabric }}</span
+          >
+        </div>
+        <div class="info-group">
+          <span class="info-label">Size</span>
+          <span class="info-value">{{ clothingItem.size || 'N/A' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage Stats Section -->
+    <div class="bento-item stats-section glass">
+      <h2 class="section-title">Usage Stats</h2>
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-icon"><mat-icon>checkroom</mat-icon></div>
+          <div class="stat-data">
+            <span class="stat-number">{{ clothingItem.wearCount }}</span>
+            <span class="stat-label">Wears</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><mat-icon>calendar_today</mat-icon></div>
+          <div class="stat-data">
+            <span class="stat-number date">{{
+              clothingItem.lastWorn ? (clothingItem.lastWorn | date: 'MMM d, y') : 'Never'
+            }}</span>
+            <span class="stat-label">Last Worn</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><mat-icon>star_border</mat-icon></div>
+          <div class="stat-data">
+            <span
+              class="stat-number condition-badge"
+              [ngClass]="clothingItem.condition.toLowerCase()"
+            >
+              {{ clothingItem.condition | titlecase }}
+            </span>
+            <span class="stat-label">Condition</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Colors (Optional, visible if exist) -->
+    <div
+      class="bento-item colors-section glass"
+      *ngIf="clothingItem.secondaryColors && clothingItem.secondaryColors.length > 0"
+    >
+      <h2 class="section-title">Color Palette</h2>
+      <div class="palette-container">
+        <div class="color-swatch main-swatch" [style.backgroundColor]="clothingItem.primaryColor">
+          <span class="swatch-label">Primary</span>
+        </div>
+        <div class="secondary-swatches">
+          <div
+            *ngFor="let color of clothingItem.secondaryColors"
+            class="color-swatch"
+            [style.backgroundColor]="color"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Purchase Info -->
+    <div class="bento-item purchase-section glass" *ngIf="clothingItem.purchasePrice > 0">
+      <h2 class="section-title">Investment</h2>
+      <div class="price-display">
+        <span class="currency">{{ clothingItem.currency }}</span>
+        <span class="amount">{{ clothingItem.purchasePrice | number: '1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+</div>

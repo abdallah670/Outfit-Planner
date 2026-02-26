@@ -31,6 +31,9 @@ public class ImageProcessingService : IImageProcessingService
 
         try
         {
+            // Reset stream position before reading since it might have been read by validation
+            imageStream.Position = 0;
+            
             // Load the original image
             using var originalImage = await Image.LoadAsync(imageStream, cancellationToken);
 

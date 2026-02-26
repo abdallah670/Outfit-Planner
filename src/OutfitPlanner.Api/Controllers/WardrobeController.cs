@@ -2,6 +2,8 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.DTOs.Wardrobe;
 using OutfitPlanner.Application.Features.ClothingItems.Requests.Commands;
 using OutfitPlanner.Application.Features.ClothingItems.Requests.Queries;
@@ -17,15 +19,19 @@ public class WardrobeController : ControllerBase
     private readonly IMediator _mediator;
     private readonly ILogger<WardrobeController> _logger;
 
+    private readonly IImageStorageService _imageStorageService;
+
     public WardrobeController(
         IMediator mediator,
-        ILogger<WardrobeController> logger)
+        ILogger<WardrobeController> logger,
+        IImageStorageService imageStorageService)
     {
         _mediator = mediator;
         _logger = logger;
+        _imageStorageService = imageStorageService;
     }
 
-    private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+    private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
     /// <summary>
     /// Gets all clothing items for the authenticated user
@@ -75,12 +81,27 @@ public class WardrobeController : ControllerBase
     /// Creates a new clothing item
     /// </summary>
     [HttpPost]
-    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ClothingItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] CreateClothingItemDto request)
+    public async Task<ActionResult<ClothingItemDto>> Create([FromForm] CreateClothingItemDto request, IFormFile? image)
     {
         var userId = GetUserId();
+
+        if (image != null)
+        {
+            var uploadResult = await _imageStorageService.UploadImageAsync(
+                image.OpenReadStream(),
+                image.FileName,
+                userId);
+
+            if (uploadResult.Success)
+            {
+                request.ImageUrl = uploadResult.OriginalPath;
+                request.ThumbnailUrl = uploadResult.ThumbnailPath;
+            }
+        }
+
         var command = new CreateClothingItemCommand
         {
             UserId = userId,
@@ -88,8 +109,8 @@ public class WardrobeController : ControllerBase
         };
         var response = await _mediator.Send(command);
 
-        if (!response.Success)
-            return BadRequest(response);
+        if (response == null)
+            return BadRequest(new BaseCommandResponse { Success = false, Message = "Failed to create clothing item" });
 
         _logger.LogInformation("User {UserId} created clothing item {ItemId}", userId, response.Id);
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
@@ -101,11 +122,26 @@ public class WardrobeController : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(ClothingItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<ClothingItemDto>> Update(Guid id, [FromBody] UpdateClothingItemDto request)
+    public async Task<ActionResult<ClothingItemDto>> Update(Guid id, [FromForm] UpdateClothingItemDto request, IFormFile? image)
     {
         var userId = GetUserId();
+
+        if (image != null)
+        {
+            var uploadResult = await _imageStorageService.UploadImageAsync(
+                image.OpenReadStream(),
+                image.FileName,
+                userId);
+
+            if (uploadResult.Success)
+            {
+                request.ImageUrl = uploadResult.OriginalPath;
+                request.ThumbnailUrl = uploadResult.ThumbnailPath;
+            }
+        }
+
         var command = new UpdateClothingItemCommand
         {
             Id = id,
@@ -145,11 +181,11 @@ public class WardrobeController : ControllerBase
     /// Records a wear event for a clothing item
     /// </summary>
     [HttpPost("{id:guid}/wear")]
-    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ClothingItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<BaseCommandResponse>> RecordWear(Guid id, [FromBody] RecordWearDto dto)
+    public async Task<ActionResult<ClothingItemDto>> RecordWear(Guid id, [FromBody] RecordWearDto dto)
     {
         var userId = GetUserId();
 
@@ -170,9 +206,6 @@ public class WardrobeController : ControllerBase
         };
         var response = await _mediator.Send(command);
 
-        if (!response.Success)
-            return BadRequest(response);
-
         return Ok(response);
     }
 
@@ -180,10 +213,10 @@ public class WardrobeController : ControllerBase
     /// Quick wear - just records that the item was worn now
     /// </summary>
     [HttpPost("{id:guid}/wear/quick")]
-    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ClothingItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<BaseCommandResponse>> QuickWear(Guid id)
+    public async Task<ActionResult<ClothingItemDto>> QuickWear(Guid id)
     {
         var userId = GetUserId();
         var dto = new RecordWearDto
@@ -194,9 +227,6 @@ public class WardrobeController : ControllerBase
 
         var command = new RecordWearCommand { UserId = userId, Request = dto };
         var response = await _mediator.Send(command);
-
-        if (!response.Success)
-            return BadRequest(response);
 
         return Ok(response);
     }

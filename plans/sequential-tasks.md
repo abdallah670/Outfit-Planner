@@ -63,7 +63,7 @@
 
 - [x] **Task 17**: Create `CreateClothingItemDto` (exists in DTOs folder but mapping is commented out)
 - [x] **Task 18**: Create `UpdateClothingItemDto` (exists but mapping is commented out)
-- [x]  **Task 19**: Create FluentValidation validators for Create/Update commands
+- [x] **Task 19**: Create FluentValidation validators for Create/Update commands
 - [x] **Task 20**: Update `MappingProfile.cs` — uncomment and complete all mappings
 
 #### Outfit Queries & Commands:
@@ -97,14 +97,14 @@
 
 #### WardrobeController (currently almost entirely commented out):
 
-- [ ] **Task 36**: Uncomment & wire `GET /api/wardrobe` — GetAll endpoint using MediatR
-- [ ] **Task 37**: Fix & wire `GET /api/wardrobe/{id}` — GetById endpoint
-- [ ] **Task 38**: Uncomment & wire `GET /api/wardrobe/category/{category}` — GetByCategory
-- [ ] **Task 39**: Uncomment & wire `POST /api/wardrobe` — Create endpoint
-- [ ] **Task 40**: Uncomment & wire `PUT /api/wardrobe/{id}` — Update endpoint
-- [ ] **Task 41**: Uncomment & wire `DELETE /api/wardrobe/{id}` — Delete endpoint
-- [ ] **Task 42**: Uncomment & wire `POST /api/wardrobe/{id}/wear` — RecordWear endpoint
-- [ ] **Task 43**: Remove the old `MapToDto` private method (replaced by AutoMapper)
+- [x] **Task 36**: Uncomment & wire `GET /api/wardrobe` — GetAll endpoint using MediatR
+- [x] **Task 37**: Fix & wire `GET /api/wardrobe/{id}` — GetById endpoint
+- [x] **Task 38**: Uncomment & wire `GET /api/wardrobe/category/{category}` — GetByCategory
+- [x] **Task 39**: Uncomment & wire `POST /api/wardrobe` — Create endpoint
+- [x] **Task 40**: Uncomment & wire `PUT /api/wardrobe/{id}` — Update endpoint
+- [x] **Task 41**: Uncomment & wire `DELETE /api/wardrobe/{id}` — Delete endpoint
+- [x] **Task 42**: Uncomment & wire `POST /api/wardrobe/{id}/wear` — RecordWear endpoint
+- [x] **Task 43**: Remove the old `MapToDto` private method (replaced by AutoMapper)
 
 #### OutfitsController (currently empty):
 
@@ -132,10 +132,10 @@
 
 #### Middleware & Cross-Cutting:
 
-- [ ] **Task 59**: Implement `ExceptionMiddleware` with global error handling
-- [ ] **Task 60**: Implement `RequestLoggingMiddleware` with Serilog
-- [ ] **Task 61**: Configure Swagger/OpenAPI documentation
-- [ ] **Task 62**: Add FluentValidation pipeline behavior in MediatR
+- [x] **Task 59**: Implement `ExceptionMiddleware` with global error handling
+- [x] **Task 60**: Implement `RequestLoggingMiddleware` with Serilog
+- [x] **Task 61**: Configure Swagger/OpenAPI documentation
+- [x] **Task 62**: Add FluentValidation pipeline behavior in MediatR
 
 ---
 
@@ -147,10 +147,10 @@
 - [x] Guards folder created (auth guard exists)
 - [x] Interceptors folder created (auth interceptor exists)
 - [x] Auth model defined
-- [ ] **Task 63**: Review & complete `AuthGuard` implementation
-- [ ] **Task 64**: Review & complete `AuthInterceptor` (JWT token injection, refresh logic)
-- [ ] **Task 65**: Create `ErrorInterceptor` for global HTTP error handling
-- [ ] **Task 66**: Review & complete `AuthService` with token storage and refresh
+- [x] **Task 63**: Review & complete `AuthGuard` implementation
+- [x] **Task 64**: Review & complete `AuthInterceptor` (JWT token injection, refresh logic)
+- [] **Task 65**: Create `ErrorInterceptor` for global HTTP error handling
+- [x] **Task 66**: Review & complete `AuthService` with token storage and refresh
 
 ### 2.2 Domain Layer
 

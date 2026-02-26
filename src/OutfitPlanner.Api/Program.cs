@@ -4,6 +4,7 @@ using OutfitPlanner.Api.Middleware;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
+using outfitplanner.Application;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -61,6 +62,9 @@ builder.Services.AddCors(options =>
 // Add Infrastructure Services
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Add Application Services
+builder.Services.AddApplication(builder.Configuration);
+
 var app = builder.Build();
 
 // Add Request Logging Middleware
@@ -81,6 +85,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// Ensure wwwroot/uploads exists
+var uploadsPath = Path.Combine(app.Environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -130,3 +142,6 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+// Make Program class accessible for integration testing
+public partial class Program { }

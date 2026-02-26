@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outfit Planner - Component Library</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Poppins', sans-serif; }
+    html, body { height: 100%; margin: 0; }
+    body { background: linear-gradient(135deg, #0f1419 0%, #1a202c 50%, #0f1419 100%); color: #e0e7ff; overflow-x: auto; }
+    .design-system { max-width: 1600px; margin: 0 auto; padding: 60px 40px; }
+    .section { margin-bottom: 80px; }
+    .section-title { font-size: 36px; font-weight: 700; margin-bottom: 12px; background: linear-gradient(135deg, #f8b4c4 0%, #9caf88 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .section-desc { font-size: 16px; color: #a8adc7; margin-bottom: 40px; }
+    .component-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; }
+    .component-showcase { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(248, 180, 196, 0.1); border-radius: 20px; padding: 32px; backdrop-filter: blur(10px); transition: all 0.3s ease; }
+    .component-showcase:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(248, 180, 196, 0.2); }
+    .component-title { font-size: 18px; font-weight: 600; color: #f8b4c4; margin-bottom: 20px; }
+    .component-example { background: rgba(255, 255, 255, 0.02); border-radius: 12px; padding: 24px; margin-bottom: 16px; border: 1px solid rgba(248, 180, 196, 0.05); }
+    .component-spec { font-size: 12px; color: #8a8fb9; font-family: 'Geist Mono', monospace; background: rgba(0, 0, 0, 0.2); padding: 10px 12px; border-radius: 6px; margin-top: 12px; }
+    
+    /* Clothing Item Card */
+    .clothing-card { background: white; border-radius: 12px; overflow: hidden; transition: all 0.2s ease; }
+    .clothing-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(248, 180, 196, 0.15); }
+    .clothing-thumb { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 48px; position: relative; }
+    .clothing-info { padding: 12px; }
+    .clothing-name { font-size: 14px; font-weight: 600; color: #2d3436; margin-bottom: 4px; }
+    .clothing-meta { font-size: 12px; color: #636e72; }
+    .wear-badge { position: absolute; top: 8px; right: 8px; background: #f8b4c4; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+    .clothing-selected { border: 3px solid #f8b4c4; }
+    
+    /* Outfit Suggestion Card */
+    .outfit-card { background: white; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s ease; }
+    .outfit-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(248, 180, 196, 0.15); }
+    .outfit-header { padding: 16px; border-bottom: 1px solid #dfe6e9; }
+    .outfit-name { font-size: 16px; font-weight: 600; color: #2d3436; margin-bottom: 8px; }
+    .outfit-meta { display: flex; gap: 8px; }
+    .outfit-badge { font-size: 12px; padding: 4px 8px; border-radius: 4px; background: #f8f8f8; color: #636e72; }
+    .outfit-items { padding: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .outfit-item-thumb { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .outfit-footer { padding: 12px 16px; border-top: 1px solid #dfe6e9; }
+    .outfit-btn { width: 100%; background: #f8b4c4; color: white; border: none; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .outfit-btn:hover { background: #f5a0b3; }
+    
+    /* Weather Widget */
+    .weather-widget { border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 20px; color: white; }
+    .weather-icon { font-size: 48px; }
+    .weather-info { }
+    .weather-temp { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+    .weather-condition { font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
+    .weather-details { font-size: 12px; opacity: 0.8; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    
+    /* Poll Card */
+    .poll-card { background: white; border-radius: 12px; padding: 24px; }
+    .poll-title { font-size: 16px; font-weight: 600; color: #2d3436; margin-bottom: 20px; }
+    .poll-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+    .poll-option { border: 2px solid #dfe6e9; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .poll-option:hover { border-color: #f8b4c4; background: #fff5f7; }
+    .poll-option.selected { border-color: #f8b4c4; background: #fde6ed; }
+    .poll-option-img { font-size: 32px; margin-bottom: 8px; }
+    .poll-option-label { font-size: 12px; color: #636e72; font-weight: 500; margin-bottom: 8px; }
+    .poll-votes { font-size: 11px; color: #f8b4c4; font-weight: 600; }
+    .poll-footer { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #636e72; border-top: 1px solid #dfe6e9; padding-top: 16px; margin-top: 16px; }
+    
+    /* Design Tokens */
+    .tokens-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .token-group { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(248, 180, 196, 0.1); border-radius: 12px; padding: 20px; }
+    .token-label { font-size: 12px; color: #8a8fb9; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 600; }
+    .color-swatch { width: 100%; height: 60px; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(248, 180, 196, 0.1); }
+    .color-value { font-size: 11px; color: #a8adc7; font-family: 'Geist Mono', monospace; }
+    
+    /* Animations */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .component-showcase { animation: fadeInUp 0.6s ease-out both; }
+    .component-showcase:nth-child(1) { animation-delay: 0.1s; }
+    .component-showcase:nth-child(2) { animation-delay: 0.2s; }
+    .component-showcase:nth-child(3) { animation-delay: 0.3s; }
+    .component-showcase:nth-child(4) { animation-delay: 0.4s; }
+    .component-showcase:nth-child(5) { animation-delay: 0.5s; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div class="design-system"><!-- Header -->
+   <div class="mb-12">
+    <h1 id="library-title" class="text-5xl font-bold mb-4" style="background: linear-gradient(135deg, #f8b4c4 0%, #9caf88 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Outfit Planner Component Library</h1>
+    <p class="text-lg text-[#a8adc7]">A complete design system for clothing and outfit management</p>
+   </div><!-- Section 1: Clothing Item Cards -->
+   <div class="section">
+    <h2 class="section-title">Clothing Item Card</h2>
+    <p class="section-desc">Display individual clothing pieces with categories, colors, and wear tracking</p>
+    <div class="component-grid"><!-- Default State -->
+     <div class="component-showcase">
+      <p class="component-title">Default</p>
+      <div class="component-example">
+       <div class="clothing-card">
+        <div class="clothing-thumb" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+         👕
+        </div>
+        <div class="clothing-info">
+         <div class="clothing-name">
+          Blue Denim Shirt
+         </div>
+         <div class="clothing-meta">
+          Tops • Blue
+         </div>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Dimensions: 180×220px | 1:1 thumbnail ratio</p>
+     </div><!-- With Wear Badge -->
+     <div class="component-showcase">
+      <p class="component-title">With Wear Count</p>
+      <div class="component-example">
+       <div class="clothing-card">
+        <div class="clothing-thumb" style="background: linear-gradient(135deg, #f8e1e8 0%, #f5c2d8 100%); position: relative;">
+         👗 
+         <div class="wear-badge">
+          12
+         </div>
+        </div>
+        <div class="clothing-info">
+         <div class="clothing-name">
+          Pink Summer Dress
+         </div>
+         <div class="clothing-meta">
+          Dresses • Pink
+         </div>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Badge: 28×28px | Top-right corner</p>
+     </div><!-- Selected State -->
+     <div class="component-showcase">
+      <p class="component-title">Selected</p>
+      <div class="component-example">
+       <div class="clothing-card clothing-selected">
+        <div class="clothing-thumb" style="background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);">
+         🧥
+        </div>
+        <div class="clothing-info">
+         <div class="clothing-name">
+          Green Cardigan
+         </div>
+         <div class="clothing-meta">
+          Outerwear • Green
+         </div>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Border: 3px solid #F8B4C4</p>
+     </div>
+    </div>
+   </div><!-- Section 2: Outfit Suggestion Cards -->
+   <div class="section">
+    <h2 class="section-title">Outfit Suggestion Card</h2>
+    <p class="section-desc">Display complete outfit combinations with match scores and occasions</p>
+    <div class="component-grid"><!-- Casual Outfit -->
+     <div class="component-showcase">
+      <p class="component-title">Casual Outfit</p>
+      <div class="component-example">
+       <div class="outfit-card">
+        <div class="outfit-header">
+         <div class="outfit-name">
+          Weekend Casual
+         </div>
+         <div class="outfit-meta"><span class="outfit-badge">92% Match</span>
+         </div>
+        </div>
+        <div class="outfit-items">
+         <div class="outfit-item-thumb" style="background: #e3f2fd;">
+          👕
+         </div>
+         <div class="outfit-item-thumb" style="background: #f3e5f5;">
+          👖
+         </div>
+         <div class="outfit-item-thumb" style="background: #fff3e0;">
+          👟
+         </div>
+        </div>
+        <div class="outfit-footer"><button class="outfit-btn">Wear Today</button>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Dimensions: 200×320px | Match score badge</p>
+     </div><!-- Work Outfit -->
+     <div class="component-showcase">
+      <p class="component-title">Work Outfit</p>
+      <div class="component-example">
+       <div class="outfit-card">
+        <div class="outfit-header">
+         <div class="outfit-name">
+          Business Meeting
+         </div>
+         <div class="outfit-meta"><span class="outfit-badge">88% Match</span>
+         </div>
+        </div>
+        <div class="outfit-items">
+         <div class="outfit-item-thumb" style="background: #f0f0f0;">
+          👗
+         </div>
+         <div class="outfit-item-thumb" style="background: #ffe0b2;">
+          🧥
+         </div>
+         <div class="outfit-item-thumb" style="background: #e0e0e0;">
+          👠
+         </div>
+        </div>
+        <div class="outfit-footer"><button class="outfit-btn">Wear Today</button>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Display 3-4 items | Color indicators</p>
+     </div><!-- Formal Outfit -->
+     <div class="component-showcase">
+      <p class="component-title">Formal Outfit</p>
+      <div class="component-example">
+       <div class="outfit-card">
+        <div class="outfit-header">
+         <div class="outfit-name">
+          Evening Gala
+         </div>
+         <div class="outfit-meta"><span class="outfit-badge">95% Match</span>
+         </div>
+        </div>
+        <div class="outfit-items">
+         <div class="outfit-item-thumb" style="background: #1a1a1a; color: white;">
+          ✨
+         </div>
+         <div class="outfit-item-thumb" style="background: #ffd700;">
+          👜
+         </div>
+         <div class="outfit-item-thumb" style="background: #c0c0c0;">
+          💍
+         </div>
+        </div>
+        <div class="outfit-footer"><button class="outfit-btn">Wear Today</button>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Call-to-action button | Full-width</p>
+     </div>
+    </div>
+   </div><!-- Section 3: Weather Widgets -->
+   <div class="section">
+    <h2 class="section-title">Weather Widget</h2>
+    <p class="section-desc">Compact weather display for outfit suitability</p>
+    <div class="component-grid"><!-- Sunny -->
+     <div class="component-showcase">
+      <p class="component-title">Sunny Day</p>
+      <div class="component-example">
+       <div class="weather-widget" style="background: linear-gradient(135deg, #FFB81C 0%, #FFA500 100%);">
+        <div class="weather-icon">
+         ☀️
+        </div>
+        <div class="weather-info">
+         <div class="weather-temp">
+          72°F
+         </div>
+         <div class="weather-condition">
+          Sunny
+         </div>
+         <div class="weather-details">
+          <div>
+           Feels like 70°F
+          </div>
+          <div>
+           Humidity: 45%
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Dimensions: 280×120px | Dynamic gradients</p>
+     </div><!-- Cloudy -->
+     <div class="component-showcase">
+      <p class="component-title">Cloudy</p>
+      <div class="component-example">
+       <div class="weather-widget" style="background: linear-gradient(135deg, #90CAF9 0%, #64B5F6 100%);">
+        <div class="weather-icon">
+         ☁️
+        </div>
+        <div class="weather-info">
+         <div class="weather-temp">
+          65°F
+         </div>
+         <div class="weather-condition">
+          Cloudy
+         </div>
+         <div class="weather-details">
+          <div>
+           Feels like 62°F
+          </div>
+          <div>
+           Wind: 8 mph
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Large temperature | Subtle shadows</p>
+     </div><!-- Rainy -->
+     <div class="component-showcase">
+      <p class="component-title">Rainy</p>
+      <div class="component-example">
+       <div class="weather-widget" style="background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);">
+        <div class="weather-icon">
+         🌧️
+        </div>
+        <div class="weather-info">
+         <div class="weather-temp">
+          58°F
+         </div>
+         <div class="weather-condition">
+          Rainy
+         </div>
+         <div class="weather-details">
+          <div>
+           Feels like 54°F
+          </div>
+          <div>
+           Humidity: 89%
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Condition-based gradient | Location name</p>
+     </div>
+    </div>
+   </div><!-- Section 4: Social Validation Polls -->
+   <div class="section">
+    <h2 class="section-title">Social Validation Poll</h2>
+    <p class="section-desc">Interactive polls for outfit recommendations and social engagement</p>
+    <div class="component-grid"><!-- 2-Option Poll -->
+     <div class="component-showcase">
+      <p class="component-title">Two-Option Poll</p>
+      <div class="component-example">
+       <div class="poll-card">
+        <div class="poll-title">
+         Which outfit should I wear?
+        </div>
+        <div class="poll-options">
+         <div class="poll-option selected">
+          <div class="poll-option-img">
+           👕
+          </div>
+          <div class="poll-option-label">
+           Casual
+          </div>
+          <div class="poll-votes">
+           28 votes
+          </div>
+         </div>
+         <div class="poll-option">
+          <div class="poll-option-img">
+           👗
+          </div>
+          <div class="poll-option-label">
+           Formal
+          </div>
+          <div class="poll-votes">
+           12 votes
+          </div>
+         </div>
+        </div>
+        <div class="poll-footer"><span>⏱️ 2 hours left</span> <span>40 total votes</span>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Vote count for each option | Time remaining</p>
+     </div><!-- 4-Option Poll -->
+     <div class="component-showcase">
+      <p class="component-title">Four-Option Poll</p>
+      <div class="component-example">
+       <div class="poll-card">
+        <div class="poll-title">
+         Pick your favorite style!
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+         <div class="poll-option">
+          <div class="poll-option-img">
+           👔
+          </div>
+          <div class="poll-option-label">
+           Business
+          </div>
+          <div class="poll-votes">
+           15 votes
+          </div>
+         </div>
+         <div class="poll-option selected">
+          <div class="poll-option-img">
+           🎨
+          </div>
+          <div class="poll-option-label">
+           Creative
+          </div>
+          <div class="poll-votes">
+           32 votes
+          </div>
+         </div>
+         <div class="poll-option">
+          <div class="poll-option-img">
+           ⛹️
+          </div>
+          <div class="poll-option-label">
+           Athletic
+          </div>
+          <div class="poll-votes">
+           18 votes
+          </div>
+         </div>
+         <div class="poll-option">
+          <div class="poll-option-img">
+           🌙
+          </div>
+          <div class="poll-option-label">
+           Evening
+          </div>
+          <div class="poll-votes">
+           24 votes
+          </div>
+         </div>
+        </div>
+        <div class="poll-footer"><span>⏱️ 1 hour left</span> <span>89 total votes</span>
+        </div>
+       </div>
+      </div>
+      <p class="component-spec">Full width | 400px height | Flexible options</p>
+     </div>
+    </div>
+   </div><!-- Section 5: Design Tokens -->
+   <div class="section">
+    <h2 class="section-title">Design Tokens</h2>
+    <p class="section-desc">Color palette, typography scale, and spacing guidelines</p>
+    <div class="mt-8 mb-8">
+     <h3 class="text-xl font-semibold text-[#f8b4c4] mb-6">Color Palette</h3>
+     <div class="tokens-grid">
+      <div class="token-group">
+       <div class="token-label">
+        Primary
+       </div>
+       <div class="color-swatch" style="background: #F8B4C4;"></div>
+       <div class="color-value">
+        #F8B4C4
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Secondary
+       </div>
+       <div class="color-swatch" style="background: #9CAF88;"></div>
+       <div class="color-value">
+        #9CAF88
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Text
+       </div>
+       <div class="color-swatch" style="background: #2D3436;"></div>
+       <div class="color-value">
+        #2D3436
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Background
+       </div>
+       <div class="color-swatch" style="background: #FAFAFA;"></div>
+       <div class="color-value">
+        #FAFAFA
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Surface
+       </div>
+       <div class="color-swatch" style="background: #FFFFFF;"></div>
+       <div class="color-value">
+        #FFFFFF
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Accent
+       </div>
+       <div class="color-swatch" style="background: #E17055;"></div>
+       <div class="color-value">
+        #E17055
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="mb-8">
+     <h3 class="text-xl font-semibold text-[#f8b4c4] mb-6">Typography</h3>
+     <div class="tokens-grid">
+      <div class="token-group">
+       <div class="token-label">
+        Font Family
+       </div>
+       <div style="font-family: 'Poppins', sans-serif; font-size: 16px; color: #e0e7ff; margin: 12px 0;">
+        Poppins
+       </div>
+       <div class="color-value">
+        Family: 'Poppins' | Fallback: sans-serif
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Headline
+       </div>
+       <div style="font-size: 36px; font-weight: 700; color: #e0e7ff; margin: 12px 0;">
+        36px / Bold
+       </div>
+       <div class="color-value">
+        Weight: 700 | Size: 36px
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Title
+       </div>
+       <div style="font-size: 24px; font-weight: 600; color: #e0e7ff; margin: 12px 0;">
+        24px / Semibold
+       </div>
+       <div class="color-value">
+        Weight: 600 | Size: 24px
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Body
+       </div>
+       <div style="font-size: 16px; font-weight: 400; color: #e0e7ff; margin: 12px 0;">
+        16px / Regular
+       </div>
+       <div class="color-value">
+        Weight: 400 | Size: 16px
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Caption
+       </div>
+       <div style="font-size: 12px; font-weight: 400; color: #e0e7ff; margin: 12px 0;">
+        12px / Regular
+       </div>
+       <div class="color-value">
+        Weight: 400 | Size: 12px
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        Mono
+       </div>
+       <div style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #e0e7ff; margin: 12px 0;">
+        Mono
+       </div>
+       <div class="color-value">
+        Family: 'Geist Mono' | Monospace
+       </div>
+      </div>
+     </div>
+    </div>
+    <div>
+     <h3 class="text-xl font-semibold text-[#f8b4c4] mb-6">Spacing Scale</h3>
+     <div class="tokens-grid">
+      <div class="token-group">
+       <div class="token-label">
+        4px
+       </div>
+       <div style="height: 4px; background: #f8b4c4; margin: 12px 0;"></div>
+       <div class="color-value">
+        Extra Small
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        8px
+       </div>
+       <div style="height: 8px; background: #f8b4c4; margin: 12px 0;"></div>
+       <div class="color-value">
+        Small
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        16px
+       </div>
+       <div style="height: 16px; background: #f8b4c4; margin: 12px 0;"></div>
+       <div class="color-value">
+        Medium
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        24px
+       </div>
+       <div style="height: 24px; background: #f8b4c4; margin: 12px 0;"></div>
+       <div class="color-value">
+        Large
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        32px
+       </div>
+       <div style="height: 32px; background: #f8b4c4; margin: 12px 0;"></div>
+       <div class="color-value">
+        Extra Large
+       </div>
+      </div>
+      <div class="token-group">
+       <div class="token-label">
+        48px
+       </div>
+       <div style="height: 48px; background: #f8b4c4; margin: 12px 0;"></div>
+       <div class="color-value">
+        Double XL
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Footer -->
+   <div class="text-center mt-20 pt-12 border-t border-[rgba(248,180,196,0.1)]">
+    <p class="text-[#a8adc7] mb-2">Outfit Planner Component Library</p>
+    <p class="text-sm text-[#8a8fb9]">Design System v1.0 • Responsive • Accessible</p>
+   </div>
+  </div>
+  <div id="app" class="hidden"></div>
+  <script>
+    // Initialize Element SDK for edit panel
+    const defaultConfig = {
+      library_title: 'Outfit Planner Component Library'
+    };
+
+    async function init() {
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: (config) => {
+            const title = document.getElementById('library-title');
+            if (title) title.textContent = config.library_title || defaultConfig.library_title;
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['library_title', config.library_title || defaultConfig.library_title]
+          ])
+        });
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d3fecd01126e19a',t:'MTc3MjExMzk2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
