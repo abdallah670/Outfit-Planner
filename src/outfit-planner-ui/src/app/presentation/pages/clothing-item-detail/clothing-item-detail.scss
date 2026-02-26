@@ -195,10 +195,11 @@
         gap: 0.5rem;
 
         .sm-icon {
-          font-size: 1.25rem;
-          width: 1.25rem;
-          height: 1.25rem;
+          font-size: 1.1rem;
           color: var(--primary-color, #3b82f6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
     }
@@ -232,6 +233,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
+        i {
+          font-size: 1.25rem;
+        }
       }
 
       .stat-data {
