@@ -22,6 +22,9 @@ import {
   reducer as wardrobeReducer,
 } from './core/state/wardrobe/wardrobe.reducer';
 import { WardrobeEffects } from './core/state/wardrobe/wardrobe.effects';
+import { weatherReducer } from './core/state/weather/weather.reducer';
+import { WeatherEffects } from './core/state/weather/weather.effects';
+import { weatherRepositoryProvider } from './data/repositories/weather.repository.impl';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,8 +37,10 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       auth: authReducer,
       wardrobe: wardrobeReducer,
+      weather: weatherReducer,
     }),
-    provideEffects(authEffects, WardrobeEffects),
+    provideEffects(authEffects, WardrobeEffects, WeatherEffects),
+    weatherRepositoryProvider,
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

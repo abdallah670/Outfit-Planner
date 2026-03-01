@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outfit Builder - Outfit Planner</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Poppins', sans-serif; }
+    .card-shadow { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .btn-shadow { box-shadow: 0 2px 8px rgba(248,180,196,0.4); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+    .category-tab.active { background: #F8B4C4; color: #2D3436; }
+    .scroll-hidden::-webkit-scrollbar { display: none; }
+    .scroll-hidden { -ms-overflow-style: none; scrollbar-width: none; }
+    .outfit-slot {
+      border: 2px dashed #E5E7EB;
+      border-radius: 12px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .outfit-slot.active {
+      border-color: #F8B4C4;
+      background: rgba(248,180,196,0.05);
+    }
+    .outfit-slot.filled {
+      border-color: #9CAF88;
+      background: rgba(156,175,136,0.05);
+    }
+    .draggable-item {
+      cursor: move;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .draggable-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(248,180,196,0.3);
+    }
+    .draggable-item.dragging {
+      opacity: 0.5;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full bg-[#FAFAFA] text-[#2D3436] overflow-auto">
+  <div id="app-wrapper" class="w-full h-full flex flex-col">
+   <!-- Navigation -->
+   <nav class="w-full bg-white card-shadow sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex items-center justify-between h-16">
+      <div class="flex items-center gap-2">
+       <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <svg class="w-8 h-8 text-[#F8B4C4]" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+        </svg><span class="text-xl font-semibold tracking-tight">Outfit Planner</span> </a>
+      </div>
+      <div class="hidden md:flex items-center gap-8">
+       <a href="/" class="text-sm font-medium hover:text-[#F8B4C4] transition-colors">← Back to Home</a>
+      </div>
+     </div>
+    </div>
+   </nav><!-- Main Content -->
+   <main class="flex-1 w-full overflow-auto">
+    <div class="w-full flex flex-col lg:flex-row gap-4 p-4">
+     <!-- Left Panel: Wardrobe Items -->
+     <div class="lg:w-48 bg-white rounded-2xl card-shadow p-4 flex flex-col overflow-y-auto">
+      <h3 id="page-title" class="text-lg font-semibold mb-4">Outfit Builder</h3>
+      <div class="flex gap-2 mb-4 flex-wrap">
+       <button class="category-tab active px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all" data-category="all">All</button> <button class="category-tab bg-gray-100 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap hover:bg-gray-200 transition-all" data-category="tops">Tops</button> <button class="category-tab bg-gray-100 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap hover:bg-gray-200 transition-all" data-category="bottoms">Bottoms</button> <button class="category-tab bg-gray-100 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap hover:bg-gray-200 transition-all" data-category="shoes">Shoes</button>
+      </div>
+      <div id="wardrobe-list" class="space-y-2 flex-1 overflow-y-auto scroll-hidden">
+       <!-- Populated by JS -->
+      </div>
+      <div id="empty-wardrobe" class="hidden text-center py-8 text-gray-500">
+       <p class="text-sm">No items in wardrobe</p>
+       <p class="text-xs mt-2">Add items from home</p>
+      </div>
+     </div><!-- Center: Outfit Builder Canvas -->
+     <div class="flex-1 bg-white rounded-2xl card-shadow p-6 flex flex-col">
+      <div class="flex items-center justify-between mb-6">
+       <h2 id="canvas-label" class="text-2xl font-semibold">Drag items to build your outfit</h2>
+       <div class="flex gap-2">
+        <button id="undo-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50" title="Undo">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v3m-9-13v2.697A7.002 7.002 0 005.305 9M3 10h5.697a7.002 7.002 0 014.697 1.305" />
+         </svg></button> <button id="redo-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50" title="Redo">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10h-10a8 8 0 00-8 8v3m9-13v2.697A7.002 7.002 0 0019.695 9M21 10h-5.697a7.002 7.002 0 00-4.697 1.305" />
+         </svg></button>
+       </div>
+      </div><!-- Outfit Assembly Slots -->
+      <div class="flex-1 grid grid-cols-2 md:grid-cols-2 gap-4 mb-6 overflow-y-auto">
+       <div class="outfit-slot" data-slot="top">
+        <div class="text-center">
+         <div class="text-3xl mb-2">
+          👕
+         </div>
+         <p class="text-xs text-gray-400">Top</p>
+        </div>
+       </div>
+       <div class="outfit-slot" data-slot="bottom">
+        <div class="text-center">
+         <div class="text-3xl mb-2">
+          👖
+         </div>
+         <p class="text-xs text-gray-400">Bottom</p>
+        </div>
+       </div>
+       <div class="outfit-slot" data-slot="shoes">
+        <div class="text-center">
+         <div class="text-3xl mb-2">
+          👟
+         </div>
+         <p class="text-xs text-gray-400">Shoes</p>
+        </div>
+       </div>
+       <div class="outfit-slot" data-slot="accessories">
+        <div class="text-center">
+         <div class="text-3xl mb-2">
+          👜
+         </div>
+         <p class="text-xs text-gray-400">Accessories</p>
+        </div>
+       </div>
+      </div><!-- Color Harmony Score -->
+      <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 mb-4">
+       <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold">Color Harmony</span> <span id="harmony-score" class="text-2xl font-bold text-[#F8B4C4]">0/100</span>
+       </div>
+       <div class="w-full bg-gray-200 rounded-full h-2">
+        <div id="harmony-bar" class="bg-gradient-to-r from-[#9CAF88] to-[#F8B4C4] h-2 rounded-full transition-all" style="width: 0%"></div>
+       </div>
+       <p id="harmony-text" class="text-xs text-gray-500 mt-2">Add items to see harmony score</p>
+      </div><!-- Save Section -->
+      <div class="flex gap-3">
+       <input type="text" id="outfit-name" placeholder="Name your outfit..." class="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F8B4C4] text-sm"> <select id="occasion-select" class="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F8B4C4] text-sm bg-white"> <option value="">Select occasion</option> <option value="casual">Casual</option> <option value="work">Work</option> <option value="date">Date Night</option> <option value="party">Party</option> <option value="gym">Gym</option> </select> <button id="save-outfit-btn" class="bg-[#F8B4C4] text-[#2D3436] px-6 py-2 rounded-lg font-semibold btn-shadow hover:brightness-105 transition-all text-sm whitespace-nowrap"> Save Outfit </button>
+      </div>
+     </div><!-- Right Panel: Weather & Suggestions -->
+     <div class="lg:w-56 flex flex-col gap-4 overflow-y-auto">
+      <!-- Weather Card -->
+      <div class="bg-white rounded-2xl card-shadow p-4 flex-shrink-0">
+       <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Today</h3>
+       <div class="flex items-center gap-3 mb-3">
+        <div class="text-3xl">
+         ⛅
+        </div>
+        <div>
+         <div class="text-2xl font-bold">
+          22°C
+         </div>
+         <div class="text-xs text-gray-500">
+          Partly cloudy
+         </div>
+        </div>
+       </div>
+       <div class="text-xs text-gray-600">
+        Perfect for layering
+       </div>
+      </div><!-- Calendar Events -->
+      <div class="bg-white rounded-2xl card-shadow p-4 flex-shrink-0">
+       <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Upcoming</h3>
+       <div class="space-y-2">
+        <div class="text-xs p-2 bg-blue-50 rounded-lg border-l-2 border-blue-400">
+         <p class="font-medium">Meeting</p>
+         <p class="text-gray-600">2:00 PM Today</p>
+        </div>
+        <div class="text-xs p-2 bg-pink-50 rounded-lg border-l-2 border-pink-400">
+         <p class="font-medium">Dinner</p>
+         <p class="text-gray-600">7:00 PM Today</p>
+        </div>
+       </div>
+      </div><!-- AI Suggestions -->
+      <div class="bg-white rounded-2xl card-shadow p-4 flex-1 flex flex-col">
+       <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">AI Suggestions</h3>
+       <div id="suggestions-list" class="space-y-2 flex-1 overflow-y-auto scroll-hidden">
+        <!-- Populated by JS -->
+       </div>
+       <div id="no-suggestions" class="text-center text-gray-500 py-4">
+        <p class="text-xs">Add items to see suggestions</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main><!-- Toast Notifications -->
+   <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+  </div>
+  <script>
+    const defaultConfig = {
+      page_title: 'Outfit Builder',
+      canvas_label: 'Drag items to build your outfit',
+      background_color: '#FAFAFA',
+      surface_color: '#FFFFFF',
+      text_color: '#2D3436',
+      primary_action: '#F8B4C4',
+      secondary_action: '#9CAF88',
+      font_family: 'Poppins',
+      font_size: 16
+    };
+
+    let wardrobeData = [];
+    let currentOutfit = { top: null, bottom: null, shoes: null, accessories: null };
+    let outfitHistory = [];
+    let historyIndex = -1;
+    let currentFilter = 'all';
+    let isLoading = false;
+
+    const categoryEmojis = {
+      tops: '👕',
+      bottoms: '👖',
+      shoes: '👟',
+      accessories: '👜'
+    };
+
+    // Element SDK initialization
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const c = { ...defaultConfig, ...config };
+          document.getElementById('page-title').textContent = c.page_title;
+          document.getElementById('canvas-label').textContent = c.canvas_label;
+          document.body.style.background = c.background_color;
+          document.querySelectorAll('.bg-white').forEach(el => el.style.background = c.surface_color);
+          document.body.style.color = c.text_color;
+        },
+        mapToCapabilities: (config) => {
+          const c = { ...defaultConfig, ...config };
+          return {
+            recolorables: [
+              { get: () => c.background_color, set: (v) => window.elementSdk.setConfig({ background_color: v }) },
+              { get: () => c.surface_color, set: (v) => window.elementSdk.setConfig({ surface_color: v }) },
+              { get: () => c.text_color, set: (v) => window.elementSdk.setConfig({ text_color: v }) },
+              { get: () => c.primary_action, set: (v) => window.elementSdk.setConfig({ primary_action: v }) },
+              { get: () => c.secondary_action, set: (v) => window.elementSdk.setConfig({ secondary_action: v }) }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => c.font_family,
+              set: (v) => window.elementSdk.setConfig({ font_family: v })
+            },
+            fontSizeable: {
+              get: () => c.font_size,
+              set: (v) => window.elementSdk.setConfig({ font_size: v })
+            }
+          };
+        },
+        mapToEditPanelValues: (config) => {
+          const c = { ...defaultConfig, ...config };
+          return new Map([
+            ['page_title', c.page_title],
+            ['canvas_label', c.canvas_label]
+          ]);
+        }
+      });
+    }
+
+    // Data SDK handler
+    const dataHandler = {
+      onDataChanged(data) {
+        wardrobeData = data.filter(item => !item.outfitId);
+        renderWardrobeList();
+        updateSuggestions();
+      }
+    };
+
+    async function initDataSdk() {
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize data SDK');
+        }
+      }
+    }
+
+    // Render wardrobe list
+    function renderWardrobeList() {
+      const list = document.getElementById('wardrobe-list');
+      const emptyState = document.getElementById('empty-wardrobe');
+      
+      const filtered = currentFilter === 'all' 
+        ? wardrobeData 
+        : wardrobeData.filter(item => item.category === currentFilter);
+      
+      if (filtered.length === 0) {
+        list.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      list.innerHTML = '';
+      
+      filtered.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'draggable-item p-3 bg-gray-50 rounded-lg cursor-move hover:bg-gray-100 transition-colors border border-gray-200';
+        el.draggable = true;
+        el.innerHTML = `
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full" style="background: ${item.color}"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-medium truncate">${item.name}</p>
+              <p class="text-xs text-gray-500">${item.category}</p>
+            </div>
+          </div>
+        `;
+        
+        el.addEventListener('dragstart', (e) => {
+          e.dataTransfer.effectAllowed = 'copy';
+          e.dataTransfer.setData('itemId', item.__backendId);
+          el.classList.add('dragging');
+        });
+        
+        el.addEventListener('dragend', () => {
+          el.classList.remove('dragging');
+        });
+        
+        list.appendChild(el);
+      });
+    }
+
+    // Outfit slot drag handling
+    document.querySelectorAll('.outfit-slot').forEach(slot => {
+      slot.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        slot.classList.add('active');
+      });
+      
+      slot.addEventListener('dragleave', () => {
+        slot.classList.remove('active');
+      });
+      
+      slot.addEventListener('drop', (e) => {
+        e.preventDefault();
+        slot.classList.remove('active');
+        
+        const itemId = e.dataTransfer.getData('itemId');
+        const slotType = slot.dataset.slot;
+        
+        const item = wardrobeData.find(i => i.__backendId === itemId);
+        if (!item) return;
+        
+        saveHistory();
+        currentOutfit[slotType] = item;
+        renderOutfit();
+        updateHarmony();
+        updateSuggestions();
+      });
+    });
+
+    // Render current outfit
+    function renderOutfit() {
+      document.querySelectorAll('.outfit-slot').forEach(slot => {
+        const slotType = slot.dataset.slot;
+        const item = currentOutfit[slotType];
+        
+        if (item) {
+          slot.classList.add('filled');
+          slot.classList.remove('active');
+          slot.innerHTML = `
+            <div class="text-center w-full">
+              <div class="text-2xl mb-2">${categoryEmojis[item.category] || '👕'}</div>
+              <p class="text-xs font-medium truncate px-2">${item.name}</p>
+              <p class="text-xs text-gray-500 mt-1">Click to remove</p>
+            </div>
+          `;
+          
+          slot.addEventListener('click', () => {
+            saveHistory();
+            currentOutfit[slotType] = null;
+            renderOutfit();
+            updateHarmony();
+            updateSuggestions();
+          });
+        } else {
+          slot.classList.remove('filled');
+          slot.innerHTML = `
+            <div class="text-center">
+              <div class="text-3xl mb-2">${categoryEmojis[slotType] || '👕'}</div>
+              <p class="text-xs text-gray-400">${slotType.charAt(0).toUpperCase() + slotType.slice(1)}</p>
+            </div>
+          `;
+        }
+      });
+    }
+
+    // Calculate color harmony
+    function updateHarmony() {
+      const items = Object.values(currentOutfit).filter(i => i);
+      if (items.length === 0) {
+        document.getElementById('harmony-score').textContent = '0/100';
+        document.getElementById('harmony-bar').style.width = '0%';
+        document.getElementById('harmony-text').textContent = 'Add items to see harmony score';
+        return;
+      }
+      
+      // Simplified color harmony calculation
+      const colors = items.map(i => i.color);
+      let score = 50;
+      
+      // Boost score for complementary or similar colors
+      if (colors.length >= 2) {
+        score += Math.min(colors.length * 15, 50);
+      }
+      
+      score = Math.min(score, 100);
+      
+      document.getElementById('harmony-score').textContent = `${score}/100`;
+      document.getElementById('harmony-bar').style.width = `${score}%`;
+      
+      if (score >= 80) {
+        document.getElementById('harmony-text').textContent = '✨ Excellent harmony!';
+      } else if (score >= 60) {
+        document.getElementById('harmony-text').textContent = 'Good combination';
+      } else {
+        document.getElementById('harmony-text').textContent = 'Mix and match more';
+      }
+    }
+
+    // AI Suggestions
+    function updateSuggestions() {
+      const list = document.getElementById('suggestions-list');
+      const noSuggestions = document.getElementById('no-suggestions');
+      const items = Object.values(currentOutfit).filter(i => i);
+      
+      if (items.length === 0) {
+        list.innerHTML = '';
+        noSuggestions.classList.remove('hidden');
+        return;
+      }
+      
+      noSuggestions.classList.add('hidden');
+      list.innerHTML = '';
+      
+      // Generate simple suggestions based on available items
+      const suggestions = [
+        { title: 'Classic Look', desc: 'Neutral tones paired well' },
+        { title: 'Bold Style', desc: 'Add a pop of color' },
+        { title: 'Comfort First', desc: 'Cozy and relaxed vibes' }
+      ];
+      
+      suggestions.forEach((sugg, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-3 bg-gradient-to-br from-pink-50 to-orange-50 rounded-lg cursor-pointer hover:shadow-md transition-all border border-pink-100';
+        card.innerHTML = `
+          <p class="text-xs font-semibold text-gray-800">${sugg.title}</p>
+          <p class="text-xs text-gray-600 mt-1">${sugg.desc}</p>
+        `;
+        
+        card.addEventListener('click', () => {
+          showToast('✨ Suggestion applied!');
+        });
+        
+        list.appendChild(card);
+      });
+    }
+
+    // History management
+    function saveHistory() {
+      historyIndex++;
+      if (historyIndex < outfitHistory.length) {
+        outfitHistory = outfitHistory.slice(0, historyIndex);
+      }
+      outfitHistory.push(JSON.parse(JSON.stringify(currentOutfit)));
+      updateHistoryButtons();
+    }
+
+    function undo() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        currentOutfit = JSON.parse(JSON.stringify(outfitHistory[historyIndex]));
+        renderOutfit();
+        updateHarmony();
+        updateSuggestions();
+        updateHistoryButtons();
+      }
+    }
+
+    function redo() {
+      if (historyIndex < outfitHistory.length - 1) {
+        historyIndex++;
+        currentOutfit = JSON.parse(JSON.stringify(outfitHistory[historyIndex]));
+        renderOutfit();
+        updateHarmony();
+        updateSuggestions();
+        updateHistoryButtons();
+      }
+    }
+
+    function updateHistoryButtons() {
+      document.getElementById('undo-btn').disabled = historyIndex <= 0;
+      document.getElementById('redo-btn').disabled = historyIndex >= outfitHistory.length - 1;
+    }
+
+    // Save outfit
+    async function saveOutfit() {
+      const items = Object.values(currentOutfit).filter(i => i);
+      if (items.length === 0) {
+        showToast('Add at least one item to save');
+        return;
+      }
+      
+      const name = document.getElementById('outfit-name').value.trim() || `Outfit ${new Date().toLocaleDateString()}`;
+      const occasion = document.getElementById('occasion-select').value || 'casual';
+      
+      isLoading = true;
+      document.getElementById('save-outfit-btn').disabled = true;
+      
+      const itemIds = items.map(i => i.__backendId).join(',');
+      
+      const result = await window.dataSdk.create({
+        outfitId: Date.now().toString(),
+        outfitName: name,
+        occasion,
+        items: itemIds,
+        harmonyScore: parseInt(document.getElementById('harmony-score').textContent),
+        savedAt: new Date().toISOString()
+      });
+      
+      if (result.isOk) {
+        showToast('✨ Outfit saved!');
+        document.getElementById('outfit-name').value = '';
+        document.getElementById('occasion-select').value = '';
+      } else {
+        showToast('Failed to save outfit');
+      }
+      
+      isLoading = false;
+      document.getElementById('save-outfit-btn').disabled = false;
+    }
+
+    // Toast
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg animate-fade';
+      toast.textContent = message;
+      document.getElementById('toast-container').appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Category filtering
+    document.querySelectorAll('.category-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.category-tab').forEach(t => {
+          t.classList.remove('active', 'bg-gray-100');
+          if (!t.classList.contains('active')) t.classList.add('bg-gray-100');
+        });
+        tab.classList.add('active');
+        tab.classList.remove('bg-gray-100');
+        currentFilter = tab.dataset.category;
+        renderWardrobeList();
+      });
+    });
+
+    // Event listeners
+    document.getElementById('undo-btn').addEventListener('click', undo);
+    document.getElementById('redo-btn').addEventListener('click', redo);
+    document.getElementById('save-outfit-btn').addEventListener('click', saveOutfit);
+
+    // Initialize
+    initDataSdk();
+    updateHistoryButtons();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d4011afd01af4c0',t:'MTc3MjExNTQ3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

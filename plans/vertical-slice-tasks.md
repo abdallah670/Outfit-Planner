@@ -60,7 +60,7 @@ _The Wardrobe backend is done. This section finishes the frontend vertical slice
 
 #### Task 79 — Create `wardrobe` NgRx State Slice
 
-- [ ] Create `wardrobe.actions.ts`:
+- [x] Create `wardrobe.actions.ts`:
   - `loadClothingItems` / `loadClothingItemsSuccess` / `loadClothingItemsFailure`
   - `loadClothingItemById` / `loadClothingItemByIdSuccess`
   - `loadClothingItemsByCategory` / `loadClothingItemsByCategorySuccess`
@@ -68,9 +68,9 @@ _The Wardrobe backend is done. This section finishes the frontend vertical slice
   - `updateClothingItem` / `updateClothingItemSuccess`
   - `deleteClothingItem` / `deleteClothingItemSuccess`
   - `recordWear` / `recordWearSuccess`
-- [ ] Create `wardrobe.reducer.ts` — State: `{ items: ClothingItem[], selectedItem: ClothingItem | null, loading: boolean, error: string | null, filter: { category: string | null } }`
-- [ ] Create `wardrobe.effects.ts` — Side effects calling `ClothingItemDataSource` methods for each action
-- [ ] Create `wardrobe.selectors.ts` — `selectAllItems`, `selectSelectedItem`, `selectLoading`, `selectItemsByCategory`, `selectWardrobeStats`
+- [x] Create `wardrobe.reducer.ts` — State: `{ items: ClothingItem[], selectedItem: ClothingItem | null, loading: boolean, error: string | null, filter: { category: string | null } }`
+- [x] Create `wardrobe.effects.ts` — Side effects calling `ClothingItemDataSource` methods for each action
+- [x] Create `wardrobe.selectors.ts` — `selectAllItems`, `selectSelectedItem`, `selectLoading`, `selectItemsByCategory`, `selectWardrobeStats`
 - **Directory**: `src/outfit-planner-ui/src/app/core/state/wardrobe/`
 
 ---
@@ -79,49 +79,49 @@ _The Wardrobe backend is done. This section finishes the frontend vertical slice
 
 #### Task 87 — Wardrobe Dashboard Page
 
-- [ ] Create component `wardrobe-dashboard.component.ts`
-- [ ] Display clothing items in a responsive grid of cards (image, name, type, color swatch, wear count)
-- [ ] Category filter tabs/buttons using `ClothingType` enum values (`Top`, `Bottom`, `Dress`, `Outerwear`, `Footwear`, `Accessory`, etc.)
-- [ ] Search bar filtering by `Name`, `Brand`, `Category`
-- [ ] Sorting options: Most Worn, Least Worn, Recently Added, Name A-Z
-- [ ] FAB button to navigate to Add Clothing Item
-- [ ] Dispatch `loadClothingItems` on init, subscribe to `selectAllItems`
+- [x] Create component `wardrobe-dashboard.component.ts`
+- [x] Display clothing items in a responsive grid of cards (image, name, type, color swatch, wear count)
+- [x] Category filter tabs/buttons using `ClothingType` enum values (`Top`, `Bottom`, `Dress`, `Outerwear`, `Footwear`, `Accessory`, etc.)
+- [x] Search bar filtering by `Name`, `Brand`, `Category`
+- [x] Sorting options: Most Worn, Least Worn, Recently Added, Name A-Z
+- [x] FAB button to navigate to Add Clothing Item
+- [x] Dispatch `loadClothingItems` on init, subscribe to `selectAllItems`
 - **API**: `GET /api/wardrobe` and `GET /api/wardrobe/category/{category}`
 - **Directory**: `src/outfit-planner-ui/src/app/presentation/pages/wardrobe-dashboard/`
 
 #### Task 88 — Add Clothing Item Page
 
-- [ ] Create component `add-clothing-item.component.ts`
-- [ ] Multi-step form or single-page form with sections:
+- [x] Create component `add-clothing-item.component.ts`
+- [x] Multi-step form or single-page form with sections:
   - **Basic Info**: `Name` (text), `Type` (dropdown — `ClothingType`), `Category` (text), `Brand` (text), `Size` (text)
   - **Colors**: `PrimaryColor` (color picker), `SecondaryColors` (multi-select)
   - **Details**: `Fabric` (dropdown — `FabricType`), `PurchasePrice` (number + currency), `PurchaseDate` (datepicker), `Condition` (dropdown: good/fair/poor)
   - **Image**: File upload component (accepts `.jpg`, `.jpeg`, `.png`, `.webp`, max 10MB)
   - **Tags**: Chip input for `ClothingTag` names
-- [ ] Client-side validation matching backend `CreateClothingItemDtoValidator`
-- [ ] Dispatch `createClothingItem` action on submit → navigate to dashboard on success
+- [x] Client-side validation matching backend `CreateClothingItemDtoValidator`
+- [x] Dispatch `createClothingItem` action on submit → navigate to dashboard on success
 - **API**: `POST /api/wardrobe` with `CreateClothingItemDto` body
 - **Directory**: `src/outfit-planner-ui/src/app/presentation/pages/add-clothing-item/`
 
 #### Task 89 — Edit Clothing Item Page
 
-- [ ] Create component `edit-clothing-item.component.ts`
-- [ ] Pre-populate form with existing data from `GET /api/wardrobe/{id}`
-- [ ] Same form fields as Add page, using `UpdateClothingItemDto`
-- [ ] Dispatch `updateClothingItem` action on submit
+- [x] Create component `edit-clothing-item.component.ts`
+- [x] Pre-populate form with existing data from `GET /api/wardrobe/{id}`
+- [x] Same form fields as Add page, using `UpdateClothingItemDto`
+- [x] Dispatch `updateClothingItem` action on submit
 - **API**: `GET /api/wardrobe/{id}` (load) → `PUT /api/wardrobe/{id}` (save)
 - **Directory**: `src/outfit-planner-ui/src/app/presentation/pages/edit-clothing-item/`
 
 #### Task 90 — Clothing Item Detail Page
 
-- [ ] Create component `clothing-item-detail.component.ts`
-- [ ] Hero section: Large image with thumbnail gallery (original, medium, large sizes)
-- [ ] Info panel: Name, Type, Category, Brand, Size, Colors, Fabric, Condition, Price
-- [ ] Stats: Wear Count, Last Worn date, Last Washed date, Cost per Wear
+- [x] Create component `clothing-item-detail.component.ts`
+- [x] Hero section: Large image with thumbnail gallery (original, medium, large sizes)
+- [x] Info panel: Name, Type, Category, Brand, Size, Colors, Fabric, Condition, Price
+- [x] Stats: Wear Count, Last Worn date, Last Washed date, Cost per Wear
 - [ ] Wear History timeline (list of `WearEvent` dates)
-- [ ] Action buttons: "Wear Now" (quick wear), "Edit", "Delete" (with confirmation dialog)
+- [x] Action buttons: "Wear Now" (quick wear), "Edit", "Delete" (with confirmation dialog)
 - [ ] "Wear Now" dispatches `recordWear` → `POST /api/wardrobe/{id}/wear/quick`
-- [ ] "Delete" dispatches `deleteClothingItem` → `DELETE /api/wardrobe/{id}`
+- [x] "Delete" dispatches `deleteClothingItem` → `DELETE /api/wardrobe/{id}`
 - **API**: `GET /api/wardrobe/{id}`
 - **Directory**: `src/outfit-planner-ui/src/app/presentation/pages/clothing-item-detail/`
 
@@ -135,12 +135,12 @@ _The Wardrobe backend is done. This section finishes the frontend vertical slice
 
 #### Task 92 — Wardrobe Routes
 
-- [ ] Add routes to `app.routes.ts`:
+- [x] Add routes to `app.routes.ts`:
   - `/wardrobe` → `WardrobeDashboardComponent`
   - `/wardrobe/add` → `AddClothingItemComponent`
   - `/wardrobe/:id` → `ClothingItemDetailComponent`
   - `/wardrobe/:id/edit` → `EditClothingItemComponent`
-- [ ] Protect all routes with `AuthGuard`
+- [x] Protect all routes with `AuthGuard`
 - **File**: `src/outfit-planner-ui/src/app/app.routes.ts`
 
 ---

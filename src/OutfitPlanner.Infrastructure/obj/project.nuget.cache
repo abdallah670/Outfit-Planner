@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "LSNuMl17/cM=",
+  "dgSpecHash": "24sCX3emOm8=",
   "success": true,
   "projectFilePath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -37,6 +37,7 @@
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.diagnostics.abstractions\\10.0.3\\microsoft.extensions.diagnostics.abstractions.10.0.3.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\10.0.0\\microsoft.extensions.fileproviders.abstractions.10.0.0.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\10.0.0\\microsoft.extensions.hosting.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.http\\9.0.4\\microsoft.extensions.http.9.0.4.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.identity.core\\10.0.3\\microsoft.extensions.identity.core.10.0.3.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.identity.stores\\10.0.3\\microsoft.extensions.identity.stores.10.0.3.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\microsoft.extensions.logging\\10.0.3\\microsoft.extensions.logging.10.0.3.nupkg.sha512",

@@ -22,7 +22,19 @@ public static class DependencyInjection
 
       
             services.AddScoped<IImageStorageService, LocalFileStorageService>();
+
+        // Register Weather API services
+        services.Configure<WeatherApiSettings>(
+            configuration.GetSection(WeatherApiSettings.SectionName));
         
+        services.AddHttpClient<IWeatherService, OpenWeatherMapWeatherService>(client =>
+        {
+            var settings = configuration.GetSection(WeatherApiSettings.SectionName)
+                .Get<WeatherApiSettings>() ?? new WeatherApiSettings();
+            
+            client.BaseAddress = new Uri(settings.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
+        });
 
         return services;
     }
