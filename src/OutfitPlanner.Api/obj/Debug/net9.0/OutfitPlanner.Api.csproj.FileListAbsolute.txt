@@ -212,3 +212,4 @@ c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\OutfitPla
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\OutfitPlanner.Api.genruntimeconfig.cache
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\ref\OutfitPlanner.Api.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\OutfitPlanner.Api.staticwebassets.runtime.json
+c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Http.dll

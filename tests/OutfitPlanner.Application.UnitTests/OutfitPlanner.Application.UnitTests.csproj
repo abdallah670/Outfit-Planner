@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OutfitPlanner.Application\OutfitPlanner.Application.csproj" />
     <ProjectReference Include="..\..\src\OutfitPlanner.Domain\OutfitPlanner.Domain.csproj" />
+    <ProjectReference Include="..\..\src\OutfitPlanner.Infrastructure\OutfitPlanner.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
