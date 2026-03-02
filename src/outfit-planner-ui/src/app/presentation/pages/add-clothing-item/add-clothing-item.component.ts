@@ -161,9 +161,9 @@ export class AddClothingItemComponent implements OnInit {
         title: 'Missing Required Fields',
         text: 'Please fill out all required fields before saving.',
         icon: 'warning',
-        background: '#1f2937',
-        color: '#f9fafb',
-        confirmButtonColor: '#f59e0b',
+        background: '#ffffff',
+        color: '#2D3436',
+        confirmButtonColor: '#F8B4C4',
       });
     }
   }

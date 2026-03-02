@@ -1,66 +1,52 @@
 .page-wrapper {
-  position: relative;
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 40px 20px;
-}
-
-.glass-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01));
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 36px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
-  position: relative;
-  z-index: 1;
+  background: var(--bg-primary);
 }
 
 .form-container {
   width: 100%;
   max-width: 900px;
-  padding: 40px;
-  color: white;
+  padding: 32px;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
 }
 
 .form-header {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 40px;
+  gap: 16px;
+  margin-bottom: 32px;
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.05);
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-
-  i {
-    font-size: 1.1rem;
+  color: var(--text-muted);
+  &:hover {
+    color: var(--text-main);
   }
 }
 
 .form-header h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 700;
   margin: 0;
-  letter-spacing: -1px;
-  background: linear-gradient(to right, #60a5fa, #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-main);
 }
 
 .form-header p {
-  opacity: 0.6;
-  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 4px 0 0;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 40px;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
 }
 
 @media (max-width: 768px) {
@@ -69,58 +55,91 @@
   }
 }
 
+// Image Upload
 .image-preview {
   width: 100%;
   aspect-ratio: 3/4;
-  background: rgba(255, 255, 255, 0.03);
-  border: 2px dashed rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
+  background: #f8f8f8;
+  border: 2px dashed #e5e7eb;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   position: relative;
-  transition: all 0.3s ease;
-}
+  transition: all 0.2s ease;
 
-.image-preview.has-image {
-  border-style: solid;
-  border-color: rgba(255, 255, 255, 0.2);
-}
+  &:hover {
+    border-color: var(--accent-pink);
+  }
 
-.image-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  &.has-image {
+    border-style: solid;
+    border-color: #e5e7eb;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .upload-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  opacity: 0.4;
-}
+  gap: 8px;
+  color: var(--text-dim);
 
-.upload-placeholder i {
-  font-size: 48px;
-  margin-bottom: 12px;
+  .upload-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  span {
+    font-size: 13px;
+  }
 }
 
 .upload-fab {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
+  bottom: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-pink);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(248, 180, 196, 0.4);
+  transition: filter 0.15s;
+
+  &:hover {
+    filter: brightness(1.05);
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
 }
 
+// Form Fields
 .full-width {
   width: 100%;
 }
 
 .row {
   display: flex;
-  gap: 20px;
+  gap: 16px;
 }
 
 .row > * {
@@ -130,56 +149,93 @@
 .color-input-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .color-picker {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border: none;
   padding: 0;
   background: none;
   cursor: pointer;
+  border-radius: 4px;
 }
 
+// Material override for light theme
 ::ng-deep .mat-mdc-form-field {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
 ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
 ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: #e5e7eb !important;
+}
+
+::ng-deep
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover
+  .mdc-notched-outline__leading,
+::ng-deep
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover
+  .mdc-notched-outline__notch,
+::ng-deep
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover
+  .mdc-notched-outline__trailing {
+  border-color: var(--accent-pink) !important;
 }
 
 ::ng-deep .mat-mdc-form-field-label {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: var(--text-muted) !important;
 }
 
 ::ng-deep .mat-mdc-input-element {
-  color: white !important;
+  color: var(--text-main) !important;
 }
 
+// Actions
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 20px;
-  margin-top: 40px;
+  gap: 12px;
+  margin-top: 32px;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid #f3f4f6;
 }
 
 .cancel-btn {
-  color: rgba(255, 255, 255, 0.6) !important;
-  font-weight: 600 !important;
-  letter-spacing: 1px !important;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #f9fafb;
+    color: var(--text-main);
+  }
 }
 
 .submit-btn {
-  padding: 0 40px !important;
-  height: 50px !important;
-  border-radius: 12px !important;
-  font-weight: 700 !important;
-  letter-spacing: 1px !important;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  padding: 8px 24px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent-pink);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    filter: brightness(1.05);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

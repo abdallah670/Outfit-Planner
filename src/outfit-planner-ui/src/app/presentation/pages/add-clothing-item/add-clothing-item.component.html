@@ -1,12 +1,16 @@
 <div class="page-wrapper">
-  <div class="form-container glass-card">
+  <div class="form-container">
     <header class="form-header">
       <button mat-icon-button routerLink="/wardrobe" class="back-btn">
-        <i class="fa-solid fa-arrow-left"></i>
+        <mat-icon>arrow_back</mat-icon>
       </button>
       <div class="header-text">
-        <h1>New Masterpiece</h1>
-        <p>Add a new item to your luxury collection</p>
+        <h1>{{ editModeId() ? 'Edit Item' : 'Add New Item' }}</h1>
+        <p>
+          {{
+            editModeId() ? 'Update your clothing item details' : 'Add a new item to your wardrobe'
+          }}
+        </p>
       </div>
     </header>
 
@@ -17,7 +21,7 @@
           <div class="image-preview" [class.has-image]="imagePreview()">
             <img *ngIf="imagePreview()" [src]="imagePreview()" alt="Preview" />
             <div *ngIf="!imagePreview()" class="upload-placeholder">
-              <i class="fa-solid fa-camera"></i>
+              <mat-icon class="upload-icon">add_a_photo</mat-icon>
               <span>Upload Image</span>
             </div>
             <input
@@ -27,14 +31,8 @@
               accept="image/*"
               hidden
             />
-            <button
-              type="button"
-              mat-mini-fab
-              color="accent"
-              class="upload-fab"
-              (click)="fileInput.click()"
-            >
-              <i class="fa-solid fa-cloud-arrow-up"></i>
+            <button type="button" class="upload-fab" (click)="fileInput.click()">
+              <mat-icon>cloud_upload</mat-icon>
             </button>
           </div>
         </div>
@@ -43,10 +41,10 @@
         <div class="details-section">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Item Name</mat-label>
-            <input matInput formControlName="name" placeholder="e.g., Midnight Silk Blazer" />
-            <mat-error *ngIf="clothingForm.get('name')?.hasError('required')"
-              >Name is required</mat-error
-            >
+            <input matInput formControlName="name" placeholder="e.g., Blue Denim Jacket" />
+            <mat-error *ngIf="clothingForm.get('name')?.hasError('required')">
+              Name is required
+            </mat-error>
           </mat-form-field>
 
           <div class="row">
@@ -92,7 +90,7 @@
           <div class="row">
             <mat-form-field appearance="outline">
               <mat-label>Brand</mat-label>
-              <input matInput formControlName="brand" placeholder="e.g., Armani" />
+              <input matInput formControlName="brand" placeholder="e.g., Zara" />
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -115,14 +113,14 @@
               matInput
               formControlName="description"
               rows="3"
-              placeholder="Tell us about this piece..."
+              placeholder="Brief description of this item..."
             ></textarea>
           </mat-form-field>
 
           <div class="row">
             <mat-form-field appearance="outline">
               <mat-label>Price</mat-label>
-              <input matInput type="number" formControlName="purchasePrice" prefix="$" />
+              <input matInput type="number" formControlName="purchasePrice" />
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -134,16 +132,9 @@
       </div>
 
       <div class="form-actions">
-        <button mat-button type="button" routerLink="/wardrobe" class="cancel-btn">CANCEL</button>
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          [disabled]="clothingForm.invalid"
-          class="submit-btn text-white"
-        >
-          <i class="fa-solid fa-check me-2"></i>
-          SAVE ITEM
+        <button type="button" routerLink="/wardrobe" class="cancel-btn">Cancel</button>
+        <button type="submit" [disabled]="clothingForm.invalid" class="submit-btn">
+          {{ editModeId() ? 'Update Item' : 'Save Item' }}
         </button>
       </div>
     </form>

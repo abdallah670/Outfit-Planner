@@ -1,0 +1,24 @@
+<div class="weather-content" *ngIf="weather; else loadingOrError">
+  <div class="weather-info">
+    <div class="weather-visual">
+      <span class="weather-emoji">{{ weatherEmoji }}</span>
+    </div>
+    <div class="weather-stats">
+      <div class="temp-value">{{ weather.temperature | number: '1.0-0' }}°C</div>
+      <div class="feels-like" *ngIf="showFeelsLike">
+        Feels like {{ weather.feelsLike | number: '1.0-0' }}°C
+      </div>
+    </div>
+  </div>
+
+  <div class="weather-description" *ngIf="showTempRange">
+    {{ weather.description }}. Perfect for layering!
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div class="weather-loading" *ngIf="loading">
+    <div class="skeleton-shimmer"></div>
+    <span>Loading weather...</span>
+  </div>
+</ng-template>

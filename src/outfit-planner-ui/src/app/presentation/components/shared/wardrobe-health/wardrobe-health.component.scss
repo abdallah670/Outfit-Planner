@@ -1,0 +1,42 @@
+.health-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .label {
+    font-size: 14px;
+    color: var(--text-main);
+    font-weight: 500;
+  }
+
+  .value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-pink);
+  }
+}
+
+.health-bar {
+  height: 8px;
+  border-radius: 4px;
+
+  ::ng-deep .mdc-linear-progress__bar-inner {
+    border-color: var(--accent-pink) !important;
+  }
+
+  ::ng-deep .mdc-linear-progress__buffer-bar {
+    background-color: #f3f4f6 !important;
+  }
+}

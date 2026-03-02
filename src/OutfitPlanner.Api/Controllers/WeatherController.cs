@@ -8,7 +8,7 @@ namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[AllowAnonymous]
 public class WeatherController : ControllerBase
 {
     private readonly IMediator _mediator;
