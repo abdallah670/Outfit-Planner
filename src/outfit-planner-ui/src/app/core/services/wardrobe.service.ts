@@ -78,7 +78,7 @@ export class WardrobeService {
 
   recordWear(id: string): Observable<ClothingItem> {
     return this.http
-      .post<ClothingItem>(`${this.apiUrl}/${id}/wear`, {})
+      .post<ClothingItem>(`${this.apiUrl}/${id}/wear/quick`, {})
       .pipe(map((item: ClothingItem) => this.fixItemUrls(item)));
   }
 

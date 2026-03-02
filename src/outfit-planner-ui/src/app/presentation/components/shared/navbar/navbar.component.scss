@@ -1,0 +1,123 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 80px;
+  background: white;
+  border-bottom: 1px solid #f3f4f6;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.nav-left .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+
+  .logo-icon {
+    color: var(--accent-pink);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+  }
+}
+
+.nav-center {
+  display: flex;
+  gap: 32px;
+
+  .nav-link {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    padding: 8px 0;
+    position: relative;
+
+    &:hover {
+      color: var(--text-main);
+    }
+
+    &.active {
+      color: var(--accent-pink);
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--accent-pink);
+        border-radius: 2px;
+      }
+    }
+  }
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .nav-icon-btn {
+    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
+
+    &:hover {
+      color: var(--text-main);
+      background: #f9fafb;
+    }
+  }
+
+  // Fix oversized Material badge on notification icon
+  ::ng-deep .mat-badge-content {
+    font-size: 10px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+
+  .user-profile {
+    margin-left: 8px;
+    cursor: pointer;
+
+    .avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: var(--accent-pink);
+        color: var(--accent-pink);
+      }
+    }
+  }
+}

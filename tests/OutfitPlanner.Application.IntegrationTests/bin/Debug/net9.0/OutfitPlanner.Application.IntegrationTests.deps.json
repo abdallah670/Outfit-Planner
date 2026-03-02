@@ -154,7 +154,7 @@
           "Microsoft.Extensions.FileProviders.Physical.Reference": "9.0.0.0",
           "Microsoft.Extensions.FileSystemGlobbing.Reference": "9.0.0.0",
           "Microsoft.Extensions.Hosting.Reference": "9.0.0.0",
-          "Microsoft.Extensions.Http": "9.0.0.0",
+          "Microsoft.Extensions.Http.Reference": "9.0.0.0",
           "Microsoft.Extensions.Localization.Abstractions": "9.0.0.0",
           "Microsoft.Extensions.Localization": "9.0.0.0",
           "Microsoft.Extensions.Logging.Configuration.Reference": "9.0.0.0",
@@ -1080,6 +1080,22 @@
         },
         "compile": {
           "lib/net9.0/Microsoft.Extensions.Hosting.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Http/9.0.4": {
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.3",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.3",
+          "Microsoft.Extensions.Diagnostics": "10.0.3",
+          "Microsoft.Extensions.Logging": "10.0.3",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.3",
+          "Microsoft.Extensions.Options": "10.0.3"
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.Extensions.Http.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.425.16305"
+          }
         }
       },
       "Microsoft.Extensions.Identity.Core/10.0.3": {
@@ -2401,6 +2417,7 @@
       },
       "OutfitPlanner.Infrastructure/1.0.0": {
         "dependencies": {
+          "Microsoft.Extensions.Http": "9.0.4",
           "OutfitPlanner.Domain": "1.0.0",
           "OutfitPlanner.Persistence": "1.0.0",
           "Serilog.AspNetCore": "10.0.0",
@@ -3052,7 +3069,7 @@
         },
         "compileOnly": true
       },
-      "Microsoft.Extensions.Http/9.0.0.0": {
+      "Microsoft.Extensions.Http.Reference/9.0.0.0": {
         "compile": {
           "Microsoft.Extensions.Http.dll": {}
         },
@@ -4509,6 +4526,13 @@
       "path": "microsoft.extensions.hosting.abstractions/10.0.0",
       "hashPath": "microsoft.extensions.hosting.abstractions.10.0.0.nupkg.sha512"
     },
+    "Microsoft.Extensions.Http/9.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ezelU6HJgmq4862YoWuEbHGSV+JnfnonTSbNSJVh6n6wDehyiJn4hBtcK7rGbf2KO3QeSvK5y8E7uzn1oaRH5w==",
+      "path": "microsoft.extensions.http/9.0.4",
+      "hashPath": "microsoft.extensions.http.9.0.4.nupkg.sha512"
+    },
     "Microsoft.Extensions.Identity.Core/10.0.3": {
       "type": "package",
       "serviceable": true,
@@ -5511,7 +5535,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.Extensions.Http/9.0.0.0": {
+    "Microsoft.Extensions.Http.Reference/9.0.0.0": {
       "type": "referenceassembly",
       "serviceable": false,
       "sha512": ""

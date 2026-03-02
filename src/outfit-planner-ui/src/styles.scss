@@ -1,37 +1,29 @@
 :root {
-  // Ultra-vibrant Dark Palette
-  --bg-dark: #030712;
-  --bg-surface: #0a0f1d;
+  // Light Premium Palette from Reference
+  --bg-primary: #fafafa;
+  --bg-surface: #ffffff;
 
-  // Premium Glass Settings
-  --glass-bg: rgba(15, 23, 42, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-glow: rgba(79, 70, 229, 0.15);
+  // Accents
+  --accent-pink: #f8b4c4;
+  --accent-green: #9caf88;
+  --accent-dark: #2d3436;
 
-  // Vibrant Accents
-  --accent-primary: #6366f1;
-  --accent-secondary: #a855f7;
-  --accent-vibrant: #ec4899;
-
-  // Refined Typography
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-dim: #64748b;
-
-  // Semantic
-  --error: #f43f5e;
-  --success: #10b981;
+  // Typography
+  --text-main: #2d3436;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
 
   // Spacing & Radius
-  --radius-lg: 24px;
-  --radius-xl: 32px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 body {
   margin: 0;
-  font-family: 'Outfit', sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
+  font-family: 'Poppins', 'Outfit', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;

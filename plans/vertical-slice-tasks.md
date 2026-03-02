@@ -118,13 +118,13 @@ _The Wardrobe backend is done. This section finishes the frontend vertical slice
 - [x] Hero section: Large image with thumbnail gallery (original, medium, large sizes)
 - [x] Info panel: Name, Type, Category, Brand, Size, Colors, Fabric, Condition, Price
 - [x] Stats: Wear Count, Last Worn date, Last Washed date, Cost per Wear
-- [ ] Wear History timeline (list of `WearEvent` dates)
+- [x] Wear History timeline (list of `WearEvent` dates)
 - [x] Action buttons: "Wear Now" (quick wear), "Edit", "Delete" (with confirmation dialog)
-- [ ] "Wear Now" dispatches `recordWear` → `POST /api/wardrobe/{id}/wear/quick`
+- [x] "Wear Now" dispatches `recordWear` → `POST /api/wardrobe/{id}/wear/quick`
 - [x] "Delete" dispatches `deleteClothingItem` → `DELETE /api/wardrobe/{id}`
 - **API**: `GET /api/wardrobe/{id}`
 - **Directory**: `src/outfit-planner-ui/src/app/presentation/pages/clothing-item-detail/`
-
+### will be implmented in future
 #### Task 91 — Wardrobe Analytics Component
 
 - [ ] Create component `wardrobe-analytics.component.ts`
@@ -155,17 +155,17 @@ _Backend CQRS → Tests → Controller → Frontend State → UI_
 
 #### Task 21 — Create Outfit DTOs
 
-- [ ] Create `OutfitDto` in `Application/DTOs/Outfit/OutfitDto.cs`:
+- [x] Create `OutfitDto` in `Application/DTOs/Outfit/OutfitDto.cs`:
   - Properties: `Id` (Guid), `UserId` (string), `Name` (string), `Occasion` (string — mapped from `OccasionType`), `WeatherCondition` (string), `Season` (string — mapped from `Season`), `ComfortRating` (int?), `StyleRating` (int?), `LastWorn` (DateTimeOffset?), `TimesWorn` (int), `Status` (string — mapped from `OutfitStatus`), `Items` (List\<OutfitItemDto\>), `CreatedAt` (DateTimeOffset)
-- [ ] Create `OutfitListDto` in `Application/DTOs/Outfit/OutfitListDto.cs`:
+- [x] Create `OutfitListDto` in `Application/DTOs/Outfit/OutfitListDto.cs`:
   - Lightweight: `Id`, `Name`, `Occasion`, `Season`, `TimesWorn`, `LastWorn`, `Status`, `ItemCount` (int), `ThumbnailUrl` (string — first item's thumbnail)
-- [ ] Create `OutfitItemDto` in `Application/DTOs/Outfit/OutfitItemDto.cs`:
+- [x] Create `OutfitItemDto` in `Application/DTOs/Outfit/OutfitItemDto.cs`:
   - Properties: `Id` (Guid), `ClothingItemId` (Guid), `ClothingItemName` (string), `ClothingItemImageUrl` (string), `Role` (string — from `ItemRole`), `LayeringOrder` (int), `IsEssential` (bool)
-- [ ] Create `CreateOutfitDto` in `Application/DTOs/Outfit/CreateOutfitDto.cs`:
+- [x] Create `CreateOutfitDto` in `Application/DTOs/Outfit/CreateOutfitDto.cs`:
   - Properties: `Name` (string, required), `Occasion` (string, required — must be valid `OccasionType`), `WeatherCondition` (string), `Season` (string, required — must be valid `Season`), `Items` (List\<CreateOutfitItemDto\>, required, min 1 item)
-- [ ] Create `CreateOutfitItemDto`:
+- [x] Create `CreateOutfitItemDto`:
   - Properties: `ClothingItemId` (Guid, required), `Role` (string — `ItemRole`), `LayeringOrder` (int), `IsEssential` (bool)
-- [ ] Create `UpdateOutfitDto` in `Application/DTOs/Outfit/UpdateOutfitDto.cs`:
+- [x] Create `UpdateOutfitDto` in `Application/DTOs/Outfit/UpdateOutfitDto.cs`:
   - Properties: `Name` (string?), `Occasion` (string?), `WeatherCondition` (string?), `Season` (string?), `ComfortRating` (int?), `StyleRating` (int?), `Items` (List\<CreateOutfitItemDto\>?)
 - **Directory**: `src/OutfitPlanner.Application/DTOs/Outfit/`
 
@@ -175,7 +175,7 @@ _Backend CQRS → Tests → Controller → Frontend State → UI_
 
 #### Update MappingProfile
 
-- [ ] Add to `MappingProfile.cs`:
+- [x] Add to `MappingProfile.cs`:
   ```
   #region Outfit Mappings
   CreateMap<Outfit, OutfitDto>().ReverseMap();
@@ -195,18 +195,18 @@ _Backend CQRS → Tests → Controller → Frontend State → UI_
 
 #### Task 22 — `GetOutfitsRequest` + Handler
 
-- [ ] Create `GetOutfitsRequest.cs` implementing `IRequest<List<OutfitListDto>>`
+- [x] Create `GetOutfitsRequest.cs` implementing `IRequest<List<OutfitListDto>>`
   - Properties: `UserId` (string)
-- [ ] Create `GetOutfitsRequestHandler.cs` in `Handlers/Queries/`
+- [x] Create `GetOutfitsRequestHandler.cs` in `Handlers/Queries/`
   - Inject: `IOutfitRepository`, `IMapper`
   - Logic: Call `_outfitRepository.GetByUserIdAsync(request.UserId)`, map to `List<OutfitListDto>`
 - **Directory**: `src/OutfitPlanner.Application/Features/Outfits/Requests/Queries/` and `src/OutfitPlanner.Application/Features/Outfits/Handlers/Queries/`
 
 #### Task 23 — `GetOutfitByIdRequest` + Handler
 
-- [ ] Create `GetOutfitByIdRequest.cs` implementing `IRequest<OutfitDto>`
+- [x] Create `GetOutfitByIdRequest.cs` implementing `IRequest<OutfitDto>`
   - Properties: `Id` (Guid), `UserId` (string)
-- [ ] Create `GetOutfitByIdRequestHandler.cs`
+- [x] Create `GetOutfitByIdRequestHandler.cs`
   - Inject: `IOutfitRepository`, `IMapper`
   - Logic: Call `_outfitRepository.GetWithItemsByIdAsync(request.Id)`, verify `UserId` matches, map to `OutfitDto`
   - Throw `NotFoundException` if not found, `UnauthorizedAccessException` if user mismatch
@@ -217,9 +217,9 @@ _Backend CQRS → Tests → Controller → Frontend State → UI_
 
 #### Task 24 — `CreateOutfitCommand` + Handler
 
-- [ ] Create `CreateOutfitCommand.cs` implementing `IRequest<BaseCommandResponse>`
+- [x] Create `CreateOutfitCommand.cs` implementing `IRequest<BaseCommandResponse>`
   - Properties: `UserId` (string), `Request` (CreateOutfitDto)
-- [ ] Create `CreateOutfitCommandHandler.cs`
+- [x] Create `CreateOutfitCommandHandler.cs`
   - Inject: `IOutfitRepository`, `IOutfitItemRepository`, `IClothingItemRepository`, `IMapper`, `IValidator<CreateOutfitCommand>`
   - Logic:
     1. Validate command via FluentValidation
@@ -227,33 +227,33 @@ _Backend CQRS → Tests → Controller → Frontend State → UI_
     3. Create new `Outfit` entity, parse `OccasionType` and `Season` enums from strings
     4. Create `OutfitItem` entities for each item
     5. Save via repository, return `BaseCommandResponse` with new `Id`
-- [ ] Create `CreateOutfitCommandValidator.cs` — Validate `Name` not empty, `Occasion` is valid enum, `Season` is valid enum, `Items` has at least 1 item
+- [x] Create `CreateOutfitCommandValidator.cs` — Validate `Name` not empty, `Occasion` is valid enum, `Season` is valid enum, `Items` has at least 1 item
 - **Directory**: `src/OutfitPlanner.Application/Features/Outfits/Requests/Commands/` and `src/OutfitPlanner.Application/Features/Outfits/Handlers/Commands/`
 
 #### Task 25 — `UpdateOutfitCommand` + Handler
 
-- [ ] Create `UpdateOutfitCommand.cs` implementing `IRequest<OutfitDto>`
+- [x] Create `UpdateOutfitCommand.cs` implementing `IRequest<OutfitDto>`
   - Properties: `Id` (Guid), `UserId` (string), `Request` (UpdateOutfitDto)
-- [ ] Create `UpdateOutfitCommandHandler.cs`
+- [x] Create `UpdateOutfitCommandHandler.cs`
   - Logic:
     1. Fetch outfit by Id, verify ownership
     2. Update only non-null fields from `UpdateOutfitDto`
     3. If `Items` provided, clear existing `OutfitItem` entries and re-create
     4. Save and return mapped `OutfitDto`
-- [ ] Create `UpdateOutfitCommandValidator.cs`
+- [x] Create `UpdateOutfitCommandValidator.cs`
 
 #### Task 26 — `DeleteOutfitCommand` + Handler
 
-- [ ] Create `DeleteOutfitCommand.cs` implementing `IRequest<BaseCommandResponse>`
+- [x] Create `DeleteOutfitCommand.cs` implementing `IRequest<BaseCommandResponse>`
   - Properties: `Id` (Guid), `UserId` (string)
-- [ ] Create `DeleteOutfitCommandHandler.cs`
+- [x] Create `DeleteOutfitCommandHandler.cs`
   - Logic: Fetch outfit, verify ownership, set `Status = OutfitStatus.Deleted` (soft delete), save
 
 #### Task 27 — `RecordOutfitWearCommand` + Handler
 
-- [ ] Create `RecordOutfitWearCommand.cs` implementing `IRequest<BaseCommandResponse>`
+- [x] Create `RecordOutfitWearCommand.cs` implementing `IRequest<BaseCommandResponse>`
   - Properties: `UserId` (string), `OutfitId` (Guid), `WornAt` (DateTimeOffset)
-- [ ] Create `RecordOutfitWearCommandHandler.cs`
+- [x] Create `RecordOutfitWearCommandHandler.cs`
   - Logic:
     1. Fetch outfit, verify ownership
     2. Create `WearEvent` entity with `OutfitId`, `UserId`, `WornAt`
@@ -262,17 +262,17 @@ _Backend CQRS → Tests → Controller → Frontend State → UI_
 
 #### Task 28 — `GenerateOutfitSuggestionsQuery` + Handler
 
-- [ ] Create `GenerateOutfitSuggestionsQuery.cs` implementing `IRequest<List<OutfitDto>>`
+- [x] Create `GenerateOutfitSuggestionsQuery.cs` implementing `IRequest<List<OutfitDto>>`
   - Properties: `UserId` (string), `Occasion` (string?), `Season` (string?), `WeatherCondition` (string?)
-- [ ] Create `GenerateOutfitSuggestionsQueryHandler.cs`
+- [x] Create `GenerateOutfitSuggestionsQueryHandler.cs`
   - **Placeholder algorithm**: Fetch user's clothing items, group by `ClothingType`, randomly combine one Top + one Bottom + optional Outerwear + optional Footwear + optional Accessory. Return 3 suggestions as `OutfitDto` objects (not persisted until user saves).
 
 ---
 
 ### 2.5 Unit Tests for Outfit Handlers
 
-- [ ] Create `OutfitTests.cs` in `tests/OutfitPlanner.Application.IntegrationTests/Outfits/`
-- [ ] Test cases (follow `ClothingItemTests.cs` pattern with in-memory DB):
+- [x] Create `OutfitTests.cs` in `tests/OutfitPlanner.Application.IntegrationTests/Outfits/`
+- [x] Test cases (follow `ClothingItemTests.cs` pattern with in-memory DB):
   - `CreateOutfit_ShouldSucceed_WithValidData`
   - `CreateOutfit_ShouldFail_WhenNameIsEmpty`
   - `CreateOutfit_ShouldFail_WhenNoItemsProvided`
@@ -290,15 +290,15 @@ _Backend CQRS → Tests → Controller → Frontend State → UI_
 
 #### Tasks 44–51 — Implement OutfitsController
 
-- [ ] Inject `IMediator` and `ILogger<OutfitsController>`, add `[Authorize]`
-- [ ] **Task 44** — `GET /api/outfits`: `GetAll()` → dispatches `GetOutfitsRequest { UserId }`, returns `List<OutfitListDto>`
-- [ ] **Task 45** — `GET /api/outfits/{id:guid}`: `GetById(Guid id)` → dispatches `GetOutfitByIdRequest { Id, UserId }`, returns `OutfitDto`
-- [ ] **Task 46** — `POST /api/outfits/generate`: `GenerateSuggestions([FromQuery] string? occasion, string? season)` → dispatches `GenerateOutfitSuggestionsQuery`, returns `List<OutfitDto>`
-- [ ] **Task 47** — `POST /api/outfits`: `Create([FromBody] CreateOutfitDto)` → dispatches `CreateOutfitCommand`, returns `CreatedAtAction` with `BaseCommandResponse`
-- [ ] **Task 48** — `PUT /api/outfits/{id:guid}`: `Update(Guid id, [FromBody] UpdateOutfitDto)` → dispatches `UpdateOutfitCommand`, returns `OutfitDto`
-- [ ] **Task 49** — `DELETE /api/outfits/{id:guid}`: `Delete(Guid id)` → dispatches `DeleteOutfitCommand`, returns `NoContent`
-- [ ] **Task 50** — `GET /api/outfits/today`: `GetToday()` → dispatches `GenerateOutfitSuggestionsQuery` with today's weather/season, returns single `OutfitDto`
-- [ ] **Task 51** — `POST /api/outfits/{id:guid}/wear`: `RecordWear(Guid id)` → dispatches `RecordOutfitWearCommand`, returns `BaseCommandResponse`
+- [x] Inject `IMediator` and `ILogger<OutfitsController>`, add `[Authorize]`
+- [x] **Task 44** — `GET /api/outfits`: `GetAll()` → dispatches `GetOutfitsRequest { UserId }`, returns `List<OutfitListDto>`
+- [x] **Task 45** — `GET /api/outfits/{id:guid}`: `GetById(Guid id)` → dispatches `GetOutfitByIdRequest { Id, UserId }`, returns `OutfitDto`
+- [x] **Task 46** — `POST /api/outfits/generate`: `GenerateSuggestions([FromQuery] string? occasion, string? season)` → dispatches `GenerateOutfitSuggestionsQuery`, returns `List<OutfitDto>`
+- [x] **Task 47** — `POST /api/outfits`: `Create([FromBody] CreateOutfitDto)` → dispatches `CreateOutfitCommand`, returns `CreatedAtAction` with `BaseCommandResponse`
+- [x] **Task 48** — `PUT /api/outfits/{id:guid}`: `Update(Guid id, [FromBody] UpdateOutfitDto)` → dispatches `UpdateOutfitCommand`, returns `OutfitDto`
+- [x] **Task 49** — `DELETE /api/outfits/{id:guid}`: `Delete(Guid id)` → dispatches `DeleteOutfitCommand`, returns `NoContent`
+- [x] **Task 50** — `GET /api/outfits/today`: `GetToday()` → dispatches `GenerateOutfitSuggestionsQuery` with today's weather/season, returns single `OutfitDto`
+- [x] **Task 51** — `POST /api/outfits/{id:guid}/wear`: `RecordWear(Guid id)` → dispatches `RecordOutfitWearCommand`, returns `BaseCommandResponse`
 - **File**: `src/OutfitPlanner.Api/Controllers/OutfitsController.cs`
 
 ---
@@ -573,19 +573,19 @@ _Backend CQRS → Tests → Controller → Frontend State → UI_
 
 #### Tasks 70 & 75 — Weather Data Layer
 
-- [ ] Create `weather.repository.ts` interface in `app/domain/repositories/`
-- [ ] Create `weather.datasource.ts` — HTTP calls to `/api/weather/*`
-- [ ] Create `weather.repository.impl.ts`
+- [x] Create `weather.repository.ts` interface in `app/domain/repositories/`
+- [x] Create `weather.datasource.ts` — HTTP calls to `/api/weather/*`
+- [x] Create `weather.repository.impl.ts`
 
 #### Task 82 — `weather` NgRx State Slice
 
-- [ ] State: `{ current: WeatherDto | null, forecast: WeatherForecastDto[], loading: boolean }`
-- [ ] Actions, Effects, Selectors
+- [x] State: `{ current: WeatherDto | null, forecast: WeatherForecastDto[], loading: boolean }`
+- [x] Actions, Effects, Selectors
 
 #### Task 96 — Weather Display Component
 
-- [ ] Reusable component showing: temperature, condition icon, city name, humidity, wind
-- [ ] Used in Daily Suggestion page and Dashboard
+- [x] Reusable component showing: temperature, condition icon, city name, humidity, wind
+- [x] Used in Daily Suggestion page and Dashboard
 - **Directory**: `src/outfit-planner-ui/src/app/presentation/components/weather-display/`
 
 ---

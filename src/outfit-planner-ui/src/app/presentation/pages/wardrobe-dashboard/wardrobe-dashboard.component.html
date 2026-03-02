@@ -1,110 +1,270 @@
 <div class="dashboard-wrapper">
+  <!-- Search Bar -->
+  <div class="search-section">
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search..."
+        class="search-input"
+        [(ngModel)]="searchQuery"
+        (input)="onSearch()"
+      />
+      <button class="ai-badge" title="AI-powered search">🤖</button>
+    </div>
+    <div class="search-tags">
+      <button class="tag" (click)="searchQuery = 'Summer dresses under $100'; onSearch()">
+        Summer dresses under $100
+      </button>
+      <button class="tag" (click)="searchQuery = 'Outfits for rainy weather'; onSearch()">
+        Outfits for rainy weather
+      </button>
+      <button class="tag" (click)="searchQuery = 'Most worn jeans'; onSearch()">
+        Most worn jeans
+      </button>
+    </div>
+  </div>
+
   <div class="content-container">
     <div class="dashboard-layout">
-      <!-- Filters Sidebar -->
-      <aside class="sidebar-filters glass-card fade-in">
-        <div class="sidebar-header">
-          <h3>Filters</h3>
-          <button (click)="clearFilters()" class="clear-btn">Clear All</button>
-        </div>
+      <!-- Filters Sidebar (Left) -->
+      <aside class="sidebar-filters">
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">Filters</h3>
 
-        <div class="filter-section">
-          <label>Category</label>
-          <div class="filter-grid">
-            <button
-              *ngFor="let cat of categories"
-              [class.active]="activeCategory() === cat"
-              (click)="setCategory(cat)"
-              class="filter-chip"
-            >
-              {{ cat }}
+          <!-- Category Filter (collapsible) -->
+          <div class="filter-section">
+            <button class="filter-label" (click)="filtersOpen.categories = !filtersOpen.categories">
+              Categories
+              <mat-icon class="chevron" [class.open]="filtersOpen.categories">expand_more</mat-icon>
             </button>
+            <div class="filter-list" *ngIf="filtersOpen.categories">
+              <button
+                *ngFor="let cat of categories"
+                [class.active]="activeCategory() === cat"
+                (click)="setCategory(cat)"
+                class="filter-item"
+              >
+                {{ cat }}
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <label>Color</label>
-          <div class="filter-grid">
-            <button
-              *ngFor="let color of colors"
-              [class.active]="activeColor() === color"
-              (click)="setColor(color)"
-              class="filter-chip"
-            >
-              {{ color }}
+          <!-- Color Filter (collapsible) -->
+          <div class="filter-section">
+            <button class="filter-label" (click)="filtersOpen.colors = !filtersOpen.colors">
+              Colors
+              <mat-icon class="chevron" [class.open]="filtersOpen.colors">expand_more</mat-icon>
             </button>
+            <div class="color-circles" *ngIf="filtersOpen.colors">
+              <button
+                *ngFor="let color of colors"
+                [class.active]="activeColor() === color"
+                (click)="setColor(color)"
+                class="color-circle"
+                [ngClass]="'color-' + color.toLowerCase()"
+                [title]="color"
+              ></button>
+            </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <label>Season</label>
-          <div class="filter-grid">
-            <button
-              *ngFor="let season of seasons"
-              [class.active]="activeSeason() === season"
-              (click)="setSeason(season)"
-              class="filter-chip"
-            >
-              {{ season }}
+          <!-- Season Filter (collapsible) -->
+          <div class="filter-section">
+            <button class="filter-label" (click)="filtersOpen.seasons = !filtersOpen.seasons">
+              Seasons
+              <mat-icon class="chevron" [class.open]="filtersOpen.seasons">expand_more</mat-icon>
             </button>
+            <div class="checkbox-grid" *ngIf="filtersOpen.seasons">
+              <label *ngFor="let season of seasons" class="checkbox-item">
+                <input
+                  type="checkbox"
+                  [checked]="activeSeason() === season"
+                  (change)="setSeason(season)"
+                />
+                <span>{{ season }}</span>
+              </label>
+            </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <label>Occasion</label>
-          <div class="filter-grid">
-            <button
-              *ngFor="let occ of occasions"
-              [class.active]="activeOccasion() === occ"
-              (click)="setOccasion(occ)"
-              class="filter-chip"
-            >
-              {{ occ }}
+          <!-- Occasion Filter (collapsible) -->
+          <div class="filter-section">
+            <button class="filter-label" (click)="filtersOpen.occasions = !filtersOpen.occasions">
+              Occasions
+              <mat-icon class="chevron" [class.open]="filtersOpen.occasions">expand_more</mat-icon>
             </button>
+            <div class="checkbox-list" *ngIf="filtersOpen.occasions">
+              <label *ngFor="let occ of occasions" class="checkbox-item">
+                <input
+                  type="checkbox"
+                  [checked]="activeOccasion() === occ"
+                  (change)="setOccasion(occ)"
+                />
+                <span>{{ occ }}</span>
+              </label>
+            </div>
           </div>
+
+          <button (click)="clearFilters()" class="clear-btn">Clear All Filters</button>
         </div>
       </aside>
 
-      <!-- Main Content Area -->
+      <!-- Main Content (Center) -->
       <main class="main-content">
-        <header class="page-header">
-          <div class="header-text">
-            <h1 class="gradient-text">Wardrobe Manager</h1>
-            <p class="subtitle">Organize and Manage Your Collection</p>
-          </div>
-          <button mat-flat-button color="primary" class="add-btn" routerLink="/wardrobe/new">
-            <i class="fa-solid fa-plus me-2"></i>
-            ADD ITEM
+        <div class="grid-toolbar">
+          <button class="select-btn" [class.active]="selectMode" (click)="toggleSelectMode()">
+            <mat-icon>{{ selectMode ? 'check_box' : 'check_box_outline_blank' }}</mat-icon> Select
           </button>
-        </header>
+          <span class="toolbar-spacer"></span>
+          <!-- Grid / List toggle -->
+          <div class="view-toggle">
+            <button
+              [class.active]="viewMode === 'grid'"
+              (click)="viewMode = 'grid'"
+              title="Grid view"
+            >
+              <mat-icon>grid_view</mat-icon>
+            </button>
+            <button
+              [class.active]="viewMode === 'list'"
+              (click)="viewMode = 'list'"
+              title="List view"
+            >
+              <mat-icon>view_list</mat-icon>
+            </button>
+          </div>
+          <button class="add-item-btn" routerLink="/wardrobe/new"><span>+</span> Add Item</button>
+        </div>
 
         <section class="items-section">
           <div *ngIf="loading()" class="loading-overlay">
-            <mat-spinner diameter="48"></mat-spinner>
+            <mat-spinner diameter="40"></mat-spinner>
           </div>
 
-          <div class="items-grid" *ngIf="!loading() && items().length > 0">
-            <app-clothing-card
+          <div
+            [class]="viewMode === 'grid' ? 'items-grid' : 'items-list'"
+            *ngIf="!loading() && items().length > 0"
+            cdkDropList
+            [cdkDropListData]="items()"
+            id="items-list"
+            [cdkDropListConnectedTo]="['outfit-board']"
+          >
+            <div
               *ngFor="let item of items(); trackBy: trackByItem"
-              [item]="item"
-              (delete)="onDelete(item.id)"
-              (recordWear)="onRecordWear(item.id)"
-            ></app-clothing-card>
+              class="card-wrapper"
+              [class.selected]="selectedItems.has(item.id)"
+              cdkDrag
+              [cdkDragData]="item"
+            >
+              <!-- Select checkbox -->
+              <div
+                class="select-check"
+                *ngIf="selectMode"
+                (click)="toggleSelectItem(item.id); $event.stopPropagation()"
+              >
+                <mat-icon>{{
+                  selectedItems.has(item.id) ? 'check_box' : 'check_box_outline_blank'
+                }}</mat-icon>
+              </div>
+              <app-clothing-card
+                [item]="item"
+                (delete)="onDelete(item.id)"
+                (recordWear)="onRecordWear(item.id)"
+              ></app-clothing-card>
+
+              <!-- Drag Preview -->
+              <div *cdkDragPreview class="drag-preview">
+                <div class="preview-dot" [style.background-color]="item.primaryColor"></div>
+                <span>{{ item.name }}</span>
+              </div>
+            </div>
           </div>
 
           <!-- Empty State -->
-          <div class="empty-state fade-in" *ngIf="!loading() && items().length === 0">
-            <div class="empty-icon-wrapper">
-              <i class="fa-solid fa-boxes-stacked"></i>
-            </div>
-            <h3>No pieces found</h3>
-            <p>Try adjusting your filters or add a new masterpiece to your vault.</p>
-            <button mat-stroked-button color="primary" routerLink="/wardrobe/new">
-              ADD YOUR FIRST ITEM
-            </button>
+          <div class="empty-state" *ngIf="!loading() && items().length === 0">
+            <div class="empty-icon">👕</div>
+            <h3>Your wardrobe is empty</h3>
+            <p>Start by adding some clothing items!</p>
+            <button class="add-item-btn" routerLink="/wardrobe/new">Add Your First Item</button>
           </div>
         </section>
+
+        <div class="action-bar" *ngIf="selectMode && selectedItems.size > 0">
+          <span class="action-wear-count">♡ {{ getSelectedWearCount() }}</span>
+          <button class="action-btn"><mat-icon>add</mat-icon> Add to Outfit</button>
+          <button class="action-btn"><mat-icon>drive_file_move</mat-icon> Move to Category</button>
+          <button class="action-btn delete" (click)="onDeleteSelected()">
+            <mat-icon>delete</mat-icon> Delete
+          </button>
+          <div
+            class="action-color-dot"
+            *ngIf="getSelectedColor()"
+            [style.background-color]="getSelectedColor()"
+          ></div>
+        </div>
       </main>
+
+      <!-- Right Sidebar -->
+      <aside class="sidebar-right">
+        <!-- Create Outfit Card -->
+        <div class="sidebar-card outfit-card">
+          <h3 class="card-heading">Create Your Outfit</h3>
+          <p class="card-subtext">Drag and drop zone from clothing for grid</p>
+          <div class="outfit-zones">
+            <div
+              class="drop-zone board-zone"
+              id="outfit-board"
+              cdkDropList
+              (cdkDropListDropped)="onDrop($event)"
+            >
+              <div class="zone-label">Outfit Board</div>
+              <div class="board-items">
+                <div *ngFor="let item of outfitBoardItems()" class="board-item">
+                  <div class="item-dot" [style.background-color]="item.primaryColor"></div>
+                  <span class="item-name">{{ item.name }}</span>
+                  <button (click)="removeFromBoard(item.id)" class="remove-btn">×</button>
+                </div>
+                <div *ngIf="outfitBoardItems().length === 0" class="empty-zone-text">
+                  Drop items here
+                </div>
+              </div>
+            </div>
+            <div class="drop-zone saved-zone">
+              <div class="zone-label">Saved Outfits</div>
+              <div class="empty-zone-text">No saved outfits</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card pink">
+            <div class="stat-header">
+              <span class="stat-title">Total Items</span>
+              <span class="stat-icon">📋</span>
+            </div>
+            <span class="stat-number">{{ stats().totalItems }}</span>
+            <span class="stat-change">↑ +5% last month</span>
+          </div>
+
+          <div class="stat-card white">
+            <div class="stat-header">
+              <span class="stat-title">Most Worn</span>
+              <span class="stat-icon">⭐</span>
+            </div>
+            <span class="stat-number">{{ mostWornCount() }}</span>
+            <span class="stat-change">wears</span>
+          </div>
+        </div>
+
+        <div class="stat-card green wide">
+          <div class="stat-header">
+            <span class="stat-title">Cost Per Wear</span>
+            <span class="stat-icon">👕</span>
+          </div>
+          <span class="stat-number">${{ costPerWear() }} avg</span>
+          <span class="stat-change">↓ -10% last month</span>
+        </div>
+      </aside>
     </div>
   </div>
 </div>

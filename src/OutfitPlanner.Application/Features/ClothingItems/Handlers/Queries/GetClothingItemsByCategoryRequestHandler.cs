@@ -37,8 +37,12 @@ public class GetClothingItemsByCategoryRequestHandler : IRequestHandler<GetCloth
                 ImageUrl = ci.ImageUrl,
                 Type = ci.Type.ToString(),
                 ThumbnailUrl = ci.ThumbnailUrl,
-                CreatedAt = ci.CreatedAt
-                
+                CreatedAt = ci.CreatedAt,
+                WearCount = ci.WearCount,
+                LastWorn = ci.LastWorn,
+                Brand = ci.Brand,
+                Condition = ci.Condition.ToString(),
+                PurchasePrice = ci.PurchasePrice.Amount
             }).ToList());
         }
         catch (Exception ex)

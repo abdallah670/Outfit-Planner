@@ -11,6 +11,8 @@ public class WearEvent : BaseEntity
     public Guid? OutfitId { get; set; }
     public Outfit? Outfit { get; set; }
     
+    public Guid? EventId { get; set; }
+    
     public DateTimeOffset WornAt { get; set; }
     public int DurationMinutes { get; set; }
     public string WeatherCondition { get; set; } = string.Empty;

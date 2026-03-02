@@ -1,0 +1,30 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="logo" routerLink="/">
+      <i class="fa-solid fa-shirt logo-icon"></i>
+      <span class="logo-text">Outfit Planner</span>
+    </div>
+  </div>
+
+  <div class="nav-center">
+    <a routerLink="/wardrobe" routerLinkActive="active" class="nav-link">My Wardrobe</a>
+    <a routerLink="/outfits" routerLinkActive="active" class="nav-link">Plan Outfits</a>
+    <a routerLink="/calendar" routerLinkActive="active" class="nav-link">Calendar</a>
+    <a routerLink="/social" routerLinkActive="active" class="nav-link">Social</a>
+    <a routerLink="/settings" routerLinkActive="active" class="nav-link">Settings</a>
+  </div>
+
+  <div class="nav-right">
+    <button routerLink="/search" mat-icon-button class="nav-icon-btn">
+      <mat-icon>search</mat-icon>
+    </button>
+    <button routerLink="/notifications" mat-icon-button class="nav-icon-btn" matBadge="2" matBadgeColor="warn">
+      <mat-icon>notifications_none</mat-icon>
+    </button>
+    <div class="user-profile">
+      <div class="avatar-placeholder">
+        <mat-icon>person</mat-icon>
+      </div>
+    </div>
+  </div>
+</nav>

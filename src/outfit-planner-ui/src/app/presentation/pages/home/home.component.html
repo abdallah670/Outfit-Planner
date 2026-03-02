@@ -1,85 +1,109 @@
-<div class="home-layout">
-  <main class="content-grid">
-    <div class="main-content">
+<div class="home-container">
+  <main class="main-layout">
+    <div class="primary-content">
       <!-- Hero Section -->
-      <section class="hero-section glass-card">
-        <div class="hero-text">
-          <h1>Intelligent Wardrobe Manager</h1>
-          <p>
-            AI-powered outfit recommendations tailored to your style, weather, and schedule. Start
-            planning your week effortlessly.
+      <section class="hero-banner animate-fade">
+        <div class="hero-content">
+          <h1 class="hero-title">Intelligent Wardrobe Manager</h1>
+          <p class="hero-subtitle">
+            AI-powered outfit recommendations tailored to your style, weather, and schedule
           </p>
-          <button mat-flat-button color="primary" class="cta-btn" routerLink="/wardrobe">
-            Get Started <i class="fa-solid fa-arrow-right ms-2"></i>
+          <button mat-flat-button class="get-started-btn" routerLink="/wardrobe">
+            Get Started
           </button>
         </div>
       </section>
 
       <!-- Virtual Closet Section -->
-      <section class="virtual-closet">
+      <section class="closet-explorer">
         <div class="section-header">
-          <h2>Virtual Closet</h2>
-          <mat-chip-listbox class="filter-chips">
-            @for (cat of categories; track cat) {
-              <mat-chip-option
-                [selected]="cat === selectedCategory"
-                (selectionChange)="selectCategory(cat)"
-              >
-                {{ cat }}
-              </mat-chip-option>
-            }
-          </mat-chip-listbox>
+          <h2 class="section-title">My Virtual Closet</h2>
+          <div class="filter-group">
+            <button
+              *ngFor="let cat of categories"
+              class="filter-tab"
+              [class.active]="cat === selectedCategory"
+              (click)="selectCategory(cat)"
+            >
+              {{ cat }}
+            </button>
+          </div>
         </div>
 
-        <div class="items-grid">
-          @for (item of items().slice(0, 5); track item.id) {
+        <div class="items-display">
+          @for (item of items().slice(0, 8); track item.id) {
             <app-clothing-card [item]="item"></app-clothing-card>
+          } @empty {
+            <div class="empty-state">
+              <div class="empty-icon">👕</div>
+              <h3>Your wardrobe is empty</h3>
+              <p>Start by adding some clothing items!</p>
+              <button class="add-first-btn" routerLink="/wardrobe/new">Add Your First Item</button>
+            </div>
           }
         </div>
       </section>
 
-      <!-- Trending Outfits Section -->
-      <section class="trending-section">
+      <!-- Trending Section -->
+      <section class="trending-outfits-card closet-explorer">
         <div class="section-header">
-          <h2>Trending Outfits</h2>
-          <button mat-button color="primary">View All</button>
+          <h2 class="section-title">Trending Outfits</h2>
+          <button mat-button class="view-all-link">View All</button>
         </div>
-        <div class="trending-grid">
-          <div class="trending-card glass-card">
-            <img src="assets/trending-1.png" alt="Style 1" />
-            <div class="card-footer">
-              <span class="author">Sarah J.</span>
-              <span class="likes"><i class="fa-regular fa-heart"></i> 245</span>
+        <div class="items-display">
+          <div class="outfit-placeholder">
+            <!-- Simulated trending item from reference -->
+            <div
+              class="aspect-square bg-gradient-to-br from-pink-50 to-rose-100 rounded-xl mb-3 flex items-center justify-center"
+            >
+              <span style="font-size: 48px">👗</span>
             </div>
-          </div>
-          <div class="trending-card glass-card">
-            <img src="assets/trending-2.png" alt="Style 2" />
-            <div class="card-footer">
-              <span class="author">Mina K.</span>
-              <span class="likes"><i class="fa-regular fa-heart"></i> 189</span>
-            </div>
-          </div>
-          <div class="trending-card glass-card">
-            <img src="assets/trending-3.png" alt="Style 3" />
-            <div class="card-footer">
-              <span class="author">David R.</span>
-              <span class="likes"><i class="fa-regular fa-heart"></i> 132</span>
+            <div class="flex justify-between items-center px-1">
+              <span style="font-size: 14px; font-weight: 500">Sarah</span>
+              <span style="font-size: 13px; color: #666">❤️ 234</span>
             </div>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <app-weather-widget></app-weather-widget>
-      <app-daily-pick></app-daily-pick>
-      <app-wardrobe-health></app-wardrobe-health>
+    <!-- Right Sidebar -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-widget">
+        <h3
+          class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4"
+          style="color: #94a3b8; font-size: 11px; margin-bottom: 16px"
+        >
+          Today's Weather
+        </h3>
+        <app-weather-display [weather]="weather()" [loading]="weatherLoading()">
+        </app-weather-display>
+      </div>
+
+      <div class="sidebar-widget">
+        <h3
+          class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4"
+          style="color: #94a3b8; font-size: 11px; margin-bottom: 16px"
+        >
+          Today's Pick
+        </h3>
+        <app-daily-pick></app-daily-pick>
+      </div>
+
+      <div class="sidebar-widget">
+        <h3
+          class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4"
+          style="color: #94a3b8; font-size: 11px; margin-bottom: 16px"
+        >
+          Wardrobe Health
+        </h3>
+        <app-wardrobe-health></app-wardrobe-health>
+      </div>
     </aside>
   </main>
 
-  <!-- FAB -->
-  <button mat-fab color="accent" class="fab-btn" routerLink="/wardrobe/new">
-    <i class="fa-solid fa-plus fab-icon"></i>
+  <!-- Add Item FAB -->
+  <button mat-fab class="floating-action-btn" routerLink="/wardrobe/new">
+    <mat-icon>add</mat-icon>
   </button>
 </div>

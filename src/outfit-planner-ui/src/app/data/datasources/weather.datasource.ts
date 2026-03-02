@@ -7,7 +7,7 @@ import { Weather, WeatherForecast } from '../../domain/entities/weather.entity';
   providedIn: 'root',
 })
 export class WeatherDataSource {
-  private readonly apiUrl = 'api/weather';
+  private readonly apiUrl = 'http://localhost:5000/api/weather';
 
   constructor(private readonly http: HttpClient) {}
 
