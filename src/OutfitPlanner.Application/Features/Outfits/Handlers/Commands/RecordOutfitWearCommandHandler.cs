@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OutfitPlanner.Application.Features.Outfits.Handlers.Commands;
 
-public class RecordOutfitWearCommandHandler : IRequestHandler<RecordOutfitWearCommand, BaseCommandResponse>
+public class RecordOutfitWearCommandHandler : IRequestHandler<RecordOutfitWearCommand, OutfitDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -25,19 +25,14 @@ public class RecordOutfitWearCommandHandler : IRequestHandler<RecordOutfitWearCo
         _logger = logger;
     }
 
-    public async Task<BaseCommandResponse> Handle(RecordOutfitWearCommand request, CancellationToken cancellationToken)
+    public async Task<OutfitDto> Handle(RecordOutfitWearCommand request, CancellationToken cancellationToken)
     {
         try
         {
             var outfit = await _unitOfWork.Outfits.GetWithItemsByIdAsync(request.OutfitId);
             if (outfit == null)
             {
-                return new BaseCommandResponse
-                {
-                    Success = false,
-                    Message = "Outfit not found",
-                    Errors = new List<string> { "Outfit not found" }
-                };
+                throw new NotFoundException(nameof(Outfit), request.OutfitId);
             }
 
             var wearEvent = new WearEvent
@@ -83,11 +78,7 @@ public class RecordOutfitWearCommandHandler : IRequestHandler<RecordOutfitWearCo
                 outfit.Id,
                 request.UserId);
 
-            return new BaseCommandResponse
-            {
-                Success = true,
-                Message = "Outfit wear recorded successfully"
-            };
+            return _mapper.Map<OutfitDto>(outfit);
         }
         catch (Exception ex)
         {

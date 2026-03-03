@@ -5,7 +5,7 @@ export interface Outfit {
   items: OutfitItem[];
   occasion: OccasionType;
   suitableWeather: WeatherCondition;
-  suitableSeason: Season;
+  season: Season;
   comfortLevel: number;
   styleRating: number;
   createdAt: Date;
@@ -19,6 +19,8 @@ export interface OutfitItem {
   id: string;
   outfitId: string;
   clothingItemId: string;
+  clothingItemName: string;
+  clothingItemImageUrl: string;
   role: 'primary' | 'secondary' | 'accent';
   layeringOrder: number;
   isEssential: boolean;
@@ -49,18 +51,18 @@ export enum OccasionType {
   Social = 'social',
   Work = 'work',
   Date = 'date',
-  Travel = 'travel'
+  Travel = 'travel',
 }
 
 export enum Season {
   Spring = 'spring',
   Summer = 'summer',
   Autumn = 'autumn',
-  Winter = 'winter'
+  Winter = 'winter',
 }
 
 export enum OutfitStatus {
   Active = 'active',
   Archived = 'archived',
-  Favorite = 'favorite'
+  Favorite = 'favorite',
 }

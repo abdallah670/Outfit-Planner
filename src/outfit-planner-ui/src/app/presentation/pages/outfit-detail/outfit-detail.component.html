@@ -1,0 +1,102 @@
+<div class="outfit-detail-container" *ngIf="outfit$ | async as outfit; else loader">
+  <header class="detail-header">
+    <div class="back-nav" [routerLink]="['/outfits']">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to Dashboard</span>
+    </div>
+
+    <div class="header-actions">
+      <button mat-flat-button class="action-btn edit-btn" (click)="onEdit($any(outfit).id)">
+        <mat-icon>edit</mat-icon>
+        Edit Outfit
+      </button>
+      <button
+        mat-icon-button
+        class="action-btn wear-btn"
+        (click)="onRecordWear($any(outfit).id)"
+        title="Record Wear"
+      >
+        <mat-icon>checkroom</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="warn"
+        class="action-btn delete-btn"
+        (click)="onDelete($any(outfit).id)"
+        title="Delete Outfit"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <main class="detail-content">
+    <section class="outfit-hero">
+      <div class="hero-info">
+        <span class="outfit-id">#{{ $any(outfit).id.substring(0, 8) }}</span>
+        <h1>{{ $any(outfit).name }}</h1>
+
+        <div class="outfit-meta">
+          <mat-chip-set>
+            <mat-chip class="occasion-chip">{{ $any(outfit).occasion | titlecase }}</mat-chip>
+            <mat-chip class="season-chip">{{ $any(outfit).season | titlecase }}</mat-chip>
+          </mat-chip-set>
+
+          <div class="wear-stats">
+            <div class="stat">
+              <mat-icon>history</mat-icon>
+              <span>Worn {{ $any(outfit).timesWorn }} times</span>
+            </div>
+            <div class="stat" *ngIf="$any(outfit).lastWorn">
+              <mat-icon>calendar_today</mat-icon>
+              <span>Last worn: {{ $any(outfit).lastWorn | date: 'MMM d, y' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="items-section">
+      <div class="section-header">
+        <h2>Outfit Items</h2>
+        <span class="item-count">{{ $any(outfit).items?.length || 0 }} items found</span>
+      </div>
+
+      <div class="items-grid" *ngIf="$any(outfit).items?.length; else emptyItems">
+        <div *ngFor="let item of $any(outfit).items" class="premium-item-card">
+          <div class="item-visual">
+            <img
+              *ngIf="$any(item).clothingItemImageUrl"
+              [src]="$any(item).clothingItemImageUrl"
+              [alt]="$any(item).clothingItemName"
+            />
+            <div class="item-overlay">
+              <span class="role-badge" [class]="'role-' + $any(item).role">{{
+                $any(item).role
+              }}</span>
+            </div>
+            <mat-icon *ngIf="!$any(item).clothingItemImageUrl">image_not_supported</mat-icon>
+          </div>
+          <div class="item-details">
+            <h3>{{ $any(item).clothingItemName || 'Nameless Item' }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #emptyItems>
+        <div class="empty-items-state">
+          <mat-icon>inventory_2</mat-icon>
+          <p>No items found in this outfit composition.</p>
+          <button mat-stroked-button (click)="onEdit($any(outfit).id)">Add Items</button>
+        </div>
+      </ng-template>
+    </section>
+  </main>
+</div>
+
+<ng-template #loader>
+  <div class="loading-state" *ngIf="loading$ | async">
+    <div class="spinner"></div>
+    <p>Loading outfit details...</p>
+  </div>
+</ng-template>

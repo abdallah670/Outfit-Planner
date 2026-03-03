@@ -1,0 +1,28 @@
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { UserRepository } from '../../domain/repositories/user.repository';
+import { UserProfile, UpdateUserProfileRequest, ChangePasswordRequest } from '../../domain/entities/user-profile.entity';
+import { UserDataSource } from '../datasources/user.datasource';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserRepositoryImpl implements UserRepository {
+  constructor(private dataSource: UserDataSource) {}
+
+  getProfile(): Observable<UserProfile> {
+    return this.dataSource.getProfile();
+  }
+
+  updateProfile(request: UpdateUserProfileRequest): Observable<void> {
+    return this.dataSource.updateProfile(request);
+  }
+
+  uploadProfilePicture(file: File): Observable<string> {
+    return this.dataSource.uploadProfilePicture(file);
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.dataSource.changePassword(request);
+  }
+}

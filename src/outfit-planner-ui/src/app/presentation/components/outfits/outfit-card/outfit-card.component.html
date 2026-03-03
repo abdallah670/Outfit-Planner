@@ -1,0 +1,47 @@
+<mat-card class="outfit-card" [routerLink]="['/outfits', outfit.id]">
+  <div class="outfit-visual">
+    <div
+      class="items-grid"
+      [class.single]="outfit.items.length === 1"
+      [class.multiple]="outfit.items.length > 1"
+    >
+      <ng-container *ngIf="outfit.items.length > 0; else noItems">
+        <div *ngFor="let item of outfit.items.slice(0, 4)" class="item-thumbnail">
+          <img
+            *ngIf="$any(item).clothingItemImageUrl"
+            [src]="$any(item).clothingItemImageUrl"
+            [alt]="$any(item).clothingItemName || 'Clothing item'"
+          />
+          <span *ngIf="!$any(item).clothingItemImageUrl" class="fallback-emoji">🧥</span>
+        </div>
+      </ng-container>
+      <ng-template #noItems>
+        <div class="empty-visual">
+          <mat-icon>Checkroom</mat-icon>
+        </div>
+      </ng-template>
+    </div>
+    <div class="occasion-badge">{{ occasionEmoji }}</div>
+  </div>
+
+  <div class="outfit-info">
+    <h3 class="outfit-name">{{ outfit.name }}</h3>
+
+    <div class="outfit-meta">
+      <mat-chip-set>
+        <mat-chip class="season-chip">{{ outfit.season }}</mat-chip>
+        <mat-chip class="count-chip">{{ outfit.items.length }} items</mat-chip>
+      </mat-chip-set>
+    </div>
+
+    <div class="outfit-footer">
+      <span class="worn-count">
+        <mat-icon>history</mat-icon>
+        {{ outfit.timesWorn }} wears
+      </span>
+      <span class="last-worn" *ngIf="outfit.lastWorn">
+        Last: {{ outfit.lastWorn | date: 'shortDate' }}
+      </span>
+    </div>
+  </div>
+</mat-card>

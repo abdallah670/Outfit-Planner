@@ -1,30 +1,33 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
+import { OutfitsActions } from './outfit.actions';
+import { OutfitSuggestionsRequest } from '../../../domain/repositories/outfit.repository';
 
 import { catchError, map, mergeMap, of, Observable, tap } from 'rxjs';
-import { WardrobeActions } from './wardrobe.actions';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { WardrobeService } from '../../services/wardrobe.service';
-import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
+
+import { Outfit } from '../../../domain/entities/outfit.entity';
+
+import { OutfitsUseCases } from '../../../domain/usecases/outfit.usecases';
 
 @Injectable()
-export class WardrobeEffects {
+export class OutfitEffects {
   private actions$ = inject(Actions);
-  private wardrobeService = inject(WardrobeService);
+  private outfitsUseCases = inject(OutfitsUseCases);
   private router = inject(Router);
 
-  loadClothingItems$ = createEffect(
+  loadOutfits$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.loadClothingItems),
+        ofType(OutfitsActions.loadOutfits),
         mergeMap(() =>
-          this.wardrobeService.getClothingItems().pipe(
-            map((items: ClothingItem[]) => WardrobeActions.loadClothingItemsSuccess({ items })),
+          this.outfitsUseCases.getAllOutfits().pipe(
+            map((outfits: Outfit[]) => OutfitsActions.loadOutfitsSuccess({ outfits })),
             catchError((error) =>
               of(
-                WardrobeActions.loadClothingItemsFailure({
+                OutfitsActions.loadOutfitsFailure({
                   error: error.message,
                 }),
               ),
@@ -34,16 +37,16 @@ export class WardrobeEffects {
       ) as Observable<Action>,
   );
 
-  loadClothingItemById$ = createEffect(
+  loadOutfitById$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.loadClothingItemById),
-        mergeMap((action: ReturnType<typeof WardrobeActions.loadClothingItemById>) =>
-          this.wardrobeService.getClothingItemById(action.id).pipe(
-            map((item: ClothingItem) => WardrobeActions.loadClothingItemByIdSuccess({ item })),
+        ofType(OutfitsActions.loadOutfitById),
+        mergeMap((action: ReturnType<typeof OutfitsActions.loadOutfitById>) =>
+          this.outfitsUseCases.getOutfitById(action.id).pipe(
+            map((outfit: Outfit) => OutfitsActions.loadOutfitByIdSuccess({ outfit })),
             catchError((error) =>
               of(
-                WardrobeActions.loadClothingItemByIdFailure({
+                OutfitsActions.loadOutfitByIdFailure({
                   error: error.message,
                 }),
               ),
@@ -53,43 +56,22 @@ export class WardrobeEffects {
       ) as Observable<Action>,
   );
 
-  loadClothingItemsByCategory$ = createEffect(
+  createOutfit$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.loadClothingItemsByCategory),
-        mergeMap((action: ReturnType<typeof WardrobeActions.loadClothingItemsByCategory>) =>
-          this.wardrobeService.getClothingItemsByCategory(action.category).pipe(
-            map((items: ClothingItem[]) =>
-              WardrobeActions.loadClothingItemsByCategorySuccess({ items }),
-            ),
-            catchError((error) =>
-              of(
-                WardrobeActions.loadClothingItemsByCategoryFailure({
-                  error: error.message,
-                }),
-              ),
-            ),
-          ),
-        ),
-      ) as Observable<Action>,
-  );
-
-  createClothingItem$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(WardrobeActions.createClothingItem),
-        mergeMap((action: ReturnType<typeof WardrobeActions.createClothingItem>) =>
-          this.wardrobeService.createClothingItem(action.item, action.image).pipe(
-            map((item: ClothingItem) => WardrobeActions.createClothingItemSuccess({ item })),
+        ofType(OutfitsActions.createOutfit),
+        mergeMap((action: ReturnType<typeof OutfitsActions.createOutfit>) =>
+          this.outfitsUseCases.createOutfit(action.outfit).pipe(
+            map((outfit: Outfit) => OutfitsActions.createOutfitSuccess({ outfit })),
             catchError((err) => {
-              let errorMessage = err.message || 'Failed to add clothing item';
+              let errorMessage = err.message || 'Failed to add outfit';
               if (err.error?.errors) {
                 errorMessage = Object.values(err.error.errors).flat().join('\n');
               } else if (err.error?.title) {
                 errorMessage = err.error.title;
               }
               return of(
-                WardrobeActions.createClothingItemFailure({
+                OutfitsActions.createOutfitFailure({
                   error: errorMessage,
                 }),
               );
@@ -99,41 +81,41 @@ export class WardrobeEffects {
       ) as Observable<Action>,
   );
 
-  createClothingItemSuccess$ = createEffect(
+  createOutfitSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.createClothingItemSuccess),
+        ofType(OutfitsActions.createOutfitSuccess),
         tap(() => {
           Swal.fire({
             title: 'Success!',
-            text: 'Your clothing item has been added to the vault.',
+            text: 'Your outfit has been added to the vault.',
             icon: 'success',
-            background: '#1f2937',
-            color: '#f9fafb',
-            confirmButtonColor: '#3b82f6',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
           }).then(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/outfits']);
           });
         }),
       ),
     { dispatch: false },
   );
 
-  createClothingItemFailure$ = createEffect(
+  createOutfitFailure$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(
-          WardrobeActions.createClothingItemFailure,
-          WardrobeActions.updateClothingItemFailure,
-          WardrobeActions.deleteClothingItemFailure,
+          OutfitsActions.createOutfitFailure,
+          OutfitsActions.updateOutfitFailure,
+          OutfitsActions.deleteOutfitFailure,
         ),
         tap(({ error }: { error: string }) => {
           Swal.fire({
             title: 'Error!',
             text: error,
             icon: 'error',
-            background: '#1f2937',
-            color: '#f9fafb',
+            background: '#ffffff',
+            color: '#2d3436',
             confirmButtonColor: '#ef4444',
           });
         }),
@@ -141,38 +123,38 @@ export class WardrobeEffects {
     { dispatch: false },
   );
 
-  updateClothingItemSuccess$ = createEffect(
+  updateOutfitSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.updateClothingItemSuccess),
-        tap(() => {
+        ofType(OutfitsActions.updateOutfitSuccess),
+        tap(({ outfit }: { outfit: Outfit }) => {
           Swal.fire({
             title: 'Updated!',
-            text: 'Your clothing item has been updated.',
+            text: 'Your outfit has been updated.',
             icon: 'success',
-            background: '#1f2937',
-            color: '#f9fafb',
-            confirmButtonColor: '#3b82f6',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
             timer: 2000,
             showConfirmButton: false,
           }).then(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/outfits', outfit.id]);
           });
         }),
       ),
     { dispatch: false },
   );
 
-  updateClothingItem$ = createEffect(
+  updateOutfit$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.updateClothingItem),
-        mergeMap((action: ReturnType<typeof WardrobeActions.updateClothingItem>) =>
-          this.wardrobeService.updateClothingItem(action.id, action.item, action.image).pipe(
-            map((item: ClothingItem) => WardrobeActions.updateClothingItemSuccess({ item })),
+        ofType(OutfitsActions.updateOutfit),
+        mergeMap((action: ReturnType<typeof OutfitsActions.updateOutfit>) =>
+          this.outfitsUseCases.updateOutfit(action.id, action.outfit).pipe(
+            map((outfit: Outfit) => OutfitsActions.updateOutfitSuccess({ outfit })),
             catchError((error) =>
               of(
-                WardrobeActions.updateClothingItemFailure({
+                OutfitsActions.updateOutfitFailure({
                   error: error.message,
                 }),
               ),
@@ -182,16 +164,16 @@ export class WardrobeEffects {
       ) as Observable<Action>,
   );
 
-  deleteClothingItem$ = createEffect(
+  deleteOutfit$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.deleteClothingItem),
-        mergeMap((action: ReturnType<typeof WardrobeActions.deleteClothingItem>) =>
-          this.wardrobeService.deleteClothingItem(action.id).pipe(
-            map(() => WardrobeActions.deleteClothingItemSuccess({ id: action.id })),
+        ofType(OutfitsActions.deleteOutfit),
+        mergeMap((action: ReturnType<typeof OutfitsActions.deleteOutfit>) =>
+          this.outfitsUseCases.deleteOutfit(action.id).pipe(
+            map(() => OutfitsActions.deleteOutfitSuccess({ id: action.id })),
             catchError((error) =>
               of(
-                WardrobeActions.deleteClothingItemFailure({
+                OutfitsActions.deleteOutfitFailure({
                   error: error.message,
                 }),
               ),
@@ -201,22 +183,22 @@ export class WardrobeEffects {
       ) as Observable<Action>,
   );
 
-  deleteClothingItemSuccess$ = createEffect(
+  deleteOutfitSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.deleteClothingItemSuccess),
+        ofType(OutfitsActions.deleteOutfitSuccess),
         tap(() => {
           Swal.fire({
             title: 'Deleted!',
-            text: 'Clothing item removed correctly.',
+            text: 'Outfit removed correctly.',
             icon: 'success',
-            background: '#1f2937',
-            color: '#f9fafb',
-            confirmButtonColor: '#3b82f6',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
             timer: 2000,
             showConfirmButton: false,
           }).then(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/outfits']);
           });
         }),
       ),
@@ -226,13 +208,71 @@ export class WardrobeEffects {
   recordWear$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(WardrobeActions.recordWear),
-        mergeMap((action: ReturnType<typeof WardrobeActions.recordWear>) =>
-          this.wardrobeService.recordWear(action.id).pipe(
-            map((item: ClothingItem) => WardrobeActions.recordWearSuccess({ item })),
+        ofType(OutfitsActions.recordOutfitWear),
+        mergeMap((action: ReturnType<typeof OutfitsActions.recordOutfitWear>) =>
+          this.outfitsUseCases.recordOutfitWear(action.id).pipe(
+            map((outfit: Outfit) => OutfitsActions.recordOutfitWearSuccess({ outfit })),
             catchError((error) =>
               of(
-                WardrobeActions.recordWearFailure({
+                OutfitsActions.recordOutfitWearFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  recordOutfitWearSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(OutfitsActions.recordOutfitWearSuccess),
+        tap(() => {
+          Swal.fire({
+            title: 'Nice Look!',
+            text: 'Wear recorded successfully.',
+            icon: 'success',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  generateSuggestions$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(OutfitsActions.generateSuggestions),
+        mergeMap((action: ReturnType<typeof OutfitsActions.generateSuggestions>) =>
+          this.outfitsUseCases.getOutfitsSuggestions(action.request).pipe(
+            map((outfits: Outfit[]) => OutfitsActions.generateSuggestionsSuccess({ outfits })),
+            catchError((error) =>
+              of(
+                OutfitsActions.generateSuggestionsFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  loadTodaysOutfit$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(OutfitsActions.loadTodaysOutfit),
+        mergeMap(() =>
+          this.outfitsUseCases.getTodaysOutfit().pipe(
+            map((outfit: Outfit) => OutfitsActions.loadTodaysOutfitSuccess({ outfit })),
+            catchError((error) =>
+              of(
+                OutfitsActions.loadTodaysOutfitFailure({
                   error: error.message,
                 }),
               ),

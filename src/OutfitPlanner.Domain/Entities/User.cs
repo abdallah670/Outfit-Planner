@@ -6,6 +6,7 @@ namespace OutfitPlanner.Domain.Entities;
 public class User : IdentityUser
 {
     public string Name { get; set; } = string.Empty;
+    public string? ProfilePictureUrl { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? LastLogin { get; set; }
     

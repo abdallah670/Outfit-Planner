@@ -1,13 +1,23 @@
+import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Outfit, WeatherCondition } from '../entities/outfit.entity';
+import { Outfit } from '../entities/outfit.entity';
+
+export const OUTFIT_REPOSITORY = new InjectionToken<OutfitRepository>('OutfitRepository');
+
+export interface OutfitSuggestionsRequest {
+  occasion?: string;
+  season?: string;
+  weatherCondition?: string;
+  maxSuggestions?: number;
+}
 
 export interface OutfitRepository {
-  getAll(): Observable<Outfit[]>;
-  getById(id: string): Observable<Outfit>;
-  create(outfit: Partial<Outfit>): Observable<Outfit>;
-  update(id: string, outfit: Partial<Outfit>): Observable<Outfit>;
-  delete(id: string): Observable<boolean>;
-  getSuggestions(weather: WeatherCondition, occasion: string): Observable<Outfit[]>;
+  getAllOutfits(): Observable<Outfit[]>;
+  getOutfitById(id: string): Observable<Outfit>;
+  createOutfit(outfit: Partial<Outfit>): Observable<Outfit>;
+  updateOutfit(id: string, outfit: Partial<Outfit>): Observable<Outfit>;
+  deleteOutfit(id: string): Observable<boolean>;
+  getOutfitsSuggestions(request: OutfitSuggestionsRequest): Observable<Outfit[]>;
   getTodaysOutfit(): Observable<Outfit>;
-  recordWear(id: string): Observable<Outfit>;
+  recordOutfitWear(id: string): Observable<Outfit>;
 }

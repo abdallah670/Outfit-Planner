@@ -1,0 +1,47 @@
+<div class="daily-suggestion-page">
+  <header class="page-header">
+    <div class="header-text">
+      <h1>Today's Picks</h1>
+      <p>Curated combinations based on weather and your style.</p>
+    </div>
+    <div class="date-badge">
+      <span class="day">{{ today | date: 'dd' }}</span>
+      <span class="month">{{ today | date: 'MMM' }}</span>
+    </div>
+  </header>
+
+  <div class="suggestions-container" *ngIf="!(loading$ | async); else loader">
+    <div class="suggestions-grid" *ngIf="suggestions$ | async as suggestionsList">
+      <div
+        *ngFor="let suggestion of $any(suggestionsList) | slice: 0 : 3; trackBy: trackByOutfitId"
+        class="suggestion-card-wrapper"
+      >
+        <app-outfit-card [outfit]="$any(suggestion)"></app-outfit-card>
+
+        <div class="suggestion-actions">
+          <button mat-flat-button color="primary" (click)="onWearToday($any(suggestion).id)">
+            <mat-icon>check_circle</mat-icon>
+            Wear This Today
+          </button>
+          <button mat-stroked-button (click)="onSaveToVault($any(suggestion))">
+            <mat-icon>bookmark_border</mat-icon>
+            Save to Favorites
+          </button>
+        </div>
+      </div>
+
+      <div class="no-suggestions" *ngIf="$any(suggestionsList).length === 0">
+        <mat-icon>wb_sunny</mat-icon>
+        <h3>No suggestions yet</h3>
+        <p>Add more items to your wardrobe to get personalized daily outfits.</p>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loader>
+    <div class="loading-state">
+      <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+      <p>Consulting the fashion oracle...</p>
+    </div>
+  </ng-template>
+</div>

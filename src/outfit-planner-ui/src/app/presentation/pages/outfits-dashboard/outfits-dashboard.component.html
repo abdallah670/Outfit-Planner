@@ -1,0 +1,66 @@
+<div class="outfits-dashboard">
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>My Outfits</h1>
+      <p>Your curated wardrobe combinations</p>
+    </div>
+
+    <div class="filters">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Occasion</mat-label>
+        <mat-select [(ngModel)]="selectedOccasion">
+          <mat-option value="">All Occasions</mat-option>
+          <mat-option *ngFor="let occasion of occasions" [value]="occasion">
+            {{ $any(occasion) | titlecase }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Season</mat-label>
+        <mat-select [(ngModel)]="selectedSeason">
+          <mat-option value="">All Seasons</mat-option>
+          <mat-option *ngFor="let season of seasons" [value]="season">
+            {{ $any(season) | titlecase }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </header>
+
+  <div class="outfits-content" *ngIf="!(loading$ | async); else loader">
+    <div class="outfits-grid" *ngIf="outfits$ | async as outfitsList; else emptyState">
+      <ng-container *ngIf="$any(outfitsList).length > 0; else emptyState">
+        <app-outfit-card
+          *ngFor="let outfit of $any(outfitsList); trackBy: trackByOutfitId"
+          [outfit]="$any(outfit)"
+        ></app-outfit-card>
+      </ng-container>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <mat-icon>inventory_2</mat-icon>
+        <h3>No outfits found</h3>
+        <p>Start building your first combination!</p>
+        <button mat-flat-button color="primary" routerLink="/outfits/build">Create Outfit</button>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loader>
+    <div class="loading-state">
+      <div class="spinner"></div>
+    </div>
+  </ng-template>
+
+  <button
+    mat-fab
+    color="primary"
+    class="fab-btn"
+    routerLink="/outfits/build"
+    aria-label="Create new outfit"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

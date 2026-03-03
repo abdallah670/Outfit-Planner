@@ -40,7 +40,8 @@ public class JwtService : IJWTService
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-            new Claim(CustomClaimTypes.Uid, user.Id)
+            new Claim(CustomClaimTypes.Uid, user.Id),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
         }
         .Union(userClaims)
         .Union(roleClaims);
