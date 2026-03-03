@@ -1,72 +1,187 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { WardrobeActions } from './wardrobe.actions';
-import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
+import { OutfitsActions } from './outfit.actions';
+import { Outfit } from '../../../domain/entities/outfit.entity';
 
-export interface WardrobeState {
-  items: ClothingItem[];
-  selectedItem: ClothingItem | null;
+export interface OutfitState {
+  outfits: Outfit[];
+  selectedItem: Outfit | null;
   loading: boolean;
   error: string | null;
   filter: { category: string | null };
+  suggestions: Outfit[];
+  todaysOutfit: Outfit | null;
 }
 
-export const initialState: WardrobeState = {
-  items: [],
+export const initialState: OutfitState = {
+  outfits: [],
   selectedItem: null,
   loading: false,
   error: null,
   filter: { category: null },
+  suggestions: [],
+  todaysOutfit: null,
 };
 
-export const wardrobeFeature = createFeature({
-  name: 'wardrobe',
+export const outfitFeature = createFeature({
+  name: 'outfit',
   reducer: createReducer(
     initialState,
-    on(WardrobeActions.loadClothingItems, (state) => ({
+
+    // Load All Outfits
+    on(OutfitsActions.loadOutfits, (state) => ({
       ...state,
       loading: true,
       error: null,
     })),
-    on(WardrobeActions.loadClothingItemsSuccess, (state, { items }) => ({
+    on(OutfitsActions.loadOutfitsSuccess, (state, { outfits }) => ({
       ...state,
-      items: items || [],
+      outfits: outfits || [],
       loading: false,
     })),
-    on(WardrobeActions.loadClothingItemsFailure, (state, { error }) => ({
+    on(OutfitsActions.loadOutfitsFailure, (state, { error }) => ({
       ...state,
       loading: false,
       error,
     })),
-    on(WardrobeActions.loadClothingItemByIdSuccess, (state, { item }) => ({
+
+    // Load Outfit By Id
+    on(OutfitsActions.loadOutfitById, (state) => ({
       ...state,
-      selectedItem: item,
+      loading: true,
+      error: null,
+    })),
+    on(OutfitsActions.loadOutfitByIdSuccess, (state, { outfit }) => ({
+      ...state,
+      selectedItem: outfit,
       loading: false,
     })),
-    on(WardrobeActions.loadClothingItemsByCategorySuccess, (state, { items }) => ({
+    on(OutfitsActions.loadOutfitByIdFailure, (state, { error }) => ({
       ...state,
-      items: items || [],
+      loading: false,
+      error,
+    })),
+
+    // Load Outfits By Category
+    on(OutfitsActions.loadOutfitsByCategory, (state, { category }) => ({
+      ...state,
+      loading: true,
+      error: null,
+      filter: { category },
+    })),
+    on(OutfitsActions.loadOutfitsByCategorySuccess, (state, { outfits }) => ({
+      ...state,
+      outfits: outfits || [],
       loading: false,
     })),
-    on(WardrobeActions.createClothingItemSuccess, (state, { item }) => ({
+    on(OutfitsActions.loadOutfitsByCategoryFailure, (state, { error }) => ({
       ...state,
-      items: [...state.items, item],
+      loading: false,
+      error,
+    })),
+
+    // Create Outfit
+    on(OutfitsActions.createOutfit, (state) => ({
+      ...state,
+      loading: true,
+      error: null,
+    })),
+    on(OutfitsActions.createOutfitSuccess, (state, { outfit }) => ({
+      ...state,
+      outfits: [...state.outfits, outfit],
       loading: false,
     })),
-    on(WardrobeActions.updateClothingItemSuccess, (state, { item }) => ({
+    on(OutfitsActions.createOutfitFailure, (state, { error }) => ({
       ...state,
-      items: state.items.map((i) => (i.id === item.id ? item : i)),
+      loading: false,
+      error,
+    })),
+
+    // Update Outfit
+    on(OutfitsActions.updateOutfit, (state) => ({
+      ...state,
+      loading: true,
+      error: null,
+    })),
+    on(OutfitsActions.updateOutfitSuccess, (state, { outfit }) => ({
+      ...state,
+      outfits: state.outfits.map((i) => (i.id === outfit.id ? outfit : i)),
+      selectedItem: state.selectedItem?.id === outfit.id ? outfit : state.selectedItem,
       loading: false,
     })),
-    on(WardrobeActions.deleteClothingItemSuccess, (state, { id }) => ({
+    on(OutfitsActions.updateOutfitFailure, (state, { error }) => ({
       ...state,
-      items: state.items.filter((i) => i.id !== id),
+      loading: false,
+      error,
+    })),
+
+    // Delete Outfit
+    on(OutfitsActions.deleteOutfit, (state) => ({
+      ...state,
+      loading: true,
+      error: null,
+    })),
+    on(OutfitsActions.deleteOutfitSuccess, (state, { id }) => ({
+      ...state,
+      outfits: state.outfits.filter((i) => i.id !== id),
+      selectedItem: state.selectedItem?.id === id ? null : state.selectedItem,
       loading: false,
     })),
-    on(WardrobeActions.recordWearSuccess, (state, { item }) => ({
+    on(OutfitsActions.deleteOutfitFailure, (state, { error }) => ({
       ...state,
-      items: state.items.map((i) => (i.id === item.id ? item : i)),
-      selectedItem: state.selectedItem?.id === item.id ? item : state.selectedItem,
       loading: false,
+      error,
+    })),
+
+    // Record Outfit Wear
+    on(OutfitsActions.recordOutfitWear, (state) => ({
+      ...state,
+      loading: true,
+      error: null,
+    })),
+    on(OutfitsActions.recordOutfitWearSuccess, (state, { outfit }) => ({
+      ...state,
+      outfits: state.outfits.map((i) => (i.id === outfit.id ? outfit : i)),
+      selectedItem: state.selectedItem?.id === outfit.id ? outfit : state.selectedItem,
+      loading: false,
+    })),
+    on(OutfitsActions.recordOutfitWearFailure, (state, { error }) => ({
+      ...state,
+      loading: false,
+      error,
+    })),
+
+    // Generate Suggestions
+    on(OutfitsActions.generateSuggestions, (state) => ({
+      ...state,
+      loading: true,
+      error: null,
+    })),
+    on(OutfitsActions.generateSuggestionsSuccess, (state, { outfits }) => ({
+      ...state,
+      suggestions: outfits || [],
+      loading: false,
+    })),
+    on(OutfitsActions.generateSuggestionsFailure, (state, { error }) => ({
+      ...state,
+      loading: false,
+      error,
+    })),
+
+    // Load Todays Outfit
+    on(OutfitsActions.loadTodaysOutfit, (state) => ({
+      ...state,
+      loading: true,
+      error: null,
+    })),
+    on(OutfitsActions.loadTodaysOutfitSuccess, (state, { outfit }) => ({
+      ...state,
+      todaysOutfit: outfit,
+      loading: false,
+    })),
+    on(OutfitsActions.loadTodaysOutfitFailure, (state, { error }) => ({
+      ...state,
+      loading: false,
+      error,
     })),
   ),
 });
@@ -74,10 +189,10 @@ export const wardrobeFeature = createFeature({
 export const {
   name,
   reducer,
-  selectWardrobeState,
-  selectItems,
+  selectOutfitState,
+  selectOutfits,
   selectSelectedItem,
   selectLoading,
   selectError,
   selectFilter,
-} = wardrobeFeature;
+} = outfitFeature;

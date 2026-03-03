@@ -15,7 +15,7 @@ namespace OutfitPlanner.Application.Features.Outfits.Handlers.Commands;
 /// <summary>
 /// Handler for creating a new outfit with validation and item ownership checks.
 /// </summary>
-public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, BaseCommandResponse>
+public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, OutfitDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -34,7 +34,7 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, B
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<BaseCommandResponse> Handle(CreateOutfitCommand request, CancellationToken cancellationToken)
+    public async Task<OutfitDto> Handle(CreateOutfitCommand request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.Request);
@@ -46,20 +46,11 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, B
             var validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
-                return new BaseCommandResponse
-                {
-                    Success = false,
-                    Message = "Validation failed",
-                    Errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList()
-                };
+                throw new ValidationException(validationResult);
             }
 
             // Validate all clothing items exist and belong to the user (single database query)
-            var validationResponse = await ValidateClothingItemsAsync(request, cancellationToken);
-            if (validationResponse != null)
-            {
-                return validationResponse;
-            }
+            await ValidateClothingItemsAsync(request, cancellationToken);
 
             // Create the outfit entity
             var outfit = _mapper.Map<Outfit>(request.Request);
@@ -84,18 +75,16 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, B
             await _unitOfWork.Outfits.AddAsync(outfit);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            // Fetch again with items to ensure return DTO is fully populated
+            var savedOutfit = await _unitOfWork.Outfits.GetWithItemsByIdAsync(outfit.Id);
+
             _logger.LogInformation(
                 "Created outfit {OutfitId} for user {UserId} with {ItemCount} items",
                 outfit.Id,
                 request.UserId,
                 outfit.Items.Count);
 
-            return new BaseCommandResponse
-            {
-                Success = true,
-                Message = "Outfit created successfully",
-                Id = outfit.Id
-            };
+            return _mapper.Map<OutfitDto>(savedOutfit);
         }
         catch (OperationCanceledException)
         {
@@ -118,7 +107,7 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, B
     /// Validates that all clothing items exist and belong to the requesting user.
     /// Uses a single database query for efficiency.
     /// </summary>
-    private async Task<BaseCommandResponse?> ValidateClothingItemsAsync(
+    private async Task ValidateClothingItemsAsync(
         CreateOutfitCommand request,
         CancellationToken cancellationToken)
     {
@@ -129,12 +118,7 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, B
 
         if (!itemIds.Any())
         {
-            return new BaseCommandResponse
-            {
-                Success = false,
-                Message = "At least one clothing item is required",
-                Errors = new List<string> { "Items list cannot be empty" }
-            };
+            throw new BadRequestException("At least one clothing item is required");
         }
 
         // Single database query to get all items by IDs AND verify ownership
@@ -152,14 +136,7 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, B
                 request.UserId,
                 string.Join(", ", missingIds));
 
-            return new BaseCommandResponse
-            {
-                Success = false,
-                Message = "Some clothing items were not found or don't belong to you",
-                Errors = missingIds.Select(id => $"Clothing item {id} not found").ToList()
-            };
+            throw new BadRequestException("Some clothing items were not found or don't belong to you");
         }
-
-        return null;
     }
 }

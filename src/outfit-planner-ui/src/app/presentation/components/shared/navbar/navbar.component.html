@@ -18,13 +18,29 @@
     <button routerLink="/search" mat-icon-button class="nav-icon-btn">
       <mat-icon>search</mat-icon>
     </button>
-    <button routerLink="/notifications" mat-icon-button class="nav-icon-btn" matBadge="2" matBadgeColor="warn">
+    <button
+      routerLink="/notifications"
+      mat-icon-button
+      class="nav-icon-btn"
+      matBadge="2"
+      matBadgeColor="warn"
+    >
       <mat-icon>notifications_none</mat-icon>
     </button>
-    <div class="user-profile">
-      <div class="avatar-placeholder">
-        <mat-icon>person</mat-icon>
-      </div>
+    <div class="user-profile" routerLink="/profile" style="cursor: pointer">
+      <ng-container *ngIf="profile$ | async as profile; else fallbackAvatar">
+        <div
+          class="avatar-image-container"
+          *ngIf="$any(profile).profilePictureUrl; else fallbackAvatar"
+        >
+          <img [src]="$any(profile).profilePictureUrl" alt="Profile avatar" class="avatar-image" />
+        </div>
+      </ng-container>
+      <ng-template #fallbackAvatar>
+        <div class="avatar-placeholder">
+          <mat-icon>person</mat-icon>
+        </div>
+      </ng-template>
     </div>
   </div>
 </nav>

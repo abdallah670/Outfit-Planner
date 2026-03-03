@@ -102,7 +102,8 @@
     margin-left: 8px;
     cursor: pointer;
 
-    .avatar-placeholder {
+    .avatar-placeholder,
+    .avatar-image-container {
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -113,11 +114,18 @@
       color: var(--text-muted);
       border: 1px solid #e5e7eb;
       transition: all 0.2s ease;
+      overflow: hidden;
 
       &:hover {
         border-color: var(--accent-pink);
         color: var(--accent-pink);
       }
+    }
+
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
 }

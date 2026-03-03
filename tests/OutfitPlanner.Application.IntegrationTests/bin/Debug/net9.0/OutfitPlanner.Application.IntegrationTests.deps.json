@@ -86,7 +86,7 @@
           "Microsoft.AspNetCore.Http.Connections": "9.0.0.0",
           "Microsoft.AspNetCore.Http": "9.0.0.0",
           "Microsoft.AspNetCore.Http.Extensions": "9.0.0.0",
-          "Microsoft.AspNetCore.Http.Features": "9.0.0.0",
+          "Microsoft.AspNetCore.Http.Features.Reference": "9.0.0.0",
           "Microsoft.AspNetCore.Http.Results": "9.0.0.0",
           "Microsoft.AspNetCore.HttpLogging": "9.0.0.0",
           "Microsoft.AspNetCore.HttpOverrides": "9.0.0.0",
@@ -2387,6 +2387,7 @@
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
           "MediatR": "14.0.0",
+          "Microsoft.AspNetCore.Http.Features": "5.0.17",
           "Microsoft.IdentityModel.Tokens": "8.14.0",
           "OutfitPlanner.Domain": "1.0.0",
           "System.IdentityModel.Tokens.Jwt": "8.14.0"
@@ -2661,7 +2662,7 @@
         },
         "compileOnly": true
       },
-      "Microsoft.AspNetCore.Http.Features/9.0.0.0": {
+      "Microsoft.AspNetCore.Http.Features.Reference/9.0.0.0": {
         "compile": {
           "Microsoft.AspNetCore.Http.Features.dll": {}
         },
@@ -4128,6 +4129,13 @@
       "coverlet.collector/6.0.2": {
         "compileOnly": true
       },
+      "Microsoft.AspNetCore.Http.Features/5.0.17": {
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "10.0.3",
+          "System.IO.Pipelines": "10.0.0"
+        },
+        "compileOnly": true
+      },
       "Microsoft.CSharp/4.7.0": {
         "compileOnly": true
       },
@@ -5195,7 +5203,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.AspNetCore.Http.Features/9.0.0.0": {
+    "Microsoft.AspNetCore.Http.Features.Reference/9.0.0.0": {
       "type": "referenceassembly",
       "serviceable": false,
       "sha512": ""
@@ -6421,6 +6429,13 @@
       "sha512": "sha512-bJShQ6uWRTQ100ZeyiMqcFlhP7WJ+bCuabUs885dJiBEzMsJMSFr7BOyeCw4rgvQokteGi5rKQTlkhfQPUXg2A==",
       "path": "coverlet.collector/6.0.2",
       "hashPath": "coverlet.collector.6.0.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Http.Features/5.0.17": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3jG2xS+dx8DDCGV/F+STdPTg89lX3ao3dF/VEPvJaz3wzBIjuadipTtYNEXDIVuOPZwb6jdmhrX9jkzOIBm5cw==",
+      "path": "microsoft.aspnetcore.http.features/5.0.17",
+      "hashPath": "microsoft.aspnetcore.http.features.5.0.17.nupkg.sha512"
     },
     "Microsoft.CSharp/4.7.0": {
       "type": "package",

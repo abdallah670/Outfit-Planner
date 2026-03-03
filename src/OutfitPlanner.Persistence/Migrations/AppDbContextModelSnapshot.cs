@@ -530,6 +530,9 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
 
@@ -729,6 +732,9 @@ namespace OutfitPlanner.Persistence.Migrations
 
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("EventId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Notes")
                         .IsRequired()

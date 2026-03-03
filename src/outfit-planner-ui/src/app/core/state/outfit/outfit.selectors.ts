@@ -1,40 +1,40 @@
 import { createSelector, createFeatureSelector } from '@ngrx/store';
-import { WardrobeState } from './wardrobe.reducer';
-import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
+import { OutfitState } from './outfit.reducer';
+import { Outfit } from '../../../domain/entities/outfit.entity';
 
-export interface WardrobeStats {
-  totalItems: number;
+export interface OutfitStats {
+  totalOutfits: number;
   totalCost: number;
 }
 
-export const selectWardrobeState = createFeatureSelector<WardrobeState>('wardrobe');
+export const selectOutfitState = createFeatureSelector<OutfitState>('outfit');
 
-export const selectAllItems = createSelector(
-  selectWardrobeState,
-  (state: WardrobeState): ClothingItem[] => state?.items || [],
+export const selectAllOutfits = createSelector(
+  selectOutfitState,
+  (state: OutfitState): Outfit[] => state?.outfits || [],
 );
 
-export const selectWardrobeLoading = createSelector(
-  selectWardrobeState,
-  (state: WardrobeState): boolean => !!state?.loading,
+export const selectOutfitLoading = createSelector(
+  selectOutfitState,
+  (state: OutfitState): boolean => !!state?.loading,
 );
 
-export const selectWardrobeError = createSelector(
-  selectWardrobeState,
-  (state: WardrobeState): string | null => state?.error,
+export const selectOutfitError = createSelector(
+  selectOutfitState,
+  (state: OutfitState): string | null => state?.error,
 );
 
 export const selectSelectedItem = createSelector(
-  selectWardrobeState,
-  (state: WardrobeState): ClothingItem | null => state?.selectedItem || null,
+  selectOutfitState,
+  (state: OutfitState): Outfit | null => state?.selectedItem || null,
 );
 
-export const selectWardrobeStats = createSelector(
-  selectAllItems,
-  (items: ClothingItem[]): WardrobeStats => {
+export const selectOutfitStats = createSelector(
+  selectAllOutfits,
+  (outfits: Outfit[]): OutfitStats => {
     return {
-      totalItems: items.length || 0,
-      totalCost: items.reduce((acc, curr) => acc + (Number(curr.purchasePrice) || 0), 0),
+      totalOutfits: outfits.length || 0,
+      totalCost: 0, // Note: Outfit doesn't have a direct cost property; would need clothing items data to calculate
     };
   },
 );

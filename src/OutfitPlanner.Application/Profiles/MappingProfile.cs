@@ -60,11 +60,11 @@ namespace OutfitPlanner.Application.Profiles
                 .ForMember(d => d.ClothingItemImageUrl, opt => opt.MapFrom(s => s.ClothingItem.ImageUrl));
 
             CreateMap<CreateOutfitDto, Outfit>()
-                .ForMember(d => d.Occasion, opt => opt.MapFrom(s => Enum.Parse<OccasionType>(s.Occasion)))
-                .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season)));
+                .ForMember(d => d.Occasion, opt => opt.MapFrom(s => Enum.Parse<OccasionType>(s.Occasion, true)))
+                .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season, true)));
 
             CreateMap<CreateOutfitItemDto, OutfitItem>()
-                .ForMember(d => d.Role, opt => opt.MapFrom(s => Enum.Parse<ItemRole>(s.Role)));
+                .ForMember(d => d.Role, opt => opt.MapFrom(s => Enum.Parse<ItemRole>(s.Role, true)));
 
             CreateMap<UpdateOutfitDto, Outfit>()
                 .ForMember(d => d.Occasion, opt => opt.Condition((src, dest, srcMember) => srcMember != null))

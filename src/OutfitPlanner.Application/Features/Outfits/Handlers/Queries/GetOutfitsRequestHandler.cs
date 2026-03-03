@@ -9,7 +9,7 @@ using OutfitPlanner.Application.Exceptions;
 
 namespace OutfitPlanner.Application.Features.Outfits.Handlers.Queries;
 
-public class GetOutfitsRequestHandler : IRequestHandler<GetOutfitsRequest, List<OutfitListDto>>
+public class GetOutfitsRequestHandler : IRequestHandler<GetOutfitsRequest, List<OutfitDto>>
 {
     private readonly IOutfitRepository _outfitRepository;
     private readonly IMapper _mapper;
@@ -22,15 +22,15 @@ public class GetOutfitsRequestHandler : IRequestHandler<GetOutfitsRequest, List<
         _logger = logger;
     }
 
-    public async Task<List<OutfitListDto>> Handle(GetOutfitsRequest request, CancellationToken cancellationToken)
+    public async Task<List<OutfitDto>> Handle(GetOutfitsRequest request, CancellationToken cancellationToken)
     {
         try{
             var outfits=await _outfitRepository.GetByUserIdAsync(request.UserId);
             if(outfits==null){
                 _logger.LogInformation("No outfits found for user with ID {UserId}", request.UserId);
-                return new List<OutfitListDto>();
+                return new List<OutfitDto>();
             }
-            return _mapper.Map<List<OutfitListDto>>(outfits);
+            return _mapper.Map<List<OutfitDto>>(outfits);
 
         }
         catch (Exception ex)

@@ -1,0 +1,343 @@
+.outfit-detail-container {
+  padding: 40px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  color: var(--text-main);
+  background: var(--bg-primary);
+  z-index: 1;
+
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 48px;
+
+    .back-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      background: white;
+      border: 1px solid #f1f5f9;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &:hover {
+        color: var(--text-main);
+        background: #f8fafc;
+        transform: translateX(-4px);
+        border-color: var(--accent-pink);
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+
+      .action-btn {
+        border-radius: 12px;
+        height: 44px;
+        font-weight: 600;
+
+        &.edit-btn {
+          background: var(--accent-pink);
+          color: white;
+          padding: 0 24px;
+          letter-spacing: 0.3px;
+
+          mat-icon {
+            margin-right: 8px;
+            font-size: 18px;
+          }
+          &:hover {
+            filter: brightness(0.95);
+            transform: translateY(-2px);
+          }
+        }
+
+        &.wear-btn {
+          background: white;
+          color: var(--text-main);
+          border: 1px solid #f1f5f9;
+          &:hover {
+            background: #f8fafc;
+            color: var(--accent-pink);
+            border-color: var(--accent-pink);
+          }
+        }
+
+        &.delete-btn {
+          background: #fff5f5;
+          color: #ef4444;
+          border: 1px solid #fee2e2;
+          &:hover {
+            background: #fee2e2;
+          }
+        }
+      }
+    }
+  }
+
+  .detail-content {
+    .outfit-hero {
+      margin-bottom: 64px;
+      animation: fadeIn 0.6s ease-out;
+
+      .outfit-id {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--accent-pink);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+        display: block;
+        opacity: 0.8;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin: 0 0 24px;
+        letter-spacing: -1.5px;
+        color: var(--text-main);
+      }
+
+      .outfit-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 32px;
+
+        mat-chip-set {
+          .mat-mdc-chip {
+            --mdc-chip-container-shape: 10px;
+            background: #fcf1f3;
+            color: var(--accent-pink);
+            font-weight: 600;
+            border: 1px solid rgba(248, 180, 196, 0.3);
+
+            &.season-chip {
+              background: #f0fdf4;
+              color: #16a34a;
+              border-color: rgba(22, 163, 74, 0.2);
+            }
+          }
+        }
+
+        .wear-stats {
+          display: flex;
+          gap: 24px;
+          color: var(--text-muted);
+          font-weight: 500;
+
+          .stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+              color: var(--text-dim);
+            }
+          }
+        }
+      }
+    }
+
+    .items-section {
+      background: white;
+      padding: 40px;
+      border-radius: 32px;
+      border: 1px solid #f1f5f9;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 32px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f1f5f9;
+
+        h2 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin: 0;
+          color: var(--text-main);
+        }
+        .item-count {
+          color: var(--text-muted);
+          font-weight: 500;
+        }
+      }
+
+      .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 24px;
+
+        .premium-item-card {
+          background: #f8fafc;
+          border-radius: 24px;
+          overflow: hidden;
+          border: 1px solid #f1f5f9;
+          position: relative;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+          &:hover {
+            transform: translateY(-8px);
+            background: white;
+            border-color: var(--accent-pink);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+
+            .item-visual img {
+              transform: scale(1.08);
+            }
+            .item-overlay {
+              opacity: 1;
+            }
+          }
+
+          .item-visual {
+            height: 220px;
+            background: #edf2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              padding: 20px;
+              transition: transform 0.4s ease;
+            }
+
+            .item-overlay {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
+              opacity: 0;
+              transition: opacity 0.3s ease;
+              padding: 16px;
+              display: flex;
+              align-items: flex-end;
+
+              .role-badge {
+                font-size: 0.65rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding: 4px 10px;
+                border-radius: 6px;
+                background: white;
+                color: var(--text-main);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+                &.role-primary {
+                  background: var(--accent-pink);
+                  color: white;
+                }
+                &.role-secondary {
+                  background: var(--accent-dark);
+                  color: white;
+                }
+              }
+            }
+
+            mat-icon {
+              font-size: 48px;
+              width: 48px;
+              height: 48px;
+              color: var(--text-dim);
+              opacity: 0.3;
+            }
+          }
+
+          .item-details {
+            padding: 16px;
+            h3 {
+              margin: 0;
+              font-size: 1rem;
+              font-weight: 600;
+              color: var(--text-main);
+            }
+          }
+        }
+      }
+
+      .empty-items-state {
+        padding: 80px 0;
+        text-align: center;
+        background: #f8fafc;
+        border-radius: 32px;
+        border: 2px dashed #e2e8f0;
+
+        mat-icon {
+          font-size: 64px;
+          height: 64px;
+          width: 64px;
+          color: var(--text-dim);
+          margin-bottom: 20px;
+          opacity: 0.5;
+        }
+
+        p {
+          color: var(--text-muted);
+          font-size: 1.1rem;
+          margin-bottom: 24px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .outfit-detail-container {
+    padding: 24px 16px;
+    .detail-content .outfit-hero h1 {
+      font-size: 2.5rem;
+      letter-spacing: -1px;
+    }
+    .detail-header .header-actions .action-btn.edit-btn {
+      padding: 0 16px;
+      span {
+        display: none;
+      }
+    }
+    .detail-content .items-section {
+      padding: 24px;
+    }
+  }
+}

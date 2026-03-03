@@ -30,8 +30,8 @@ public class OutfitsController : ControllerBase
     /// Gets all outfits for the authenticated user
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(List<OutfitListDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<OutfitListDto>>> GetAll()
+    [ProducesResponseType(typeof(List<OutfitDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<OutfitDto>>> GetAll()
     {
         var userId = GetUserId();
         var outfits = await _mediator.Send(new GetOutfitsRequest { UserId = userId });
@@ -59,16 +59,16 @@ public class OutfitsController : ControllerBase
     /// Creates a new outfit
     /// </summary>
     [HttpPost]
-    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(OutfitDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] CreateOutfitDto request)
+    public async Task<ActionResult<OutfitDto>> Create([FromBody] CreateOutfitDto request)
     {
         var userId = GetUserId();
         var command = new CreateOutfitCommand { UserId = userId, Request = request };
         var response = await _mediator.Send(command);
 
-        if (!response.Success)
-            return BadRequest(response);
+        if (response == null)
+            return BadRequest("Failed to create outfit");
 
         _logger.LogInformation("User {UserId} created outfit {OutfitId}", userId, response.Id);
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
@@ -114,10 +114,10 @@ public class OutfitsController : ControllerBase
     /// Records a wear event for an outfit
     /// </summary>
     [HttpPost("{id:guid}/wear")]
-    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OutfitDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<BaseCommandResponse>> RecordWear(Guid id, [FromBody] RecordOutfitWearDto dto)
+    public async Task<ActionResult<OutfitDto>> RecordWear(Guid id, [FromBody] RecordOutfitWearDto dto)
     {
         var userId = GetUserId();
         var command = new RecordOutfitWearCommand 
@@ -130,8 +130,8 @@ public class OutfitsController : ControllerBase
         };
         var response = await _mediator.Send(command);
 
-        if (!response.Success)
-            return BadRequest(response);
+        if (response == null)
+            return BadRequest("Failed to record wear");
 
         return Ok(response);
     }

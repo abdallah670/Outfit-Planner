@@ -25,7 +25,7 @@ public class GetOutfitByIdRequestHandler : IRequestHandler<GetOutfitByIdRequest,
     public async Task<OutfitDto> Handle(GetOutfitByIdRequest request, CancellationToken cancellationToken)
     {
         try{
-            var outfit=await _outfitRepository.GetByIdAsync(request.Id);
+            var outfit=await _outfitRepository.GetWithItemsByIdAsync(request.Id);
             if(outfit==null){
                 _logger.LogInformation("Outfit with ID {Id} not found", request.Id);
                 throw new NotFoundException("Outfit", request.Id);
