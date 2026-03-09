@@ -2,18 +2,22 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OutfitPlanner.Application.Exceptions;
+using EntityValidationException = OutfitPlanner.Application.Exceptions.ValidationException;
 
 namespace OutfitPlanner.Application.Features.Outfits.Handlers.Commands;
 
 /// <summary>
-/// Handler for creating a new outfit with validation and item ownership checks.
+/// Handler for creating a new outfit with validation, item ownership checks,
+/// and pre-generation of outfit images.
 /// </summary>
 public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, OutfitDto>
 {
@@ -21,17 +25,26 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
     private readonly IMapper _mapper;
     private readonly IValidator<CreateOutfitCommand> _validator;
     private readonly ILogger<CreateOutfitCommandHandler> _logger;
+    private readonly IImageCombinationService _imageCombinationService;
+    private readonly IOutfitImageCacheService _imageCacheService;
+    private readonly OutfitImageCacheSettings _cacheSettings;
 
     public CreateOutfitCommandHandler(
         IUnitOfWork unitOfWork,
         IMapper mapper,
         IValidator<CreateOutfitCommand> validator,
-        ILogger<CreateOutfitCommandHandler> logger)
+        ILogger<CreateOutfitCommandHandler> logger,
+        IImageCombinationService imageCombinationService,
+        IOutfitImageCacheService imageCacheService,
+        IOptions<OutfitImageCacheSettings> cacheSettings)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _imageCombinationService = imageCombinationService ?? throw new ArgumentNullException(nameof(imageCombinationService));
+        _imageCacheService = imageCacheService ?? throw new ArgumentNullException(nameof(imageCacheService));
+        _cacheSettings = cacheSettings?.Value ?? new OutfitImageCacheSettings();
     }
 
     public async Task<OutfitDto> Handle(CreateOutfitCommand request, CancellationToken cancellationToken)
@@ -46,7 +59,7 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
             var validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
-                throw new ValidationException(validationResult);
+                throw new EntityValidationException(validationResult);
             }
 
             // Validate all clothing items exist and belong to the user (single database query)
@@ -77,6 +90,22 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
 
             // Fetch again with items to ensure return DTO is fully populated
             var savedOutfit = await _unitOfWork.Outfits.GetWithItemsByIdAsync(outfit.Id);
+
+            // Pre-generate outfit image if enabled and outfit has multiple items
+            if (_cacheSettings.EnablePreGeneration && savedOutfit.Items.Count > 1)
+            {
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await PreGenerateOutfitImageAsync(savedOutfit);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to pre-generate outfit image for outfit {OutfitId}", outfit.Id);
+                    }
+                }, cancellationToken);
+            }
 
             _logger.LogInformation(
                 "Created outfit {OutfitId} for user {UserId} with {ItemCount} items",
@@ -137,6 +166,54 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
                 string.Join(", ", missingIds));
 
             throw new BadRequestException("Some clothing items were not found or don't belong to you");
+        }
+    }
+
+    /// <summary>
+    /// Pre-generates and caches the outfit image in the background
+    /// </summary>
+    private async Task PreGenerateOutfitImageAsync(Outfit outfit)
+    {
+        try
+        {
+            _logger.LogInformation("Pre-generating outfit image for outfit {OutfitId}", outfit.Id);
+
+            // Get clothing items with their images
+            var itemsWithImages = outfit.Items
+                .Where(i => !string.IsNullOrEmpty(i.ClothingItem.ImageUrl))
+                .ToList();
+
+            if (itemsWithImages.Count < 2)
+            {
+                _logger.LogInformation("Outfit {OutfitId} has less than 2 items with images, skipping pre-generation", outfit.Id);
+                return;
+            }
+
+            // Extract URLs, types, and names
+            var imageUrls = itemsWithImages.Select(i => i.ClothingItem.ImageUrl).ToList();
+            var clothingTypes = itemsWithImages.Select(i => i.ClothingItem.Type).ToList();
+            var clothingNames = itemsWithImages.Select(i => i.ClothingItem.Name).ToList();
+
+            // Generate combined image
+            var combinedImage = await _imageCombinationService.CombineImagesFromPathsAsync(
+                imageUrls,
+                clothingTypes,
+                clothingNames);
+
+            if (combinedImage != null)
+            {
+                // Cache the generated image
+                await _imageCacheService.CacheImageAsync(outfit.Id, combinedImage);
+                _logger.LogInformation("Successfully pre-generated and cached outfit image for outfit {OutfitId}", outfit.Id);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to generate outfit image for outfit {OutfitId}", outfit.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error pre-generating outfit image for outfit {OutfitId}", outfit.Id);
         }
     }
 }
