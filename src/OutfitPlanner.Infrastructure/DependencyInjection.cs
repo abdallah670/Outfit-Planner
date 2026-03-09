@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Configuration;
+tusing Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Infrastructure.Configuration;
 using OutfitPlanner.Infrastructure.Services;
@@ -12,16 +13,27 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddPersistence(configuration);
-           var storageSettings = configuration.GetSection(ImageStorageSettings.SectionName)
+        
+        // Image Storage Settings
+        var storageSettings = configuration.GetSection(ImageStorageSettings.SectionName)
             .Get<ImageStorageSettings>() ?? new ImageStorageSettings();
-
         services.AddSingleton(storageSettings);
 
-        // Register image processing service
-        services.AddScoped<IImageProcessingService, ImageProcessingService>();
+        // Background Removal Settings
+        services.Configure<BackgroundRemovalSettings>(
+            configuration.GetSection(BackgroundRemovalSettings.SectionName));
+        
+        // Outfit Image Cache Settings
+        services.Configure<OutfitImageCacheSettings>(
+            configuration.GetSection(OutfitImageCacheSettings.SectionName));
 
-      
-            services.AddScoped<IImageStorageService, LocalFileStorageService>();
+        // Register image processing services
+        services.AddScoped<IImageProcessingService, ImageProcessingService>();
+        services.AddScoped<IBackgroundRemovalService, RemoveBgBackgroundRemovalService>();
+        services.AddScoped<IOutfitImageCacheService, OutfitImageCacheService>();
+
+        // Register storage service
+        services.AddScoped<IImageStorageService, LocalFileStorageService>();
 
         // Register Weather API services
         services.Configure<WeatherApiSettings>(

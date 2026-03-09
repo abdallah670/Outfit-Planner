@@ -3,10 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Responses;
+using OutfitPlanner.Application.Services;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -17,11 +19,22 @@ public class OutfitsController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<OutfitsController> _logger;
+    private readonly IImageCombinationService _imageService;
+    private readonly IOutfitImageCacheService _imageCacheService;
+    private readonly IWebHostEnvironment _environment;
 
-    public OutfitsController(IMediator mediator, ILogger<OutfitsController> logger)
+    public OutfitsController(
+        IMediator mediator, 
+        ILogger<OutfitsController> logger,
+        IImageCombinationService imageService,
+        IOutfitImageCacheService imageCacheService,
+        IWebHostEnvironment environment)
     {
         _mediator = mediator;
         _logger = logger;
+        _imageService = imageService;
+        _imageCacheService = imageCacheService;
+        _environment = environment;
     }
 
     private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -106,6 +119,9 @@ public class OutfitsController : ControllerBase
         if (!response.Success)
             return NotFound(response);
 
+        // Also delete cached image
+        await _imageCacheService.DeleteCachedImageAsync(id);
+
         _logger.LogInformation("User {UserId} deleted outfit {OutfitId}", userId, id);
         return NoContent();
     }
@@ -174,5 +190,68 @@ public class OutfitsController : ControllerBase
         };
         var suggestions = await _mediator.Send(query);
         return Ok(suggestions);
+    }
+
+    /// <summary>
+    /// Generates a combined image for an outfit using AI guide principles.
+    /// Returns cached image if available, otherwise generates and caches a new one.
+    /// </summary>
+    [HttpGet("{id:guid}/combined-image")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GetCombinedImage(Guid id)
+    {
+        try
+        {
+            // First, check if we have a cached image
+            var cachedImage = await _imageCacheService.GetCachedImageAsync(id);
+            if (cachedImage != null)
+            {
+                _logger.LogInformation("Returning cached image for outfit {OutfitId}", id);
+                return File(cachedImage, "image/jpeg", $"outfit-{id}.jpg");
+            }
+
+            var userId = GetUserId();
+            var outfit = await _mediator.Send(new GetOutfitByIdRequest { Id = id, UserId = userId });
+            
+            if (outfit == null || outfit.Items == null || !outfit.Items.Any())
+                return NotFound("Outfit not found or has no items");
+
+            // Get outfit items with their metadata
+            var itemsWithImages = outfit.Items
+                .Where(i => !string.IsNullOrEmpty(i.ClothingItemImageUrl))
+                .ToList();
+
+            if (!itemsWithImages.Any())
+                return NotFound("No images found for outfit items");
+
+            // Extract URLs, types, and names for smart combination
+            var imageUrls = itemsWithImages.Select(i => i.ClothingItemImageUrl!).ToList();
+            var clothingTypes = itemsWithImages.Select(i => i.ClothingItemType).ToList();
+            var clothingNames = itemsWithImages.Select(i => i.ClothingItemName).ToList();
+
+            // Combine images with smart layout using clothing types
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var combinedImage = await _imageService.CombineImagesAsync(
+                imageUrls, 
+                clothingTypes, 
+                clothingNames,
+                _environment.WebRootPath, 
+                baseUrl);
+            
+            if (combinedImage == null || combinedImage.Length == 0)
+                return StatusCode(500, "Failed to combine images - no valid images found");
+
+            // Cache the generated image for future requests
+            await _imageCacheService.CacheImageAsync(id, combinedImage);
+            _logger.LogInformation("Generated and cached image for outfit {OutfitId}", id);
+
+            return File(combinedImage, "image/jpeg", $"outfit-{id}.jpg");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating combined image for outfit {OutfitId}", id);
+            return StatusCode(500, $"Error generating combined image: {ex.Message}");
+        }
     }
 }

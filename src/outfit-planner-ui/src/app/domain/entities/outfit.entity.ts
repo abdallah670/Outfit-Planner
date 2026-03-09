@@ -21,9 +21,23 @@ export interface OutfitItem {
   clothingItemId: string;
   clothingItemName: string;
   clothingItemImageUrl: string;
+  clothingItemType: ClothingType;
+  clothingItemCategory: string;
   role: 'primary' | 'secondary' | 'accent';
   layeringOrder: number;
   isEssential: boolean;
+}
+
+export enum ClothingType {
+  Top = 'Top',
+  Bottom = 'Bottom',
+  Dress = 'Dress',
+  Outerwear = 'Outerwear',
+  Footwear = 'Footwear',
+  Accessory = 'Accessory',
+  Undergarment = 'Undergarment',
+  Swimwear = 'Swimwear',
+  Activewear = 'Activewear',
 }
 
 export interface WeatherCondition {
@@ -44,21 +58,22 @@ export interface OutfitFeedback {
 }
 
 export enum OccasionType {
-  Casual = 'casual',
-  BusinessCasual = 'business_casual',
-  Formal = 'formal',
-  Athletic = 'athletic',
-  Social = 'social',
-  Work = 'work',
-  Date = 'date',
-  Travel = 'travel',
+  Casual = 'Casual',
+  BusinessCasual = 'BusinessCasual',
+  Formal = 'Formal',
+  Athletic = 'Athletic',
+  Social = 'Social',
+  Work = 'Work',
+  Date = 'Date',
+  Travel = 'Travel',
 }
 
 export enum Season {
-  Spring = 'spring',
-  Summer = 'summer',
-  Autumn = 'autumn',
-  Winter = 'winter',
+  Spring = 'Spring',
+  Summer = 'Summer',
+  Autumn = 'Autumn',
+  Winter = 'Winter',
+  AllSeason = 'AllSeason',
 }
 
 export enum OutfitStatus {
