@@ -1,0 +1,126 @@
+<div class="notifications-page">
+  <div class="notifications-container">
+    <!-- Header -->
+    <header class="notifications-header">
+      <div class="header-left">
+        <h1 class="page-title">Notifications</h1>
+        <p class="page-subtitle" *ngIf="unreadCount > 0">
+          You have {{ unreadCount }} unread notification{{ unreadCount > 1 ? 's' : '' }}
+        </p>
+        <p class="page-subtitle" *ngIf="unreadCount === 0">All caught up!</p>
+      </div>
+      <button
+        mat-stroked-button
+        class="mark-all-btn"
+        (click)="markAllAsRead()"
+        *ngIf="unreadCount > 0"
+      >
+        Mark All as Read
+      </button>
+    </header>
+
+    <!-- Tabs -->
+    <mat-tab-group class="notifications-tabs" [(selectedIndex)]="activeTab">
+      <!-- All Tab -->
+      <mat-tab label="All">
+        <div class="tab-content">
+          <div class="notifications-list">
+            <article
+              class="notification-item"
+              *ngFor="let notification of filteredNotifications"
+              [class.unread]="!notification.isRead"
+              [routerLink]="notification.actionUrl"
+              (click)="markAsRead(notification.id)"
+            >
+              <div
+                class="notification-icon"
+                [style.background-color]="getTypeColor(notification.type) + '20'"
+              >
+                <mat-icon [style.color]="getTypeColor(notification.type)">
+                  {{ getTypeIcon(notification.type) }}
+                </mat-icon>
+              </div>
+
+              <div class="notification-content">
+                <div class="notification-header">
+                  <h3 class="notification-title">{{ notification.title }}</h3>
+                  <span class="notification-time">{{
+                    formatTimestamp(notification.timestamp)
+                  }}</span>
+                </div>
+                <p class="notification-message">{{ notification.message }}</p>
+              </div>
+
+              <button
+                class="delete-btn"
+                (click)="deleteNotification(notification.id); $event.stopPropagation()"
+                aria-label="Delete notification"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <div class="unread-indicator" *ngIf="!notification.isRead"></div>
+            </article>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="filteredNotifications.length === 0">
+            <div class="empty-icon">🔔</div>
+            <h3>No Notifications</h3>
+            <p>You're all caught up!</p>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Unread Tab -->
+      <mat-tab label="Unread">
+        <div class="tab-content">
+          <div class="notifications-list">
+            <article
+              class="notification-item unread"
+              *ngFor="let notification of filteredNotifications"
+              [routerLink]="notification.actionUrl"
+              (click)="markAsRead(notification.id)"
+            >
+              <div
+                class="notification-icon"
+                [style.background-color]="getTypeColor(notification.type) + '20'"
+              >
+                <mat-icon [style.color]="getTypeColor(notification.type)">
+                  {{ getTypeIcon(notification.type) }}
+                </mat-icon>
+              </div>
+
+              <div class="notification-content">
+                <div class="notification-header">
+                  <h3 class="notification-title">{{ notification.title }}</h3>
+                  <span class="notification-time">{{
+                    formatTimestamp(notification.timestamp)
+                  }}</span>
+                </div>
+                <p class="notification-message">{{ notification.message }}</p>
+              </div>
+
+              <button
+                class="delete-btn"
+                (click)="deleteNotification(notification.id); $event.stopPropagation()"
+                aria-label="Delete notification"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <div class="unread-indicator"></div>
+            </article>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="filteredNotifications.length === 0">
+            <div class="empty-icon">✅</div>
+            <h3>No Unread Notifications</h3>
+            <p>You're all caught up!</p>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

@@ -34,8 +34,21 @@ public class DeleteOutfitCommandHandler : IRequestHandler<DeleteOutfitCommand, B
             };
           }
           
-          await _unitOfWork.Outfits.RemoveAsync(outfit);
-          await _unitOfWork.SaveChangesAsync(cancellationToken);
+           // Delete related records that might block deletion (FK constraints)
+           var wearEvents = await _unitOfWork.WearEvents.FindAsync(w => w.OutfitId == request.Id);
+           if (wearEvents.Any())
+           {
+               await _unitOfWork.WearEvents.RemoveRangeAsync(wearEvents);
+           }
+
+           var feedbacks = await _unitOfWork.OutfitFeedbacks.FindAsync(f => f.OutfitId == request.Id);
+           if (feedbacks.Any())
+           {
+               await _unitOfWork.OutfitFeedbacks.RemoveRangeAsync(feedbacks);
+           }
+           
+           await _unitOfWork.Outfits.RemoveAsync(outfit);
+           await _unitOfWork.SaveChangesAsync(cancellationToken);
           return new BaseCommandResponse{
             Success=true,
             Message="Outfit deleted successfully"

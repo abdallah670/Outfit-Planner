@@ -1,6 +1,13 @@
 <mat-card class="outfit-card" [routerLink]="['/outfits', outfit.id]">
   <div class="outfit-visual">
+    <!-- Combined Image View -->
+    <div *ngIf="showCombinedView && combinedImageUrl" class="combined-view">
+      <img [src]="combinedImageUrl" [alt]="outfit.name" />
+    </div>
+    
+    <!-- Separate Items Grid View -->
     <div
+      *ngIf="!showCombinedView || !combinedImageUrl"
       class="items-grid"
       [class.single]="outfit.items.length === 1"
       [class.multiple]="outfit.items.length > 1"
@@ -21,7 +28,39 @@
         </div>
       </ng-template>
     </div>
+    
+    <!-- Loading State -->
+    <div *ngIf="isGenerating" class="loading-overlay">
+      <mat-icon class="spinning">sync</mat-icon>
+      <span>Generating...</span>
+    </div>
+    
     <div class="occasion-badge">{{ occasionEmoji }}</div>
+    
+    <!-- View Toggle Button -->
+    <button 
+      mat-mini-fab 
+      class="view-toggle-btn"
+      color="primary"
+      (click)="toggleView($event)"
+      [matTooltip]="showCombinedView ? 'Show separate items' : 'Show combined view'"
+    >
+      <mat-icon *ngIf="showCombinedView">grid_view</mat-icon>
+      <mat-icon *ngIf="!showCombinedView">combine</mat-icon>
+    </button>
+    
+    <!-- Download Button -->
+    <button 
+      mat-mini-fab 
+      class="download-btn"
+      color="primary"
+      (click)="downloadCombinedImage($event)"
+      [disabled]="isGenerating"
+      [matTooltip]="isGenerating ? 'Generating...' : 'Download combined image'"
+    >
+      <mat-icon *ngIf="!isGenerating">download</mat-icon>
+      <mat-icon *ngIf="isGenerating" class="spinning">sync</mat-icon>
+    </button>
   </div>
 
   <div class="outfit-info">

@@ -32,6 +32,17 @@
     <aside class="wardrobe-aside">
       <div class="aside-header">
         <h2>My Wardrobe</h2>
+        <button class="upload-btn" (click)="triggerFileUpload()" title="Upload Custom Image">
+          <mat-icon>add_photo_alternate</mat-icon>
+          Upload
+        </button>
+        <input
+          type="file"
+          #fileInput
+          accept="image/*"
+          style="display: none"
+          (change)="onFileSelected($event)"
+        />
       </div>
 
       <div class="wardrobe-scroll" *ngIf="wardrobeItems$ | async as allItems">

@@ -16,6 +16,7 @@ import {
 } from '../../../core/state/outfit/outfit.selectors';
 import { OutfitState } from '../../../core/state/outfit/outfit.reducer';
 import { Outfit } from '../../../domain/entities/outfit.entity';
+import { OutfitCanvasService } from '../../../core/services/outfit-canvas.service';
 
 @Component({
   selector: 'app-outfit-detail',
@@ -35,14 +36,37 @@ export class OutfitDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private store = inject(Store<{ outfit: OutfitState }>);
+  private canvasService = inject(OutfitCanvasService);
 
   outfit$: Observable<Outfit | null> = this.store.select(selectSelectedItem);
   loading$: Observable<boolean> = this.store.select(selectOutfitLoading);
+  
+  combinedImageUrl: string | null = null;
+  isGeneratingCombined = false;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.store.dispatch(OutfitsActions.loadOutfitById({ id }));
+    }
+  }
+  
+  async generateCombinedImage(items: any[]): Promise<void> {
+    if (!items || items.length === 0 || this.combinedImageUrl) return;
+    
+    this.isGeneratingCombined = true;
+    try {
+      this.combinedImageUrl = await this.canvasService.combineOutfitImages(items);
+    } catch (error) {
+      console.error('Failed to generate combined image:', error);
+    } finally {
+      this.isGeneratingCombined = false;
+    }
+  }
+  
+  downloadCombinedImage(): void {
+    if (this.combinedImageUrl) {
+      this.canvasService.downloadCombinedImage(this.combinedImageUrl, 'outfit-detail');
     }
   }
 

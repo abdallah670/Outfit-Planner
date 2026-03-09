@@ -1,71 +1,129 @@
+<!-- Login Page - Email/Password + Social Login -->
 <div class="auth-container">
-  <!-- Clean Light Background -->
-
-  <div class="glass-card">
-    <div class="glass-header">
-      <div class="logo-container">
-        <div class="logo-icon">👕</div>
-      </div>
-      <h2>Welcome Back</h2>
-      <p>Log in to your account</p>
+  <!-- Left Side - Hero Image Section -->
+  <div class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Outfit Planner</h1>
+      <p class="hero-subtitle">Organize your wardrobe, plan your style, and look your best every day.</p>
     </div>
+  </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
-      <div
-        class="input-group"
-        [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-      >
-        <label for="email">Email</label>
-        <div class="input-wrapper">
-          <span class="icon">✉️</span>
-          <input
-            type="email"
-            id="email"
-            formControlName="email"
-            placeholder="style@planner.com"
-            autocomplete="email"
-          />
+  <!-- Right Side - Login Form Section -->
+  <div class="form-section">
+    <div class="form-container">
+      <!-- Logo -->
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+          </svg>
         </div>
-        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-          <span class="error-msg">Please enter a valid email</span>
-        }
+        <span class="logo-text">Outfit Planner</span>
       </div>
 
-      <div
-        class="input-group"
-        [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-      >
-        <label for="password">Password</label>
-        <div class="input-wrapper">
-          <span class="icon">🔒</span>
-          <input
-            type="password"
-            id="password"
-            formControlName="password"
-            placeholder="••••••••"
-            autocomplete="current-password"
-          />
+      <!-- Welcome Text -->
+      <h2 class="welcome-title">Welcome Back!</h2>
+      <p class="welcome-subtitle">Please enter your details to sign in.</p>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input type="email" id="email" formControlName="email" placeholder="sarah@example.com">
+          </div>
         </div>
-        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-          <span class="error-msg">Password is required (min 6 chars)</span>
-        }
-      </div>
 
-      <div class="form-actions">
-        <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
-      </div>
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input [type]="showPassword() ? 'text' : 'password'" id="password" formControlName="password" placeholder="••••••••••••">
+            <button type="button" class="toggle-password" (click)="togglePassword()">
+              <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                @if (showPassword()) {
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                } @else {
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                }
+              </svg>
+            </button>
+          </div>
+        </div>
 
-      <button type="submit" class="auth-btn" [disabled]="isLoading()">
-        @if (isLoading()) {
-          <span class="loader"></span>
-        } @else {
-          Login
-        }
-      </button>
+        <!-- Remember Me & Forgot Password -->
+        <div class="form-options">
+          <label class="checkbox-wrapper">
+            <input type="checkbox" checked>
+            <span class="checkmark">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+            <span class="checkbox-label">Remember me</span>
+          </label>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
 
-      <div class="auth-footer">
-        <p>New here? <a routerLink="/register">Create an account</a></p>
-      </div>
-    </form>
+        <!-- Sign In Button -->
+        <button type="submit" class="sign-in-btn" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="loader"></span>
+          } @else {
+            Sign In
+          }
+        </button>
+
+        <!-- Divider -->
+        <div class="divider">
+          <span>OR CONTINUE WITH</span>
+        </div>
+
+        <!-- Social Login -->
+        <div class="social-login">
+          <button type="button" class="social-btn" (click)="loginWithGoogle()" title="Google">
+            <svg viewBox="0 0 24 24" class="social-icon">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+          </button>
+          <button type="button" class="social-btn" (click)="loginWithInstagram()" title="Instagram">
+            <svg viewBox="0 0 24 24" class="social-icon">
+              <defs>
+                <linearGradient id="ig-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#f58529"/>
+                  <stop offset="50%" style="stop-color:#dd2a7b"/>
+                  <stop offset="100%" style="stop-color:#8134af"/>
+                </linearGradient>
+              </defs>
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="url(#ig-gradient)" stroke-width="2"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="none" stroke="url(#ig-gradient)" stroke-width="2"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="url(#ig-gradient)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="social-btn" (click)="loginWithFacebook()" title="Facebook">
+            <svg viewBox="0 0 24 24" class="social-icon facebook">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sign Up Link -->
+        <p class="sign-up-text">
+          Don't have an account? <a href="#" class="sign-up-link">Sign Up</a>
+        </p>
+      </form>
+    </div>
   </div>
 </div>

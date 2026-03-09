@@ -9,9 +9,12 @@ namespace OutfitPlanner.Api.Middleware{
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        public ExceptionMiddleware(RequestDelegate next)
+        private readonly ILogger<ExceptionMiddleware> _logger;
+        private  ErrorDetails errorDetails;
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
         public async Task InvokeAsync(HttpContext httpContext)
         {
@@ -46,6 +49,13 @@ namespace OutfitPlanner.Api.Middleware{
                 case NotFoundException notFoundException:
                     statusCode = HttpStatusCode.NotFound;
                     break;
+                // case DbUpdateConcurrencyException concurrencyEx:
+                //     statusCode = HttpStatusCode.Conflict;
+                //     errorDetails.ErrorType = "ConcurrencyError";
+                //     errorDetails.ErrorMessage = "The data you are trying to update has been modified or deleted by another user. Please refresh and try again.";
+                //     result = JsonSerializer.Serialize(errorDetails);
+                //     _logger.LogWarning(concurrencyEx, "Concurrency conflict detected during update.");
+                //     break;
                 default:
                     break;
             }

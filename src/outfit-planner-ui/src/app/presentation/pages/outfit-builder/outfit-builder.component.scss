@@ -235,11 +235,41 @@
 
     .aside-header {
       padding: 24px 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
       h2 {
         margin: 0;
         font-size: 1.1rem;
         font-weight: 700;
         color: #1e293b;
+      }
+
+      .upload-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+        background: linear-gradient(135deg, #ec4899, #db2777);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
       }
     }
 
