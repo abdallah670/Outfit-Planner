@@ -1,0 +1,539 @@
+/* Social Page - Exact Design Match */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.social-page {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  background-color: #f5f3f0;
+  position: relative;
+  z-index: 100;
+}
+
+.social-page .app {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Header */
+.social-page .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.social-page .page-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.social-page .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.social-page .notification-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #1a1a2e;
+}
+
+.social-page .bell-icon {
+  width: 18px;
+  height: 18px;
+  color: #e74c3c;
+  font-size: 18px;
+}
+
+/* Main Content Grid */
+.social-page .main-content {
+  display: grid;
+  grid-template-columns: 280px 1fr 300px;
+  gap: 1.5rem;
+}
+
+/* Section Headers */
+.social-page .section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.social-page .section-header h2,
+.social-page .section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 1rem 0;
+}
+
+.social-page .badge {
+  background-color: #e74c3c;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* Community Feed */
+.social-page .community-feed {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+}
+
+.social-page .feed-subtitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+}
+
+.social-page .outfit-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.social-page .outfit-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.social-page .outfit-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.social-page .outfit-images img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.social-page .outfit-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.social-page .user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.social-page .likes {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.social-page .heart-icon {
+  width: 14px;
+  height: 14px;
+  color: #e891a3;
+  font-size: 14px;
+}
+
+/* Active Polls */
+.social-page .active-polls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.social-page .poll-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.social-page .poll-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.social-page .poll-title-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+  margin-top: 0;
+}
+
+.social-page .poll-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.social-page .countdown {
+  text-align: right;
+}
+
+.social-page .countdown-time {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 1px;
+}
+
+.social-page .countdown-label {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-left: 0.5rem;
+}
+
+/* Poll Options */
+.social-page .poll-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.social-page .poll-option {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.social-page .option-label {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: 28px;
+  height: 28px;
+  background-color: #1a1a2e;
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 1;
+}
+
+.social-page .option-image {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+
+.social-page .option-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.social-page .vote-btn {
+  width: calc(100% - 1rem);
+  margin: 0.5rem;
+  padding: 0.625rem;
+  background: linear-gradient(135deg, #f4a6b8 0%, #e891a3 100%);
+  border: none;
+  border-radius: 8px;
+  color: #1a1a2e;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.social-page .vote-btn:hover {
+  transform: translateY(-1px);
+}
+
+.social-page .vote-text {
+  font-weight: 600;
+}
+
+.social-page .click-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.social-page .vote-count {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+  padding-bottom: 0.75rem;
+  margin: 0;
+}
+
+/* Community Feedback */
+.social-page .feedback-section {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+}
+
+.social-page .feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.social-page .feedback-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.social-page .new-comments-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background-color: #fee2e2;
+  color: #e74c3c;
+  padding: 0.375rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.social-page .comment-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.social-page .comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.social-page .comment {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.social-page .comment-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.social-page .comment-content {
+  flex: 1;
+}
+
+.social-page .comment-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.social-page .comment-author {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1a1a2e;
+}
+
+.social-page .comment-time {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.social-page .comment-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Results & Share */
+.social-page .results-share {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.social-page .results-card,
+.social-page .share-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+}
+
+.social-page .results-card h3,
+.social-page .share-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.social-page .result-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.social-page .result-bar {
+  position: relative;
+  height: 28px;
+  background-color: #f5f3f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.social-page .bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #8fb996;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.social-page .bar-label {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+/* Share Card */
+.social-page .share-subtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.social-page .link-box {
+  background-color: #f5f3f0;
+  padding: 0.625rem 0.875rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #1a1a2e;
+  margin-bottom: 0.75rem;
+  word-break: break-all;
+}
+
+.social-page .copy-btn {
+  width: 100%;
+  padding: 0.625rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1a1a2e;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.social-page .copy-btn:hover {
+  background-color: #f5f3f0;
+}
+
+.social-page .qr-code {
+  margin-top: 1.25rem;
+  text-align: center;
+}
+
+.social-page .qr-code img {
+  width: 140px;
+  height: 140px;
+  margin-bottom: 0.5rem;
+}
+
+.social-page .qr-code p {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .social-page .main-content {
+    grid-template-columns: 240px 1fr 260px;
+  }
+}
+
+@media (max-width: 992px) {
+  .social-page .main-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .social-page .community-feed,
+  .social-page .results-share {
+    order: 2;
+  }
+  
+  .social-page .active-polls {
+    order: 1;
+  }
+  
+  .social-page .poll-options {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .social-page .poll-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .social-page .poll-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .social-page .countdown {
+    text-align: left;
+  }
+}

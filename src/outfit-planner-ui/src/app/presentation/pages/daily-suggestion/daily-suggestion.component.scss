@@ -1,158 +1,509 @@
+// ============================================
+// Daily Suggestion Page Styles
+// Matching Design/dailysuggestion.html
+// ============================================
+
+// Design Tokens
+$color-background: #fff9fb;
+$color-foreground: #1f2937;
+$color-border: #00000014;
+$color-input: #ffffff;
+$color-primary: #ff6fa8;
+$color-primary-foreground: #ffffff;
+$color-secondary: #fff0f6;
+$color-secondary-foreground: #7b2a4a;
+$color-muted: #f3f4f6;
+$color-muted-foreground: #9ca3af;
+$color-success: #10b981;
+$color-accent: #ffd6e8;
+$color-accent-foreground: #7b2a4a;
+$color-destructive: #ef4444;
+$color-card: #ffffff;
+$color-card-foreground: #111827;
+
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+$radius-xl: 12px;
+
+// ============================================
+// Base Layout
+// ============================================
 .daily-suggestion-page {
-  padding: 32px 24px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(147, 51, 234, 0.08) 0%, transparent 40%);
+  background-color: $color-background;
+  padding: 32px 40px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
 
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 48px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
 
-    .header-text {
-      h1 {
-        margin: 0;
-        font-size: 3rem;
-        font-weight: 900;
-        background: linear-gradient(135deg, #f8fafc 0%, #64748b 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -1.5px;
-      }
-      p {
-        margin: 8px 0 0;
-        font-size: 1.25rem;
-        color: #94a3b8;
-      }
-    }
+// ============================================
+// Header
+// ============================================
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 24px;
+  border-bottom: 1px solid $color-border;
+  margin-bottom: 32px;
+}
 
-    .date-badge {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 12px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      backdrop-filter: blur(8px);
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 20px;
+  color: $color-primary;
+}
 
-      .day {
-        font-size: 1.5rem;
-        font-weight: 800;
-        line-height: 1;
-      }
-      .month {
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: #3b82f6;
-      }
-    }
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #db2777, #be185d);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: $color-foreground;
+}
+
+.date-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: $color-muted-foreground;
+}
+
+// ============================================
+// Page Date Title
+// ============================================
+.page-date-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 32px 0;
+  color: $color-foreground;
+}
+
+// ============================================
+// Hero Grid
+// ============================================
+.hero-grid {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+// ============================================
+// Outfit Card (Left)
+// ============================================
+.outfit-card {
+  background-color: $color-card;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.outfit-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  background-color: $color-muted;
+}
+
+.outfit-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pick-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background-color: $color-primary;
+  color: $color-primary-foreground;
+  padding: 6px 12px;
+  border-radius: $radius-xl;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.outfit-details {
+  padding: 20px;
+}
+
+.outfit-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.match-score {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: $color-primary;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.primary-btn {
+  width: 100%;
+  height: 48px;
+  background-color: $color-primary;
+  color: $color-primary-foreground;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #e85a8f;
   }
+}
 
-  .suggestions-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    max-width: 800px;
+.secondary-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.secondary-btn {
+  flex: 1;
+  height: 40px;
+  background-color: transparent;
+  border: 1px solid $color-border;
+  color: $color-foreground;
+  border-radius: $radius-md;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: $color-muted;
+    border-color: $color-muted-foreground;
+  }
+}
+
+// ============================================
+// Context Column (Right)
+// ============================================
+.context-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-card {
+  background-color: $color-card;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reasoning-card {
+  flex: 1;
+}
+
+.weather-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.weather-icon-large {
+  width: 48px;
+  height: 48px;
+  color: #f59e0b;
+}
+
+.weather-text h3 {
+  margin: 0 0 4px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.weather-sub {
+  color: $color-muted-foreground;
+  font-size: 14px;
+}
+
+.weather-note {
+  background-color: $color-secondary;
+  color: $color-secondary-foreground;
+  padding: 8px 12px;
+  border-radius: $radius-md;
+  font-size: 14px;
+  font-weight: 500;
+  align-self: flex-start;
+}
+
+.events-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-muted-foreground;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  background-color: $color-muted;
+  border-radius: $radius-md;
+}
+
+.event-time {
+  font-weight: 600;
+  font-size: 14px;
+  color: $color-foreground;
+  min-width: 70px;
+}
+
+.event-name {
+  font-size: 14px;
+  color: $color-foreground;
+}
+
+.reasons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reason-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 15px;
+  color: $color-foreground;
+}
+
+.check-icon {
+  color: $color-primary;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+// ============================================
+// Alternatives Section
+// ============================================
+.alternatives-section {
+  margin-top: 48px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.swipe-hint {
+  font-size: 14px;
+  color: $color-muted-foreground;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cards-scroller {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.alt-card {
+  background-color: $color-card;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border-color: $color-primary;
+  }
+}
+
+.alt-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.alt-info {
+  padding: 16px;
+}
+
+.alt-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+
+.alt-meta {
+  font-size: 13px;
+  color: $color-muted-foreground;
+  margin-bottom: 12px;
+}
+
+.match-bar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.match-bar {
+  height: 4px;
+  background-color: $color-muted;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.match-fill {
+  height: 100%;
+  background-color: $color-primary;
+}
+
+// ============================================
+// Tomorrow Banner
+// ============================================
+.tomorrow-banner {
+  margin-top: 48px;
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: $radius-lg;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tomorrow-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tomorrow-title {
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 2px;
+}
+
+.tomorrow-sub {
+  font-size: 14px;
+  color: #60a5fa;
+}
+
+.tomorrow-btn {
+  background-color: #fff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+  padding: 8px 16px;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f0f9ff;
+  }
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .outfit-card {
+    max-width: 400px;
     margin: 0 auto;
-
-    .suggestion-card-wrapper {
-      display: flex;
-      gap: 32px;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 24px;
-      padding: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.04);
-        border-color: rgba(59, 130, 246, 0.2);
-        transform: scale(1.01);
-      }
-
-      app-outfit-card {
-        flex: 1;
-        max-width: 320px;
-      }
-
-      .suggestion-actions {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-
-        button {
-          height: 56px;
-          border-radius: 16px;
-          font-weight: 600;
-          font-size: 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-
-          mat-icon {
-            font-size: 24px;
-            width: 24px;
-            height: 24px;
-          }
-        }
-      }
-    }
-
-    .no-suggestions {
-      text-align: center;
-      padding: 80px 0;
-      color: #64748b;
-
-      mat-icon {
-        font-size: 64px;
-        width: 64px;
-        height: 64px;
-        margin-bottom: 24px;
-        color: rgba(255, 255, 255, 0.1);
-      }
-      h3 {
-        font-size: 1.5rem;
-        color: #cbd5e1;
-        margin-bottom: 12px;
-      }
-    }
-  }
-
-  .loading-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    gap: 24px;
-    color: #94a3b8;
   }
 }
 
 @media (max-width: 768px) {
   .daily-suggestion-page {
     padding: 16px;
+  }
+  
+  .page-date-title {
+    font-size: 22px;
+  }
+  
+  .cards-scroller {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tomorrow-banner {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .tomorrow-info {
+    flex-direction: column;
+  }
+}
 
-    .page-header .header-text h1 {
-      font-size: 2.25rem;
-    }
-
-    .suggestions-grid .suggestion-card-wrapper {
-      flex-direction: column;
-      app-outfit-card {
-        max-width: 100%;
-        width: 100%;
-      }
-      .suggestion-actions {
-        width: 100%;
-      }
-    }
+@media (max-width: 480px) {
+  .cards-scroller {
+    grid-template-columns: 1fr;
   }
 }

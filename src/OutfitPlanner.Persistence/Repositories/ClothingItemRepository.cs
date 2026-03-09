@@ -26,4 +26,10 @@ public class ClothingItemRepository : GenericRepository<ClothingItem>, IClothing
             .Include(i => i.Tags)
             .ToListAsync();
     }
+    // Delete is a hard delete,deletion is permanent and removes the record from the database. The method is asynchronous and returns a Task, indicating that it can be awaited.
+    public async Task Delete(ClothingItem item)
+    {
+        _dbSet.Remove(item);
+        await _context.SaveChangesAsync();
+    }
 }

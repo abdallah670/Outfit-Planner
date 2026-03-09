@@ -79,18 +79,24 @@ export class AuthService{
       this.cookieService.set('refreshToken', response.refreshToken, 7, '/');
     }
 
+    console.log('[AuthService] Token stored in cookies:', response.token.substring(0, 20) + '...');
+    console.log('[AuthService] Refresh token stored:', response.refreshToken ? 'Yes' : 'No');
+
     this.currentUser.set({
       id: response.id,
       userName: response.userName,
       email: response.email,
     });
     this.isAuthenticated.set(true);
+    console.log('[AuthService] isAuthenticated set to:', this.isAuthenticated());
   }
 
   private checkAuthStatus(): void {
     const token = this.cookieService.get('token');
+    console.log('[AuthService] checkAuthStatus - Token found:', !!token);
     if (token) {
       this.isAuthenticated.set(true);
+      console.log('[AuthService] Restored auth state from cookies');
       // Optional: Logic to fetch user profile using the token
     }
   }

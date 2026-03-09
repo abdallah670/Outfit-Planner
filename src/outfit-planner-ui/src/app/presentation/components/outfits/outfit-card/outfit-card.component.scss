@@ -26,6 +26,42 @@
     background: #f8fafc;
     overflow: hidden;
 
+    .combined-view {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+    
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #6366f1;
+      font-size: 14px;
+      font-weight: 500;
+      
+      mat-icon.spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+
     .items-grid {
       display: grid;
       height: 100%;
@@ -91,6 +127,50 @@
       justify-content: center;
       font-size: 18px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .download-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      background: rgba(99, 102, 241, 0.9) !important;
+      
+      mat-icon {
+        color: white;
+      }
+      
+      &:disabled {
+        background: rgba(148, 163, 184, 0.9) !important;
+      }
+      
+      .spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+    
+    .view-toggle-btn {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      background: rgba(34, 197, 94, 0.9) !important;
+      
+      mat-icon {
+        color: white;
+      }
+    }
+    
+    &:hover .download-btn,
+    &:hover .view-toggle-btn {
+      opacity: 1;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   }
 

@@ -1,0 +1,168 @@
+<div class="create-poll-page">
+  <header class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="onCancel()" aria-label="Go back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>Create New Poll</h1>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button color="primary" routerLink="/social">
+        <mat-icon>how_to_vote</mat-icon>
+        Validation
+      </button>
+      <button mat-stroked-button color="accent" routerLink="/social/feed">
+        <mat-icon>groups</mat-icon>
+        Community Feed
+      </button>
+    </div>
+  </header>
+
+  <form [formGroup]="pollForm" (ngSubmit)="onSubmit()" class="poll-form">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Poll Details</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Question -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Question</mat-label>
+          <textarea
+            matInput
+            formControlName="question"
+            placeholder="Ask your question... (e.g., Which outfit looks better for a date?)"
+            rows="3">
+          </textarea>
+          <mat-hint align="end">{{ pollForm.get('question')?.value?.length || 0 }}/500</mat-hint>
+          <mat-error *ngIf="pollForm.get('question')?.hasError('required')">
+            Question is required
+          </mat-error>
+          <mat-error *ngIf="pollForm.get('question')?.hasError('minlength')">
+            Question must be at least 3 characters
+          </mat-error>
+          <mat-error *ngIf="pollForm.get('question')?.hasError('maxlength')">
+            Question cannot exceed 500 characters
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Context -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Context (Optional)</mat-label>
+          <textarea
+            matInput
+            formControlName="context"
+            placeholder="Add any additional context..."
+            rows="2">
+          </textarea>
+        </mat-form-field>
+
+        <!-- Expiry Date -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Expires At</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="expiresAt"
+            [min]="minDate"
+            placeholder="Choose an expiry date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="pollForm.get('expiresAt')?.hasError('required')">
+            Expiry date is required
+          </mat-error>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-divider></mat-divider>
+
+    <!-- Options Section -->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Poll Options</mat-card-title>
+        <mat-card-subtitle>
+          Add {{ minOptions }} to {{ maxOptions }} options for people to vote on
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div formArrayName="options" class="options-list">
+          <div
+            *ngFor="let option of options.controls; let i = index"
+            [formGroupName]="i"
+            class="option-item">
+            <div class="option-header">
+              <span class="option-letter">{{ getOptionLetter(i) }}</span>
+              <button
+                *ngIf="canRemoveOption()"
+                mat-icon-button
+                color="warn"
+                type="button"
+                (click)="removeOption(i)"
+                aria-label="Remove option">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <input
+                matInput
+                formControlName="description"
+                [placeholder]="'Describe option ' + getOptionLetter(i)">
+              <mat-error *ngIf="option.get('description')?.hasError('required')">
+                Description is required
+              </mat-error>
+              <mat-error *ngIf="option.get('description')?.hasError('maxlength')">
+                Description cannot exceed 200 characters
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Optional: Outfit Picker -->
+            <div class="outfit-picker-section">
+              <button
+                mat-stroked-button
+                type="button"
+                color="primary"
+                disabled>
+                <mat-icon>checkroom</mat-icon>
+                Select Outfit (Coming Soon)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Option Button -->
+        <button
+          *ngIf="canAddOption()"
+          mat-stroked-button
+          type="button"
+          color="primary"
+          (click)="addOption()"
+          class="add-option-btn">
+          <mat-icon>add</mat-icon>
+          Add Option ({{ options.length }}/{{ maxOptions }})
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="onCancel()">
+        Cancel
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="pollForm.invalid">
+        <mat-icon>how_to_vote</mat-icon>
+        Create Poll
+      </button>
+    </div>
+  </form>
+</div>

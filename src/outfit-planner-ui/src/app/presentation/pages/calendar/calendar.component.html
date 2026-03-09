@@ -1,0 +1,201 @@
+<!-- Calendar Page - Matching Design/calender.html exactly -->
+<div class="calendar-page">
+  <div class="calendar-container">
+   
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Calendar Section -->
+      <section class="calendar-section" aria-label="Calendar">
+        <div class="calendar-controls">
+          <div class="month-title">
+            <button class="control-btn" (click)="previousMonth()" aria-label="Previous month">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+            <span>{{ currentMonth() }} {{ currentYear() }}</span>
+            <button class="control-btn" (click)="nextMonth()" aria-label="Next month">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="view-toggles">
+            <button class="view-toggle" [class.active]="currentView() === 'month'" (click)="setView('month')">Month</button>
+            <button class="view-toggle" [class.active]="currentView() === 'week'" (click)="setView('week')">Week</button>
+          </div>
+        </div>
+        
+        <!-- Calendar Grid -->
+        <div class="calendar-grid" role="grid" aria-label="Calendar dates">
+          <!-- Day Headers -->
+          <div class="day-header" *ngFor="let day of weekDays" role="columnheader">{{ day }}</div>
+          
+          <!-- Calendar Days -->
+          <div
+            class="calendar-day"
+            *ngFor="let day of calendarDays()"
+            [class.other-month]="!day.isCurrentMonth"
+            [class.today]="day.isToday"
+            [class.selected]="selectedDate() && isSameDate(day.date, selectedDate()!)"
+            (click)="selectDay(day)"
+            (keydown.enter)="selectDay(day)"
+            (keydown.space)="selectDay(day); $event.preventDefault()"
+            role="gridcell"
+            tabindex="0"
+            [attr.aria-label]="day.date | date: 'fullDate'"
+            [attr.aria-selected]="selectedDate() && isSameDate(day.date, selectedDate()!)"
+          >
+            <div class="day-number" [class.today]="day.isToday">{{ day.dayNumber }}</div>
+            
+            <!-- Weather Mini -->
+            <div class="weather-mini" *ngIf="day.weather && day.isCurrentMonth">
+              <span>{{ day.weather.icon }}</span> {{ day.weather.temp }}°
+            </div>
+            
+            <div class="day-content">
+              <!-- Outfit Pills -->
+              <div
+                class="outfit-pill"
+                *ngFor="let outfit of day.outfits.slice(0, 1)"
+                [class.worn]="outfit.worn"
+                [class.scheduled]="!outfit.worn"
+              >
+                <img
+                  *ngIf="outfit.imageUrl"
+                  [src]="outfit.imageUrl"
+                  class="pill-img"
+                  alt=""
+                />
+                <img
+                  *ngIf="!outfit.imageUrl"
+                  src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=150&auto=format&fit=crop"
+                  class="pill-img"
+                  alt=""
+                />
+                <span class="pill-text">{{ outfit.name }}</span>
+              </div>
+              
+              <!-- Event Dot -->
+              <div class="event-dot" *ngIf="day.outfits.length > 1">
+                • +{{ day.outfits.length - 1 }} more
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Sidebar Section -->
+      <aside class="sidebar-section" aria-label="Calendar details">
+        <!-- Selected Day Card -->
+        <div class="detail-card">
+          <div class="detail-header">
+            <div>
+              <h2 class="selected-date-large" *ngIf="selectedDate()">{{ selectedDate() | date: 'MMMM d' }}</h2>
+              <div class="selected-day-name" *ngIf="selectedDate()">{{ selectedDate() | date: 'EEEE' }}</div>
+            </div>
+            <button class="btn-outline" aria-label="More options">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Weather Widget -->
+          <div class="weather-widget" *ngIf="selectedDayWeather()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+            <div>
+              <div>{{ selectedDayWeather()!.condition }}</div>
+              <div class="weather-detail">High {{ selectedDayWeather()!.temp }}° • Low {{ selectedDayWeather()!.temp! - 6 }}°</div>
+            </div>
+          </div>
+          
+          <!-- Events List -->
+          <div class="events-list" *ngIf="selectedDayOutfits().length > 0 || true">
+            <div class="event-label">EVENTS</div>
+            <div class="event-item" *ngFor="let outfit of selectedDayOutfits()">
+              <div class="event-time">2:00 PM</div>
+              <div class="event-details">{{ outfit.name }}</div>
+            </div>
+            <div class="event-item" *ngIf="selectedDayOutfits().length === 0">
+              <div class="event-time">--:--</div>
+              <div class="event-details">No events</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Scheduled Outfit Card -->
+        <div class="detail-card">
+          <div class="detail-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span class="event-label">SCHEDULED OUTFIT</span>
+            <span style="color: #ff6fa8; cursor: pointer; font-size: 12px;">Change</span>
+          </div>
+          
+          <div class="outfit-preview-card" *ngIf="selectedDayOutfits().length > 0; else noOutfit">
+            <div class="preview-img-container">
+              <img
+                src="https://storage.googleapis.com/banani-generated-images/generated-images/4e3307e4-59bf-4d31-8dd1-514fe7c342f4.jpg"
+                class="preview-img"
+                alt="Scheduled Outfit"
+              />
+              <div class="status-badge scheduled">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+                Planned
+              </div>
+            </div>
+            
+            <div class="outfit-info">
+              <h3>{{ selectedDayOutfits()[0]?.name || 'Casual Outfit' }}</h3>
+              <div class="outfit-items">
+                <span class="item-chip">Blue Shirt</span>
+                <span class="item-chip">Dark Jeans</span>
+                <span class="item-chip">White Sneakers</span>
+              </div>
+            </div>
+            
+            <button class="action-btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              Log as Worn
+            </button>
+          </div>
+          
+          <ng-template #noOutfit>
+            <div class="empty-slot">
+              <p>No outfit scheduled</p>
+              <button class="action-btn btn-primary" routerLink="/outfits/build">
+                Schedule Outfit
+              </button>
+            </div>
+          </ng-template>
+        </div>
+        
+        <!-- History Stats -->
+        <div class="detail-card">
+          <div class="event-label">WEAR HISTORY</div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stat-value">12</span>
+              <span class="stat-label">Days tracked</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">85%</span>
+              <span class="stat-label">Adherence</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">3</span>
+              <span class="stat-label">New Outfits</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>

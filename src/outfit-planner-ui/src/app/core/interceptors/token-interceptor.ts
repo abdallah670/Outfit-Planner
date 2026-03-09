@@ -10,6 +10,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
   const token = cookieService.get('token');
+  console.log(`[TokenInterceptor] Request to ${req.url}: Token ${token ? 'found' : 'NOT FOUND'}`);
 
   // Clone the request and add the Bearer token
   let authReq = req;
@@ -19,6 +20,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log('[TokenInterceptor] Added Authorization header');
   }
 
   return next(authReq).pipe(

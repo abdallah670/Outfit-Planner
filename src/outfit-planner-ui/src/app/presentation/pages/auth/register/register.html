@@ -1,93 +1,145 @@
+<!-- Register Page - Matching Design/register.html -->
 <div class="auth-container">
-  <!-- Clean Light Background -->
-
-  <div class="glass-card">
-    <div class="glass-header">
-      <div class="logo-container">
-        <div class="logo-icon">👕</div>
-      </div>
-      <h2>Join the Club</h2>
-      <p>Create your new account</p>
+  <!-- Left Side - Hero Image Section -->
+  <div class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Outfit Planner</h1>
+      <p class="hero-subtitle">Organize your wardrobe, plan your style, and look your best every day.</p>
     </div>
+  </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
-      <div class="name-row">
-        <div class="input-group">
-          <label for="firstName">First Name</label>
-          <div class="input-wrapper">
-            <input type="text" id="firstName" formControlName="firstName" placeholder="Jane" />
+  <!-- Right Side - Sign Up Form Section -->
+  <div class="form-section">
+    <div class="form-container">
+      <!-- Logo -->
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+          </svg>
+        </div>
+        <span class="logo-text">Outfit Planner</span>
+      </div>
+
+      <!-- Welcome Text -->
+      <h2 class="welcome-title">Create an Account</h2>
+      <p class="welcome-subtitle">Please enter your details to sign up.</p>
+
+      <!-- Sign Up Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="signup-form">
+        <!-- Name Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstname">First Name</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <input type="text" id="firstname" formControlName="firstName" placeholder="Sarah">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="lastname">Last Name</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <input type="text" id="lastname" formControlName="lastName" placeholder="Johnson">
+            </div>
           </div>
         </div>
-        <div class="input-group">
-          <label for="lastName">Last Name</label>
+
+        <!-- Username Field -->
+        <div class="form-group">
+          <label for="username">Username</label>
           <div class="input-wrapper">
-            <input type="text" id="lastName" formControlName="lastName" placeholder="Doe" />
+            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 006 0v-1a10 10 0 10-3.92 7.94"/>
+            </svg>
+            <input type="text" id="username" formControlName="userName" placeholder="sarahj_style">
           </div>
         </div>
-      </div>
 
-      <div
-        class="input-group"
-        [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
-      >
-        <label for="email">Email</label>
-        <div class="input-wrapper">
-          <span class="icon">✉️</span>
-          <input type="email" id="email" formControlName="email" placeholder="jane@example.com" />
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input type="email" id="email" formControlName="email" placeholder="sarah@example.com">
+          </div>
         </div>
-        @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-          <span class="error-msg">Valid email is required</span>
-        }
-      </div>
 
-      <div
-        class="input-group"
-        [class.error]="
-          registerForm.get('userName')?.invalid && registerForm.get('userName')?.touched
-        "
-      >
-        <label for="userName">Username</label>
-        <div class="input-wrapper">
-          <span class="icon">👤</span>
-          <input
-            type="text"
-            id="userName"
-            formControlName="userName"
-            placeholder="fashionista_123"
-          />
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input type="password" id="password" formControlName="password" placeholder="••••••••••••">
+            <button type="button" class="toggle-password">
+              <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
         </div>
-        @if (registerForm.get('userName')?.invalid && registerForm.get('userName')?.touched) {
-          <span class="error-msg">Username required (min 6 chars)</span>
-        }
-      </div>
 
-      <div
-        class="input-group"
-        [class.error]="
-          registerForm.get('password')?.invalid && registerForm.get('password')?.touched
-        "
-      >
-        <label for="password">Password</label>
-        <div class="input-wrapper">
-          <span class="icon">🔒</span>
-          <input type="password" id="password" formControlName="password" placeholder="••••••••" />
+        <!-- Terms Checkbox -->
+        <div class="form-options">
+          <label class="checkbox-wrapper">
+            <input type="checkbox" checked>
+            <span class="checkmark">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+            <span class="checkbox-label">I agree to the <a href="#" class="link">Terms</a> and <a href="#" class="link">Privacy Policy</a></span>
+          </label>
         </div>
-        @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
-          <span class="error-msg">Min 6 characters required</span>
-        }
-      </div>
 
-      <button type="submit" class="auth-btn" [disabled]="isLoading()">
-        @if (isLoading()) {
-          <span class="loader"></span>
-        } @else {
-          Create Account
-        }
-      </button>
+        <!-- Sign Up Button -->
+        <button type="submit" class="sign-up-btn" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="loader"></span>
+          } @else {
+            Sign Up
+          }
+        </button>
 
-      <div class="auth-footer">
-        <p>Already have an account? <a routerLink="/login">Log in</a></p>
-      </div>
-    </form>
+        <!-- Divider -->
+        <div class="divider">
+          <span>OR CONTINUE WITH</span>
+        </div>
+
+        <!-- Social Login -->
+        <div class="social-login">
+          <button type="button" class="social-btn">
+            <svg viewBox="0 0 24 24" class="social-icon">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.37.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.9 1.24 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.22.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+          </button>
+          <button type="button" class="social-btn">
+            <svg viewBox="0 0 24 24" class="social-icon">
+              <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+            </svg>
+          </button>
+          <button type="button" class="social-btn">
+            <svg viewBox="0 0 24 24" class="social-icon facebook">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sign In Link -->
+        <p class="sign-in-text">
+          Already have an account? <a href="#" class="sign-in-link">Sign In</a>
+        </p>
+      </form>
+    </div>
   </div>
 </div>

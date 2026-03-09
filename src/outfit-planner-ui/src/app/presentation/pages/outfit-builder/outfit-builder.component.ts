@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, Signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, Signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   CdkDragDrop,
   DragDropModule,
@@ -30,6 +31,7 @@ import { WeatherDisplayComponent } from '../../components/weather-display/weathe
 import { WeatherActions } from '../../../core/state/weather/weather.actions';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Weather } from '../../../domain/entities/weather.entity';
+import { WardrobeService } from '../../../core/services/wardrobe.service';
 import {
   selectCurrentWeather,
   selectWeatherLoading,
@@ -51,6 +53,7 @@ import { selectSelectedItem } from '../../../core/state/outfit/outfit.selectors'
     MatCardModule,
     MatDividerModule,
     MatChipsModule,
+    MatSnackBarModule,
     DragDropModule,
     WeatherDisplayComponent,
   ],
@@ -62,7 +65,11 @@ export class OutfitBuilderComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private wardrobeService = inject(WardrobeService);
+  private snackBar = inject(MatSnackBar);
   private sub?: Subscription;
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   editingId: string | null = null;
 
@@ -348,5 +355,63 @@ export class OutfitBuilderComponent implements OnInit, OnDestroy {
 
   cancel() {
     this.router.navigate(['/outfits']);
+  }
+
+  // Upload custom image as clothing item
+  triggerFileUpload(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    // Generate a default name based on timestamp
+    const defaultName = `Custom Item ${new Date().toLocaleTimeString()}`;
+    this.uploadCustomItem(file, defaultName);
+
+    // Reset input for re-upload
+    input.value = '';
+  }
+
+  private uploadCustomItem(file: File, name: string): void {
+    const itemData: Partial<ClothingItem> = {
+      name,
+      category: 'Custom',
+      type: 'Top',
+      brand: 'Custom',
+      fabric: 'Cotton',
+      size: 'N/A',
+      condition: 'Good',
+      primaryColor: '#808080',
+      purchasePrice: 0,
+      currency: 'USD',
+    };
+
+    this.wardrobeService.createClothingItem(itemData, file).subscribe({
+      next: (newItem: ClothingItem) => {
+        // Add to canvas immediately
+        this.addItem(newItem);
+
+        // Refresh wardrobe list
+        this.store.dispatch(WardrobeActions.loadClothingItems());
+
+        // Show success message
+        this.snackBar.open(`${newItem.name} added to outfit!`, 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
+      },
+      error: (err: unknown) => {
+        console.error('Upload failed:', err);
+        this.snackBar.open('Failed to upload image. Please try again.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
+      },
+    });
   }
 }

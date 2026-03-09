@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  baseUrl: 'https://localhost:5001/api',
-  resourceBaseUrl: 'https://localhost:5001',
+  baseUrl: 'http://localhost:5000/api',
+  resourceBaseUrl: 'http://localhost:5000',
 };

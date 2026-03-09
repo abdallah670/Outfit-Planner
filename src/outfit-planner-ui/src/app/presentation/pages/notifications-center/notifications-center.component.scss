@@ -1,0 +1,276 @@
+// ============================================
+// Notifications Center Component Styles
+// Mobile-first approach with BEM methodology
+// ============================================
+
+// Design Tokens
+$color-bg-primary: #fafafa;
+$color-surface: #ffffff;
+$color-primary: #f8b4c4;
+$color-secondary: #9caf88;
+$color-text-primary: #2d3436;
+$color-text-secondary: #636e72;
+$color-border: #dfe6e9;
+$color-error: #e17055;
+$color-warning: #fdcb6e;
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+$radius-card: 12px;
+$radius-btn: 8px;
+$radius-chip: 16px;
+
+$shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+$shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+// ============================================
+// Base Layout
+// ============================================
+.notifications-page {
+  min-height: 100vh;
+  background-color: $color-bg-primary;
+  padding: $spacing-lg;
+
+  @media (min-width: 1024px) {
+    padding: $spacing-xl;
+  }
+}
+
+.notifications-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+// ============================================
+// Header
+// ============================================
+.notifications-header {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-bottom: $spacing-xl;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.header-left {
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-xs;
+
+    @media (min-width: 768px) {
+      font-size: 32px;
+    }
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
+
+.mark-all-btn {
+  color: $color-primary !important;
+  border-color: $color-primary !important;
+  font-weight: 500;
+}
+
+// ============================================
+// Tabs
+// ============================================
+.notifications-tabs {
+  ::ng-deep {
+    .mat-mdc-tab-header {
+      background-color: $color-surface;
+      border-radius: $radius-card $radius-card 0 0;
+      margin-bottom: $spacing-lg;
+    }
+
+    .mat-mdc-tab {
+      color: $color-text-secondary;
+
+      &.mdc-tab--active {
+        color: $color-primary;
+      }
+    }
+
+    .mdc-tab-indicator__content--underline {
+      border-color: $color-primary;
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      background-color: transparent;
+    }
+  }
+}
+
+.tab-content {
+  padding: $spacing-md 0;
+}
+
+// ============================================
+// Notifications List
+// ============================================
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background-color: $color-surface;
+  border-radius: $radius-card;
+  box-shadow: $shadow-card;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  text-decoration: none;
+
+  &:hover {
+    box-shadow: $shadow-elevated;
+  }
+
+  &.unread {
+    background-color: rgba($color-primary, 0.03);
+    border-left: 3px solid $color-primary;
+  }
+}
+
+.notification-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-btn;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 22px;
+  }
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-xs;
+}
+
+.notification-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  margin-left: $spacing-sm;
+}
+
+.notification-message {
+  font-size: 14px;
+  color: $color-text-secondary;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: $color-text-secondary;
+  cursor: pointer;
+  padding: $spacing-xs;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background-color: rgba($color-error, 0.1);
+    color: $color-error;
+  }
+}
+
+.notification-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.unread-indicator {
+  position: absolute;
+  top: $spacing-md;
+  right: $spacing-md;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: $color-primary;
+}
+
+// ============================================
+// Empty State
+// ============================================
+.empty-state {
+  text-align: center;
+  padding: $spacing-xl * 2;
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: $spacing-md;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-sm;
+  }
+
+  p {
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
+
+// ============================================
+// Accessibility
+// ============================================
+.notification-item:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}

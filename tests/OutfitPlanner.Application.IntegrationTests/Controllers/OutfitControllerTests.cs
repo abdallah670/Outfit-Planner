@@ -453,15 +453,35 @@ public class OutfitControllerTests : IClassFixture<WebApplicationFactory<Program
 
     private Guid ExtractIdFromResponse(string responseContent)
     {
-        const string idPrefix = "\"Id\":\"";
-        var idIndex = responseContent.IndexOf(idPrefix);
-        if (idIndex < 0)
-            throw new Exception("Id not found in response");
+        try
+        {
+            // Try to deserialize as OutfitDto first
+            var outfit = System.Text.Json.JsonSerializer.Deserialize<OutfitDto>(responseContent, 
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (outfit?.Id != Guid.Empty)
+                return outfit.Id;
+        }
+        catch { }
 
-        idIndex += idPrefix.Length;
-        var idLength = 36; // GUID length
-        var idStr = responseContent.Substring(idIndex, idLength);
-        return Guid.Parse(idStr);
+        try
+        {
+            // Try to deserialize as a generic object with Id property
+            using var doc = System.Text.Json.JsonDocument.Parse(responseContent);
+            var root = doc.RootElement;
+            
+            if (root.TryGetProperty("id", out var idProp))
+            {
+                return Guid.Parse(idProp.GetString()!);
+            }
+            
+            if (root.TryGetProperty("Id", out var idPropPascal))
+            {
+                return Guid.Parse(idPropPascal.GetString()!);
+            }
+        }
+        catch { }
+
+        throw new Exception($"Id not found in response. Response content: {responseContent}");
     }
 
     #endregion

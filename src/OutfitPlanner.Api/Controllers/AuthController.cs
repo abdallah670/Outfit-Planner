@@ -50,9 +50,11 @@ public class AuthController : ControllerBase
         }
     }
 
+    public record RefreshTokenRequest(string Token, string RefreshToken);
+
     [HttpPost("refresh")]
-    public async Task<ActionResult<AuthResponse>> RefreshToken(string token, string refreshToken)
+    public async Task<ActionResult<AuthResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        return Ok(await _authenticationService.RefreshToken(token, refreshToken));
+        return Ok(await _authenticationService.RefreshToken(request.Token, request.RefreshToken));
     }
 }

@@ -30,6 +30,9 @@ import { reducer as outfitReducer } from './core/state/outfit/outfit.reducer';
 import { OutfitEffects } from './core/state/outfit/outfit.effects';
 import { weatherRepositoryProvider } from './data/repositories/weather.repository.impl';
 import { outfitRepositoryProvider } from './data/repositories/outfit.repository.impl';
+import { socialRepositoryProvider } from './data/repositories/social.repository.impl';
+import { socialFeature, reducer as socialReducer } from './core/state/social/social.reducer';
+import { SocialEffects } from './core/state/social/social.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -45,10 +48,12 @@ export const appConfig: ApplicationConfig = {
       weather: weatherReducer,
       user: userReducer,
       outfit: outfitReducer,
+      social: socialReducer,
     }),
-    provideEffects(authEffects, WardrobeEffects, WeatherEffects, userEffects, OutfitEffects),
+    provideEffects(authEffects, WardrobeEffects, WeatherEffects, userEffects, OutfitEffects, SocialEffects),
     weatherRepositoryProvider,
     outfitRepositoryProvider,
+    socialRepositoryProvider,
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

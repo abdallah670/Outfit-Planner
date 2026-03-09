@@ -1,47 +1,166 @@
+<!-- Daily Suggestion Page - Matching Design/dailysuggestion.html -->
 <div class="daily-suggestion-page">
-  <header class="page-header">
-    <div class="header-text">
-      <h1>Today's Picks</h1>
-      <p>Curated combinations based on weather and your style.</p>
-    </div>
-    <div class="date-badge">
-      <span class="day">{{ today | date: 'dd' }}</span>
-      <span class="month">{{ today | date: 'MMM' }}</span>
-    </div>
-  </header>
+  <div class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+          </svg>
+        </div>
+        <span>Daily Pick</span>
+      </div>
+      <div class="date-display">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span>Today</span>
+      </div>
+    </header>
 
-  <div class="suggestions-container" *ngIf="!(loading$ | async); else loader">
-    <div class="suggestions-grid" *ngIf="suggestions$ | async as suggestionsList">
-      <div
-        *ngFor="let suggestion of $any(suggestionsList) | slice: 0 : 3; trackBy: trackByOutfitId"
-        class="suggestion-card-wrapper"
-      >
-        <app-outfit-card [outfit]="$any(suggestion)"></app-outfit-card>
+    <h1 class="page-date-title">{{ today | date: 'EEEE, MMMM d, yyyy' }}</h1>
 
-        <div class="suggestion-actions">
-          <button mat-flat-button color="primary" (click)="onWearToday($any(suggestion).id)">
-            <mat-icon>check_circle</mat-icon>
+    <!-- Hero Grid -->
+    <div class="hero-grid">
+      <!-- Left: Today's Pick Card -->
+      <div class="outfit-card">
+        <div class="outfit-image-container">
+          <img
+            src="https://storage.googleapis.com/banani-generated-images/generated-images/4e3307e4-59bf-4d31-8dd1-514fe7c342f4.jpg"
+            class="outfit-image"
+            alt="Weekend Casual Outfit"
+          />
+          <div class="pick-badge">Today's Pick</div>
+        </div>
+        <div class="outfit-details">
+          <h2 class="outfit-name">{{ currentOutfit()?.name || 'Weekend Casual' }}</h2>
+          <div class="match-score">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            {{ currentOutfit()?.matchPercentage || 94 }}% match for today
+          </div>
+
+          <button class="primary-btn" (click)="wearToday()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
             Wear This Today
           </button>
-          <button mat-stroked-button (click)="onSaveToVault($any(suggestion))">
-            <mat-icon>bookmark_border</mat-icon>
-            Save to Favorites
-          </button>
+
+          <div class="secondary-actions">
+            <button class="secondary-btn" (click)="showAlternatives()">See Alternatives</button>
+            <button class="secondary-btn" routerLink="/outfits/build">Build Custom</button>
+          </div>
         </div>
       </div>
 
-      <div class="no-suggestions" *ngIf="$any(suggestionsList).length === 0">
-        <mat-icon>wb_sunny</mat-icon>
-        <h3>No suggestions yet</h3>
-        <p>Add more items to your wardrobe to get personalized daily outfits.</p>
+      <!-- Right: Context Info -->
+      <div class="context-column">
+        <!-- Weather Card -->
+        <div class="info-card">
+          <div class="weather-header">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+            <div class="weather-text">
+              <h3>{{ weather()?.temp || 22 }}°C {{ weather()?.condition || 'Partly Cloudy' }}</h3>
+              <div class="weather-sub">Feels like {{ weather()?.feelsLike || 24 }}°C • Humidity {{ weather()?.humidity || 45 }}%</div>
+            </div>
+          </div>
+          <div class="weather-note">Perfect for layering!</div>
+        </div>
+
+        <!-- Events Card -->
+        <div class="info-card">
+          <div class="events-title">📅 Today's Events</div>
+          <div class="events-list">
+            <div class="event-item" *ngFor="let event of todayEvents()">
+              <div class="event-time">{{ event.time }}</div>
+              <div class="event-name">{{ event.name }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reasoning Card -->
+        <div class="info-card reasoning-card">
+          <div class="events-title">Why this outfit?</div>
+          <div class="reasons-list">
+            <div class="reason-item">
+              <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span>Weather-appropriate for {{ weather()?.temp || 22 }}°C {{ weather()?.condition?.toLowerCase() || 'partly cloudy' }}</span>
+            </div>
+            <div class="reason-item">
+              <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span>Professional enough for meeting</span>
+            </div>
+            <div class="reason-item">
+              <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span>Comfortable for evening dinner</span>
+            </div>
+            <div class="reason-item">
+              <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span>Matches your "casual" style preference</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <ng-template #loader>
-    <div class="loading-state">
-      <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
-      <p>Consulting the fashion oracle...</p>
+    <!-- Alternatives Section -->
+    <div class="alternatives-section">
+      <div class="section-header">
+        <h3 class="section-title">Alternative Suggestions</h3>
+        <div class="swipe-hint">
+          Swipe for more
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="cards-scroller">
+        <!-- Alternative 1 -->
+        <div class="alt-card" *ngFor="let alt of alternatives()" (click)="selectAlternative(alt)">
+          <img [src]="alt.imageUrl" class="alt-image" [alt]="alt.name" />
+          <div class="alt-info">
+            <div class="alt-title">{{ alt.name }}</div>
+            <div class="alt-meta">{{ alt.description }}</div>
+            <div class="match-bar-wrapper">
+              <span>Match</span>
+              <span>{{ alt.matchPercentage }}%</span>
+            </div>
+            <div class="match-bar">
+              <div class="match-fill" [style.width.%]="alt.matchPercentage"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </ng-template>
+
+    <!-- Tomorrow Banner -->
+    <div class="tomorrow-banner">
+      <div class="tomorrow-info">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+          <path d="M20 16.58A5 5 0 0018 7h-1.26A8 8 0 104 15.25"/>
+          <path d="M8 19v1m0-8v1m8 6v1m0-8v1m4 10v1m0-8v1m-4 4v1m0-8v1"/>
+        </svg>
+        <div>
+          <div class="tomorrow-title">Tomorrow's Preview</div>
+          <div class="tomorrow-sub">Rain expected • 16°C</div>
+        </div>
+      </div>
+      <button class="tomorrow-btn" (click)="previewTomorrow()">Preview Suggestion</button>
+    </div>
+  </div>
 </div>

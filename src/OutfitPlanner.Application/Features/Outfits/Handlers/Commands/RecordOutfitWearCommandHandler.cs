@@ -6,6 +6,7 @@ using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application.Exceptions;
 using Microsoft.Extensions.Logging;
+using OutfitPlanner.Application.DTOs.Outfit;
 
 namespace OutfitPlanner.Application.Features.Outfits.Handlers.Commands;
 
