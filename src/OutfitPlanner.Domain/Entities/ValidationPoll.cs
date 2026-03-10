@@ -33,9 +33,6 @@ public class PollOption : BaseEntity
 public class Vote : BaseEntity
 {
     public Guid PollId { get; set; }
-    // public ValidationPoll Poll { get; set; } = null!; // Circular/Redundant if via Option? Diagram implies Votes associated with Poll AND Option? 
-    // Diagram: PollOptions ||--o{ Votes. ValidationPolls ||--o{ Votes.
-    // I'll add PollId for easier querying.
     
     public Guid OptionId { get; set; }
     public PollOption Option { get; set; } = null!;
@@ -46,4 +43,6 @@ public class Vote : BaseEntity
     public int Rating { get; set; } // 1-5
     public string? Comment { get; set; }
     public bool IsAnonymous { get; set; }
+    
+    public ICollection<VoteReaction> Reactions { get; set; } = new List<VoteReaction>();
 }
