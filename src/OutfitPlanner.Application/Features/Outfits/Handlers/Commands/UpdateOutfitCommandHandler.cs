@@ -1,11 +1,13 @@
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using OutfitPlanner.Application.Common.Interfaces.Persistence;
-using OutfitPlanner.Application.DTOs.Outfit;
-using OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts;
+using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Exceptions;
+using OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
 using ValidationException = OutfitPlanner.Application.Exceptions.ValidationException;
@@ -18,17 +20,23 @@ public class UpdateOutfitCommandHandler : IRequestHandler<UpdateOutfitCommand, O
     private readonly IMapper _mapper;
     private readonly IValidator<UpdateOutfitCommand> _validator;
     private readonly ILogger<UpdateOutfitCommandHandler> _logger;
+    private readonly IOutfitImageGeneratorService _imageGeneratorService;
+    private readonly OutfitImageCacheSettings _cacheSettings;
 
     public UpdateOutfitCommandHandler(
         IUnitOfWork unitOfWork,
         IMapper mapper,
         IValidator<UpdateOutfitCommand> validator,
-        ILogger<UpdateOutfitCommandHandler> logger)
+        ILogger<UpdateOutfitCommandHandler> logger,
+        IOutfitImageGeneratorService imageGeneratorService,
+        IOptions<OutfitImageCacheSettings> cacheSettings)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _validator = validator;
         _logger = logger;
+        _imageGeneratorService = imageGeneratorService ?? throw new ArgumentNullException(nameof(imageGeneratorService));
+        _cacheSettings = cacheSettings?.Value ?? new OutfitImageCacheSettings();
     }
 
     private async Task ValidateClothingItemsAsync(
@@ -122,6 +130,22 @@ public class UpdateOutfitCommandHandler : IRequestHandler<UpdateOutfitCommand, O
 
         // 8. Reload with full includes for the response DTO
         var updatedOutfit = await _unitOfWork.Outfits.GetWithItemsByIdAsync(outfit.Id);
+
+        // 9. Regenerate outfit image if enabled and outfit has multiple items
+        if (_cacheSettings.EnablePreGeneration && updatedOutfit!.Items.Count > 1)
+        {
+            var imagePath = await _imageGeneratorService.RegenerateOutfitImageAsync(updatedOutfit);
+            
+            // Save the new image URL to the database
+            if (!string.IsNullOrEmpty(imagePath))
+            {
+                updatedOutfit.ImageUrl = imagePath;
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation("Regenerated outfit image for outfit {OutfitId}: {ImageUrl}", 
+                    outfit.Id, imagePath);
+            }
+        }
+
         return _mapper.Map<OutfitDto>(updatedOutfit!);
     }
 }
