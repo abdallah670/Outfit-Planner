@@ -27,7 +27,7 @@ public class SocialController : ControllerBase
     }
 
     private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-
+    
     /// <summary>
     /// Gets all polls for the authenticated user
     /// </summary>
@@ -97,99 +97,112 @@ public class SocialController : ControllerBase
     }
 
     /// <summary>
-    /// Gets local trending polls and topics (placeholder implementation)
+    /// Updates an existing poll (only the owner can edit)
+    /// </summary>
+    [HttpPut("polls/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> UpdatePoll(Guid id, [FromBody] UpdatePollRequest request)
+    {
+        var userId = GetUserId();
+        var command = new UpdatePollCommand
+        {
+            Id = id,
+            UserId = userId,
+            Request = request
+        };
+
+        var response = await _mediator.Send(command);
+
+        if (!response.Success)
+        {
+            if (response.Message.Contains("not found"))
+                return NotFound(new { error = response.Message });
+            return Forbid();
+        }
+
+        _logger.LogInformation("User {UserId} updated poll {PollId}", userId, id);
+        return Ok(new { message = "Poll updated successfully" });
+    }
+
+    /// <summary>
+    /// Deletes a poll (only the owner can delete)
+    /// </summary>
+    [HttpDelete("polls/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> DeletePoll(Guid id)
+    {
+        var userId = GetUserId();
+        var command = new DeletePollCommand
+        {
+            Id = id,
+            UserId = userId
+        };
+
+        var response = await _mediator.Send(command);
+
+        if (!response.Success)
+        {
+            if (response.Message.Contains("not found"))
+                return NotFound(new { error = response.Message });
+            return Forbid();
+        }
+
+        _logger.LogInformation("User {UserId} deleted poll {PollId}", userId, id);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Closes a poll (only the owner can close)
+    /// </summary>
+    [HttpPost("polls/{id:guid}/close")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> ClosePoll(Guid id)
+    {
+        var userId = GetUserId();
+        var command = new ClosePollCommand
+        {
+            Id = id,
+            UserId = userId
+        };
+
+        var response = await _mediator.Send(command);
+
+        if (!response.Success)
+        {
+            if (response.Message.Contains("not found"))
+                return NotFound(new { error = response.Message });
+            return Forbid();
+        }
+
+        _logger.LogInformation("User {UserId} closed poll {PollId}", userId, id);
+        return Ok(new { message = "Poll closed successfully" });
+    }
+
+    /// <summary>
+    /// Gets local trending polls and topics
     /// </summary>
     [HttpGet("trends/local")]
     [ProducesResponseType(typeof(TrendingDataDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<TrendingDataDto>> GetLocalTrends()
     {
-        // Placeholder implementation - returns hardcoded trending data
-        var trends = new TrendingDataDto
-        {
-            Trends = new List<TrendItemDto>
-            {
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Summer Fashion Trends 2026",
-                    Description = "Discover the hottest summer styles",
-                    Category = "Seasonal",
-                    PopularityScore = 95,
-                    TrendingSince = DateTimeOffset.UtcNow.AddDays(-3)
-                },
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Sustainable Fashion",
-                    Description = "Eco-friendly outfit ideas",
-                    Category = "Lifestyle",
-                    PopularityScore = 87,
-                    TrendingSince = DateTimeOffset.UtcNow.AddDays(-5)
-                },
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Office Casual",
-                    Description = "Work-appropriate casual wear",
-                    Category = "Occasion",
-                    PopularityScore = 82,
-                    TrendingSince = DateTimeOffset.UtcNow.AddDays(-2)
-                }
-            },
-            TopPolls = new List<TopPollDto>
-            {
-                new()
-                {
-                    PollId = Guid.NewGuid(),
-                    Question = "Which color palette for spring?",
-                    TotalVotes = 156,
-                    EngagementRate = 0.78
-                },
-                new()
-                {
-                    PollId = Guid.NewGuid(),
-                    Question = "Best outfit for a first date?",
-                    TotalVotes = 243,
-                    EngagementRate = 0.85
-                }
-            },
-            GeneratedAt = DateTimeOffset.UtcNow
-        };
-
-        return Ok(trends);
+        var result = await _mediator.Send(new GetLocalTrendsRequest());
+        return Ok(result);
     }
-}
 
-/// <summary>
-/// DTO for trending data response
-/// </summary>
-public class TrendingDataDto
-{
-    public List<TrendItemDto> Trends { get; set; } = new();
-    public List<TopPollDto> TopPolls { get; set; } = new();
-    public DateTimeOffset GeneratedAt { get; set; }
-}
-
-/// <summary>
-/// DTO for a single trend item
-/// </summary>
-public class TrendItemDto
-{
-    public Guid Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string Category { get; set; } = string.Empty;
-    public int PopularityScore { get; set; }
-    public DateTimeOffset TrendingSince { get; set; }
-}
-
-/// <summary>
-/// DTO for top poll information in trends
-/// </summary>
-public class TopPollDto
-{
-    public Guid PollId { get; set; }
-    public string Question { get; set; } = string.Empty;
-    public int TotalVotes { get; set; }
-    public double EngagementRate { get; set; }
+    /// <summary>
+    /// Gets trending outfits from the community
+    /// </summary>
+    [HttpGet("trending-outfits")]
+    [ProducesResponseType(typeof(List<TrendingOutfitDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<TrendingOutfitDto>>> GetTrendingOutfits()
+    {
+        var result = await _mediator.Send(new GetTrendingOutfitsRequest());
+        return Ok(result);
+    }
 }

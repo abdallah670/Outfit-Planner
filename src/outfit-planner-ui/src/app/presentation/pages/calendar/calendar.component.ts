@@ -1,9 +1,20 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Store } from '@ngrx/store';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { CalendarActions } from '../../../core/state/calendar/calendar.actions';
+import {
+  selectEvents,
+  selectStats,
+  selectCurrentYear,
+  selectCurrentMonth,
+  selectLoading,
+} from '../../../core/state/calendar/calendar.selectors';
+import { CalendarEvent, MonthlyStats } from '../../../domain/entities/wear-event.entity';
 
 interface CalendarDay {
   date: Date;
@@ -30,12 +41,6 @@ interface WeatherData {
   condition: string;
 }
 
-interface MonthlyStats {
-  worn: number;
-  scheduled: number;
-  favorite: number;
-}
-
 @Component({
   selector: 'app-calendar',
   standalone: true,
@@ -44,6 +49,8 @@ interface MonthlyStats {
   styleUrl: './calendar.component.scss'
 })
 export class CalendarComponent implements OnInit {
+  private store = inject(Store);
+
   currentDate = signal(new Date());
   currentMonth = signal('');
   currentYear = signal(0);
@@ -51,214 +58,207 @@ export class CalendarComponent implements OnInit {
   // View toggle (month/week)
   currentView = signal<'month' | 'week'>('month');
   
-  calendarDays = signal<CalendarDay[]>([]);
   weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   
-  // Mock data for scheduled outfits with enhanced properties
-  scheduledOutfits = signal<ScheduledOutfit[]>([
-    { 
-      id: '1', 
-      name: 'Business Meeting', 
-      date: this.getDateDaysFromNow(2), 
-      occasion: 'Work',
-      worn: false,
-      imageUrl: '',
-      items: ['Navy Blazer', 'White Shirt', 'Khaki Pants']
-    },
-    { 
-      id: '2', 
-      name: 'Weekend Brunch', 
-      date: this.getDateDaysFromNow(5), 
-      occasion: 'Casual',
-      worn: false,
-      imageUrl: '',
-      items: ['Denim Jacket', 'Graphic Tee', 'Jeans']
-    },
-    { 
-      id: '3', 
-      name: 'Date Night', 
-      date: this.getDateDaysFromNow(7), 
-      occasion: 'Date Night',
-      worn: false,
-      imageUrl: '',
-      items: ['Leather Jacket', 'Black Turtleneck', 'Dress Pants']
-    },
-    { 
-      id: '4', 
-      name: 'Gym Session', 
-      date: this.getDateDaysFromNow(3), 
-      occasion: 'Sports',
-      worn: false,
-      imageUrl: '',
-      items: ['Sports Bra', 'Leggings', 'Sneakers']
-    },
-    { 
-      id: '5', 
-      name: 'Wedding Guest', 
-      date: this.getDateDaysFromNow(10), 
-      occasion: 'Formal',
-      worn: false,
-      imageUrl: '',
-      items: ['Floral Dress', 'Heels', 'Pearl Earrings']
-    },
-  ]);
-
-  selectedDate = signal<Date | null>(null);
-  selectedDayOutfits = signal<ScheduledOutfit[]>([]);
+  // NgRx signals - get data from store
+  private eventsSignal = toSignal(this.store.select(selectEvents), { initialValue: [] as CalendarEvent[] }) as () => CalendarEvent[];
+  stats = toSignal(this.store.select(selectStats), { initialValue: null as MonthlyStats | null }) as () => MonthlyStats | null;
+  loading = toSignal(this.store.select(selectLoading), { initialValue: false }) as () => boolean;
   
-  // Computed weather for selected day
-  selectedDayWeather = computed<WeatherData | null>(() => {
+  // Get current year/month from store
+  year = toSignal(this.store.select(selectCurrentYear), { initialValue: new Date().getFullYear() }) as () => number;
+  month = toSignal(this.store.select(selectCurrentMonth), { initialValue: new Date().getMonth() + 1 }) as () => number;
+
+  // Selected date signals for sidebar display
+  selectedDate = signal<Date | null>(null);
+  
+  // Computed signals for selected day data
+  selectedDayOutfits = computed((): ScheduledOutfit[] => {
     const date = this.selectedDate();
-    if (!date) return null;
-    return this.getWeatherForDate(date);
+    if (!date) return [];
+    
+    const events = this.eventsSignal();
+    return events
+      .filter(event => {
+        const eventDate = new Date(event.scheduledDate);
+        return eventDate.toDateString() === date.toDateString();
+      })
+      .map(event => ({
+        id: event.outfitId,
+        name: event.outfitName,
+        date: new Date(event.scheduledDate),
+        occasion: event.occasion || 'Casual',
+        worn: event.worn,
+        imageUrl: event.outfitImageUrl,
+        items: []
+      }));
   });
   
-  // Monthly statistics
-  monthlyStats = signal<MonthlyStats>({
-    worn: 12,
-    scheduled: 8,
-    favorite: 5
+  selectedDayWeather = computed((): WeatherData | null => {
+    const date = this.selectedDate();
+    if (!date) return null;
+    
+    // For demo, return mock weather data
+    // In real app, this would come from weather API based on date
+    return {
+      temp: 22,
+      icon: '☀️',
+      condition: 'Sunny'
+    };
+  });
+
+  // Calendar days computed from events
+  calendarDays = computed((): CalendarDay[] => {
+    const yr = this.year();
+    const monthNum = this.month();
+    const events = this.eventsSignal();
+    return this.generateCalendarDays(yr, monthNum, events);
   });
 
   ngOnInit(): void {
-    this.generateCalendar();
-    // Select today by default
-    this.selectDay(this.calendarDays().find(d => d.isToday) || this.calendarDays()[0]);
-  }
-
-  private getDateDaysFromNow(days: number): Date {
+    // Load scheduled outfits from API
+    const now = new Date();
+    this.store.dispatch(CalendarActions.loadScheduledOutfits({ year: now.getFullYear(), month: now.getMonth() + 1 }));
+    this.store.dispatch(CalendarActions.loadMonthlyStats({ year: now.getFullYear(), month: now.getMonth() + 1 }));
+    
+    // Set current month display
     const date = new Date();
-    date.setDate(date.getDate() + days);
-    return date;
+    this.currentMonth.set(date.toLocaleString('default', { month: 'long' }));
+    this.currentYear.set(date.getFullYear());
   }
 
-  generateCalendar(): void {
+  /**
+   * Generate calendar days for the given month
+   */
+  private generateCalendarDays(year: number, month: number, events: CalendarEvent[]): CalendarDay[] {
+    const firstDay = new Date(year, month - 1, 1);
+    const lastDay = new Date(year, month, 0);
     const today = new Date();
-    const month = this.currentDate().getMonth();
-    const year = this.currentDate().getFullYear();
-
-    this.currentMonth.set(today.toLocaleString('default', { month: 'long' }));
-    this.currentYear.set(year);
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDay = firstDay.getDay();
-    const totalDays = lastDay.getDate();
-
+    
     const days: CalendarDay[] = [];
-
+    const startDayOfWeek = firstDay.getDay();
+    
     // Previous month days
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
-    for (let i = startDay - 1; i >= 0; i--) {
-      const date = new Date(year, month - 1, prevMonthLastDay - i);
+    const prevMonthLastDay = new Date(year, month - 1, 0).getDate();
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      const dayNum = prevMonthLastDay - i;
+      const date = new Date(year, month - 2, dayNum);
       days.push({
         date,
-        dayNumber: prevMonthLastDay - i,
+        dayNumber: dayNum,
         isCurrentMonth: false,
-        isToday: this.isSameDate(date, today),
-        outfits: this.getOutfitsForDate(date)
+        isToday: false,
+        outfits: this.getOutfitsForDate(date, events)
       });
     }
-
+    
     // Current month days
-    for (let i = 1; i <= totalDays; i++) {
-      const date = new Date(year, month, i);
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const date = new Date(year, month - 1, day);
+      const isToday = date.toDateString() === today.toDateString();
       days.push({
         date,
-        dayNumber: i,
+        dayNumber: day,
         isCurrentMonth: true,
-        isToday: this.isSameDate(date, today),
-        outfits: this.getOutfitsForDate(date),
-        weather: this.getWeatherForDate(date)
+        isToday,
+        outfits: this.getOutfitsForDate(date, events)
       });
     }
-
-    // Next month days to fill grid
+    
+    // Next month days to fill the grid
     const remainingDays = 42 - days.length;
-    for (let i = 1; i <= remainingDays; i++) {
-      const date = new Date(year, month + 1, i);
+    for (let day = 1; day <= remainingDays; day++) {
+      const date = new Date(year, month, day);
       days.push({
         date,
-        dayNumber: i,
+        dayNumber: day,
         isCurrentMonth: false,
-        isToday: this.isSameDate(date, today),
-        outfits: this.getOutfitsForDate(date)
+        isToday: false,
+        outfits: this.getOutfitsForDate(date, events)
       });
     }
-
-    this.calendarDays.set(days);
+    
+    return days;
   }
 
-  private getOutfitsForDate(date: Date): ScheduledOutfit[] {
-    return this.scheduledOutfits()
-      .filter(o => this.isSameDate(new Date(o.date), date));
-  }
-
-  private getWeatherForDate(date: Date): WeatherData {
-    // Mock weather - deterministic based on date
-    const dayOfYear = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-    const weatherOptions = [
-      { temp: 22, icon: '☀️', condition: 'Sunny' },
-      { temp: 20, icon: '⛅', condition: 'Cloudy' },
-      { temp: 18, icon: '🌤️', condition: 'Partly Cloudy' },
-      { temp: 24, icon: '☀️', condition: 'Clear' },
-      { temp: 16, icon: '🌧️', condition: 'Rainy' }
-    ];
-    return weatherOptions[dayOfYear % weatherOptions.length];
+  /**
+   * Get outfits for a specific date from events
+   */
+  private getOutfitsForDate(date: Date, events: CalendarEvent[]): ScheduledOutfit[] {
+    return events
+      .filter(event => {
+        const eventDate = new Date(event.scheduledDate);
+        return eventDate.toDateString() === date.toDateString();
+      })
+      .map(event => ({
+        id: event.outfitId,
+        name: event.outfitName,
+        date: new Date(event.scheduledDate),
+        occasion: event.occasion || 'Casual',
+        worn: event.worn,
+        imageUrl: event.outfitImageUrl,
+        items: []
+      }));
   }
 
   previousMonth(): void {
-    const newDate = new Date(this.currentDate());
-    newDate.setMonth(newDate.getMonth() - 1);
-    this.currentDate.set(newDate);
-    this.generateCalendar();
+    const currentYearVal = this.year();
+    const currentMonthVal = this.month();
+    let newMonth = currentMonthVal - 1;
+    let newYear = currentYearVal;
+    
+    if (newMonth < 1) {
+      newMonth = 12;
+      newYear--;
+    }
+    
+    this.store.dispatch(CalendarActions.setCurrentMonth({ year: newYear, month: newMonth }));
+    this.store.dispatch(CalendarActions.loadScheduledOutfits({ year: newYear, month: newMonth }));
+    this.store.dispatch(CalendarActions.loadMonthlyStats({ year: newYear, month: newMonth }));
+    
+    const date = new Date(newYear, newMonth - 1, 1);
+    this.currentMonth.set(date.toLocaleString('default', { month: 'long' }));
+    this.currentYear.set(newYear);
   }
 
   nextMonth(): void {
-    const newDate = new Date(this.currentDate());
-    newDate.setMonth(newDate.getMonth() + 1);
-    this.currentDate.set(newDate);
-    this.generateCalendar();
+    const currentYearVal = this.year();
+    const currentMonthVal = this.month();
+    let newMonth = currentMonthVal + 1;
+    let newYear = currentYearVal;
+    
+    if (newMonth > 12) {
+      newMonth = 1;
+      newYear++;
+    }
+    
+    this.store.dispatch(CalendarActions.setCurrentMonth({ year: newYear, month: newMonth }));
+    this.store.dispatch(CalendarActions.loadScheduledOutfits({ year: newYear, month: newMonth }));
+    this.store.dispatch(CalendarActions.loadMonthlyStats({ year: newYear, month: newMonth }));
+    
+    const date = new Date(newYear, newMonth - 1, 1);
+    this.currentMonth.set(date.toLocaleString('default', { month: 'long' }));
+    this.currentYear.set(newYear);
   }
 
   setView(view: 'month' | 'week'): void {
     this.currentView.set(view);
   }
 
-  goToToday(): void {
-    this.currentDate.set(new Date());
-    this.generateCalendar();
-  }
-
   selectDay(day: CalendarDay): void {
-    if (!day) return;
+    // Set the selected date
     this.selectedDate.set(day.date);
-    this.selectedDayOutfits.set(
-      this.scheduledOutfits().filter(o => 
-        this.isSameDate(new Date(o.date), day.date)
-      )
-    );
+    console.log('Selected day:', day);
   }
 
   isSameDate(date1: Date, date2: Date): boolean {
-    return date1.getDate() === date2.getDate() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getFullYear() === date2.getFullYear();
+    return date1.toDateString() === date2.toDateString();
   }
 
-  getUpcomingOutfits(): ScheduledOutfit[] {
-    const today = new Date();
-    return this.scheduledOutfits()
-      .filter(o => new Date(o.date) >= today)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(0, 5);
-  }
-
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+  // Helper method for template
+  getDateDaysFromNow(days: number): Date {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    return date;
   }
 }

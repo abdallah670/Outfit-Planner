@@ -84,20 +84,50 @@ export class WardrobeService {
 
   private fixItemUrls(item: ClothingItem): ClothingItem {
     const backendBase = environment.baseUrl.replace('/api', '');
-    if (
-      item.imageUrl &&
-      (item.imageUrl.startsWith('uploads/') || item.imageUrl.startsWith('/uploads/'))
-    ) {
-      const path = item.imageUrl.startsWith('/') ? item.imageUrl : `/${item.imageUrl}`;
-      item.imageUrl = `${backendBase}${path}`;
+    
+    if (item.imageUrl) {
+      item.imageUrl = this.fixImageUrl(item.imageUrl, backendBase, item.id);
     }
-    if (
-      item.thumbnailUrl &&
-      (item.thumbnailUrl.startsWith('uploads/') || item.thumbnailUrl.startsWith('/uploads/'))
-    ) {
-      const path = item.thumbnailUrl.startsWith('/') ? item.thumbnailUrl : `/${item.thumbnailUrl}`;
-      item.thumbnailUrl = `${backendBase}${path}`;
+    if (item.thumbnailUrl) {
+      item.thumbnailUrl = this.fixImageUrl(item.thumbnailUrl, backendBase, item.id);
     }
+    
     return item;
+  }
+
+  /**
+   * Fixes image URL to be a full URL.
+   * Handles various formats:
+   * - Full URLs (http://...) - returned as-is
+   * - Paths starting with /uploads/ - prepends backend base
+   * - Simple filenames - logs warning as backend should return full paths
+   */
+  private fixImageUrl(url: string, backendBase: string, itemId?: string): string {
+    // If it's already a full URL, return as-is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+
+    // If it's already a path starting with /uploads/, prepend backend base
+    if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+      const path = url.startsWith('/') ? url : `/${url}`;
+      return `${backendBase}${path}`;
+    }
+
+    // If it's a simple filename without path separators,
+    // the backend should return full paths. Log a warning.
+    if (!url.includes('/')) {
+      console.warn(
+        `Simple filename detected without full path: ${url}. ` +
+        `itemId: ${itemId}. ` +
+        `Backend should return full paths like /uploads/{userId}/{itemId}/{filename}`
+      );
+      // Return as-is - it will fail to load and show fallback
+      return url;
+    }
+
+    // For any other relative path, prepend backend base
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${backendBase}${path}`;
   }
 }

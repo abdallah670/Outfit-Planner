@@ -15,9 +15,9 @@ export class OutfitCanvasService {
    * Gets combined outfit image from backend (server-side image combination)
    * This uses the .NET backend with ImageSharp for reliable image processing
    * @param outfitId The ID of the outfit
-   * @returns Promise<string> Base64 data URL of combined image
+   * @returns Promise<string> Base64 data URL of combined image, or null if not available
    */
-  async getCombinedImageFromBackend(outfitId: string): Promise<string> {
+  async getCombinedImageFromBackend(outfitId: string): Promise<string | null> {
     try {
       const response = await firstValueFrom(
         this.http.get(`${this.apiBaseUrl}/api/outfits/${outfitId}/combined-image`, {
@@ -32,7 +32,12 @@ export class OutfitCanvasService {
         reader.onerror = reject;
         reader.readAsDataURL(response as Blob);
       });
-    } catch (error) {
+    } catch (error: any) {
+      // Handle 404 - images not available (expected when clothing items have no images)
+      if (error.status === 404) {
+        console.warn(`Combined image not available for outfit ${outfitId}:`, error.error || 'Images missing');
+        return null;
+      }
       console.error('Failed to get combined image from backend:', error);
       throw error;
     }

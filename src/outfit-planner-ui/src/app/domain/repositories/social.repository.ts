@@ -6,6 +6,13 @@ import {
   CastVoteRequest,
   CommandResponse,
 } from '../entities/validation-poll.entity';
+import {
+  TrendingOutfit,
+  OutfitEngagement,
+  VoteComment,
+  OutfitVoteResult,
+  UpdatePollRequest,
+} from '../../data/datasources/social.datasource';
 
 export const SOCIAL_REPOSITORY = new InjectionToken<SocialRepository>('SocialRepository');
 
@@ -32,4 +39,62 @@ export interface SocialRepository {
    * Cast a vote on a poll
    */
   vote(pollId: string, dto: CastVoteRequest): Observable<CommandResponse>;
+
+  /**
+   * Get trending outfits from the community
+   */
+  getTrendingOutfits(): Observable<TrendingOutfit[]>;
+
+  // ============ Outfit Poll Methods ============
+
+  /**
+   * Like an outfit
+   */
+  likeOutfit(outfitId: string): Observable<OutfitVoteResult>;
+
+  /**
+   * Unlike an outfit
+   */
+  unlikeOutfit(outfitId: string): Observable<OutfitVoteResult>;
+
+  /**
+   * Comment on an outfit
+   */
+  commentOnOutfit(outfitId: string, content: string): Observable<VoteComment>;
+
+  /**
+   * Get outfit engagement stats
+   */
+  getOutfitEngagement(outfitId: string): Observable<OutfitEngagement>;
+
+  /**
+   * Get votes/comments for an outfit
+   */
+  getOutfitVotes(
+    outfitId: string,
+    page?: number,
+    pageSize?: number,
+  ): Observable<{ items: VoteComment[]; totalCount: number }>;
+
+  /**
+   * React to a vote/comment
+   */
+  reactToVote(voteId: string, reactionType: string): Observable<void>;
+
+  // ============ Poll Management Methods ============
+
+  /**
+   * Update a poll
+   */
+  updatePoll(pollId: string, request: UpdatePollRequest): Observable<void>;
+
+  /**
+   * Delete a poll
+   */
+  deletePoll(pollId: string): Observable<void>;
+
+  /**
+   * Close a poll
+   */
+  closePoll(pollId: string): Observable<void>;
 }

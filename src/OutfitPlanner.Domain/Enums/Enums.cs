@@ -89,23 +89,23 @@ public enum FabricType
     Rayon,
     Other
 }
-public enum CalendarEventType
-{
-    General,
-    Work,
-    Meeting,
-    Social,
-    Date,
-    Party,
-    Sport,
-    Travel,
-    Appointment
-}
-public enum RecurrenceType
-{
-    None,
-    Daily,
-    Weekly,
-    Monthly,
-    Yearly
-}
+// public enum CalendarEventType
+// {
+//     General,
+//     Work,
+//     Meeting,
+//     Social,
+//     Date,
+//     Party,
+//     Sport,
+//     Travel,
+//     Appointment
+// }
+// public enum RecurrenceType
+// {
+//     None,
+//     Daily,
+//     Weekly,
+//     Monthly,
+//     Yearly
+// }

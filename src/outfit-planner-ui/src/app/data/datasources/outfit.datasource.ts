@@ -63,19 +63,52 @@ export class OutfitDataSource {
   private fixOutfitUrls(outfit: Outfit): Outfit {
     if (outfit.items) {
       outfit.items = outfit.items.map((item: any) => {
-        if (
-          item.clothingItemImageUrl &&
-          (item.clothingItemImageUrl.startsWith('uploads/') ||
-            item.clothingItemImageUrl.startsWith('/uploads/'))
-        ) {
-          const path = item.clothingItemImageUrl.startsWith('/')
-            ? item.clothingItemImageUrl
-            : `/${item.clothingItemImageUrl}`;
-          item.clothingItemImageUrl = `${this.backendBase}${path}`;
+        if (item.clothingItemImageUrl) {
+          item.clothingItemImageUrl = this.fixImageUrl(
+            item.clothingItemImageUrl,
+            item.clothingItemId
+          );
         }
         return item;
       });
     }
     return outfit;
+  }
+
+  /**
+   * Fixes image URL to be a full URL.
+   * Handles various formats:
+   * - Full URLs (http://...) - returned as-is
+   * - Paths starting with /uploads/ - prepends backend base
+   * - Simple filenames - attempts to construct full path using clothingItemId
+   */
+  private fixImageUrl(url: string, clothingItemId?: string): string {
+    // If it's already a full URL, return as-is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+
+    // If it's already a path starting with /uploads/, prepend backend base
+    if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+      const path = url.startsWith('/') ? url : `/${url}`;
+      return `${this.backendBase}${path}`;
+    }
+
+    // If it's a simple filename and we have the clothingItemId,
+    // we can't construct the full path without the userId.
+    // The backend should return full paths. Log a warning.
+    if (!url.includes('/')) {
+      console.warn(
+        `Simple filename detected without full path: ${url}. ` +
+        `clothingItemId: ${clothingItemId}. ` +
+        `Backend should return full paths like /uploads/{userId}/{clothingItemId}/{filename}`
+      );
+      // Return as-is - it will fail to load and show fallback
+      return url;
+    }
+
+    // For any other relative path, prepend backend base
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${this.backendBase}${path}`;
   }
 }

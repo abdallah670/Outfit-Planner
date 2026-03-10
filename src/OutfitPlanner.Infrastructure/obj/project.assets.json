@@ -1564,6 +1564,7 @@
           "Microsoft.AspNetCore.Http.Features": "5.0.17",
           "Microsoft.IdentityModel.Tokens": "8.14.0",
           "OutfitPlanner.Domain": "1.0.0",
+          "SixLabors.ImageSharp": "3.1.6",
           "System.IdentityModel.Tokens.Jwt": "8.14.0"
         },
         "compile": {
@@ -4058,6 +4059,7 @@
   "projectFileDependencyGroups": {
     "net9.0": [
       "Microsoft.Extensions.Http >= 9.0.4",
+      "OutfitPlanner.Application >= 1.0.0",
       "OutfitPlanner.Domain >= 1.0.0",
       "OutfitPlanner.Persistence >= 1.0.0",
       "Serilog.AspNetCore >= 10.0.0",
@@ -4096,6 +4098,9 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
+            "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
+              "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
+            },
             "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
               "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
             },
@@ -4160,6 +4165,9 @@
           }
         ],
         "frameworkReferences": {
+          "Microsoft.AspNetCore.App": {
+            "privateAssets": "none"
+          },
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
