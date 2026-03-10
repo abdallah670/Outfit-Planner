@@ -9,4 +9,5 @@ public class UpdateOutfitDto
     public int? ComfortRating { get; set; }
     public int? StyleRating { get; set; }
     public List<CreateOutfitItemDto>? Items { get; set; }
+    public string? ImageUrl { get; set; }
 }

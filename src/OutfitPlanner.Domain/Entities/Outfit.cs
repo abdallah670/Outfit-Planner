@@ -22,6 +22,9 @@ public class Outfit : BaseEntity
     // metadata jsonb? In SQL Server, likely nvarchar(max).
     // I'll skip metadata prop for now or use string.
     
+    // Combined outfit image URL (stored permanently in database)
+    public string? ImageUrl { get; set; }
+    
     public ICollection<OutfitItem> Items { get; set; } = new List<OutfitItem>();
     public ICollection<OutfitFeedback> Feedback { get; set; } = new List<OutfitFeedback>();
     public ICollection<PollOption> PollOptions { get; set; } = new List<PollOption>();

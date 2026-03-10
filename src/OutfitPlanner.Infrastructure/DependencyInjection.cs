@@ -1,4 +1,4 @@
-tusing Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.Contracts.Infrastructure;
@@ -47,6 +47,13 @@ public static class DependencyInjection
             client.BaseAddress = new Uri(settings.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
         });
+
+        // Register image combination and processing services (moved from Application layer)
+        services.AddScoped<IImageCombinationService, ImageCombinationService>();
+        services.AddScoped<IOutfitImageProcessingService, OutfitImageProcessingService>();
+
+        // Register outfit image generator service
+        services.AddScoped<IOutfitImageGeneratorService, OutfitImageGeneratorService>();
 
         return services;
     }

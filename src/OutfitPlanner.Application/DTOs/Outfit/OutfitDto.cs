@@ -15,4 +15,7 @@ public class OutfitDto
     public string Status { get; set; } = string.Empty; // mapped from OutfitStatus
     public List<OutfitItemDto> Items { get; set; } = new();
     public DateTimeOffset CreatedAt { get; set; }
+    
+    // Combined outfit image URL (stored permanently in database)
+    public string? ImageUrl { get; set; }
 }
