@@ -8,25 +8,25 @@ using OutfitPlanner.Persistence;
 
 namespace OutfitPlanner.Application.Features.OutfitPoll.Handlers.Commands;
 
-public class LikeOutFitCommandHandler : IRequestHandler<LikeOutFitCommand, OutFitVoteResultDto>
+public class LikeOutfitCommandHandler : IRequestHandler<LikeOutfitCommand, OutfitVoteResultDto>
 {
     private readonly AppDbContext _context;
 
-    public LikeOutFitCommandHandler(AppDbContext context)
+    public LikeOutfitCommandHandler(AppDbContext context)
     {
         _context = context;
     }
 
-    public async Task<OutFitVoteResultDto> Handle(LikeOutFitCommand request, CancellationToken cancellationToken)
+    public async Task<OutfitVoteResultDto> Handle(LikeOutfitCommand request, CancellationToken cancellationToken)
     {
         // Find or create outfit poll
-        var poll = await GetOrCreateOutFITPollAsync(request.OutFITId);
+        var poll = await GetOrCreateOutfitPollAsync(request.OutfitId);
         if (poll == null)
-            return new OutFitVoteResultDto { ErrorMessage = "OUTFIT not found" };
+            return new OutfitVoteResultDto { ErrorMessage = "Outfit not found" };
 
         var option = poll.Options.FirstOrDefault();
         if (option == null)
-            return new OutFitVoteResultDto { ErrorMessage = "Invalid outfit poll configuration" };
+            return new OutfitVoteResultDto { ErrorMessage = "Invalid outfit poll configuration" };
 
         // Check if user already voted
         var existingVote = await _context.Votes
@@ -35,37 +35,75 @@ public class LikeOutFitCommandHandler : IRequestHandler<LikeOutFitCommand, OutFi
         if (existingVote != null)
         {
             // Already liked, return current state
-            return new OutFitVoteResultDto
+            return new OutfitVoteResultDto
             {
                 Success = true,
                 Message = "Already liked",
                 UserHasVoted = true,
-                VoteCount = await GetVotecountAsync(option.Id),
-                RatingGiven= existingVote.Rating ?? 0 
+                VoteCount = await GetVoteCountAsync(option.Id),
+                RatingGiven = existingVote.Rating ?? 0
             };
-            
-            
-            
-            
-            
+        }
 
-        
-    
-}
-private async Task<int>GetVotecountAsync(Guid optionid){
-return await _context.Votes.Countasync(v=>v.Optionid==optionid);
-}
+        // Create new vote
+        var vote = new Vote
+        {
+            Id = Guid.NewGuid(),
+            OptionId = option.Id,
+            VoterId = request.UserId,
+            Rating = request.Rating,
+            CreatedAt = DateTime.UtcNow
+        };
 
-private async Task <Validation Poll?>GetorCreateoutFItPOllAsynC(Guid outFItID){
-var poll=await_context.Validationpolls.include(p=>p.options).Firstordefaultasync(p=>p.Context.contains($"\"outFITID\":\"{outFITID}\"")|| p.Options.Any(o=>o.outFITID==outFITID));
-if(poll!=null)returnpoll;
-//createnewpollforthe out FIT 
-poll=new Validation Poll{
- Id=Guid.NewGuid(),
- Question="OUT FITRating",
- Context=$"{{\"OUT FIT ID\":\"{OUT FIT ID}\"}}",Status=PollStatus.Active,
- ExpiresAt=DateTime.UtcNow.AddDays(30),CreatedAt=DateTime.UtcNow,
- Options=new List<PollOption>{new PollOption{ Id=Guid.Newguid(),DisplayOrder=1 ,CreatedAt DateTime.UtcNow}}
-};
-_context.Validation Polls.Add(poll);await_context.SaveChangesasync(cancellation Token);return.poll;}
+        _context.Votes.Add(vote);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return new OutfitVoteResultDto
+        {
+            Success = true,
+            Message = "Liked successfully",
+            UserHasVoted = true,
+            VoteCount = await GetVoteCountAsync(option.Id),
+            RatingGiven = request.Rating ?? 0
+        };
+    }
+
+    private async Task<int> GetVoteCountAsync(Guid optionId)
+    {
+        return await _context.Votes.CountAsync(v => v.OptionId == optionId);
+    }
+
+    private async Task<ValidationPoll?> GetOrCreateOutfitPollAsync(Guid outfitId)
+    {
+        var poll = await _context.ValidationPolls
+            .Include(p => p.Options)
+            .FirstOrDefaultAsync(p => p.Context.Contains($"\"outfitId\":\"{outfitId}\"") || 
+                                      p.Options.Any(o => o.OutfitId == outfitId));
+
+        if (poll != null) return poll;
+
+        // Create new poll for the outfit
+        poll = new ValidationPoll
+        {
+            Id = Guid.NewGuid(),
+            Question = "Outfit Rating",
+            Context = $"{{\"outfitId\":\"{outfitId}\"}}",
+            Status = PollStatus.Active,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            CreatedAt = DateTime.UtcNow,
+            Options = new List<PollOption>
+            {
+                new PollOption
+                {
+                    Id = Guid.NewGuid(),
+                    DisplayOrder = 1,
+                    CreatedAt = DateTime.UtcNow
+                }
+            }
+        };
+
+        _context.ValidationPolls.Add(poll);
+        await _context.SaveChangesAsync();
+        return poll;
+    }
 }

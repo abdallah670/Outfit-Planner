@@ -2,13 +2,13 @@
   <div class="card-visual" [style.background-color]="colorBackground">
     <!-- Item Image or Emoji fallback -->
     <img
-      *ngIf="item.imageUrl"
+      *ngIf="item.imageUrl && !imageError"
       [src]="item.imageUrl"
       [alt]="item.name"
       class="card-image"
-      (error)="$any($event.target).style.display = 'none'"
+      (error)="onImageError()"
     />
-    <span *ngIf="!item.imageUrl" class="card-emoji">{{ categoryEmoji }}</span>
+    <span *ngIf="!item.imageUrl || imageError" class="card-emoji">{{ categoryEmoji }}</span>
 
     <!-- Delete button (hover) -->
     <button class="delete-btn" (click)="onDelete($event)">×</button>

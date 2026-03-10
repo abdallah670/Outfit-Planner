@@ -10,12 +10,19 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Store } from '@ngrx/store';
 import { SocialActions } from '../../../core/state/social/social.actions';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 interface PollOptionForm {
   description: string;
   outfitId?: string;
+  imageFile?: File;
+  imagePreview?: string;
 }
 
 @Component({
@@ -33,6 +40,7 @@ interface PollOptionForm {
     MatNativeDateModule,
     MatCardModule,
     MatDividerModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './create-poll.component.html',
   styleUrl: './create-poll.component.scss',
@@ -43,10 +51,19 @@ export class CreatePollComponent implements OnInit {
   maxOptions = 6;
   minOptions = 2;
 
+  // Track uploading state for each option (index -> boolean)
+  uploadingOptions = signal<Set<number>>(new Set());
+
+  // Store uploaded image URLs for each option
+  uploadedImages = signal<Map<number, string>>(new Map());
+
+  private readonly apiUrl = `${environment.baseUrl}`;
+
   constructor(
     private fb: FormBuilder,
     private store: Store,
     private router: Router,
+    private http: HttpClient,
   ) {}
 
   ngOnInit(): void {
@@ -140,5 +157,129 @@ export class CreatePollComponent implements OnInit {
 
   getOptionLetter(index: number): string {
     return String.fromCharCode(65 + index); // A, B, C, D, E, F
+  }
+
+  /**
+   * Handle image file selection for a poll option
+   */
+  onImageSelected(event: Event, optionIndex: number): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      console.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      console.error('File size must be less than 5MB');
+      return;
+    }
+
+    // Set uploading state
+    const currentUploading = this.uploadingOptions();
+    currentUploading.add(optionIndex);
+    this.uploadingOptions.set(new Set(currentUploading));
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Update the preview
+      const currentImages = this.uploadedImages();
+      currentImages.set(optionIndex, e.target?.result as string);
+      this.uploadedImages.set(new Map(currentImages));
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server
+    this.uploadImage(file).subscribe({
+      next: (imageUrl: string) => {
+        // Store the uploaded image URL
+        const currentImages = this.uploadedImages();
+        currentImages.set(optionIndex, imageUrl);
+        this.uploadedImages.set(new Map(currentImages));
+
+        // Clear uploading state
+        const currentUploading = this.uploadingOptions();
+        currentUploading.delete(optionIndex);
+        this.uploadingOptions.set(new Set(currentUploading));
+
+        // Update form with outfitId (using image URL as reference)
+        const options = this.pollForm.get('options') as FormArray;
+        const optionGroup = options.at(optionIndex) as FormGroup;
+        optionGroup.patchValue({ outfitId: imageUrl });
+      },
+      error: (err:any) => {
+        console.error('Failed to upload image:', err);
+        // Clear uploading state
+        const currentUploading = this.uploadingOptions();
+        currentUploading.delete(optionIndex);
+        this.uploadingOptions.set(new Set(currentUploading));
+      },
+    });
+  }
+
+  /**
+   * Upload image to server
+   */
+  private uploadImage(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Call the actual upload endpoint
+    return this.http.post<{ url: string }>(
+      `${this.apiUrl}/poll-image-upload/upload`,
+      formData
+    ).pipe(
+      map((response: { url: string }) => response.url)
+    );
+  }
+
+  /**
+   * Select an existing outfit for this poll option
+   */
+  onSelectOutfit(optionIndex: number): void {
+    // TODO: Open a dialog to select from user's outfits
+    // For now, navigate to outfits page to get outfit ID
+    this.router.navigate(['/outfits'], { 
+      queryParams: { 
+        selectForPoll: true, 
+        optionIndex: optionIndex 
+      }
+    });
+  }
+
+  /**
+   * Check if an option is currently uploading
+   */
+  isUploading(optionIndex: number): boolean {
+    return this.uploadingOptions().has(optionIndex);
+  }
+
+  /**
+   * Get image preview for an option
+   */
+  getImagePreview(optionIndex: number): string | undefined {
+    return this.uploadedImages().get(optionIndex);
+  }
+
+  /**
+   * Remove uploaded image from an option
+   */
+  removeImage(optionIndex: number): void {
+    const currentImages = this.uploadedImages();
+    currentImages.delete(optionIndex);
+    this.uploadedImages.set(new Map(currentImages));
+
+    // Clear outfitId in form
+    const options = this.pollForm.get('options') as FormArray;
+    const optionGroup = options.at(optionIndex) as FormGroup;
+    optionGroup.patchValue({ outfitId: null });
   }
 }

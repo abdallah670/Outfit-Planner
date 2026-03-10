@@ -20,15 +20,8 @@ import {
   PollStatus,
   PollOption,
 } from '../../../domain/entities/validation-poll.entity';
-
-interface TrendingOutfit {
-  id: string;
-  userName: string;
-  userAvatar: string;
-  imageUrl: string;
-  likes: number;
-  occasion: string;
-}
+import { SOCIAL_REPOSITORY, SocialRepository } from '../../../domain/repositories/social.repository';
+import { TrendingOutfit } from '../../../data/datasources/social.datasource';
 
 interface CommunityFeedItem {
   id: string;
@@ -95,6 +88,7 @@ function getTimeLeft(expiresAt: Date | string): string {
 export class SocialComponent implements OnInit {
   private store = inject(Store);
   private snackBar = inject(MatSnackBar);
+  private socialRepository = inject(SOCIAL_REPOSITORY);
 
   activeTab = signal(0);
 
@@ -192,15 +186,8 @@ export class SocialComponent implements OnInit {
     }
   ]);
 
-  // Mock trending outfits - static for now
-  trendingOutfits = signal<TrendingOutfit[]>([
-    { id: '1', userName: 'Sarah', userAvatar: '', imageUrl: '', likes: 234, occasion: 'Date Night' },
-    { id: '2', userName: 'Mike', userAvatar: '', imageUrl: '', likes: 189, occasion: 'Casual' },
-    { id: '3', userName: 'Alex', userAvatar: '', imageUrl: '', likes: 156, occasion: 'Business' },
-    { id: '4', userName: 'Emma', userAvatar: '', imageUrl: '', likes: 142, occasion: 'Weekend' },
-    { id: '5', userName: 'James', userAvatar: '', imageUrl: '', likes: 128, occasion: 'Date Night' },
-    { id: '6', userName: 'Olivia', userAvatar: '', imageUrl: '', likes: 115, occasion: 'Casual' }
-  ]);
+  // Trending outfits - loaded from API
+  trendingOutfits = signal<TrendingOutfit[]>([]);
 
   // Filter options
   filterChips = ['All', 'Date Night', 'Work', 'Casual', 'Sports', 'Formal'];
@@ -209,6 +196,16 @@ export class SocialComponent implements OnInit {
   ngOnInit(): void {
     // Load polls from API via NgRx
     this.store.dispatch(SocialActions.loadPolls());
+    
+    // Load trending outfits from API
+    this.socialRepository.getTrendingOutfits().subscribe({
+      next: (outfits: TrendingOutfit[]) => {
+        this.trendingOutfits.set(outfits);
+      },
+      error: (err: Error) => {
+        console.error('Failed to load trending outfits:', err);
+      }
+    });
   }
 
   /**

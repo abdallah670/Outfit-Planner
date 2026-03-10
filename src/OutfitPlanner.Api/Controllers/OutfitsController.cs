@@ -210,13 +210,24 @@ public class OutfitsController : ControllerBase
                 _logger.LogInformation("Returning cached image for outfit {OutfitId}", id);
                 return File(cachedImage, "image/jpeg", $"outfit-{id}.jpg");
             }
+           
 
             var userId = GetUserId();
             var outfit = await _mediator.Send(new GetOutfitByIdRequest { Id = id, UserId = userId });
-            
+           
             if (outfit == null || outfit.Items == null || !outfit.Items.Any())
                 return NotFound("Outfit not found or has no items");
-
+            var existingImageUrl = outfit.ImageUrl;
+            if (!string.IsNullOrEmpty(existingImageUrl))
+            {
+                // Read the existing cached image and return it
+                var imagePath = Path.Combine(_environment.WebRootPath, existingImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    var imageBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
+                    return File(imageBytes, "image/jpeg", $"outfit-{id}.jpg");
+                }
+            }
             // Get outfit items with their metadata
             var itemsWithImages = outfit.Items
                 .Where(i => !string.IsNullOrEmpty(i.ClothingItemImageUrl))
@@ -240,12 +251,18 @@ public class OutfitsController : ControllerBase
                 baseUrl);
             
             if (combinedImage == null || combinedImage.Length == 0)
-                return StatusCode(500, "Failed to combine images - no valid images found");
+            {
+                _logger.LogWarning("Could not generate combined image for outfit {OutfitId} - no valid images found", id);
+                return NotFound("Could not generate outfit preview - clothing item images are missing or unavailable.");
+            }
 
             // Cache the generated image for future requests
             await _imageCacheService.CacheImageAsync(id, combinedImage);
             _logger.LogInformation("Generated and cached image for outfit {OutfitId}", id);
-
+            
+            // Update the outfit with the ImageUrl
+            var updateDto = new UpdateOutfitDto { ImageUrl = $"/uploads/outfit-images/outfit-{id}.jpg" };
+            await _mediator.Send(new UpdateOutfitCommand { Id = id, UserId = userId, Request = updateDto });
             return File(combinedImage, "image/jpeg", $"outfit-{id}.jpg");
         }
         catch (Exception ex)

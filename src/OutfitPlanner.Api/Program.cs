@@ -1,10 +1,11 @@
 using Scalar.AspNetCore;
-using OutfitPlanner.Infrastructure;
 using OutfitPlanner.Api.Middleware;
+using OutfitPlanner.Infrastructure;
+using OutfitPlanner.Persistence.Data;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
-using outfitplanner.Application;
+using OutfitPlanner.Application;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -54,9 +55,10 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
                .AllowAnyMethod()
-               .AllowAnyHeader());
+               .AllowAnyHeader()
+               .AllowCredentials());
 });
 
 // Add Infrastructure Services
@@ -64,6 +66,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Add Application Services
 builder.Services.AddApplication(builder.Configuration);
+
+builder.Services.AddScoped<DataSeeder>();
 
 var app = builder.Build();
 
@@ -127,6 +131,14 @@ app.MapGet("/weatherforecast", () =>
 try 
 {
     Log.Information("Starting web host");
+    
+    // Seed the database with initial data
+    using (var scope = app.Services.CreateScope())
+    {
+        var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+        await seeder.SeedAsync();
+    }
+    
     app.Run();
 }
 catch (Exception ex)

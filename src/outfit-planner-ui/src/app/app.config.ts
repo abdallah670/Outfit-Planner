@@ -5,7 +5,7 @@ import {
   importProvidersFrom,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CookieService } from 'ngx-cookie-service';
 import { provideStore } from '@ngrx/store';
@@ -31,14 +31,20 @@ import { OutfitEffects } from './core/state/outfit/outfit.effects';
 import { weatherRepositoryProvider } from './data/repositories/weather.repository.impl';
 import { outfitRepositoryProvider } from './data/repositories/outfit.repository.impl';
 import { socialRepositoryProvider } from './data/repositories/social.repository.impl';
+import { wearEventRepositoryProvider } from './data/repositories/wear-event.repository.impl';
 import { socialFeature, reducer as socialReducer } from './core/state/social/social.reducer';
+import { calendarFeature, reducer as calendarReducer } from './core/state/calendar/calendar.reducer';
+import { CalendarEffects } from './core/state/calendar/calendar.effects';
 import { SocialEffects } from './core/state/social/social.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([tokenInterceptor])),
+    provideHttpClient(
+      withInterceptors([tokenInterceptor]),
+      withFetch(),
+    ),
     provideAnimationsAsync(),
     importProvidersFrom(MatSnackBarModule),
     CookieService,
@@ -49,11 +55,13 @@ export const appConfig: ApplicationConfig = {
       user: userReducer,
       outfit: outfitReducer,
       social: socialReducer,
+      calendar: calendarReducer,
     }),
-    provideEffects(authEffects, WardrobeEffects, WeatherEffects, userEffects, OutfitEffects, SocialEffects),
+    provideEffects(authEffects, WardrobeEffects, WeatherEffects, userEffects, OutfitEffects, SocialEffects, CalendarEffects),
     weatherRepositoryProvider,
     outfitRepositoryProvider,
     socialRepositoryProvider,
+    wearEventRepositoryProvider,
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

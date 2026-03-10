@@ -3,7 +3,14 @@ import {
   SocialRepository,
   SOCIAL_REPOSITORY,
 } from '../../domain/repositories/social.repository';
-import { SocialDataSource } from '../datasources/social.datasource';
+import {
+  SocialDataSource,
+  TrendingOutfit,
+  OutfitEngagement,
+  VoteComment,
+  OutfitVoteResult,
+  UpdatePollRequest,
+} from '../datasources/social.datasource';
 import { Observable } from 'rxjs';
 import {
   ValidationPoll,
@@ -32,6 +39,54 @@ export class SocialRepositoryImpl implements SocialRepository {
 
   vote(pollId: string, dto: CastVoteRequest): Observable<CommandResponse> {
     return this.socialDataSource.vote(pollId, dto);
+  }
+
+  getTrendingOutfits(): Observable<TrendingOutfit[]> {
+    return this.socialDataSource.getTrendingOutfits();
+  }
+
+  // ============ Outfit Poll Methods ============
+
+  likeOutfit(outfitId: string): Observable<OutfitVoteResult> {
+    return this.socialDataSource.likeOutfit(outfitId);
+  }
+
+  unlikeOutfit(outfitId: string): Observable<OutfitVoteResult> {
+    return this.socialDataSource.unlikeOutfit(outfitId);
+  }
+
+  commentOnOutfit(outfitId: string, content: string): Observable<VoteComment> {
+    return this.socialDataSource.commentOnOutfit(outfitId, content);
+  }
+
+  getOutfitEngagement(outfitId: string): Observable<OutfitEngagement> {
+    return this.socialDataSource.getOutfitEngagement(outfitId);
+  }
+
+  getOutfitVotes(
+    outfitId: string,
+    page?: number,
+    pageSize?: number,
+  ): Observable<{ items: VoteComment[]; totalCount: number }> {
+    return this.socialDataSource.getOutfitVotes(outfitId, page, pageSize);
+  }
+
+  reactToVote(voteId: string, reactionType: string): Observable<void> {
+    return this.socialDataSource.reactToVote(voteId, reactionType);
+  }
+
+  // ============ Poll Management Methods ============
+
+  updatePoll(pollId: string, request: UpdatePollRequest): Observable<void> {
+    return this.socialDataSource.updatePoll(pollId, request);
+  }
+
+  deletePoll(pollId: string): Observable<void> {
+    return this.socialDataSource.deletePoll(pollId);
+  }
+
+  closePoll(pollId: string): Observable<void> {
+    return this.socialDataSource.closePoll(pollId);
   }
 }
 

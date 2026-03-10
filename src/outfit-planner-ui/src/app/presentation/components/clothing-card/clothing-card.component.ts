@@ -18,9 +18,15 @@ export class ClothingCardComponent {
   @Output() delete = new EventEmitter<string>();
   @Output() recordWear = new EventEmitter<string>();
 
+  imageError = false;
+
   onDelete(event: Event) {
     event.stopPropagation();
     this.delete.emit(this.item.id);
+  }
+
+  onImageError(): void {
+    this.imageError = true;
   }
 
   get categoryEmoji(): string {

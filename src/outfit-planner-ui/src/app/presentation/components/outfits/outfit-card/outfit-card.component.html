@@ -13,13 +13,14 @@
       [class.multiple]="outfit.items.length > 1"
     >
       <ng-container *ngIf="outfit.items.length > 0; else noItems">
-        <div *ngFor="let item of outfit.items.slice(0, 4)" class="item-thumbnail">
+        <div *ngFor="let item of outfit.items.slice(0, 4); let i = index" class="item-thumbnail">
           <img
-            *ngIf="$any(item).clothingItemImageUrl"
+            *ngIf="$any(item).clothingItemImageUrl && !imageError[i]"
             [src]="$any(item).clothingItemImageUrl"
             [alt]="$any(item).clothingItemName || 'Clothing item'"
+            (error)="onImageError(i)"
           />
-          <span *ngIf="!$any(item).clothingItemImageUrl" class="fallback-emoji">🧥</span>
+          <span *ngIf="!$any(item).clothingItemImageUrl || imageError[i]" class="fallback-emoji">🧥</span>
         </div>
       </ng-container>
       <ng-template #noItems>

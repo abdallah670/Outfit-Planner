@@ -19,8 +19,14 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
       setHeaders: {
         Authorization: `Bearer ${token}`,
       },
+      withCredentials: true,
     });
     console.log('[TokenInterceptor] Added Authorization header');
+  } else {
+    // Still include credentials even without token
+    authReq = req.clone({
+      withCredentials: true,
+    });
   }
 
   return next(authReq).pipe(
@@ -35,6 +41,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
                 setHeaders: {
                   Authorization: `Bearer ${newToken}`,
                 },
+                withCredentials: true,
               });
               return next(retryReq);
             }

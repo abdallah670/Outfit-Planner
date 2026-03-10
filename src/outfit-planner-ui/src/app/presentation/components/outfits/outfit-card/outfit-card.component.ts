@@ -36,6 +36,7 @@ export class OutfitCardComponent implements OnInit {
   isGenerating = false;
   combinedImageUrl: string | null = null;
   errorMessage: string | null = null;
+  imageError: boolean[] = []; // Track image load errors by index
 
   get hasMultipleItems(): boolean {
     return this.outfit.items && this.outfit.items.length > 1;
@@ -100,7 +101,13 @@ export class OutfitCardComponent implements OnInit {
 
     try {
       // Use the enhanced backend service that applies AI guide principles
-      this.combinedImageUrl = await this.canvasService.getCombinedImageFromBackend(this.outfit.id);
+      const result = await this.canvasService.getCombinedImageFromBackend(this.outfit.id);
+      if (result) {
+        this.combinedImageUrl = result;
+      } else {
+        // Images not available - will show item grid view instead
+        this.errorMessage = 'Outfit preview not available - some item images are missing';
+      }
     } catch (error) {
       console.error('Failed to generate combined image:', error);
       this.errorMessage = 'Failed to generate outfit preview';
@@ -135,5 +142,12 @@ export class OutfitCardComponent implements OnInit {
     this.combinedImageUrl = null;
     this.errorMessage = null;
     await this.generateCombinedImage();
+  }
+
+  /**
+   * Handle image load error for a specific item thumbnail
+   */
+  onImageError(index: number): void {
+    this.imageError[index] = true;
   }
 }
