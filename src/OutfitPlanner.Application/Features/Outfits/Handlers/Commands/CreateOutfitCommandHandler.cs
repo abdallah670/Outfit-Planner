@@ -25,8 +25,7 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
     private readonly IMapper _mapper;
     private readonly IValidator<CreateOutfitCommand> _validator;
     private readonly ILogger<CreateOutfitCommandHandler> _logger;
-    private readonly IImageCombinationService _imageCombinationService;
-    private readonly IOutfitImageCacheService _imageCacheService;
+    private readonly IOutfitImageGeneratorService _imageGeneratorService;
     private readonly OutfitImageCacheSettings _cacheSettings;
 
     public CreateOutfitCommandHandler(
@@ -34,16 +33,14 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
         IMapper mapper,
         IValidator<CreateOutfitCommand> validator,
         ILogger<CreateOutfitCommandHandler> logger,
-        IImageCombinationService imageCombinationService,
-        IOutfitImageCacheService imageCacheService,
+        IOutfitImageGeneratorService imageGeneratorService,
         IOptions<OutfitImageCacheSettings> cacheSettings)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _imageCombinationService = imageCombinationService ?? throw new ArgumentNullException(nameof(imageCombinationService));
-        _imageCacheService = imageCacheService ?? throw new ArgumentNullException(nameof(imageCacheService));
+        _imageGeneratorService = imageGeneratorService ?? throw new ArgumentNullException(nameof(imageGeneratorService));
         _cacheSettings = cacheSettings?.Value ?? new OutfitImageCacheSettings();
     }
 
@@ -94,17 +91,16 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
             // Pre-generate outfit image if enabled and outfit has multiple items
             if (_cacheSettings.EnablePreGeneration && savedOutfit.Items.Count > 1)
             {
-                _ = Task.Run(async () =>
+                var imagePath = await PreGenerateOutfitImageAsync(savedOutfit);
+                
+                // Save the image URL to the database
+                if (!string.IsNullOrEmpty(imagePath))
                 {
-                    try
-                    {
-                        await PreGenerateOutfitImageAsync(savedOutfit);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Failed to pre-generate outfit image for outfit {OutfitId}", outfit.Id);
-                    }
-                }, cancellationToken);
+                    savedOutfit.ImageUrl = imagePath;
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                    _logger.LogInformation("Saved outfit image URL to database for outfit {OutfitId}: {ImageUrl}", 
+                        outfit.Id, imagePath);
+                }
             }
 
             _logger.LogInformation(
@@ -171,49 +167,10 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
 
     /// <summary>
     /// Pre-generates and caches the outfit image in the background
+    /// Uses the injected IOutfitImageGeneratorService for image generation
     /// </summary>
-    private async Task PreGenerateOutfitImageAsync(Outfit outfit)
+    private async Task<string?> PreGenerateOutfitImageAsync(Outfit outfit)
     {
-        try
-        {
-            _logger.LogInformation("Pre-generating outfit image for outfit {OutfitId}", outfit.Id);
-
-            // Get clothing items with their images
-            var itemsWithImages = outfit.Items
-                .Where(i => !string.IsNullOrEmpty(i.ClothingItem.ImageUrl))
-                .ToList();
-
-            if (itemsWithImages.Count < 2)
-            {
-                _logger.LogInformation("Outfit {OutfitId} has less than 2 items with images, skipping pre-generation", outfit.Id);
-                return;
-            }
-
-            // Extract URLs, types, and names
-            var imageUrls = itemsWithImages.Select(i => i.ClothingItem.ImageUrl).ToList();
-            var clothingTypes = itemsWithImages.Select(i => i.ClothingItem.Type).ToList();
-            var clothingNames = itemsWithImages.Select(i => i.ClothingItem.Name).ToList();
-
-            // Generate combined image
-            var combinedImage = await _imageCombinationService.CombineImagesFromPathsAsync(
-                imageUrls,
-                clothingTypes,
-                clothingNames);
-
-            if (combinedImage != null)
-            {
-                // Cache the generated image
-                await _imageCacheService.CacheImageAsync(outfit.Id, combinedImage);
-                _logger.LogInformation("Successfully pre-generated and cached outfit image for outfit {OutfitId}", outfit.Id);
-            }
-            else
-            {
-                _logger.LogWarning("Failed to generate outfit image for outfit {OutfitId}", outfit.Id);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error pre-generating outfit image for outfit {OutfitId}", outfit.Id);
-        }
+        return await _imageGeneratorService.GenerateOutfitImageAsync(outfit);
     }
 }
