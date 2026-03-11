@@ -37,7 +37,7 @@ public class DataSeeder
             await _context.Database.EnsureCreatedAsync();
 
             // Check if already seeded
-            if (await _context.Outfits.AnyAsync())
+            if (await _userManager.Users.AnyAsync())
             {
                 _logger.LogInformation("Database already seeded, skipping...");
                 return;
@@ -47,6 +47,9 @@ public class DataSeeder
 
             // Seed sample users
             await SeedUsersAsync();
+
+            // Seed sample clothing items
+            await SeedClothingItemsAsync();
 
             // Seed sample outfits with images
             await SeedOutfitsAsync();
@@ -68,16 +71,90 @@ public class DataSeeder
 
     private async Task SeedUsersAsync()
     {
-        // Get existing users from Identity
-        var users = await _userManager.Users.Take(5).ToListAsync();
-        
-        if (users.Count == 0)
+        // Check if there are any users
+        if (await _userManager.Users.AnyAsync())
         {
-            _logger.LogWarning("No users found. Please register a user first.");
+            _logger.LogInformation("Users already exist, skipping user seeding.");
             return;
         }
 
-        _logger.LogInformation("Found {Count} users in the system", users.Count);
+        var users = new List<User>
+        {
+            new User { UserName = "user1@example.com", Email = "user1@example.com", Name = "User One" },
+            new User { UserName = "user2@example.com", Email = "user2@example.com", Name = "User Two" },
+            new User { UserName = "user3@example.com", Email = "user3@example.com", Name = "User Three" },
+            new User { UserName = "user4@example.com", Email = "user4@example.com", Name = "User Four" },
+            new User { UserName = "user5@example.com", Email = "user5@example.com", Name = "User Five" }
+        };
+
+        var password = "Password123!";
+
+        foreach (var user in users)
+        {
+            var result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Created user: {UserName}", user.UserName);
+            }
+            else
+            {
+                _logger.LogError("Failed to create user {UserName}: {Errors}", user.UserName, string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+        }
+
+        _logger.LogInformation("Seeded {Count} users", users.Count);
+    }
+
+    private async Task SeedClothingItemsAsync()
+    {
+        var users = await _userManager.Users.ToListAsync();
+        if (users.Count == 0)
+        {
+            _logger.LogWarning("No users found. Skipping clothing items seeding.");
+            return;
+        }
+
+        // Check if any user already has clothing items
+        var anyClothingItems = await _context.ClothingItems.AnyAsync();
+        if (anyClothingItems)
+        {
+            _logger.LogInformation("Clothing items already exist, skipping clothing items seeding.");
+            return;
+        }
+
+        var clothingItems = new List<ClothingItem>();
+        var random = new Random(42); // Fixed seed for reproducibility
+
+        foreach (var user in users)
+        {
+            // Create 2 tops, 2 bottoms, 2 footwear, 1 outerwear for each user
+            var categories = new[] { "Top", "Top", "Bottom", "Bottom", "Footwear", "Footwear", "Outerwear" };
+            foreach (var category in categories)
+            {
+                var clothingItem = new ClothingItem
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    Name = $"{category} {random.Next(1, 10)}",
+                    Category = category,
+                    Color = GetRandomColor(random),
+                    Brand = $"Brand {random.Next(1, 5)}",
+                    Size = GetRandomSize(random),
+                    Material = $"Material {random.Next(1, 5)}",
+                    PurchaseDate = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 365)),
+                    Price = Math.Round(random.NextDouble() * 100 + 10, 2),
+                    ImageUrl = $"/uploads/clothing-images/{category.ToLower()}-{random.Next(1, 100)}.jpg",
+                    CreatedAt = DateTimeOffset.UtcNow
+                };
+
+                clothingItems.Add(clothingItem);
+            }
+        }
+
+        await _context.ClothingItems.AddRangeAsync(clothingItems);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} clothing items", clothingItems.Count);
     }
 
     private async Task SeedOutfitsAsync()
@@ -336,5 +413,17 @@ public class DataSeeder
             3 => "Windy",
             _ => "Clear"
         };
+    }
+
+    private static string GetRandomColor(Random random)
+    {
+        var colors = new[] { "Red", "Blue", "Green", "Black", "White", "Yellow", "Purple", "Pink", "Orange", "Gray" };
+        return colors[random.Next(colors.Length)];
+    }
+
+    private static string GetRandomSize(Random random)
+    {
+        var sizes = new[] { "XS", "S", "M", "L", "XL", "XXL" };
+        return sizes[random.Next(sizes.Length)];
     }
 }

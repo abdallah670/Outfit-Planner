@@ -1,3 +1,4 @@
+using OutfitPlanner.Domain.Enums;
 namespace OutfitPlanner.Domain.Entities;
 
 /// <summary>
@@ -32,21 +33,7 @@ public class CalendarEvent : BaseEntity
     public string? RecurrencePattern { get; set; } // JSON serialized RecurrencePattern
 }
 
-/// <summary>
-/// Calendar event types for categorization
-/// </summary>
-public enum CalendarEventType
-{
-    General,
-    Work,
-    Meeting,
-    Social,
-    Date,
-    Party,
-    Sport,
-    Travel,
-    Appointment
-}
+
 
 /// <summary>
 /// Value object for recurrence pattern
@@ -59,14 +46,3 @@ public class RecurrencePattern
     public DateTimeOffset? EndDate { get; set; }
 }
 
-/// <summary>
-/// Recurrence types for calendar events
-/// </summary>
-public enum RecurrenceType
-{
-    None,
-    Daily,
-    Weekly,
-    Monthly,
-    Yearly
-}
