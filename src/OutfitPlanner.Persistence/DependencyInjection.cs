@@ -69,7 +69,7 @@ public static class DependencyInjection
         services.AddScoped<IUserPreferencesRepository, UserPreferencesRepository>();
         services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
         services.AddScoped<ITrendingOutfitRepository, TrendingOutfitRepository>();
-
+        services.AddScoped<DataSeeder>();
         return services;
     }
 }
