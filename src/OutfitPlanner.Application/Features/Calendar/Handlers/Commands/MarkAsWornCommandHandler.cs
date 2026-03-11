@@ -30,7 +30,7 @@ public class MarkAsWornCommandHandler : IRequestHandler<MarkAsWornCommand, BaseC
 
         if (wearEvent.UserId != request.UserId)
         {
-            throw new UnauthorizedAccessException("You do not have permission to update this event");
+            throw new Exceptions.UnauthorizedAccessException("You do not have permission to update this event");
         }
 
         // Update the event with wear details

@@ -30,10 +30,10 @@ public class DeleteCalendarEventCommandHandler : IRequestHandler<DeleteCalendarE
 
         if (wearEvent.UserId != request.UserId)
         {
-            throw new UnauthorizedAccessException("You do not have permission to delete this event");
+            throw new Exceptions.UnauthorizedAccessException("You do not have permission to delete this event");
         }
 
-        _unitOfWork.WearEvents.Remove(wearEvent);
+        await _unitOfWork.WearEvents.RemoveAsync(wearEvent);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         response.Success = true;

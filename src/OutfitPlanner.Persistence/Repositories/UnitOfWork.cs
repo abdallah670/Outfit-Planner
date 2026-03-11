@@ -20,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
     public IPollOptionRepository PollOptions { get; }
     public IVoteRepository Votes { get; }
     public IUserPreferencesRepository UserPreferences { get; }
+    public ICalendarEventRepository CalendarEvents { get; }
 
     public UnitOfWork(
         AppDbContext context,
@@ -35,7 +36,8 @@ public class UnitOfWork : IUnitOfWork
         IOutfitItemRepository outfitItems,
         IPollOptionRepository pollOptions,
         IVoteRepository votes,
-        IUserPreferencesRepository userPreferences)
+        IUserPreferencesRepository userPreferences,
+        ICalendarEventRepository calendarEvents)
     {
         _context = context;
         ClothingItems = clothingItems;
@@ -51,6 +53,7 @@ public class UnitOfWork : IUnitOfWork
         PollOptions = pollOptions;
         Votes = votes;
         UserPreferences = userPreferences;
+        CalendarEvents = calendarEvents;
     }
     
 

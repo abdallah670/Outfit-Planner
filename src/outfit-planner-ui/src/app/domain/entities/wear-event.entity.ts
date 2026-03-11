@@ -65,3 +65,65 @@ export interface MonthlyStats {
   scheduledCount: number;
   favoriteCount: number;
 }
+
+/**
+ * Calendar event types
+ */
+export enum CalendarEventType {
+  General = 0,
+  Work = 1,
+  Meeting = 2,
+  Social = 3,
+  Date = 4,
+  Party = 5,
+  Sport = 6,
+  Travel = 7,
+  Appointment = 8
+}
+
+/**
+ * Calendar event item (new events feature)
+ */
+export interface CalendarEventItem {
+  id: string;
+  title: string;
+  description?: string;
+  location?: string;
+  eventDate: Date;
+  startTime?: string; // Formatted as "2:00 PM"
+  endTime?: string;   // Formatted as "4:00 PM"
+  eventType: CalendarEventType;
+  wearEventId?: string;
+  notes?: string;
+  isRecurring: boolean;
+}
+
+/**
+ * Request to create a calendar event
+ */
+export interface CreateCalendarEventRequest {
+  title: string;
+  description?: string;
+  location?: string;
+  eventDate: Date;
+  startTime?: string;
+  endTime?: string;
+  eventType: CalendarEventType;
+  outfitId?: string;
+  notes?: string;
+}
+
+/**
+ * Request to update a calendar event
+ */
+export interface UpdateCalendarEventRequest {
+  title?: string;
+  description?: string;
+  location?: string;
+  eventDate?: Date;
+  startTime?: string;
+  endTime?: string;
+  eventType?: CalendarEventType;
+  outfitId?: string;
+  notes?: string;
+}

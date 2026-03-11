@@ -1,0 +1,436 @@
+<!-- Navigation Header -->
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="logo" routerLink="/">
+      <div class="logo-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"
+          ></path>
+        </svg>
+      </div>
+      <span class="logo-text">Outfit Planner</span>
+    </div>
+    <div class="nav-tabs">
+      <a routerLink="/dashboard" class="nav-tab">Dashboard</a>
+      <a routerLink="/calendar" class="nav-tab">Calendar</a>
+      <a routerLink="/wardrobe" class="nav-tab">Wardrobe</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="settings-btn" routerLink="/settings">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="3"></circle>
+        <path
+          d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
+        ></path>
+      </svg>
+      <span>Settings</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main-content">
+  <!-- Loading State -->
+  <div *ngIf="loading$ | async" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading profile...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error$ | async as error" class="error-message">
+    <span>{{ error }}</span>
+    <button class="btn-icon" (click)="clearError()" aria-label="Dismiss error">✕</button>
+  </div>
+
+  <ng-container *ngIf="profile$ | async as profile">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <img
+          [src]="$any(profile).profilePictureUrl || 'assets/default-avatar.png'"
+          [alt]="$any(profile).name"
+          class="profile-avatar"
+          (error)="onImageError($event)"
+        />
+        <div class="profile-details">
+          <h1 class="profile-name">{{ $any(profile).name }}</h1>
+          <p class="profile-date">Member since {{ getMemberSince($any(profile).createdAt) }}</p>
+        </div>
+      </div>
+      <button class="edit-profile-btn" (click)="openEditProfileModal()">Edit<br />Profile</button>
+    </div>
+
+    <!-- Wardrobe Stats -->
+    <div class="stats-section">
+      <h2 class="stats-title">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="stats-icon"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        YOUR WARDROBE STATS
+      </h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">{{ $any(profile).wardrobeItemCount || 0 }}</span>
+          <span class="stat-label">Items in Wardrobe</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">{{ $any(profile).outfitCount || 0 }}</span>
+          <span class="stat-label">Outfits Created</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">{{ getAverageWears($any(profile)) }}</span>
+          <span class="stat-label">Times Worn (Avg)</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">${{ getWardrobeValue($any(profile)) }}k</span>
+          <span class="stat-label">Wardrobe Value</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="content-grid">
+      <!-- Style Profile -->
+      <div class="style-profile-card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="card-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"></circle>
+              <circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"></circle>
+              <circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"></circle>
+              <circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"></circle>
+              <path
+                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"
+              ></path>
+            </svg>
+            <h3>Style Profile</h3>
+          </div>
+          <button class="edit-btn" (click)="openEditStyleModal()">Edit</button>
+        </div>
+        <div class="card-content">
+          <!-- Favorite Colors -->
+          <div class="profile-section" *ngIf="$any(profile).styleProfile?.preferredColors?.length">
+            <label>Favorite Colors</label>
+            <div class="color-dots">
+              <span
+                *ngFor="let color of $any(profile).styleProfile.preferredColors"
+                class="color-dot"
+                [style.background-color]="color"
+                [title]="color"
+              ></span>
+            </div>
+          </div>
+
+          <!-- Core Style -->
+          <div class="profile-section" *ngIf="$any(profile).styleProfile?.style">
+            <label>Core Style</label>
+            <div class="tag-list">
+              <span class="tag">{{ $any(profile).styleProfile.style }}</span>
+            </div>
+          </div>
+
+          <!-- Fit Preferences -->
+          <div class="profile-section" *ngIf="$any(profile).styleProfile?.fitPreferences">
+            <label>Fit Preferences</label>
+            <div class="tag-list">
+              <span class="tag">{{ $any(profile).styleProfile.fitPreferences }}</span>
+            </div>
+          </div>
+
+          <!-- Style Tags -->
+          <div
+            class="profile-section"
+            *ngIf="
+              !$any(profile).styleProfile?.preferredColors?.length &&
+              !$any(profile).styleProfile?.style
+            "
+          >
+            <label>Style Tags</label>
+            <div class="tag-list">
+              <span class="tag">Not set</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Settings -->
+      <div class="account-settings-card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="card-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            <h3>Account Settings</h3>
+          </div>
+        </div>
+        <div class="settings-list">
+          <!-- Email -->
+          <div class="setting-item" (click)="openEditEmailModal()">
+            <div class="setting-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                ></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div class="setting-info">
+              <span class="setting-label">Email</span>
+              <span class="setting-value">{{ $any(profile).email }}</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="chevron"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+
+          <!-- Change Password -->
+          <div class="setting-item" (click)="openChangePasswordModal()">
+            <div class="setting-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+            </div>
+            <div class="setting-info">
+              <span class="setting-label">Change Password</span>
+              <span class="setting-value dots">••••••••••••</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="chevron"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+
+          <!-- Notifications -->
+          <div class="setting-item" (click)="openEditPreferencesModal()">
+            <div class="setting-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 01-3.46 0"></path>
+              </svg>
+            </div>
+            <div class="setting-info">
+              <span class="setting-label">Notifications</span>
+              <span class="setting-value">{{
+                ($any(profile).preferences?.includeInTrendAnalysis ?? true) ? 'Enabled' : 'Disabled'
+              }}</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="chevron"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+
+          <!-- Privacy Settings -->
+          <div class="setting-item" (click)="openEditPreferencesModal()">
+            <div class="setting-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div class="setting-info">
+              <span class="setting-label">Default Outfit Privacy</span>
+              <span class="setting-value">{{
+                $any(profile).preferences?.defaultOutfitPrivacy || 'Private'
+              }}</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="chevron"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+
+          <!-- Export Data -->
+          <div class="setting-item" (click)="exportData()">
+            <div class="setting-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </div>
+            <div class="setting-info">
+              <span class="setting-label">Export Data</span>
+              <span class="setting-value">Download your wardrobe data</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="chevron"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="footer-actions">
+      <button class="logout-btn" (click)="onLogout()">Log Out</button>
+      <a href="javascript:void(0)" class="delete-account" (click)="confirmDeleteAccount()"
+        >Delete Account</a
+      >
+    </div>
+  </ng-container>
+</main>

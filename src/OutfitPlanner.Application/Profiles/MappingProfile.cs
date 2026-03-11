@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using OutfitPlanner.Application.DTOs.Calendar;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.DTOs.Social;
 using OutfitPlanner.Application.DTOs.Wardrobe;
@@ -87,5 +88,14 @@ public class MappingProfile : Profile
         CreateMap<VoteDto, Vote>();
 
         CreateMap<TrendingOutfit, TrendingOutfitDto>();
+
+        // Calendar mappings
+        CreateMap<CalendarEvent, CalendarEventItemDto>()
+            .ForMember(d => d.StartTime, opt => opt.MapFrom(s => s.StartTime.HasValue ? s.StartTime.Value.ToString(@"hh\:mm") : null))
+            .ForMember(d => d.EndTime, opt => opt.MapFrom(s => s.EndTime.HasValue ? s.EndTime.Value.ToString(@"hh\:mm") : null));
+
+        CreateMap<CalendarEventItemDto, CalendarEvent>()
+            .ForMember(d => d.StartTime, opt => opt.MapFrom(s => !string.IsNullOrEmpty(s.StartTime) ? TimeSpan.Parse(s.StartTime) : (TimeSpan?)null))
+            .ForMember(d => d.EndTime, opt => opt.MapFrom(s => !string.IsNullOrEmpty(s.EndTime) ? TimeSpan.Parse(s.EndTime) : (TimeSpan?)null));
     }
 }

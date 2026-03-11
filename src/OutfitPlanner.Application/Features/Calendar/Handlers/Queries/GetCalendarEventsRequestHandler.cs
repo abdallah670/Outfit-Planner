@@ -3,6 +3,7 @@ using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.DTOs.Calendar;
 using OutfitPlanner.Application.Features.Calendar.Requests.Queries;
+using OutfitPlanner.Domain.Entities;
 
 namespace OutfitPlanner.Application.Features.Calendar.Handlers.Queries;
 
@@ -30,7 +31,12 @@ public class GetCalendarEventsRequestHandler : IRequestHandler<GetCalendarEvents
         var dtos = new List<CalendarEventDto>();
         foreach (var we in events)
         {
-            var outfit = await _unitOfWork.Outfits.GetByIdAsync(we.OutfitId);
+            Outfit? outfit = null;
+            if (we.OutfitId.HasValue)
+            {
+                outfit = await _unitOfWork.Outfits.GetByIdAsync(we.OutfitId.Value);
+            }
+            
             var firstItem = outfit?.Items.FirstOrDefault();
             var clothingItem = firstItem?.ClothingItem;
             

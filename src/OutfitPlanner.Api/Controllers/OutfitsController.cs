@@ -8,7 +8,7 @@ using OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Responses;
-using OutfitPlanner.Application.Services;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 
 namespace OutfitPlanner.Api.Controllers;
 

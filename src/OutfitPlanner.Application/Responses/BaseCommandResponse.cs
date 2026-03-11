@@ -10,5 +10,6 @@ namespace OutfitPlanner.Application.Responses
         public bool Success { get; set; } = true;
         public string Message { get; set; } = string.Empty;
         public List<string> Errors { get; set; } = new();
+        public object? Data { get; set; }
     }
 }

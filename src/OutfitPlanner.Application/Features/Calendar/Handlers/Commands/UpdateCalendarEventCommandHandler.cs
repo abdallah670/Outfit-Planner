@@ -31,7 +31,7 @@ public class UpdateCalendarEventCommandHandler : IRequestHandler<UpdateCalendarE
 
         if (wearEvent.UserId != request.UserId)
         {
-            throw new UnauthorizedAccessException("You do not have permission to update this event");
+            throw new Exceptions.UnauthorizedAccessException("You do not have permission to update this event");
         }
 
         if (request.Request.WornAt.HasValue)

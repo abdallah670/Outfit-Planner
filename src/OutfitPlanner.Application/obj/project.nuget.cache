@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "3VERlrVmN3Q=",
+  "dgSpecHash": "/VERoGfkKBY=",
   "success": true,
-  "projectFilePath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
+  "projectFilePath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\abdallh\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
@@ -48,9 +48,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-2cmq-823j-5qj8",
-      "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
+      "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
+      "filePath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
       "libraryId": "SixLabors.ImageSharp",
       "targetGraphs": [
         "net9.0"
@@ -60,9 +60,9 @@
       "code": "NU1902",
       "level": "Warning",
       "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-rxmq-m78w-7wmc",
-      "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
+      "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
+      "filePath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
       "libraryId": "SixLabors.ImageSharp",
       "targetGraphs": [
         "net9.0"

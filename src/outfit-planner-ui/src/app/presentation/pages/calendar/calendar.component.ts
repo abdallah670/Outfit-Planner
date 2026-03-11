@@ -14,7 +14,7 @@ import {
   selectCurrentMonth,
   selectLoading,
 } from '../../../core/state/calendar/calendar.selectors';
-import { CalendarEvent, MonthlyStats } from '../../../domain/entities/wear-event.entity';
+import { CalendarEvent, MonthlyStats, CalendarEventItem, CalendarEventType } from '../../../domain/entities/wear-event.entity';
 
 interface CalendarDay {
   date: Date;
@@ -71,6 +71,51 @@ export class CalendarComponent implements OnInit {
 
   // Selected date signals for sidebar display
   selectedDate = signal<Date | null>(null);
+  
+  // Calendar events for selected day (new feature)
+  selectedDayEvents = computed((): CalendarEventItem[] => {
+    const date = this.selectedDate();
+    if (!date) return [];
+    
+    // Mock data for demonstration - in real app, this would come from store/API
+    const mockEvents: CalendarEventItem[] = [
+      {
+        id: '1',
+        title: 'Team Meeting',
+        description: 'Weekly standup with the dev team',
+        location: 'Conference Room A',
+        eventDate: date,
+        startTime: '9:00 AM',
+        endTime: '10:00 AM',
+        eventType: CalendarEventType.Work,
+        isRecurring: true
+      },
+      {
+        id: '2',
+        title: 'Lunch with Client',
+        description: 'Discussing new project requirements',
+        location: 'Downtown Cafe',
+        eventDate: date,
+        startTime: '12:30 PM',
+        endTime: '1:30 PM',
+        eventType: CalendarEventType.Meeting,
+        isRecurring: false
+      },
+      {
+        id: '3',
+        title: 'Gym Session',
+        description: 'Cardio and weights',
+        location: 'Fitness Center',
+        eventDate: date,
+        startTime: '6:00 PM',
+        endTime: '7:30 PM',
+        eventType: CalendarEventType.Sport,
+        isRecurring: true
+      }
+    ];
+    
+    return mockEvents;
+  });
   
   // Computed signals for selected day data
   selectedDayOutfits = computed((): ScheduledOutfit[] => {

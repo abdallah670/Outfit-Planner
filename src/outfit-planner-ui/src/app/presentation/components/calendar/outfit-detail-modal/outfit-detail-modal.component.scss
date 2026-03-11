@@ -1,0 +1,39 @@
+.outfit-detail {
+  padding: 16px 0;
+  min-width: 350px;
+}
+
+.outfit-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.outfit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #555;
+  
+  mat-icon {
+    color: #f8b4c4;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+}
