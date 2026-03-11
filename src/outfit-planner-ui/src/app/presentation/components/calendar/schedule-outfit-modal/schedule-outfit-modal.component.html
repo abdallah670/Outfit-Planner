@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>Schedule Outfit</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="scheduleForm" class="schedule-form">
+    <!-- Outfit Selection -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Outfit</mat-label>
+      <mat-select formControlName="outfitId" required>
+        <mat-option *ngFor="let outfit of data.outfits" [value]="outfit.id">
+          {{ outfit.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="scheduleForm.get('outfitId')?.hasError('required')">
+        Please select an outfit
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Date Picker -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="scheduledDate" required>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="scheduleForm.get('scheduledDate')?.hasError('required')">
+        Please select a date
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Occasion -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Occasion</mat-label>
+      <mat-select formControlName="occasion">
+        <mat-option value="">None</mat-option>
+        <mat-option *ngFor="let occasion of occasions" [value]="occasion">
+          {{ occasion }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Notes -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" rows="3" placeholder="Add any notes..."></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="scheduleForm.invalid">
+    Schedule
+  </button>
+</mat-dialog-actions>

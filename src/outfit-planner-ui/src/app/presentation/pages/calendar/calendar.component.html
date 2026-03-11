@@ -115,13 +115,24 @@
           </div>
           
           <!-- Events List -->
-          <div class="events-list" *ngIf="selectedDayOutfits().length > 0 || true">
+          <div class="events-list" *ngIf="selectedDayEvents().length > 0">
             <div class="event-label">EVENTS</div>
-            <div class="event-item" *ngFor="let outfit of selectedDayOutfits()">
-              <div class="event-time">2:00 PM</div>
-              <div class="event-details">{{ outfit.name }}</div>
+            <div class="event-item" *ngFor="let event of selectedDayEvents()">
+              <div class="event-time">{{ event.startTime }}</div>
+              <div class="event-details">
+                <div class="event-title">{{ event.title }}</div>
+                <div class="event-location" *ngIf="event.location">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  {{ event.location }}
+                </div>
+              </div>
             </div>
-            <div class="event-item" *ngIf="selectedDayOutfits().length === 0">
+          </div>
+          <div class="events-list" *ngIf="selectedDayEvents().length === 0">
+            <div class="event-label">EVENTS</div>
+            <div class="event-item">
               <div class="event-time">--:--</div>
               <div class="event-details">No events</div>
             </div>

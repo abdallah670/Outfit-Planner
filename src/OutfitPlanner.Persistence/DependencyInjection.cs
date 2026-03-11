@@ -67,6 +67,8 @@ public static class DependencyInjection
         services.AddScoped<IPollOptionRepository, PollOptionRepository>();
         services.AddScoped<IVoteRepository, VoteRepository>();
         services.AddScoped<IUserPreferencesRepository, UserPreferencesRepository>();
+        services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
+        services.AddScoped<ITrendingOutfitRepository, TrendingOutfitRepository>();
 
         return services;
     }

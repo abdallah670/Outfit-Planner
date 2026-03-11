@@ -171,6 +171,76 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<TimeSpan?>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTimeOffset>("EventDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsRecurring")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("RecurrencePattern")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<TimeSpan?>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid?>("WearEventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventDate");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("WearEventId");
+
+                    b.HasIndex("UserId", "EventDate");
+
+                    b.ToTable("CalendarEvents", (string)null);
+                });
+
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.ClothingItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -894,6 +964,24 @@ namespace OutfitPlanner.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OutfitPlanner.Domain.Entities.WearEvent", "WearEvent")
+                        .WithMany()
+                        .HasForeignKey("WearEventId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
+
+                    b.Navigation("WearEvent");
                 });
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.ClothingItem", b =>
