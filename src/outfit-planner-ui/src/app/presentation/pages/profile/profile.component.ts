@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +13,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatConfirmDialogComponent } from '../../components/shared/mat-confirm-dialog/mat-confirm-dialog.component';
+import { EditProfileModalComponent } from '../../components/shared/modals/edit-profile-modal/edit-profile-modal.component';
+import { EditStyleProfileModalComponent } from '../../components/shared/modals/edit-style-profile-modal/edit-style-profile-modal.component';
+import { EditPreferencesModalComponent } from '../../components/shared/modals/edit-preferences-modal/edit-preferences-modal.component';
+import { ChangePasswordModalComponent } from '../../components/shared/modals/change-password-modal/change-password-modal.component';
+import { EditEmailModalComponent } from '../../components/shared/modals/edit-email-modal/edit-email-modal.component';
 import {
   UserProfile,
   StylePreference,
@@ -99,35 +104,98 @@ export class ProfileComponent implements OnInit {
     img.src = 'assets/default-avatar.png';
   }
 
-  // Modal handlers - These would open dialog components
-  // For now, we'll show a snackbar indicating the feature
   openEditProfileModal(): void {
-    this.snackBar.open('Profile editing will be available in a modal', 'Close', {
-      duration: 3000,
+    this.profile$.pipe(take(1)).subscribe((profile: UserProfile | null) => {
+      const dialogRef = this.dialog.open(EditProfileModalComponent, {
+        width: '400px',
+        data: {
+          profile: profile,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        if (result) {
+          this.store.dispatch(UserActions.loadProfile());
+          this.snackBar.open('Profile updated successfully', 'Close', {
+            duration: 3000,
+          });
+        }
+      });
     });
   }
 
   openEditStyleModal(): void {
-    this.snackBar.open('Style profile editing will be available in a modal', 'Close', {
-      duration: 3000,
+    this.profile$.pipe(take(1)).subscribe((profile: UserProfile | null) => {
+      const dialogRef = this.dialog.open(EditStyleProfileModalComponent, {
+        width: '400px',
+        data: {
+          styleProfile: profile?.styleProfile,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        if (result) {
+          this.store.dispatch(UserActions.loadProfile());
+          this.snackBar.open('Style profile updated successfully', 'Close', {
+            duration: 3000,
+          });
+        }
+      });
     });
   }
 
   openEditEmailModal(): void {
-    this.snackBar.open('Email editing will be available in a modal', 'Close', {
-      duration: 3000,
+    this.profile$.pipe(take(1)).subscribe((profile: UserProfile | null) => {
+      const dialogRef = this.dialog.open(EditEmailModalComponent, {
+        width: '400px',
+        data: {
+          email: profile?.email,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        if (result) {
+          this.store.dispatch(UserActions.loadProfile());
+          this.snackBar.open('Email updated successfully', 'Close', {
+            duration: 3000,
+          });
+        }
+      });
     });
   }
 
   openChangePasswordModal(): void {
-    this.snackBar.open('Password change will be available in a modal', 'Close', {
-      duration: 3000,
+    const dialogRef = this.dialog.open(ChangePasswordModalComponent, {
+      width: '400px',
+      data: {},
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.snackBar.open('Password changed successfully', 'Close', {
+          duration: 3000,
+        });
+      }
     });
   }
 
   openEditPreferencesModal(): void {
-    this.snackBar.open('Preferences editing will be available in a modal', 'Close', {
-      duration: 3000,
+    this.profile$.pipe(take(1)).subscribe((profile: UserProfile | null) => {
+      const dialogRef = this.dialog.open(EditPreferencesModalComponent, {
+        width: '400px',
+        data: {
+          preferences: profile?.preferences,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        if (result) {
+          this.store.dispatch(UserActions.loadProfile());
+          this.snackBar.open('Preferences updated successfully', 'Close', {
+            duration: 3000,
+          });
+        }
+      });
     });
   }
 

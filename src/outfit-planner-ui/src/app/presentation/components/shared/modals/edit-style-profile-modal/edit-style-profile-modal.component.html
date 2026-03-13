@@ -1,0 +1,67 @@
+<h2 mat-dialog-title>Edit Style Profile</h2>
+<mat-dialog-content>
+  <form [formGroup]="styleForm" (ngSubmit)="onSubmit()">
+    <!-- Core Style -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Core Style</mat-label>
+      <mat-select formControlName="style">
+        <mat-option *ngFor="let style of stylePreferences" [value]="style">
+          {{ style }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Fit Preferences -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Fit Preferences</mat-label>
+      <mat-select formControlName="fitPreferences">
+        <mat-option value="Slim">Slim</mat-option>
+        <mat-option value="Regular">Regular</mat-option>
+        <mat-option value="Loose">Loose</mat-option>
+        <mat-option value="Athletic">Athletic</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Comfort Priority -->
+    <div class="form-field">
+      <label>Comfort Priority: {{ styleForm.get('comfortPriority')?.value }}</label>
+      <input type="range" formControlName="comfortPriority" min="1" max="10" step="1" />
+    </div>
+
+    <!-- Accepts Trends -->
+    <mat-slide-toggle formControlName="acceptsTrends" class="full-width">
+      Accept Fashion Trends
+    </mat-slide-toggle>
+
+    <!-- Preferred Colors -->
+    <div class="color-section">
+      <label>Favorite Colors</label>
+      <div class="color-input">
+        <input type="color" #colorPicker (change)="addColor(colorPicker.value)" />
+        <button type="button" mat-stroked-button (click)="addColor(colorPicker.value)">
+          Add Color
+        </button>
+      </div>
+      <div class="color-list">
+        <div *ngFor="let color of selectedColors; let i = index" class="color-item">
+          <span class="color-dot" [style.background-color]="color"></span>
+          <span>{{ color }}</span>
+          <button type="button" mat-icon-button (click)="removeColor(i)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="styleForm.invalid || isLoading"
+    (click)="onSubmit()"
+  >
+    {{ isLoading ? 'Saving...' : 'Save' }}
+  </button>
+</mat-dialog-actions>

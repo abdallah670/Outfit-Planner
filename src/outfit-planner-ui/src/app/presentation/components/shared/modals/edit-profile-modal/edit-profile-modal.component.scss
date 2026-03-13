@@ -1,0 +1,28 @@
+.full-width {
+  width: 100%;
+}
+
+.profile-picture-section {
+  margin: 1.5rem 0;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  input[type='file'] {
+    margin-bottom: 1rem;
+  }
+
+  .preview {
+    margin-top: 1rem;
+
+    img {
+      max-width: 150px;
+      max-height: 150px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+  }
+}

@@ -271,7 +271,7 @@ public class CalendarController : ControllerBase
         [FromBody] UpdateCalendarEventItemRequest request)
     {
         var userId = GetUserId();
-        var command = new UpdateCalendarEventItemCommand
+        var command = new UpdateCalendarEventDetailsCommand
         {
             Id = id,
             UserId = userId,
@@ -297,7 +297,7 @@ public class CalendarController : ControllerBase
     public async Task<ActionResult> DeleteCalendarEvent(Guid id)
     {
         var userId = GetUserId();
-        var command = new DeleteCalendarEventItemCommand
+        var command = new DeleteCalendarEventCommand
         {
             Id = id,
             UserId = userId

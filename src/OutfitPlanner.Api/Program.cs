@@ -55,10 +55,17 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
-        builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
+        builder.WithOrigins(
+            "http://localhost:4200", 
+            "https://localhost:4200",
+            "http://localhost:5000",
+            "https://localhost:5001",
+            "http://localhost:5001",
+            "https://localhost:5000")
                .AllowAnyMethod()
                .AllowAnyHeader()
-               .AllowCredentials());
+               .AllowCredentials()
+               .SetIsOriginAllowed(_ => true)); // Allow any origin for development
 });
 
 // Add Infrastructure Services
@@ -75,10 +82,12 @@ var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 
+// Apply CORS before HTTPS redirection to handle preflight requests properly
+app.UseCors("AllowAll");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors("AllowAll");
     app.MapOpenApi();
     app.MapScalarApiReference();
     app.UseSwagger();

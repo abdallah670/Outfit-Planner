@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>Edit Email</h2>
+<mat-dialog-content>
+  <form [formGroup]="emailForm" (ngSubmit)="onSubmit()">
+    <!-- Current Email (Read Only) -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Current Email</mat-label>
+      <input matInput [value]="currentEmail" readonly />
+    </mat-form-field>
+
+    <!-- Current Password -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Current Password</mat-label>
+      <input
+        matInput
+        [type]="hideCurrentPassword ? 'password' : 'text'"
+        formControlName="currentPassword"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="hideCurrentPassword = !hideCurrentPassword"
+      >
+        <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="emailForm.get('currentPassword')?.hasError('required')">
+        Current password is required
+      </mat-error>
+    </mat-form-field>
+
+    <!-- New Email -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>New Email</mat-label>
+      <input matInput type="email" formControlName="newEmail" />
+      <mat-error *ngIf="emailForm.get('newEmail')?.hasError('required')">
+        New email is required
+      </mat-error>
+      <mat-error *ngIf="emailForm.get('newEmail')?.hasError('email')">
+        Please enter a valid email address
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Confirm Email -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Confirm New Email</mat-label>
+      <input matInput type="email" formControlName="confirmEmail" />
+      <mat-error *ngIf="emailForm.get('confirmEmail')?.hasError('required')">
+        Please confirm your email
+      </mat-error>
+      <mat-error *ngIf="emailForm.get('confirmEmail')?.hasError('emailMismatch')">
+        Emails do not match
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="emailForm.invalid || isLoading"
+    (click)="onSubmit()"
+  >
+    {{ isLoading ? 'Saving...' : 'Save' }}
+  </button>
+</mat-dialog-actions>

@@ -8,41 +8,73 @@
     <div class="filters">
       <mat-form-field appearance="outline" class="filter-field">
         <mat-label>Occasion</mat-label>
-        <mat-select [(ngModel)]="selectedOccasion">
+        <mat-select [value]="selectedOccasion()" (selectionChange)="onOccasionChange($event.value)">
           <mat-option value="">All Occasions</mat-option>
           <mat-option *ngFor="let occasion of occasions" [value]="occasion">
-            {{ $any(occasion) | titlecase }}
+            {{ occasion | titlecase }}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="filter-field">
         <mat-label>Season</mat-label>
-        <mat-select [(ngModel)]="selectedSeason">
+        <mat-select [value]="selectedSeason()" (selectionChange)="onSeasonChange($event.value)">
           <mat-option value="">All Seasons</mat-option>
           <mat-option *ngFor="let season of seasons" [value]="season">
-            {{ $any(season) | titlecase }}
+            {{ season | titlecase }}
           </mat-option>
         </mat-select>
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field search-field">
+        <mat-label>Search</mat-label>
+        <input
+          matInput
+          [value]="searchQuery()"
+          (input)="onSearchChange($any($event.target).value)"
+          placeholder="Search outfits..."
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Sort By</mat-label>
+        <mat-select [value]="sortBy()" (selectionChange)="onSortChange($event.value)">
+          <mat-option *ngFor="let option of sortOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-button
+        color="primary"
+        (click)="clearFilters()"
+        *ngIf="selectedOccasion() || selectedSeason() || searchQuery()"
+      >
+        Clear Filters
+      </button>
     </div>
   </header>
 
   <div class="outfits-content" *ngIf="!(loading$ | async); else loader">
-    <div class="outfits-grid" *ngIf="outfits$ | async as outfitsList; else emptyState">
-      <ng-container *ngIf="$any(outfitsList).length > 0; else emptyState">
-        <app-outfit-card
-          *ngFor="let outfit of $any(outfitsList); trackBy: trackByOutfitId"
-          [outfit]="$any(outfit)"
-        ></app-outfit-card>
-      </ng-container>
+    <div class="outfits-grid" *ngIf="filteredOutfits().length > 0; else emptyState">
+      <app-outfit-card
+        *ngFor="let outfit of filteredOutfits(); trackBy: trackByOutfitId"
+        [outfit]="outfit"
+      ></app-outfit-card>
     </div>
 
     <ng-template #emptyState>
       <div class="empty-state">
         <mat-icon>inventory_2</mat-icon>
         <h3>No outfits found</h3>
-        <p>Start building your first combination!</p>
+        <p *ngIf="selectedOccasion() || selectedSeason() || searchQuery()">
+          Try adjusting your filters
+        </p>
+        <p *ngIf="!selectedOccasion() && !selectedSeason() && !searchQuery()">
+          Start building your first combination!
+        </p>
         <button mat-flat-button color="primary" routerLink="/outfits/build">Create Outfit</button>
       </div>
     </ng-template>

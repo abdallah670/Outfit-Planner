@@ -1,0 +1,57 @@
+<h2 mat-dialog-title>Edit Preferences</h2>
+<mat-dialog-content>
+  <form [formGroup]="preferencesForm" (ngSubmit)="onSubmit()">
+    <!-- Include in Trend Analysis -->
+    <mat-slide-toggle formControlName="includeInTrendAnalysis" class="full-width">
+      Include in Trend Analysis
+    </mat-slide-toggle>
+    <p class="help-text">Allow your outfit choices to be included in community trend analysis</p>
+
+    <!-- Allow Friend Requests -->
+    <mat-slide-toggle formControlName="allowFriendRequests" class="full-width">
+      Allow Friend Requests
+    </mat-slide-toggle>
+    <p class="help-text">Let other users send you friend requests</p>
+
+    <!-- Share Outfits Anonymously -->
+    <mat-slide-toggle formControlName="shareOutfitsAnonymously" class="full-width">
+      Share Outfits Anonymously
+    </mat-slide-toggle>
+    <p class="help-text">
+      Share your outfits in the community feed without revealing your identity
+    </p>
+
+    <!-- Default Outfit Privacy -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Default Outfit Privacy</mat-label>
+      <mat-select formControlName="defaultOutfitPrivacy">
+        <mat-option *ngFor="let level of privacyLevels" [value]="level">
+          {{ level }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Show Body Metrics -->
+    <mat-slide-toggle formControlName="showBodyMetrics" class="full-width">
+      Show Body Metrics
+    </mat-slide-toggle>
+    <p class="help-text">Display your body measurements on your profile</p>
+
+    <!-- Allow Location Tracking -->
+    <mat-slide-toggle formControlName="allowLocationTracking" class="full-width">
+      Allow Location Tracking
+    </mat-slide-toggle>
+    <p class="help-text">Use your location for weather-based outfit recommendations</p>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="preferencesForm.invalid || isLoading"
+    (click)="onSubmit()"
+  >
+    {{ isLoading ? 'Saving...' : 'Save' }}
+  </button>
+</mat-dialog-actions>

@@ -8,6 +8,7 @@ export interface UserState {
   updating: boolean;
   uploadingPicture: boolean;
   changingPassword: boolean;
+  updatingEmail: boolean;
   error: string | null;
 }
 
@@ -17,6 +18,7 @@ export const initialState: UserState = {
   updating: false,
   uploadingPicture: false,
   changingPassword: false,
+  updatingEmail: false,
   error: null,
 };
 
@@ -94,9 +96,27 @@ export const userReducer = createReducer(
     error,
   })),
 
+  // Update Email
+  on(UserActions.updateEmail, (state) => ({
+    ...state,
+    updatingEmail: true,
+    error: null,
+  })),
+  on(UserActions.updateEmailSuccess, (state, { email }) => ({
+    ...state,
+    profile: state.profile ? { ...state.profile, email } : null,
+    updatingEmail: false,
+    error: null,
+  })),
+  on(UserActions.updateEmailFailure, (state, { error }) => ({
+    ...state,
+    updatingEmail: false,
+    error,
+  })),
+
   // Clear Error
   on(UserActions.clearError, (state) => ({
     ...state,
     error: null,
-  }))
+  })),
 );

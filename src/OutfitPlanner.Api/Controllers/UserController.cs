@@ -151,4 +151,39 @@ public class UserController : ControllerBase
             return StatusCode(500, new { message = "Failed to change password" });
         }
     }
+
+    /// <summary>
+    /// Update user email
+    /// </summary>
+    [HttpPut("email")]
+    public async Task<IActionResult> UpdateEmail([FromBody] UpdateEmailDto request)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var command = new UpdateEmailCommand
+            {
+                UserId = userId,
+                Request = request
+            };
+            var response = await _mediator.Send(command);
+            
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            
+            return BadRequest(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating email");
+            return StatusCode(500, new { message = "Failed to update email" });
+        }
+    }
 }

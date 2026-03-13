@@ -33,18 +33,20 @@ import { outfitRepositoryProvider } from './data/repositories/outfit.repository.
 import { socialRepositoryProvider } from './data/repositories/social.repository.impl';
 import { wearEventRepositoryProvider } from './data/repositories/wear-event.repository.impl';
 import { socialFeature, reducer as socialReducer } from './core/state/social/social.reducer';
-import { calendarFeature, reducer as calendarReducer } from './core/state/calendar/calendar.reducer';
+import {
+  calendarFeature,
+  reducer as calendarReducer,
+} from './core/state/calendar/calendar.reducer';
 import { CalendarEffects } from './core/state/calendar/calendar.effects';
 import { SocialEffects } from './core/state/social/social.effects';
+import { searchReducer } from './core/state/search/search.reducer';
+import * as searchEffects from './core/state/search/search.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(
-      withInterceptors([tokenInterceptor]),
-      withFetch(),
-    ),
+    provideHttpClient(withInterceptors([tokenInterceptor]), withFetch()),
     provideAnimationsAsync(),
     importProvidersFrom(MatSnackBarModule),
     CookieService,
@@ -56,8 +58,18 @@ export const appConfig: ApplicationConfig = {
       outfit: outfitReducer,
       social: socialReducer,
       calendar: calendarReducer,
+      search: searchReducer,
     }),
-    provideEffects(authEffects, WardrobeEffects, WeatherEffects, userEffects, OutfitEffects, SocialEffects, CalendarEffects),
+    provideEffects(
+      authEffects,
+      WardrobeEffects,
+      WeatherEffects,
+      userEffects,
+      OutfitEffects,
+      SocialEffects,
+      CalendarEffects,
+      searchEffects,
+    ),
     weatherRepositoryProvider,
     outfitRepositoryProvider,
     socialRepositoryProvider,

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
+using OutfitPlanner.Domain.ValueObjects;
 using OutfitPlanner.Persistence.Repositories;
 
 namespace OutfitPlanner.Persistence.Data;
@@ -137,15 +138,31 @@ public class DataSeeder
                     UserId = user.Id,
                     Name = $"{category} {random.Next(1, 10)}",
                     Category = category,
-                    Color = GetRandomColor(random),
+                    Type = ClothingType.Top, // Default type based on category
+                    PrimaryColor = GetRandomColor(random),
                     Brand = $"Brand {random.Next(1, 5)}",
                     Size = GetRandomSize(random),
-                    Material = $"Material {random.Next(1, 5)}",
-                    PurchaseDate = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 365)),
-                    Price = Math.Round(random.NextDouble() * 100 + 10, 2),
+                    Fabric = FabricType.Cotton, // Default fabric
+                    PurchaseDate = DateTime.UtcNow.AddDays(-random.Next(1, 365)),
+                    PurchasePrice = Money.From((decimal)(random.NextDouble() * 100 + 10), "USD"),
                     ImageUrl = $"/uploads/clothing-images/{category.ToLower()}-{random.Next(1, 100)}.jpg",
-                    CreatedAt = DateTimeOffset.UtcNow
+                    Condition = "good",
+                    IsActive = true
                 };
+
+                // Set Type based on category
+                clothingItem.Type = category switch
+                {
+                    "Top" => ClothingType.Top,
+                    "Bottom" => ClothingType.Bottom,
+                    "Footwear" => ClothingType.Footwear,
+                    "Outerwear" => ClothingType.Outerwear,
+                    _ => ClothingType.Accessory
+                };
+
+                // Set random fabric
+                var fabrics = new[] { FabricType.Cotton, FabricType.Polyester, FabricType.Wool, FabricType.Silk, FabricType.Denim };
+                clothingItem.Fabric = fabrics[random.Next(fabrics.Length)];
 
                 clothingItems.Add(clothingItem);
             }

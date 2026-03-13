@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xukp4gdTKRk=",
+  "dgSpecHash": "5slSs3OZZp0=",
   "success": true,
-  "projectFilePath": "c:\\Meno\\Projects\\Outfit Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
+  "projectFilePath": "C:\\Meno\\Projects\\Outfit Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\abdallh\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

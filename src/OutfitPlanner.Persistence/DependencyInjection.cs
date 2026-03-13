@@ -8,6 +8,7 @@ using System.Text;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Persistence.Repositories;
+using OutfitPlanner.Persistence.Data;
 using OutfitPlanner.Application.Models.Identity;
 using OutfitPlanner.Application.Contracts.Identity;
 using OutfitPlanner.Persistence.Security;

@@ -63,7 +63,7 @@ export class AuthService{
       return of(null as any);
     }
 
-    return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { token, refreshToken }).pipe(
+    return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { Token: token, RefreshToken: refreshToken }).pipe(
       tap((response: AuthResponse) => this.handleAuthentication(response)),
       catchError(() => {
         this.logout();

@@ -4098,14 +4098,14 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
-              "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
+            "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
+              "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
             },
-            "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
-              "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
+            "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
+              "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
             },
-            "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
-              "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
+            "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
+              "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
             }
           }
         }
