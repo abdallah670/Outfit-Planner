@@ -97,12 +97,23 @@ export class WardrobeDashboardComponent implements OnInit {
   activeColor = signal<string>('All');
   activeSeason = signal<string>('All');
   activeOccasion = signal<string>('All');
+  searchQuery = signal<string>('');
 
-  // Filter options
+  // Filter options - matching backend enums
   categories = ['All', 'Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Shoes', 'Accessories'];
   colors = ['All', 'Black', 'White', 'Blue', 'Red', 'Green', 'Pink', 'Beige'];
-  seasons = ['All', 'Spring', 'Summer', 'Fall', 'Winter'];
-  occasions = ['All', 'Casual', 'Work', 'Formal', 'Sport'];
+  seasons = ['All', 'Spring', 'Summer', 'Autumn', 'Winter'];
+  occasions = [
+    'All',
+    'Casual',
+    'Work',
+    'Formal',
+    'Athletic',
+    'BusinessCasual',
+    'Social',
+    'Date',
+    'Travel',
+  ];
 
   // Collapsible filter state
   filtersOpen = {
@@ -111,9 +122,6 @@ export class WardrobeDashboardComponent implements OnInit {
     seasons: true,
     occasions: true,
   };
-
-  // Search
-  searchQuery = '';
 
   // View mode
   viewMode: 'grid' | 'list' = 'grid';
@@ -125,27 +133,72 @@ export class WardrobeDashboardComponent implements OnInit {
   // Computed filtered items
   items = computed(() => {
     let filtered = this.allItems().filter((item) => {
-      const categoryMatch =
-        this.activeCategory() === 'All' ||
-        item.type.toLowerCase() === this.activeCategory().toLowerCase() ||
-        (this.activeCategory() === 'Shoes' && item.type.toLowerCase() === 'footwear');
+      // Category filter with mapping for Footwear -> Shoes
+      const categoryMap: { [key: string]: string } = {
+        footwear: 'Shoes',
+        top: 'Tops',
+        tops: 'Tops',
+        bottom: 'Bottoms',
+        bottoms: 'Bottoms',
+        dress: 'Dresses',
+        dresses: 'Dresses',
+        outerwear: 'Outerwear',
+        shoes: 'Shoes',
+        accessory: 'Accessories',
+        accessories: 'Accessories',
+      };
 
+      const itemType = item.type?.toLowerCase() || '';
+      const mappedCategory = categoryMap[itemType] || itemType;
+      const activeCat = this.activeCategory();
+
+      const categoryMatch =
+        activeCat === 'All' ||
+        mappedCategory === activeCat ||
+        (activeCat === 'Shoes' && (itemType === 'footwear' || itemType === 'shoes'));
+
+      // Color filter - partial match
+      const activeColor = this.activeColor();
       const colorMatch =
-        this.activeColor() === 'All' ||
-        item.primaryColor.toLowerCase().includes(this.activeColor().toLowerCase());
+        activeColor === 'All' ||
+        item.primaryColor?.toLowerCase().includes(activeColor.toLowerCase()) ||
+        item.primaryColor?.toLowerCase() === activeColor.toLowerCase();
+
+      // Occasion filter - match against item.category field
+      // Map UI occasion values to backend values
+      const occasionMap: { [key: string]: string } = {
+        athletic: 'Athletic',
+        sport: 'Athletic',
+        businesscasual: 'BusinessCasual',
+        casual: 'Casual',
+        work: 'Work',
+        formal: 'Formal',
+        social: 'Social',
+        date: 'Date',
+        travel: 'Travel',
+      };
+
+      const activeOccasion = this.activeOccasion();
+      const itemCategory = item.category?.toLowerCase() || '';
+      const mappedOccasion = occasionMap[activeOccasion.toLowerCase()] || activeOccasion;
 
       const occasionMatch =
-        this.activeOccasion() === 'All' ||
-        item.category.toLowerCase() === this.activeOccasion().toLowerCase();
+        activeOccasion === 'All' ||
+        itemCategory === mappedOccasion.toLowerCase() ||
+        itemCategory.includes(activeOccasion.toLowerCase());
 
-      const seasonMatch = true;
+      // Season filter - NOTE: ClothingItem doesn't have a season field in backend
+      // For now, we'll make this pass through (display all) but log a warning
+      // In production, you'd want to add season support to the backend
+      const seasonMatch = true; // Backend ClothingItem has no season field - filter disabled
 
       return categoryMatch && colorMatch && occasionMatch && seasonMatch;
     });
 
     // Search filter
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
+    const searchValue = this.searchQuery();
+    if (searchValue.trim()) {
+      const q = searchValue.toLowerCase();
       filtered = filtered.filter(
         (item) =>
           item.name.toLowerCase().includes(q) ||
@@ -167,6 +220,10 @@ export class WardrobeDashboardComponent implements OnInit {
     // Triggers re-computation via the computed signal since searchQuery changed
   }
 
+  onSearchChange(query: string) {
+    this.searchQuery.set(query);
+  }
+
   setCategory(category: string) {
     this.activeCategory.set(category);
   }
@@ -185,7 +242,7 @@ export class WardrobeDashboardComponent implements OnInit {
     this.activeColor.set('All');
     this.activeSeason.set('All');
     this.activeOccasion.set('All');
-    this.searchQuery = '';
+    this.searchQuery.set('');
   }
 
   toggleSelectMode() {

@@ -127,3 +127,15 @@ export interface UpdateCalendarEventRequest {
   outfitId?: string;
   notes?: string;
 }
+
+/**
+ * Weather data for a specific date
+ */
+export interface WeatherData {
+  date: Date;
+  temperature: number;
+  condition: string;
+  icon: string;
+  humidity?: number;
+  windSpeed?: number;
+}

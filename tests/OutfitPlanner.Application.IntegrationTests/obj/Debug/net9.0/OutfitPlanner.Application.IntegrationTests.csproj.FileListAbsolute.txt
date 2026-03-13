@@ -1,0 +1,9 @@
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\bin\Debug\net9.0\.msCoverageSourceRootsMapping_OutfitPlanner.Application.IntegrationTests
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\bin\Debug\net9.0\CoverletSourceRootsMapping_OutfitPlanner.Application.IntegrationTests
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.csproj.AssemblyReference.cache
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\MvcTestingAppManifest.json
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.GeneratedMSBuildEditorConfig.editorconfig
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.AssemblyInfoInputs.cache
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.AssemblyInfo.cs
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.csproj.CoreCompileInputs.cache
+c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.sourcelink.json

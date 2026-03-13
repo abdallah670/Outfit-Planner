@@ -1,5 +1,10 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { UserProfile, UpdateUserProfileRequest, ChangePasswordRequest } from '../../../domain/entities/user-profile.entity';
+import {
+  UserProfile,
+  UpdateUserProfileRequest,
+  ChangePasswordRequest,
+  UpdateEmailRequest,
+} from '../../../domain/entities/user-profile.entity';
 
 export const UserActions = createActionGroup({
   source: 'User',
@@ -23,6 +28,11 @@ export const UserActions = createActionGroup({
     'Change Password': props<{ request: ChangePasswordRequest }>(),
     'Change Password Success': emptyProps(),
     'Change Password Failure': props<{ error: string }>(),
+
+    // Update Email
+    'Update Email': props<{ request: UpdateEmailRequest }>(),
+    'Update Email Success': props<{ email: string }>(),
+    'Update Email Failure': props<{ error: string }>(),
 
     // Clear Error
     'Clear Error': emptyProps(),

@@ -7,19 +7,19 @@
         type="text"
         placeholder="Search..."
         class="search-input"
-        [(ngModel)]="searchQuery"
-        (input)="onSearch()"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchChange($event)"
       />
       <button class="ai-badge" title="AI-powered search">🤖</button>
     </div>
     <div class="search-tags">
-      <button class="tag" (click)="searchQuery = 'Summer dresses under $100'; onSearch()">
+      <button class="tag" (click)="onSearchChange('Summer dresses under $100')">
         Summer dresses under $100
       </button>
-      <button class="tag" (click)="searchQuery = 'Outfits for rainy weather'; onSearch()">
+      <button class="tag" (click)="onSearchChange('Outfits for rainy weather')">
         Outfits for rainy weather
       </button>
-      <button class="tag" (click)="searchQuery = 'Most worn jeans'; onSearch()">
+      <button class="tag" (click)="onSearchChange('Most worn jeans')">
         Most worn jeans
       </button>
     </div>

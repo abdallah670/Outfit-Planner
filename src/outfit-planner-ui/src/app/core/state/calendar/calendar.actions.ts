@@ -5,6 +5,8 @@ import {
   ScheduleOutfitRequest,
   CalendarEvent,
   MonthlyStats,
+  CalendarEventItem,
+  WeatherData,
 } from '../../../domain/entities/wear-event.entity';
 
 export const CalendarActions = createActionGroup({
@@ -42,5 +44,30 @@ export const CalendarActions = createActionGroup({
 
     // Set Current Month
     'Set Current Month': props<{ year: number; month: number }>(),
+
+    // NEW: Calendar Events (Time-based)
+    'Load Calendar Events': props<{ year: number; month: number }>(),
+    'Load Calendar Events Success': props<{ events: CalendarEventItem[] }>(),
+    'Load Calendar Events Failure': props<{ error: string }>(),
+
+    'Create Calendar Event': props<{ event: Partial<CalendarEventItem> }>(),
+    'Create Calendar Event Success': props<{ event: CalendarEventItem }>(),
+    'Create Calendar Event Failure': props<{ error: string }>(),
+
+    'Update Calendar Event': props<{ eventId: string; event: Partial<CalendarEventItem> }>(),
+    'Update Calendar Event Success': props<{ event: CalendarEventItem }>(),
+    'Update Calendar Event Failure': props<{ error: string }>(),
+
+    'Delete Calendar Event': props<{ eventId: string }>(),
+    'Delete Calendar Event Success': props<{ eventId: string }>(),
+    'Delete Calendar Event Failure': props<{ error: string }>(),
+
+    // NEW: Weather
+    'Load Weather Forecast': props<{ year: number; month: number }>(),
+    'Load Weather Forecast Success': props<{ weatherData: Map<string, WeatherData> }>(),
+    'Load Weather Forecast Failure': props<{ error: string }>(),
+
+    // NEW: Select Date
+    'Select Date': props<{ date: Date | null }>(),
   },
 });

@@ -13,13 +13,15 @@ export const loadProfile$ = createEffect(
         userRepository.getProfile().pipe(
           map((profile: UserProfile) => UserActions.loadProfileSuccess({ profile })),
           catchError((error) =>
-            of(UserActions.loadProfileFailure({ error: error?.message || 'Failed to load profile' }))
-          )
-        )
-      )
+            of(
+              UserActions.loadProfileFailure({ error: error?.message || 'Failed to load profile' }),
+            ),
+          ),
+        ),
+      ),
     );
   },
-  { functional: true }
+  { functional: true },
 );
 
 export const updateProfile$ = createEffect(
@@ -32,18 +34,26 @@ export const updateProfile$ = createEffect(
             userRepository.getProfile().pipe(
               map((profile: UserProfile) => UserActions.updateProfileSuccess({ profile })),
               catchError((error) =>
-                of(UserActions.updateProfileFailure({ error: error?.message || 'Failed to update profile' }))
-              )
-            )
+                of(
+                  UserActions.updateProfileFailure({
+                    error: error?.message || 'Failed to update profile',
+                  }),
+                ),
+              ),
+            ),
           ),
           catchError((error) =>
-            of(UserActions.updateProfileFailure({ error: error?.message || 'Failed to update profile' }))
-          )
-        )
-      )
+            of(
+              UserActions.updateProfileFailure({
+                error: error?.message || 'Failed to update profile',
+              }),
+            ),
+          ),
+        ),
+      ),
     );
   },
-  { functional: true }
+  { functional: true },
 );
 
 export const uploadProfilePicture$ = createEffect(
@@ -52,15 +62,21 @@ export const uploadProfilePicture$ = createEffect(
       ofType(UserActions.uploadProfilePicture),
       exhaustMap(({ file }) =>
         userRepository.uploadProfilePicture(file).pipe(
-          map((profilePictureUrl: string) => UserActions.uploadProfilePictureSuccess({ profilePictureUrl })),
+          map((profilePictureUrl: string) =>
+            UserActions.uploadProfilePictureSuccess({ profilePictureUrl }),
+          ),
           catchError((error) =>
-            of(UserActions.uploadProfilePictureFailure({ error: error?.message || 'Failed to upload profile picture' }))
-          )
-        )
-      )
+            of(
+              UserActions.uploadProfilePictureFailure({
+                error: error?.message || 'Failed to upload profile picture',
+              }),
+            ),
+          ),
+        ),
+      ),
     );
   },
-  { functional: true }
+  { functional: true },
 );
 
 export const changePassword$ = createEffect(
@@ -71,11 +87,41 @@ export const changePassword$ = createEffect(
         userRepository.changePassword(request).pipe(
           map(() => UserActions.changePasswordSuccess()),
           catchError((error) =>
-            of(UserActions.changePasswordFailure({ error: error?.message || 'Failed to change password' }))
-          )
-        )
-      )
+            of(
+              UserActions.changePasswordFailure({
+                error: error?.message || 'Failed to change password',
+              }),
+            ),
+          ),
+        ),
+      ),
     );
   },
-  { functional: true }
+  { functional: true },
+);
+
+export const updateEmail$ = createEffect(
+  (actions$ = inject(Actions), userRepository = inject(UserRepositoryImpl)) => {
+    return actions$.pipe(
+      ofType(UserActions.updateEmail),
+      exhaustMap(({ request }) =>
+        userRepository.updateEmail(request).pipe(
+          map((response: { success: boolean; message: string }) => {
+            if (response.success) {
+              return UserActions.updateEmailSuccess({ email: request.newEmail });
+            }
+            return UserActions.updateEmailFailure({
+              error: response.message || 'Failed to update email',
+            });
+          }),
+          catchError((error) =>
+            of(
+              UserActions.updateEmailFailure({ error: error?.message || 'Failed to update email' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
 );

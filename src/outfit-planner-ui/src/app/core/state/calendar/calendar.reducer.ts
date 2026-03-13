@@ -1,6 +1,6 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { CalendarActions } from './calendar.actions';
-import { CalendarEvent, MonthlyStats } from '../../../domain/entities/wear-event.entity';
+import { CalendarEvent, MonthlyStats, CalendarEventItem, WeatherData } from '../../../domain/entities/wear-event.entity';
 
 export interface CalendarState {
   events: CalendarEvent[];
@@ -9,6 +9,17 @@ export interface CalendarState {
   currentMonth: number;
   loading: boolean;
   error: string | null;
+  
+  // NEW: Calendar Events (time-based)
+  calendarEvents: CalendarEventItem[];
+  calendarEventsLoading: boolean;
+  
+  // NEW: Weather
+  weatherData: Map<string, WeatherData>;
+  weatherLoading: boolean;
+  
+  // NEW: Selected Date
+  selectedDate: Date | null;
 }
 
 export const initialState: CalendarState = {
@@ -18,6 +29,11 @@ export const initialState: CalendarState = {
   currentMonth: new Date().getMonth() + 1,
   loading: false,
   error: null,
+  calendarEvents: [],
+  calendarEventsLoading: false,
+  weatherData: new Map(),
+  weatherLoading: false,
+  selectedDate: null,
 };
 
 export const calendarFeature = createFeature({
@@ -142,6 +158,60 @@ export const calendarFeature = createFeature({
       ...state,
       currentYear: year,
       currentMonth: month,
+    })),
+
+    // NEW: Calendar Events (Time-based)
+    on(CalendarActions.loadCalendarEvents, (state) => ({
+      ...state,
+      calendarEventsLoading: true,
+      error: null,
+    })),
+    on(CalendarActions.loadCalendarEventsSuccess, (state, { events }) => ({
+      ...state,
+      calendarEvents: events || [],
+      calendarEventsLoading: false,
+    })),
+    on(CalendarActions.loadCalendarEventsFailure, (state, { error }) => ({
+      ...state,
+      calendarEventsLoading: false,
+      error,
+    })),
+
+    on(CalendarActions.createCalendarEventSuccess, (state, { event }) => ({
+      ...state,
+      calendarEvents: [...state.calendarEvents, event],
+    })),
+
+    on(CalendarActions.updateCalendarEventSuccess, (state, { event }) => ({
+      ...state,
+      calendarEvents: state.calendarEvents.map((e) => (e.id === event.id ? event : e)),
+    })),
+
+    on(CalendarActions.deleteCalendarEventSuccess, (state, { eventId }) => ({
+      ...state,
+      calendarEvents: state.calendarEvents.filter((e) => e.id !== eventId),
+    })),
+
+    // NEW: Weather
+    on(CalendarActions.loadWeatherForecast, (state) => ({
+      ...state,
+      weatherLoading: true,
+    })),
+    on(CalendarActions.loadWeatherForecastSuccess, (state, { weatherData }) => ({
+      ...state,
+      weatherData,
+      weatherLoading: false,
+    })),
+    on(CalendarActions.loadWeatherForecastFailure, (state, { error }) => ({
+      ...state,
+      weatherLoading: false,
+      error,
+    })),
+
+    // NEW: Select Date
+    on(CalendarActions.selectDate, (state, { date }) => ({
+      ...state,
+      selectedDate: date,
     })),
   ),
 });

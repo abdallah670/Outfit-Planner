@@ -1,10 +1,15 @@
+using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.DTOs.Calendar;
+using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Features.Calendar.Requests.Commands;
+using OutfitPlanner.Application.Features.Calendar.Requests.Commands.Validators;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
-using DomainCalendarEventType = OutfitPlanner.Domain.Entities.CalendarEventType;
+using OutfitPlanner.Domain.Enums;
+using DomainCalendarEventType = OutfitPlanner.Domain.Enums.CalendarEventType;
 
 namespace OutfitPlanner.Application.Features.Calendar.Handlers.Commands;
 
@@ -14,11 +19,18 @@ namespace OutfitPlanner.Application.Features.Calendar.Handlers.Commands;
 public class CreateCalendarEventCommandHandler 
     : IRequestHandler<CreateCalendarEventCommand, BaseCommandResponse>
 {
+    private readonly ILogger<CreateCalendarEventCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public CreateCalendarEventCommandHandler(IUnitOfWork unitOfWork)
+    public CreateCalendarEventCommandHandler(
+        ILogger<CreateCalendarEventCommandHandler> logger,
+        IUnitOfWork unitOfWork, 
+        IMapper mapper)
     {
+        _logger = logger;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<BaseCommandResponse> Handle(
@@ -26,6 +38,15 @@ public class CreateCalendarEventCommandHandler
         CancellationToken cancellationToken)
     {
         var response = new BaseCommandResponse();
+
+        // Validate request
+        var validationResult = await new CreateCalendarEventCommandValidator().ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+            _logger.LogWarning("Validation failed for calendar event creation request for user with ID {UserId}. Errors: {Errors}", request.UserId, errors);
+            throw new ValidationException(validationResult);
+        }
 
         // Validate outfit if provided
         Outfit? outfit = null;
@@ -81,146 +102,6 @@ public class CreateCalendarEventCommandHandler
         response.Message = "Calendar event created successfully";
         response.Id = calendarEvent.Id;
 
-        return response;
-    }
-}
-
-/// <summary>
-/// Handler for updating a calendar event
-/// </summary>
-public class UpdateCalendarEventItemCommandHandler 
-    : IRequestHandler<UpdateCalendarEventItemCommand, BaseCommandResponse>
-{
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateCalendarEventItemCommandHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<BaseCommandResponse> Handle(
-        UpdateCalendarEventItemCommand request, 
-        CancellationToken cancellationToken)
-    {
-        var response = new BaseCommandResponse();
-
-        var calendarEvent = await _unitOfWork.CalendarEvents.GetByIdAsync(request.Id);
-
-        if (calendarEvent == null || calendarEvent.UserId != request.UserId)
-        {
-            response.Success = false;
-            response.Message = "Calendar event not found";
-            return response;
-        }
-
-        // Update basic properties
-        if (request.Request.Title != null)
-            calendarEvent.Title = request.Request.Title;
-        if (request.Request.Description != null)
-            calendarEvent.Description = request.Request.Description;
-        if (request.Request.Location != null)
-            calendarEvent.Location = request.Request.Location;
-        if (request.Request.EventDate.HasValue)
-            calendarEvent.EventDate = request.Request.EventDate.Value;
-        if (request.Request.StartTime.HasValue)
-            calendarEvent.StartTime = request.Request.StartTime.Value;
-        if (request.Request.EndTime.HasValue)
-            calendarEvent.EndTime = request.Request.EndTime.Value;
-        if (request.Request.EventType.HasValue)
-            calendarEvent.EventType = (DomainCalendarEventType)request.Request.EventType.Value;
-        if (request.Request.Notes != null)
-            calendarEvent.Notes = request.Request.Notes;
-
-        // Handle outfit association change
-        if (request.Request.OutfitId.HasValue)
-        {
-            var outfit = await _unitOfWork.Outfits.GetByIdAsync(request.Request.OutfitId.Value);
-
-            if (outfit == null || outfit.UserId != request.UserId)
-            {
-                response.Success = false;
-                response.Message = "Outfit not found";
-                return response;
-            }
-
-            if (calendarEvent.WearEventId.HasValue)
-            {
-                // Update existing wear event
-                var wearEvent = await _unitOfWork.WearEvents.GetByIdAsync(calendarEvent.WearEventId.Value);
-                if (wearEvent != null)
-                {
-                    wearEvent.OutfitId = outfit.Id;
-                    await _unitOfWork.WearEvents.UpdateAsync(wearEvent);
-                }
-            }
-            else
-            {
-                // Create new wear event
-                var wearEvent = new WearEvent
-                {
-                    UserId = request.UserId,
-                    OutfitId = outfit.Id,
-                    WornAt = calendarEvent.EventDate,
-                    Notes = calendarEvent.Notes ?? string.Empty
-                };
-                await _unitOfWork.WearEvents.AddAsync(wearEvent);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-                calendarEvent.WearEventId = wearEvent.Id;
-            }
-        }
-
-        await _unitOfWork.CalendarEvents.UpdateAsync(calendarEvent);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        response.Success = true;
-        response.Message = "Calendar event updated successfully";
-        return response;
-    }
-}
-
-/// <summary>
-/// Handler for deleting a calendar event
-/// </summary>
-public class DeleteCalendarEventItemCommandHandler 
-    : IRequestHandler<DeleteCalendarEventItemCommand, BaseCommandResponse>
-{
-    private readonly IUnitOfWork _unitOfWork;
-
-    public DeleteCalendarEventItemCommandHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<BaseCommandResponse> Handle(
-        DeleteCalendarEventItemCommand request, 
-        CancellationToken cancellationToken)
-    {
-        var response = new BaseCommandResponse();
-
-        var calendarEvent = await _unitOfWork.CalendarEvents.GetByIdAsync(request.Id);
-
-        if (calendarEvent == null || calendarEvent.UserId != request.UserId)
-        {
-            response.Success = false;
-            response.Message = "Calendar event not found";
-            return response;
-        }
-
-        // Delete associated wear event if exists
-        if (calendarEvent.WearEventId.HasValue)
-        {
-            var wearEvent = await _unitOfWork.WearEvents.GetByIdAsync(calendarEvent.WearEventId.Value);
-            if (wearEvent != null)
-            {
-                await _unitOfWork.WearEvents.RemoveAsync(wearEvent);
-            }
-        }
-
-        await _unitOfWork.CalendarEvents.RemoveAsync(calendarEvent);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        response.Success = true;
-        response.Message = "Calendar event deleted successfully";
         return response;
     }
 }

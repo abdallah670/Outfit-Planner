@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>Edit Profile</h2>
+<mat-dialog-content>
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="Enter your name" />
+      <mat-error *ngIf="profileForm.get('name')?.hasError('required')">
+        Name is required
+      </mat-error>
+      <mat-error *ngIf="profileForm.get('name')?.hasError('maxlength')">
+        Name must be less than 100 characters
+      </mat-error>
+    </mat-form-field>
+
+    <div class="profile-picture-section">
+      <label for="profilePicture">Profile Picture</label>
+      <input type="file" id="profilePicture" (change)="onFileSelected($event)" accept="image/*" />
+      <div *ngIf="selectedFilePreview" class="preview">
+        <img [src]="selectedFilePreview" alt="Profile preview" />
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="profileForm.invalid || isLoading"
+    (click)="onSubmit()"
+  >
+    {{ isLoading ? 'Saving...' : 'Save' }}
+  </button>
+</mat-dialog-actions>

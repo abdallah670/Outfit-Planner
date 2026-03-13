@@ -6,6 +6,7 @@ import {
   UserProfile,
   UpdateUserProfileRequest,
   ChangePasswordRequest,
+  UpdateEmailRequest,
 } from '../../domain/entities/user-profile.entity';
 import { environment } from '../../../environments/environment';
 
@@ -60,5 +61,9 @@ export class UserDataSource {
 
   changePassword(request: ChangePasswordRequest): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/change-password`, request);
+  }
+
+  updateEmail(request: UpdateEmailRequest): Observable<{ success: boolean; message: string }> {
+    return this.http.put<{ success: boolean; message: string }>(`${this.apiUrl}/email`, request);
   }
 }

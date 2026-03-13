@@ -55,6 +55,9 @@ public static class DependencyInjection
         // Register outfit image generator service
         services.AddScoped<IOutfitImageGeneratorService, OutfitImageGeneratorService>();
 
+        // Register Search service
+        services.AddScoped<ISearchService, SearchService>();
+
         return services;
     }
 }

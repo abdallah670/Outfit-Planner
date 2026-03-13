@@ -5,15 +5,15 @@ export interface UserProfile {
   profilePictureUrl?: string;
   createdAt: string;
   lastLogin?: string;
-  
+
   // Stats
   wardrobeItemCount: number;
   outfitCount: number;
   totalWears: number;
-  
+
   // Style Profile
   styleProfile?: UserStyleProfile;
-  
+
   // Preferences
   preferences?: UserPreferences;
 }
@@ -45,13 +45,13 @@ export enum StylePreference {
   Streetwear = 'Streetwear',
   Preppy = 'Preppy',
   Chic = 'Chic',
-  Business = 'Business'
+  Business = 'Business',
 }
 
 export enum PrivacyLevel {
   Private = 'Private',
   Friends = 'Friends',
-  Public = 'Public'
+  Public = 'Public',
 }
 
 export interface UpdateUserProfileRequest {
@@ -64,4 +64,10 @@ export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
+}
+
+export interface UpdateEmailRequest {
+  newEmail: string;
+  confirmEmail: string;
+  currentPassword: string;
 }
