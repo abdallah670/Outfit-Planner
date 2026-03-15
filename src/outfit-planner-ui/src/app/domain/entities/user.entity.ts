@@ -9,6 +9,7 @@ export interface User {
   lastLogin: Date;
 }
 
+
 export interface UserStyleProfile {
   id: string;
   userId: string;
@@ -46,3 +47,4 @@ export enum PrivacyLevel {
   Community = 'community',
   Public = 'public'
 }
+

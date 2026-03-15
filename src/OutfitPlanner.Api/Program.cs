@@ -6,6 +6,8 @@ using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
 using OutfitPlanner.Application;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Facebook;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -73,6 +75,30 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Add Application Services
 builder.Services.AddApplication(builder.Configuration);
+
+// Add Cookie authentication for external providers
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/api/auth/external-callback";
+    options.Cookie.Name = "Identity.External";
+});
+
+// Add OAuth authentication
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+        options.CallbackPath = "/api/auth/google-callback";
+        options.SaveTokens = true;
+    })
+    .AddFacebook(options =>
+    {
+        options.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
+        options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
+        options.CallbackPath = "/api/auth/facebook-callback";
+        options.SaveTokens = true;
+    });
 
 
 

@@ -8,6 +8,7 @@ import {
 
 export interface UserRepository {
   getProfile(): Observable<UserProfile>;
+  getProfilePicture(): Observable<string>;
   updateProfile(request: UpdateUserProfileRequest): Observable<void>;
   uploadProfilePicture(file: File): Observable<string>;
   changePassword(request: ChangePasswordRequest): Observable<void>;

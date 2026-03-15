@@ -81,7 +81,34 @@ public class UserController : ControllerBase
             return StatusCode(500, new { message = "Failed to update profile" });
         }
     }
+    /// <summary>
+    /// Upload profile picture
+    /// </summary>
+    [HttpGet("profile-picture")]
+    public async Task<IActionResult> GetProfilePicture()
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
 
+            var query = new GetProfilePictureQuery { UserId = userId };
+            var profilePicture = await _mediator.Send(query);
+            return Ok(profilePicture);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving profile picture");
+            return StatusCode(500, new { message = "Failed to retrieve profile picture" });
+        }
+    }
+
+    
+       
+    
     /// <summary>
     /// Upload profile picture
     /// </summary>

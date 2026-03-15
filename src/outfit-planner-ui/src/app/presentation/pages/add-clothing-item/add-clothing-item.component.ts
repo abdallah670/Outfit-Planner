@@ -68,6 +68,7 @@ export class AddClothingItemComponent implements OnInit {
         if (item.imageUrl) {
           this.imagePreview.set(item.imageUrl);
         }
+        
       }
     });
   }

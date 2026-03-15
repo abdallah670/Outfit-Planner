@@ -1,290 +1,285 @@
 <div class="search-page">
-  <!-- Search Header -->
-  <div class="search-header">
-    <div class="search-input-container">
-      <mat-icon class="search-icon">search</mat-icon>
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Search outfits, wardrobe items..."
-        [value]="localQuery()"
-        (input)="onSearchInput($event)"
-        (keydown)="onSearchKeyDown($event)"
-        (focus)="onSearchFocus()"
-        (blur)="onSearchBlur()"
-      />
-      @if (localQuery()) {
-        <button class="clear-btn" (click)="onClearSearch()">
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-      <button
-        class="filter-toggle-btn"
-        [class.active]="showFilters()"
-        [class.has-filters]="hasActiveFilters()"
-        (click)="toggleFilters()"
-      >
-        <mat-icon>tune</mat-icon>
-        @if (activeFiltersCount() > 0) {
-          <span class="filter-badge">{{ activeFiltersCount() }}</span>
-        }
-      </button>
-    </div>
-
-    <!-- Suggestions Dropdown -->
-    @if (showSuggestions() && (suggestions().length > 0 || recentSearches().length > 0)) {
-      <div class="suggestions-dropdown">
-        <!-- Recent Searches -->
-        @if (recentSearches().length > 0 && !localQuery()) {
-          <div class="suggestions-section">
-            <div class="suggestions-header">
-              <span>Recent Searches</span>
-              <button class="clear-link" (click)="onClearRecentSearches()">Clear</button>
-            </div>
-            @for (search of recentSearches(); track search) {
-              <div class="suggestion-item" (click)="onRecentSearchClick(search)">
-                <mat-icon>history</mat-icon>
-                <span class="suggestion-text">{{ search }}</span>
-                <button
-                  class="remove-btn"
-                  (click)="onRemoveRecentSearch($event, search)"
-                >
-                  <mat-icon>close</mat-icon>
-                </button>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Auto-suggestions -->
-        @if (suggestions().length > 0) {
-          <div class="suggestions-section">
-            <div class="suggestions-header">
-              <span>Suggestions</span>
-            </div>
-            @for (suggestion of suggestions(); track suggestion) {
-              <div class="suggestion-item" (click)="onSuggestionClick(suggestion)">
-                <mat-icon>search</mat-icon>
-                <span class="suggestion-text">{{ suggestion }}</span>
-              </div>
-            }
-          </div>
-        }
-      </div>
-    }
+  <!-- Search Bar -->
+  <div class="search-bar-container">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      type="text"
+      class="search-input"
+      [placeholder]="searchPlaceholder()"
+      [value]="localQuery()"
+      (input)="onSearchInput($event)"
+      (keydown)="onSearchKeyDown($event)"
+    />
   </div>
 
-  <!-- Filter Sidebar -->
-  @if (showFilters()) {
-    <div class="filter-sidebar">
-      <div class="filter-header">
-        <h3>Filters</h3>
-        @if (hasActiveFilters()) {
-          <button class="clear-filters-btn" (click)="onClearFilters()">
-            Clear All
-          </button>
-        }
-      </div>
-
-      <!-- Type Filter -->
-      <div class="filter-section">
-        <h4>Type</h4>
-        <div class="type-options">
-          @for (option of typeOptions; track option.value) {
-            <button
-              class="type-option"
-              [class.active]="filters().type === option.value"
-              (click)="onTypeChange(option.value)"
-            >
-              <mat-icon>{{ option.icon }}</mat-icon>
-              <span>{{ option.label }}</span>
-            </button>
-          }
-        </div>
-      </div>
-
-      <!-- Category Filter -->
-      <div class="filter-section">
-        <h4>Categories</h4>
-        <div class="filter-chips">
-          @for (category of categoryOptions; track category) {
-            <mat-chip
-              [class.selected]="isCategorySelected(category)"
-              (click)="onCategoryToggle(category)"
-            >
-              {{ category }}
-            </mat-chip>
-          }
-        </div>
-      </div>
-
-      <!-- Season Filter -->
-      <div class="filter-section">
-        <h4>Seasons</h4>
-        <div class="filter-chips">
-          @for (season of seasonOptions; track season) {
-            <mat-chip
-              [class.selected]="isSeasonSelected(season)"
-              (click)="onSeasonToggle(season)"
-            >
-              {{ season }}
-            </mat-chip>
-          }
-        </div>
-      </div>
-
-      <!-- Color Filter -->
-      <div class="filter-section">
-        <h4>Colors</h4>
-        <div class="color-options">
-          <button
-            class="color-option"
-            [class.selected]="isColorSelected(null)"
-            (click)="onColorSelect(null)"
-          >
-            All
-          </button>
-          @for (color of colorOptions; track color) {
-            <button
-              class="color-option"
-              [class.selected]="isColorSelected(color)"
-              [style.background-color]="color.toLowerCase()"
-              [style.color]="getContrastColor(color)"
-              (click)="onColorSelect(color)"
-            >
-              {{ color }}
-            </button>
-          }
-        </div>
-      </div>
+  <!-- Filter Tabs -->
+  <div class="results-header">
+    <div class="filter-tabs">
+      <button
+        class="filter-tab"
+        [class.active]="activeTab() === 'all'"
+        (click)="onTabChange('all')"
+      >
+        All Results
+      </button>
+      <button
+        class="filter-tab"
+        [class.active]="activeTab() === 'outfits'"
+        (click)="onTabChange('outfits')"
+      >
+        Outfits ({{ outfits().length }})
+      </button>
+      <button
+        class="filter-tab"
+        [class.active]="activeTab() === 'items'"
+        (click)="onTabChange('items')"
+      >
+        Items ({{ wardrobeItems().length }})
+      </button>
     </div>
-  }
+    <div class="results-count">Found {{ totalResults() }} results</div>
+  </div>
 
-  <!-- Results Section -->
-  <div class="results-section">
-    <!-- Loading State -->
-    @if (loading()) {
-      <div class="loading-state">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>Searching...</p>
-      </div>
-    }
-
-    <!-- Error State -->
-    @if (error()) {
-      <div class="error-state">
-        <mat-icon>error_outline</mat-icon>
-        <p>{{ error() }}</p>
-      </div>
-    }
-
-    <!-- Results Count -->
-    @if (!loading() && !error() && query()) {
-      <div class="results-count">
-        <p>{{ totalResults() }} results for "{{ query() }}"</p>
-      </div>
-    }
-
-    <!-- Outfit Results -->
-    @if (!loading() && !error() && outfits().length > 0) {
-      <div class="results-category">
-        <h3>Outfits</h3>
-        <div class="results-grid outfits-grid">
-          @for (outfit of outfits(); track outfit.id) {
-            <a
-              [routerLink]="['/outfits', outfit.id]"
-              class="result-card outfit-card"
-            >
-              <div class="card-image">
-                @if (outfit.imageUrl) {
-                  <img [src]="outfit.imageUrl" [alt]="outfit.name" />
-                } @else {
-                  <div class="placeholder-image">
-                    <mat-icon>checkroom</mat-icon>
-                  </div>
-                }
-              </div>
-              <div class="card-content">
-                <h4 class="card-title">{{ outfit.name }}</h4>
-                @if (outfit.occasion) {
-                  <span class="card-badge">{{ outfit.occasion }}</span>
-                }
-                @if (outfit.season) {
-                  <span class="card-badge">{{ outfit.season }}</span>
-                }
-              </div>
-            </a>
-          }
+  <!-- Main Content Grid -->
+  <div class="main-content">
+    <!-- Left: Search Results -->
+    <div class="results-section">
+      <!-- Loading State -->
+      @if (loading()) {
+        <div class="loading-state">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Searching...</p>
         </div>
-      </div>
-    }
+      }
 
-    <!-- Wardrobe Item Results -->
-    @if (!loading() && !error() && wardrobeItems().length > 0) {
-      <div class="results-category">
-        <h3>Wardrobe Items</h3>
-        <div class="results-grid items-grid">
-          @for (item of wardrobeItems(); track item.id) {
-            <a
-              [routerLink]="['/wardrobe', item.id]"
-              class="result-card item-card"
-            >
-              <div class="card-image">
-                @if (item.imageUrl) {
-                  <img [src]="item.imageUrl" [alt]="item.name" />
-                } @else {
-                  <div class="placeholder-image">
-                    <mat-icon>inventory_2</mat-icon>
+      <!-- Outfit Results -->
+      @if (!loading() && showOutfits()) {
+        <div>
+          <div class="section-title">
+            <mat-icon style="color: var(--primary)">layers</mat-icon>
+            Matching Outfits
+          </div>
+          <div class="outfits-grid">
+            @for (outfit of outfits(); track outfit.id) {
+              <a [routerLink]="['/outfits', outfit.id]" class="outfit-card">
+                <div class="outfit-images">
+                  <img
+                    [src]="outfit.imageUrl || '/outfit_placeholder.png'"
+                    class="outfit-main-img"
+                    [alt]="outfit.name"
+                  />
+                  <div class="outfit-sub-images">
+                    <div class="outfit-sub-img placeholder"></div>
+                    <div class="outfit-sub-img placeholder"></div>
                   </div>
-                }
-              </div>
-              <div class="card-content">
-                <h4 class="card-title">{{ item.name }}</h4>
-                <p class="card-subtitle">{{ item.brand }}</p>
-                <div class="card-tags">
-                  <span class="tag">{{ item.category }}</span>
-                  <span class="tag">{{ item.primaryColor }}</span>
                 </div>
-              </div>
-            </a>
+                <div class="outfit-info">
+                  <div class="outfit-title">{{ outfit.name }}</div>
+                  <div class="outfit-tags">
+                    @if (outfit.occasion) {
+                      <span class="tag">{{ outfit.occasion }}</span>
+                    }
+                    @if (outfit.season) {
+                      <span class="tag">{{ outfit.season }}</span>
+                    }
+                  </div>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Item Results -->
+      @if (!loading() && showItems()) {
+        <div>
+          <div class="section-title">
+            <mat-icon style="color: var(--primary)">checkroom</mat-icon>
+            Matching Items
+          </div>
+          <div class="items-grid">
+            @for (item of wardrobeItems(); track item.id) {
+              <a [routerLink]="['/wardrobe', item.id]" class="item-card">
+                <img
+                  [src]="item.imageUrl || '/clothing-placeholder.png'"
+                  class="item-image"
+                  [alt]="item.name"
+                />
+                <div class="item-info">
+                  <div class="item-name">{{ item.name }}</div>
+                  <div class="item-meta">
+                    <span>{{ item.brand }}</span>
+                    <span>{{ item.category }}</span>
+                  </div>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!loading() && !hasResults()) {
+        <div class="empty-state">
+          <mat-icon>search_off</mat-icon>
+          <h3>No results found</h3>
+          <p>Try adjusting your search or filters</p>
+        </div>
+      }
+    </div>
+
+    <!-- Right: Sidebar Filters -->
+    <div class="sidebar">
+      <!-- Filters Card -->
+      <div class="sidebar-card">
+        <div class="sidebar-title">
+          <span>Filters</span>
+          @if (hasActiveFilters()) {
+            <span class="clear-link" (click)="onClearFilters()">Clear all</span>
           }
         </div>
-      </div>
-    }
 
-    <!-- Empty State -->
-    @if (!loading() && !error() && query() && !hasResults()) {
-      <div class="empty-state">
-        <mat-icon>search_off</mat-icon>
-        <h3>No results found</h3>
-        <p>Try adjusting your search or filters to find what you're looking for.</p>
-        @if (hasActiveFilters()) {
-          <button mat-button (click)="onClearFilters()">Clear Filters</button>
-        }
-      </div>
-    }
-
-    <!-- Initial State -->
-    @if (!loading() && !error() && !query()) {
-      <div class="initial-state">
-        <mat-icon>search</mat-icon>
-        <h3>Start Searching</h3>
-        <p>Search for outfits, wardrobe items, or browse your collection.</p>
-
-        @if (recentSearches().length > 0) {
-          <div class="recent-searches-section">
-            <h4>Recent Searches</h4>
-            <div class="recent-chips">
-              @for (search of recentSearches(); track search) {
-                <mat-chip (click)="onRecentSearchClick(search)">
-                  <mat-icon>history</mat-icon>
-                  {{ search }}
-                </mat-chip>
+        <!-- Category Filter (Items tab only) -->
+        @if (showCategoryFilter()) {
+          <div class="filter-group">
+            <label class="filter-label">Category</label>
+            <div class="checkbox-list">
+              @for (category of categoryOptions; track category) {
+                <div
+                  class="checkbox-item"
+                  [class.checked]="isCategorySelected(category)"
+                  (click)="onCategoryToggle(category)"
+                >
+                  <div class="checkbox-box">
+                    @if (isCategorySelected(category)) {
+                      <mat-icon style="font-size: 12px">check</mat-icon>
+                    }
+                  </div>
+                  {{ category }}
+                </div>
               }
             </div>
           </div>
         }
+
+        <!-- Season Filter (Outfits and Items tabs) -->
+        @if (showSeasonFilter()) {
+          <div class="filter-group">
+            <label class="filter-label">Season</label>
+            <div class="checkbox-list">
+              @for (season of seasonOptions; track season) {
+                <div
+                  class="checkbox-item"
+                  [class.checked]="isSeasonSelected(season)"
+                  (click)="onSeasonToggle(season)"
+                >
+                  <div class="checkbox-box">
+                    @if (isSeasonSelected(season)) {
+                      <mat-icon style="font-size: 12px">check</mat-icon>
+                    }
+                  </div>
+                  {{ season }}
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Occasion Filter (Outfits tab only) -->
+        @if (showOccasionFilter()) {
+          <div class="filter-group">
+            <label class="filter-label">Occasion</label>
+            <div class="checkbox-list">
+              @for (occasion of occasionOptions; track occasion) {
+                <div
+                  class="checkbox-item"
+                  [class.checked]="isOccasionSelected(occasion)"
+                  (click)="onOccasionToggle(occasion)"
+                >
+                  <div class="checkbox-box">
+                    @if (isOccasionSelected(occasion)) {
+                      <mat-icon style="font-size: 12px">check</mat-icon>
+                    }
+                  </div>
+                  {{ occasion }}
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Color Filter (Items tab only) -->
+        @if (showColorFilter()) {
+          <div class="filter-group">
+            <label class="filter-label">Color</label>
+            <div class="color-options">
+              @for (color of colorOptions; track color) {
+                <div
+                  class="color-circle"
+                  [class.active]="isColorSelected(color)"
+                  [style.background-color]="color.toLowerCase()"
+                  [style.border-color]="color === 'White' ? '#e5e7eb' : color.toLowerCase()"
+                  (click)="onColorSelect(color)"
+                ></div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Price Filter (Items tab only) -->
+        @if (showPriceFilter()) {
+          <div class="filter-group">
+            <label class="filter-label">Price Range</label>
+            <div class="price-range">
+              <input
+                type="number"
+                placeholder="Min"
+                class="price-input"
+                [value]="minPrice()"
+                (change)="onMinPriceChange($event)"
+              />
+              <span>-</span>
+              <input
+                type="number"
+                placeholder="Max"
+                class="price-input"
+                [value]="maxPrice()"
+                (change)="onMaxPriceChange($event)"
+              />
+            </div>
+          </div>
+        }
       </div>
-    }
+
+      <!-- AI Suggestions & Recent Searches -->
+      <div class="sidebar-card">
+        <div class="sidebar-title">Suggestions</div>
+
+        <!-- AI Suggestion -->
+        <div class="ai-suggestion">
+          <mat-icon style="color: var(--primary); font-size: 16px">auto_awesome</mat-icon>
+          <div>
+            <div style="font-weight: 500; margin-bottom: 2px">AI Styling Tip</div>
+            <div style="color: var(--muted-foreground); line-height: 1.4; font-size: 13px">
+              Try combining your <b>Floral Wrap Dress</b> with <b>White Sneakers</b> for a trendy look.
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-title" style="margin-top: 24px">Recent Searches</div>
+        @for (search of recentSearches(); track search) {
+          <div class="recent-search-item" (click)="onRecentSearchClick(search)">
+            <span style="display: flex; gap: 8px; align-items: center">
+              <mat-icon style="color: var(--muted-foreground); font-size: 16px">history</mat-icon>
+              "{{ search }}"
+            </span>
+            <mat-icon
+              style="font-size: 14px; color: var(--muted-foreground); cursor: pointer"
+              (click)="onRemoveRecentSearch($event, search)"
+            >close</mat-icon>
+          </div>
+        }
+      </div>
+    </div>
   </div>
 </div>

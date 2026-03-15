@@ -28,67 +28,19 @@ public class UploadProfilePictureCommandHandler : IRequestHandler<UploadProfileP
         {
             throw new NotFoundException(nameof(Domain.Entities.User), request.UserId);
         }
-
-        // Validate file
-        if (request.File == null || request.File.Length == 0)
+        var savingresult=await _imageStorageService.UploadProfilePictureAsync(request.File.OpenReadStream(),request.File.FileName,request.UserId,cancellationToken);
+        if (!savingresult.Success)
         {
             return new BaseCommandResponse
             {
                 Success = false,
-                Message = "No file provided"
+                Message = savingresult.ErrorMessage ?? "Failed to upload image"
             };
         }
 
-        // Check file type
-        var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/webp" };
-        if (!allowedTypes.Contains(request.File.ContentType.ToLower()))
-        {
-            return new BaseCommandResponse
-            {
-                Success = false,
-                Message = "Invalid file type. Only JPEG, PNG, and WebP are allowed."
-            };
-        }
-
-        // Check file size (max 5MB)
-        if (request.File.Length > 5 * 1024 * 1024)
-        {
-            return new BaseCommandResponse
-            {
-                Success = false,
-                Message = "File size exceeds 5MB limit"
-            };
-        }
-
-        // Upload image
-        using var stream = request.File.OpenReadStream();
-        var fileName = $"profile-pictures/{request.UserId}_{Guid.NewGuid()}{Path.GetExtension(request.File.FileName)}";
-        var uploadResult = await _imageStorageService.UploadImageAsync(stream, fileName, request.UserId, cancellationToken);
-
-        if (!uploadResult.Success)
-        {
-            return new BaseCommandResponse
-            {
-                Success = false,
-                Message = uploadResult.ErrorMessage ?? "Failed to upload image"
-            };
-        }
-
-        // Delete old profile picture if exists
-        if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
-        {
-            try
-            {
-                await _imageStorageService.DeleteImageAsync(user.ProfilePictureUrl, cancellationToken);
-            }
-            catch
-            {
-                // Ignore errors when deleting old image
-            }
-        }
 
         // Update user
-        user.ProfilePictureUrl = uploadResult.OriginalPath;
+        user.ProfilePictureUrl = savingresult.OriginalPath;
         var result = await _userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
@@ -103,7 +55,7 @@ public class UploadProfilePictureCommandHandler : IRequestHandler<UploadProfileP
         return new BaseCommandResponse
         {
             Success = true,
-            Message = $"Profile picture uploaded successfully|{uploadResult.OriginalPath}"
+            Message = $"Profile picture uploaded successfully|{savingresult.OriginalPath}"
         };
     }
 }

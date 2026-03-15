@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { UserDataSource } from '../../../data/datasources/user.datasource';
 import { MatConfirmDialogComponent } from '../../components/shared/mat-confirm-dialog/mat-confirm-dialog.component';
 import { EditProfileModalComponent } from '../../components/shared/modals/edit-profile-modal/edit-profile-modal.component';
 import { EditStyleProfileModalComponent } from '../../components/shared/modals/edit-style-profile-modal/edit-style-profile-modal.component';
@@ -59,6 +60,7 @@ export class ProfileComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly userDataSource = inject(UserDataSource);
 
   profile$!: Observable<UserProfile | null>;
   loading$: Observable<boolean>;
@@ -101,7 +103,10 @@ export class ProfileComponent implements OnInit {
 
   onImageError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/default-avatar.png';
+    // Prevent infinite loop if default avatar also fails
+    if (!img.src.includes('default-avatar.png')) {
+      img.src = 'assets/default-avatar.png';
+    }
   }
 
   openEditProfileModal(): void {
@@ -251,5 +256,45 @@ export class ProfileComponent implements OnInit {
 
   clearError() {
     this.store.dispatch(UserActions.clearError());
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        this.snackBar.open('Please select an image file', 'Close', {
+          duration: 3000,
+        });
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        this.snackBar.open('Image size must be less than 5MB', 'Close', {
+          duration: 3000,
+        });
+        return;
+      }
+
+      // Upload the file
+      this.userDataSource.uploadProfilePicture(file).subscribe({
+        next: (imageUrl: string) => {
+          this.snackBar.open('Profile picture updated successfully', 'Close', {
+            duration: 3000,
+          });
+          // Reload profile to get updated image URL
+          this.store.dispatch(UserActions.loadProfile());
+        },
+        error: (error: Error) => {
+          console.error('Upload error:', error);
+          this.snackBar.open('Failed to upload profile picture', 'Close', {
+            duration: 3000,
+          });
+        },
+      });
+    }
   }
 }

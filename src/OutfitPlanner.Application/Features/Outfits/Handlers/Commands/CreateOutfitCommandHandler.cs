@@ -88,8 +88,8 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
             // Fetch again with items to ensure return DTO is fully populated
             var savedOutfit = await _unitOfWork.Outfits.GetWithItemsByIdAsync(outfit.Id);
 
-            // Pre-generate outfit image if enabled and outfit has multiple items
-            if (_cacheSettings.EnablePreGeneration && savedOutfit.Items.Count > 1)
+            // Pre-generate outfit image if enabled and outfit has at least one item
+            if (_cacheSettings.EnablePreGeneration && savedOutfit.Items.Count >= 1)
             {
                 var imagePath = await PreGenerateOutfitImageAsync(savedOutfit);
                 

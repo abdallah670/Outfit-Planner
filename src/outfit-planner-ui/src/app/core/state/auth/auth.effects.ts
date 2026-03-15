@@ -1,9 +1,11 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { exhaustMap, map, catchError, tap, of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { AuthActions } from './auth.actions';
+import { UserActions } from '../user/user.actions';
 import { AuthResponse, RegistrationResponse } from '../../../data/models/auth.model';
 
 export const login$ = createEffect(
@@ -77,6 +79,19 @@ export const loginSuccess$ = createEffect(
     return actions$.pipe(
       ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
       tap(() => router.navigate(['/'])),
+    );
+  },
+  { functional: true, dispatch: false },
+);
+
+// Load user profile after successful login/register
+export const loadProfileAfterAuth$ = createEffect(
+  () => {
+    return inject(Actions).pipe(
+      ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
+      tap(() => {
+        inject(Store).dispatch(UserActions.loadProfile());
+      }),
     );
   },
   { functional: true, dispatch: false },

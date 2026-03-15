@@ -33,6 +33,8 @@ import {
   initialSearchFilters,
 } from '../../../domain/entities/search.entity';
 
+type SearchTab = 'all' | 'outfits' | 'items';
+
 @Component({
   selector: 'app-global-search',
   standalone: true,
@@ -53,7 +55,17 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private searchInput$ = new Subject<string>();
 
-  // Signals from NgRx store with explicit types
+  // Active tab signal
+  activeTab = signal<SearchTab>('all');
+
+  // Price range signals
+  minPrice = signal<number | null>(null);
+  maxPrice = signal<number | null>(null);
+
+  // Occasion selection signal
+  selectedOccasions = signal<string[]>([]);
+
+  // Signals from NgRx store
   query: Signal<string> = toSignal(this.store.select(selectSearchQuery), { initialValue: '' });
   filters: Signal<SearchFilters> = toSignal(this.store.select(selectSearchFilters), {
     initialValue: initialSearchFilters,
@@ -71,9 +83,43 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   wardrobeItems: Signal<WardrobeItemSearchResult[]> = toSignal(this.store.select(selectSearchWardrobeItems), { initialValue: [] });
 
   // Local state
-  showFilters = signal(false);
-  showSuggestions = signal(false);
-  localQuery = signal('');
+  localQuery = signal<string>('');
+
+  // Search placeholder based on active tab
+  searchPlaceholder = computed(() => {
+    switch (this.activeTab()) {
+      case 'all':
+        return 'Search everything...';
+      case 'outfits':
+        return 'Search outfits by name or occasion...';
+      case 'items':
+        return 'Search wardrobe by item name or brand...';
+      default:
+        return 'Search...';
+    }
+  });
+
+  // Show outfits section
+  showOutfits = computed(() => {
+    const tab = this.activeTab();
+    return tab === 'all' || tab === 'outfits';
+  });
+
+  // Show items section
+  showItems = computed(() => {
+    const tab = this.activeTab();
+    return tab === 'all' || tab === 'items';
+  });
+
+  // Filter visibility based on tab
+  // 'all' tab shows Season only (common filter)
+  // 'outfits' tab shows Season, Occasion
+  // 'items' tab shows Category, Season, Color, Price
+  showCategoryFilter = computed(() => this.activeTab() === 'items');
+  showSeasonFilter = computed(() => true); // Show on all tabs
+  showOccasionFilter = computed(() => this.activeTab() === 'outfits');
+  showColorFilter = computed(() => this.activeTab() === 'items');
+  showPriceFilter = computed(() => this.activeTab() === 'items');
 
   // Computed values
   hasResults = computed(() => {
@@ -84,26 +130,10 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   totalResults = computed(() => this.results().totalCount);
 
   // Filter options
-  typeOptions: { value: SearchType; label: string; icon: string }[] = [
-    { value: 'all', label: 'All', icon: 'search' },
-    { value: 'outfits', label: 'Outfits', icon: 'checkroom' },
-    { value: 'wardrobe', label: 'Wardrobe', icon: 'inventory_2' },
-  ];
-
   categoryOptions = ['Tops', 'Bottoms', 'Dresses', 'Shoes', 'Accessories', 'Outerwear'];
   seasonOptions = ['Spring', 'Summer', 'Fall', 'Winter'];
-  colorOptions = [
-    'Black',
-    'White',
-    'Red',
-    'Blue',
-    'Green',
-    'Yellow',
-    'Purple',
-    'Pink',
-    'Gray',
-    'Brown',
-  ];
+  occasionOptions = ['Casual', 'Formal', 'Work', 'Party', 'Sport', 'Date'];
+  colorOptions = ['Black', 'White', 'Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Pink', 'Gray', 'Brown'];
 
   ngOnInit(): void {
     // Load recent searches on init
@@ -115,6 +145,9 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
       .subscribe((query: string) => {
         this.performSearch(query);
       });
+
+    // Load all results on initial page load
+    this.performSearch('');
   }
 
   ngOnDestroy(): void {
@@ -122,34 +155,36 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  // Tab change handler
+  onTabChange(tab: SearchTab): void {
+    this.activeTab.set(tab);
+
+    // Update search type in filters
+    const searchType: SearchType = tab === 'items' ? 'wardrobe' : tab === 'outfits' ? 'outfits' : 'all';
+    this.store.dispatch(SearchActions.updateFilters({ filters: { type: searchType } }));
+
+    // Trigger search with new filter
+    const currentQuery = this.query();
+    if (currentQuery) {
+      this.performSearch(currentQuery);
+    }
+  }
+
   onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.localQuery.set(value);
     this.searchInput$.next(value);
-    this.showSuggestions.set(value.length >= 2);
   }
 
   onSearchKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
-      this.showSuggestions.set(false);
       this.performSearch(this.localQuery());
     }
   }
 
-  onSearchFocus(): void {
-    if (this.localQuery().length >= 2) {
-      this.showSuggestions.set(true);
-    }
-  }
-
-  onSearchBlur(): void {
-    // Delay to allow clicking on suggestions
-    setTimeout(() => this.showSuggestions.set(false), 200);
-  }
-
   performSearch(query: string): void {
+    this.store.dispatch(SearchActions.search({ query: query.trim() }));
     if (query.trim()) {
-      this.store.dispatch(SearchActions.search({ query: query.trim() }));
       this.store.dispatch(SearchActions.saveRecentSearch({ query: query.trim() }));
     }
   }
@@ -157,7 +192,6 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   onRecentSearchClick(search: string): void {
     this.localQuery.set(search);
     this.performSearch(search);
-    this.showSuggestions.set(false);
   }
 
   onRemoveRecentSearch(event: Event, search: string): void {
@@ -165,28 +199,19 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     this.store.dispatch(SearchActions.removeRecentSearch({ query: search }));
   }
 
-  onClearRecentSearches(): void {
-    this.store.dispatch(SearchActions.clearRecentSearches());
-  }
+  onClearFilters(): void {
+    this.store.dispatch(SearchActions.clearFilters());
+    this.selectedOccasions.set([]);
+    this.minPrice.set(null);
+    this.maxPrice.set(null);
 
-  onSuggestionClick(suggestion: string): void {
-    this.localQuery.set(suggestion);
-    this.performSearch(suggestion);
-    this.showSuggestions.set(false);
-  }
-
-  toggleFilters(): void {
-    this.showFilters.update((v) => !v);
-  }
-
-  onTypeChange(type: SearchType): void {
-    this.store.dispatch(SearchActions.updateFilters({ filters: { type } }));
     const currentQuery = this.query();
     if (currentQuery) {
       this.performSearch(currentQuery);
     }
   }
 
+  // Category filter
   onCategoryToggle(category: string): void {
     const currentCategories = this.filters().categories;
     const updatedCategories = currentCategories.includes(category)
@@ -203,6 +228,11 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     }
   }
 
+  isCategorySelected(category: string): boolean {
+    return this.filters().categories.includes(category);
+  }
+
+  // Season filter
   onSeasonToggle(season: string): void {
     const currentSeasons = this.filters().seasons;
     const updatedSeasons = currentSeasons.includes(season)
@@ -217,6 +247,30 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     }
   }
 
+  isSeasonSelected(season: string): boolean {
+    return this.filters().seasons.includes(season);
+  }
+
+  // Occasion filter
+  onOccasionToggle(occasion: string): void {
+    const currentOccasions = this.selectedOccasions();
+    const updatedOccasions = currentOccasions.includes(occasion)
+      ? currentOccasions.filter((o: string) => o !== occasion)
+      : [...currentOccasions, occasion];
+
+    this.selectedOccasions.set(updatedOccasions);
+
+    const currentQuery = this.query();
+    if (currentQuery) {
+      this.performSearch(currentQuery);
+    }
+  }
+
+  isOccasionSelected(occasion: string): boolean {
+    return this.selectedOccasions().includes(occasion);
+  }
+
+  // Color filter
   onColorSelect(color: string | null): void {
     this.store.dispatch(SearchActions.updateFilters({ filters: { color } }));
 
@@ -226,34 +280,22 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  onClearFilters(): void {
-    this.store.dispatch(SearchActions.clearFilters());
-
-    const currentQuery = this.query();
-    if (currentQuery) {
-      this.performSearch(currentQuery);
-    }
-  }
-
-  onClearSearch(): void {
-    this.localQuery.set('');
-    this.store.dispatch(SearchActions.clearSearch());
-  }
-
-  isCategorySelected(category: string): boolean {
-    return this.filters().categories.includes(category);
-  }
-
-  isSeasonSelected(season: string): boolean {
-    return this.filters().seasons.includes(season);
-  }
-
   isColorSelected(color: string | null): boolean {
     return this.filters().color === color;
   }
 
+  // Price filter handlers
+  onMinPriceChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.minPrice.set(value ? parseFloat(value) : null);
+  }
+
+  onMaxPriceChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.maxPrice.set(value ? parseFloat(value) : null);
+  }
+
   getContrastColor(color: string): string {
-    // Simple contrast calculation for light/dark text
     const lightColors = ['White', 'Yellow', 'Pink'];
     return lightColors.includes(color) ? '#000000' : '#FFFFFF';
   }

@@ -25,7 +25,7 @@ import { OutfitCanvasService } from '../../../../core/services/outfit-canvas.ser
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './outfit-card.component.html',
   styleUrl: './outfit-card.component.scss',
@@ -55,8 +55,10 @@ export class OutfitCardComponent implements OnInit {
   constructor(private canvasService: OutfitCanvasService) {}
 
   ngOnInit() {
-    // Only generate combined image if there are multiple items
-    if (this.hasMultipleItems) {
+    // Use pre-saved imageUrl if available, otherwise try to generate on-demand
+    if (this.outfit.imageUrl) {
+      this.combinedImageUrl = this.outfit.imageUrl;
+    } else if (this.hasMultipleItems) {
       this.generateCombinedImage();
     }
   }

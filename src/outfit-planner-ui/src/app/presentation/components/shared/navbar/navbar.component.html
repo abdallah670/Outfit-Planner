@@ -29,17 +29,22 @@
       <mat-icon>notifications_none</mat-icon>
     </button>
     <div class="user-profile" routerLink="/profile" style="cursor: pointer">
-      <ng-container *ngIf="profile$ | async as profile; else fallbackAvatar">
+      <ng-container *ngIf="profilePictureUrl$ | async as profilePictureUrl; else fallbackAvatar">
         <div
           class="avatar-image-container"
-          *ngIf="$any(profile).profilePictureUrl; else fallbackAvatar"
+          *ngIf="!isImageFailed(profilePictureUrl); else fallbackAvatar"
         >
-          <img [src]="$any(profile).profilePictureUrl" alt="Profile avatar" class="avatar-image" />
+          <img
+            [src]="profilePictureUrl"
+            alt="Profile avatar"
+            class="avatar-image"
+            (error)="onImageError($event, profilePictureUrl)"
+          />
         </div>
       </ng-container>
       <ng-template #fallbackAvatar>
         <div class="avatar-placeholder">
-          <mat-icon>person</mat-icon>
+          <img src="assets/default-avatar.png" alt="Default avatar" class="avatar-image" />
         </div>
       </ng-template>
     </div>

@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Observable, map } from 'rxjs';
 
@@ -26,6 +27,7 @@ import { OccasionType, Season } from '../../../domain/entities/outfit.entity';
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
+    MatInputModule,
     MatSelectModule,
     MatChipsModule,
     FormsModule,
@@ -48,7 +50,6 @@ export class OutfitsDashboardComponent implements OnInit {
 
   // Filter options - matching backend enums
   occasions: string[] = [
-    '',
     'Casual',
     'BusinessCasual',
     'Formal',
@@ -58,7 +59,7 @@ export class OutfitsDashboardComponent implements OnInit {
     'Date',
     'Travel',
   ];
-  seasons: string[] = ['', 'Spring', 'Summer', 'Autumn', 'Winter', 'AllSeason'];
+  seasons: string[] = [ 'Spring', 'Summer', 'Autumn', 'Winter'];
   sortOptions = [
     { value: 'recent', label: 'Recently Created' },
     { value: 'mostWorn', label: 'Most Worn' },
@@ -88,7 +89,7 @@ export class OutfitsDashboardComponent implements OnInit {
         Spring: 'Spring',
         Summer: 'Summer',
         Winter: 'Winter',
-        AllSeason: 'AllSeason',
+      
       };
       const mappedSeason = seasonMap[season] || season;
       result = result.filter(

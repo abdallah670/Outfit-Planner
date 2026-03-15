@@ -41,6 +41,10 @@ export class UserDataSource {
     );
   }
 
+  getProfilePicture(): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/profile-picture`);
+  }
+
   updateProfile(request: UpdateUserProfileRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/profile`, request);
   }

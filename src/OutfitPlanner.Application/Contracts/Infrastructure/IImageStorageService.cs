@@ -8,6 +8,11 @@ namespace OutfitPlanner.Application.Contracts.Infrastructure{
         string fileName,
         string userId,
         CancellationToken cancellationToken = default);
+    Task <ProfileImageUploadResult> UploadProfilePictureAsync(
+        Stream imageStream,
+        string fileName,
+        string userId,
+        CancellationToken cancellationToken = default);
     Task<bool> DeleteImageAsync(
         string imagePath,
         CancellationToken cancellationToken = default);
@@ -17,7 +22,7 @@ namespace OutfitPlanner.Application.Contracts.Infrastructure{
         string imagePath,
         CancellationToken cancellationToken = default);
     ImageValidationResult ValidateImage(Stream imageStream, string fileName);
-
+     
 
 
 

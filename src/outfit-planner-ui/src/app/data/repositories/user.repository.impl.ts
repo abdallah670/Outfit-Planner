@@ -19,6 +19,10 @@ export class UserRepositoryImpl implements UserRepository {
     return this.dataSource.getProfile();
   }
 
+  getProfilePicture(): Observable<string> {
+    return this.dataSource.getProfilePicture();
+  }
+
   updateProfile(request: UpdateUserProfileRequest): Observable<void> {
     return this.dataSource.updateProfile(request);
   }
