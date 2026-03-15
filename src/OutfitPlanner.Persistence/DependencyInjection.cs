@@ -32,7 +32,7 @@ public static class DependencyInjection
 
         var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
-        // register jwt
+        // register JWT authentication
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

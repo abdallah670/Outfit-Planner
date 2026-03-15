@@ -249,5 +249,75 @@ namespace OutfitPlanner.Infrastructure.Services
 
         return filePath;
     }
+    private async Task DeleteProfileImageAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        
+        if (userId != null)
+        {
+            var uploadFolder = Path.Combine(
+                _environment.WebRootPath,
+                "profile_pictures");
+            var filePath = Path.Combine(uploadFolder, $"{userId}.png");
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+    }
+
+    public async Task<ProfileImageUploadResult> UploadProfilePictureAsync(
+        Stream imageStream,
+        string fileName,
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Uploading profile picture for user: {UserId}", userId);
+
+        try
+        {
+            // Validate the image first
+            var validation = ValidateImage(imageStream, fileName);
+            if (!validation.IsValid)
+            {
+                return ProfileImageUploadResult.Failed(string.Join(", ", validation.Errors));
+            }
+            //check if user want to update their profile picture or upload it for first time
+            if (userId != null)
+            {
+                await DeleteProfileImageAsync(userId, cancellationToken);
+            }
+            // Create folder structure: profile_pictures/
+            var uploadFolder = Path.Combine(
+                _environment.WebRootPath,
+                "profile_pictures");
+            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            //check if folder exists
+            if(!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
+
+            var originalPath = await SaveImageAsync(
+                imageStream,
+                uploadFolder,
+                $"{userId}{extension}",
+                cancellationToken);
+
+            // Return relative paths for database storage
+            var relativeBase = $"profile_pictures/{userId}{extension}";
+
+            _logger.LogInformation(
+                "Image uploaded successfully: {UserId} for user: {UserId}",
+                userId, userId);
+
+            return ProfileImageUploadResult.Successful(
+                originalPath: relativeBase);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to upload image: {FileName}", fileName);
+            return ProfileImageUploadResult.Failed($"Upload failed: {ex.Message}");
+        }
+    }
     }
 }

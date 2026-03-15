@@ -91,6 +91,11 @@ export class AuthService{
     console.log('[AuthService] isAuthenticated set to:', this.isAuthenticated());
   }
 
+  // Handle OAuth social login callback
+  handleSocialLogin(response: AuthResponse): void {
+    this.handleAuthentication(response);
+  }
+
   private checkAuthStatus(): void {
     const token = this.cookieService.get('token');
     console.log('[AuthService] checkAuthStatus - Token found:', !!token);

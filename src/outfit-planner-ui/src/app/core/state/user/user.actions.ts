@@ -14,6 +14,10 @@ export const UserActions = createActionGroup({
     'Load Profile Success': props<{ profile: UserProfile }>(),
     'Load Profile Failure': props<{ error: string }>(),
 
+    'Load Profile Picture': emptyProps(),
+    'Load Profile Picture Success': props<{ profilePictureUrl: string }>(),
+    'Load Profile Picture Failure': props<{ error: string }>(),
+
     // Update Profile
     'Update Profile': props<{ request: UpdateUserProfileRequest }>(),
     'Update Profile Success': props<{ profile: UserProfile }>(),

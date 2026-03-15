@@ -61,18 +61,43 @@ export class OutfitDataSource {
   }
 
   private fixOutfitUrls(outfit: Outfit): Outfit {
+    // Fix the main outfit image URL if present
+    if (outfit.imageUrl) {
+      outfit.imageUrl = this.fixOutfitImageUrl(outfit.imageUrl);
+    }
+
     if (outfit.items) {
       outfit.items = outfit.items.map((item: any) => {
         if (item.clothingItemImageUrl) {
           item.clothingItemImageUrl = this.fixImageUrl(
             item.clothingItemImageUrl,
-            item.clothingItemId
+            item.clothingItemId,
           );
         }
         return item;
       });
     }
     return outfit;
+  }
+
+  /**
+   * Fixes outfit image URL to be a full URL
+   */
+  private fixOutfitImageUrl(url: string): string {
+    // If it's already a full URL, return as-is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+
+    // If it's a path starting with /uploads/, prepend backend base
+    if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+      const path = url.startsWith('/') ? url : `/${url}`;
+      return `${this.backendBase}${path}`;
+    }
+
+    // For any other relative path, prepend backend base
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${this.backendBase}${path}`;
   }
 
   /**
@@ -100,8 +125,8 @@ export class OutfitDataSource {
     if (!url.includes('/')) {
       console.warn(
         `Simple filename detected without full path: ${url}. ` +
-        `clothingItemId: ${clothingItemId}. ` +
-        `Backend should return full paths like /uploads/{userId}/{clothingItemId}/{filename}`
+          `clothingItemId: ${clothingItemId}. ` +
+          `Backend should return full paths like /uploads/{userId}/{clothingItemId}/{filename}`,
       );
       // Return as-is - it will fail to load and show fallback
       return url;

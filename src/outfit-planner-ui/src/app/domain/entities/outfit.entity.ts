@@ -2,6 +2,7 @@ export interface Outfit {
   id: string;
   userId: string;
   name: string;
+  imageUrl?: string; // URL to the generated outfit preview image
   items: OutfitItem[];
   occasion: OccasionType;
   suitableWeather: WeatherCondition;

@@ -194,6 +194,103 @@ public class JwtService : IJWTService
         };
     }
 
+    public async Task<AuthResponse> SocialLogin(string email, string name, string provider, string providerId, string? profilePictureUrl = null)
+    {
+        // Try to find user by email
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user == null)
+        {
+            // Create new user for social login
+            var username = email.Split('@')[0] + "_" + provider.ToLower();
+            
+            // Ensure username is unique
+            var existingUser = await _userManager.FindByNameAsync(username);
+            var counter = 1;
+            var originalUsername = username;
+            while (existingUser != null)
+            {
+                username = $"{originalUsername}{counter}";
+                existingUser = await _userManager.FindByNameAsync(username);
+                counter++;
+            }
+
+            user = new User
+            {
+                Email = email,
+                Name = name,
+                UserName = username,
+                EmailConfirmed = true,
+                Provider = provider,
+                ProviderId = providerId,
+                ProfilePictureUrl = profilePictureUrl
+            };
+
+            // Generate a random secure password (users won't use this, they use social login)
+            var randomPassword = GenerateSecureRandomPassword();
+            var result = await _userManager.CreateAsync(user, randomPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                _logger.LogError("Failed to create social login user: {Errors}", errors);
+                throw new Exception($"Failed to create user: {errors}");
+            }
+
+            // Assign default role
+            if (!await _userManager.IsInRoleAsync(user, "Planner"))
+            {
+                await _userManager.AddToRoleAsync(user, "Planner");
+            }
+
+            _logger.LogInformation("Created new user via {Provider} social login: {Email}", provider, email);
+        }
+        else
+        {
+            // Update existing user with social login info if not already set
+            if (string.IsNullOrEmpty(user.Provider))
+            {
+                user.Provider = provider;
+                user.ProviderId = providerId;
+                if (!string.IsNullOrEmpty(profilePictureUrl) && string.IsNullOrEmpty(user.ProfilePictureUrl))
+                {
+                    user.ProfilePictureUrl = profilePictureUrl;
+                }
+                await _userManager.UpdateAsync(user);
+                _logger.LogInformation("Linked existing user to {Provider} social login: {Email}", provider, email);
+            }
+        }
+
+        // Update last login
+        user.LastLogin = DateTimeOffset.UtcNow;
+        
+        // Generate tokens
+        var jwtSecurityToken = await GenerateToken(user);
+        user.RefreshToken = GenerateRefreshToken();
+        user.RefreshTokenExpiration = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenDurationInDays);
+        await _userManager.UpdateAsync(user);
+
+        return new AuthResponse
+        {
+            Id = user.Id,
+            Token = jwtSecurityToken,
+            Email = user.Email!,
+            UserName = user.UserName!,
+            RefreshToken = user.RefreshToken
+        };
+    }
+
+    private string GenerateSecureRandomPassword()
+    {
+        // Generate a secure random password for social login users
+        // They won't use this password - they'll login via social providers
+        var length = 32;
+        var randomNumber = new byte[length];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
     private string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];

@@ -8,6 +8,11 @@ export const selectUserProfile = createSelector(
   (state) => state.profile
 );
 
+export const selectProfilePictureUrl = createSelector(
+  selectUserState,
+  (state) => state.profile?.profilePictureUrl ?? null
+);
+
 export const selectUserLoading = createSelector(
   selectUserState,
   (state) => state.loading

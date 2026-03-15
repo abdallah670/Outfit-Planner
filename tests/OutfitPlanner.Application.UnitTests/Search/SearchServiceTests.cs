@@ -39,7 +39,7 @@ public class SearchServiceTests : IDisposable
                 Id = Guid.NewGuid(),
                 UserId = _userId,
                 Name = "Casual Friday",
-                Description = "Comfortable work outfit",
+             
                 Season = Season.Summer,
                 Occasion = OccasionType.Casual,
                 Status = OutfitStatus.Active,
@@ -52,7 +52,7 @@ public class SearchServiceTests : IDisposable
                 Id = Guid.NewGuid(),
                 UserId = _userId,
                 Name = "Business Meeting",
-                Description = "Formal attire for important meetings",
+            
                 Season = Season.Winter,
                 Occasion = OccasionType.Formal,
                 Status = OutfitStatus.Active,

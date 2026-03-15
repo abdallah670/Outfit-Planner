@@ -43,6 +43,23 @@ export const userReducer = createReducer(
     error,
   })),
 
+  on(UserActions.loadProfilePicture, (state) => ({
+    ...state,
+    loading: true,
+    error: null,
+  })),
+  on(UserActions.loadProfilePictureSuccess, (state, { profilePictureUrl }) => ({
+    ...state,
+    profile: state.profile ? { ...state.profile, profilePictureUrl } : null,
+    loading: false,
+    error: null,
+  })),
+  on(UserActions.loadProfilePictureFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+
   // Update Profile
   on(UserActions.updateProfile, (state) => ({
     ...state,

@@ -39,7 +39,8 @@ public class ImageProcessingService : IImageProcessingService
 
             var imageId = Guid.NewGuid();
             var extension = Path.GetExtension(fileName);
-            var baseFileName = Path.GetFileNameWithoutExtension(fileName);
+            // Fix: Extract just the filename without directory path
+            var baseFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(fileName));
             var generatedFileName = $"{imageId}_{baseFileName}";
 
             var result = new ProcessedImage

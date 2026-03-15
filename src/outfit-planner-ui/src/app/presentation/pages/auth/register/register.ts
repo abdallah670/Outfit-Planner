@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../../environments/environment';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -27,6 +28,20 @@ export class Register {
     userName: ['', [Validators.required, Validators.minLength(6)]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
+
+  // Google Login
+  loginWithGoogle(): void {
+    this.isLoading.set(true);
+    // Redirect to backend OAuth endpoint (same as login)
+    window.location.href = `${environment.baseUrl}/Auth/google`;
+  }
+
+  // Facebook Login
+  loginWithFacebook(): void {
+    this.isLoading.set(true);
+    // Redirect to backend OAuth endpoint (same as login)
+    window.location.href = `${environment.baseUrl}/Auth/facebook`;
+  }
 
   onSubmit(): void {
     if (this.registerForm.invalid) {

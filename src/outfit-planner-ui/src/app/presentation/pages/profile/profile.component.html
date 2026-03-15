@@ -1,54 +1,4 @@
-<!-- Navigation Header -->
-<nav class="navbar">
-  <div class="nav-left">
-    <div class="logo" routerLink="/">
-      <div class="logo-icon">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path
-            d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"
-          ></path>
-        </svg>
-      </div>
-      <span class="logo-text">Outfit Planner</span>
-    </div>
-    <div class="nav-tabs">
-      <a routerLink="/dashboard" class="nav-tab">Dashboard</a>
-      <a routerLink="/calendar" class="nav-tab">Calendar</a>
-      <a routerLink="/wardrobe" class="nav-tab">Wardrobe</a>
-    </div>
-  </div>
-  <div class="nav-right">
-    <button class="settings-btn" routerLink="/settings">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <circle cx="12" cy="12" r="3"></circle>
-        <path
-          d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
-        ></path>
-      </svg>
-      <span>Settings</span>
-    </button>
-  </div>
-</nav>
+
 
 <!-- Main Content -->
 <main class="main-content">
@@ -68,12 +18,28 @@
     <!-- Profile Header -->
     <div class="profile-header">
       <div class="profile-info">
-        <img
-          [src]="$any(profile).profilePictureUrl || 'assets/default-avatar.png'"
-          [alt]="$any(profile).name"
-          class="profile-avatar"
-          (error)="onImageError($event)"
-        />
+        <div class="avatar-container" (click)="fileInput.click()">
+          <img
+            [src]="$any(profile).profilePictureUrl || 'assets/default-avatar.png'"
+            [alt]="$any(profile).name"
+            class="profile-avatar"
+            (error)="onImageError($event)"
+          />
+          <div class="avatar-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            <span>Change Photo</span>
+          </div>
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            style="display: none"
+          />
+        </div>
         <div class="profile-details">
           <h1 class="profile-name">{{ $any(profile).name }}</h1>
           <p class="profile-date">Member since {{ getMemberSince($any(profile).createdAt) }}</p>

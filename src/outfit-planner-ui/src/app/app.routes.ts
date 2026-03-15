@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './presentation/pages/auth/login/login';
 import { Register } from './presentation/pages/auth/register/register';
+import { AuthCallbackComponent } from './presentation/pages/auth/auth-callback/auth-callback.component';
 import { WardrobeDashboardComponent } from './presentation/pages/wardrobe-dashboard/wardrobe-dashboard.component';
 import { AddClothingItemComponent } from './presentation/pages/add-clothing-item/add-clothing-item.component';
 import { ClothingItemDetail } from './presentation/pages/clothing-item-detail/clothing-item-detail';
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'home', redirectTo: '', pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+  { path: 'auth/callback', component: AuthCallbackComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'wardrobe', component: WardrobeDashboardComponent, canActivate: [authGuard] },
   { path: 'wardrobe/new', component: AddClothingItemComponent, canActivate: [authGuard] },

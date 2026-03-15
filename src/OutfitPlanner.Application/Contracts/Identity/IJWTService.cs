@@ -9,4 +9,5 @@ public interface IJWTService
     Task<AuthResponse> Login(AuthRequest request);
     Task<RegistrationResponse> Register(RegistrationRequest request);
     Task<AuthResponse> RefreshToken(string token, string refreshToken);
+    Task<AuthResponse> SocialLogin(string email, string name, string provider, string providerId, string? profilePictureUrl = null);
 }

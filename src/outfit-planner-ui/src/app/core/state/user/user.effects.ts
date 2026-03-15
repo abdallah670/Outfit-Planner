@@ -23,6 +23,24 @@ export const loadProfile$ = createEffect(
   },
   { functional: true },
 );
+export const loadProfilePicture$ = createEffect(
+  (actions$ = inject(Actions), userRepository = inject(UserRepositoryImpl)) => {
+    return actions$.pipe(
+      ofType(UserActions.loadProfilePicture),
+      exhaustMap(() =>
+        userRepository.getProfilePicture().pipe(
+          map((profilePictureUrl: string) => UserActions.loadProfilePictureSuccess({ profilePictureUrl })),
+          catchError((error) =>
+            of(
+              UserActions.loadProfilePictureFailure({ error: error?.message || 'Failed to load profile picture' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
 
 export const updateProfile$ = createEffect(
   (actions$ = inject(Actions), userRepository = inject(UserRepositoryImpl)) => {
