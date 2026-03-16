@@ -59,7 +59,7 @@ public class CreateCalendarEventCommandHandlerTests
         _unitOfWorkMock.Setup(u => u.CalendarEvents.AddAsync(It.IsAny<Domain.Entities.CalendarEvent>()))
             .Callback<Domain.Entities.CalendarEvent>(e => { })
             .Returns(Task.CompletedTask);
-        _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
         // Act
@@ -109,7 +109,7 @@ public class CreateCalendarEventCommandHandlerTests
             .Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CalendarEvents.AddAsync(It.IsAny<Domain.Entities.CalendarEvent>()))
             .Returns(Task.CompletedTask);
-        _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
         // Act

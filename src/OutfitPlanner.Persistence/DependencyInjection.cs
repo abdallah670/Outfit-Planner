@@ -12,6 +12,7 @@ using OutfitPlanner.Persistence.Data;
 using OutfitPlanner.Application.Models.Identity;
 using OutfitPlanner.Application.Contracts.Identity;
 using OutfitPlanner.Persistence.Security;
+using Microsoft.Extensions.Logging;
 
 namespace OutfitPlanner.Persistence;
 
@@ -52,23 +53,7 @@ public static class DependencyInjection
                 ClockSkew = TimeSpan.FromMinutes(5) // Allow 5 minutes clock skew
             };
 
-            // Add event handlers for debugging
-            options.Events = new JwtBearerEvents
-            {
-                OnAuthenticationFailed = context =>
-                {
-                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(context.Exception, "JWT Authentication failed: {Message}", context.Exception.Message);
-                    return Task.CompletedTask;
-                },
-                OnTokenValidated = context =>
-                {
-                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("JWT Token validated successfully for user: {User}", 
-                        context.Principal?.Identity?.Name ?? "unknown");
-                    return Task.CompletedTask;
-                }
-            };
+          
         });
 
         services.AddScoped<IJWTService, JwtService>();
