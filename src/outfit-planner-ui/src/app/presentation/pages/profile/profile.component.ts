@@ -15,6 +15,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { UserDataSource } from '../../../data/datasources/user.datasource';
 import { MatConfirmDialogComponent } from '../../components/shared/mat-confirm-dialog/mat-confirm-dialog.component';
 import { EditProfileModalComponent } from '../../components/shared/modals/edit-profile-modal/edit-profile-modal.component';
+import { EditProfilePictureModalComponent } from '../../components/shared/modals/edit-profile-picture-modal/edit-profile-picture-modal.component';
 import { EditStyleProfileModalComponent } from '../../components/shared/modals/edit-style-profile-modal/edit-style-profile-modal.component';
 import { EditPreferencesModalComponent } from '../../components/shared/modals/edit-preferences-modal/edit-preferences-modal.component';
 import { ChangePasswordModalComponent } from '../../components/shared/modals/change-password-modal/change-password-modal.component';
@@ -122,6 +123,26 @@ export class ProfileComponent implements OnInit {
         if (result) {
           this.store.dispatch(UserActions.loadProfile());
           this.snackBar.open('Profile updated successfully', 'Close', {
+            duration: 3000,
+          });
+        }
+      });
+    });
+  }
+
+  openEditProfilePictureModal(): void {
+    this.profile$.pipe(take(1)).subscribe((profile: UserProfile | null) => {
+      const dialogRef = this.dialog.open(EditProfilePictureModalComponent, {
+        width: '400px',
+        data: {
+          profile: profile,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        if (result) {
+          this.store.dispatch(UserActions.loadProfile());
+          this.snackBar.open('Profile picture updated successfully', 'Close', {
             duration: 3000,
           });
         }
