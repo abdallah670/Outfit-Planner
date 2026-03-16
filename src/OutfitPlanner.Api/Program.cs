@@ -83,22 +83,51 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "Identity.External";
 });
 
-// Add OAuth authentication
-builder.Services.AddAuthentication()
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-        options.CallbackPath = "/api/auth/google-callback";
-        options.SaveTokens = true;
-    })
-    .AddFacebook(options =>
-    {
-        options.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
-        options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
-        options.CallbackPath = "/api/auth/facebook-callback";
-        options.SaveTokens = true;
-    });
+// Add OAuth authentication (JWT is already configured in AddPersistence)
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
+var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+var facebookAppId = builder.Configuration["Authentication:Facebook:AppId"];
+var facebookAppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+
+// Only add Google OAuth if credentials are properly configured
+if (!string.IsNullOrEmpty(googleClientId) && 
+    !string.IsNullOrEmpty(googleClientSecret) &&
+    !googleClientId.Contains("YOUR_") &&
+    !googleClientId.Contains("example"))
+{
+    builder.Services.AddAuthentication()
+        .AddGoogle(options =>
+        {
+            options.ClientId = googleClientId;
+            options.ClientSecret = googleClientSecret;
+            options.CallbackPath = "/signin-google";
+            options.SaveTokens = true;
+        });
+}
+else
+{
+    Log.Warning("Google OAuth credentials not configured. Social login with Google will not work.");
+}
+
+// Only add Facebook OAuth if credentials are properly configured
+if (!string.IsNullOrEmpty(facebookAppId) && 
+    !string.IsNullOrEmpty(facebookAppSecret) &&
+    !facebookAppId.Contains("YOUR_") &&
+    !facebookAppId.Contains("example"))
+{
+    builder.Services.AddAuthentication()
+        .AddFacebook(options =>
+        {
+            options.AppId = facebookAppId;
+            options.AppSecret = facebookAppSecret;
+            options.CallbackPath = "/signin-facebook";
+            options.SaveTokens = true;
+        });
+}
+else
+{
+    Log.Warning("Facebook OAuth credentials not configured. Social login with Facebook will not work.");
+}
 
 
 

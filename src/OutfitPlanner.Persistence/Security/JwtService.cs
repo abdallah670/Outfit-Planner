@@ -171,27 +171,75 @@ public class JwtService : IJWTService
 
     public async Task<AuthResponse> RefreshToken(string token, string refreshToken)
     {
-        var principal = GetPrincipalFromExpiredToken(token);
-        var username = principal.Identity!.Name;
-
-        var user = await _userManager.FindByNameAsync(username!);
-        if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiration <= DateTime.UtcNow)
+        try
         {
-            throw new Exception("Invalid refresh token or token expired.");
+            _logger.LogInformation("Attempting to refresh token for token: {TokenPrefix}...", 
+                token?.Length > 20 ? token[..20] : token);
+
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(refreshToken))
+            {
+                throw new Exception("Token and refresh token are required.");
+            }
+
+            ClaimsPrincipal principal;
+            try
+            {
+                principal = GetPrincipalFromExpiredToken(token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to validate expired token");
+                throw new Exception("Invalid token format.");
+            }
+
+            var username = principal?.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+            {
+                _logger.LogWarning("Could not extract username from token");
+                throw new Exception("Invalid token claims.");
+            }
+
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                _logger.LogWarning("User not found for username: {Username}", username);
+                throw new Exception("User not found.");
+            }
+
+            if (user.RefreshToken != refreshToken)
+            {
+                _logger.LogWarning("Refresh token mismatch for user: {Username}", username);
+                throw new Exception("Invalid refresh token.");
+            }
+
+            if (user.RefreshTokenExpiration <= DateTime.UtcNow)
+            {
+                _logger.LogWarning("Refresh token expired for user: {Username}. Expiration: {Expiration}", 
+                    username, user.RefreshTokenExpiration);
+                throw new Exception("Refresh token has expired. Please login again.");
+            }
+
+            var newJwtToken = await GenerateToken(user);
+            user.RefreshToken = GenerateRefreshToken();
+            user.RefreshTokenExpiration = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenDurationInDays);
+            await _userManager.UpdateAsync(user);
+
+            _logger.LogInformation("Token refreshed successfully for user: {Username}", username);
+
+            return new AuthResponse
+            {
+                Id = user.Id,
+                Token = newJwtToken,
+                Email = user.Email!,
+                UserName = user.UserName!,
+                RefreshToken = user.RefreshToken
+            };
         }
-
-        var newJwtToken = await GenerateToken(user);
-        user.RefreshToken = GenerateRefreshToken();
-        await _userManager.UpdateAsync(user);
-
-        return new AuthResponse
+        catch (Exception ex)
         {
-            Id = user.Id,
-            Token = newJwtToken,
-            Email = user.Email!,
-            UserName = user.UserName!,
-            RefreshToken = user.RefreshToken
-        };
+            _logger.LogError(ex, "Error refreshing token: {Message}", ex.Message);
+            throw;
+        }
     }
 
     public async Task<AuthResponse> SocialLogin(string email, string name, string provider, string providerId, string? profilePictureUrl = null)
