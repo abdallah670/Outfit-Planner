@@ -37,6 +37,7 @@ interface WardrobeItemSearchApiResult {
 export class SearchService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.baseUrl}/search`;
+  private backendBase = environment.baseUrl.replace('/api', '');
 
   search(query: string, filters?: SearchFilters, page: number = 1): Observable<SearchResults> {
     let params = new HttpParams()
@@ -94,7 +95,7 @@ export class SearchService {
       outfits: response.outfits.map((o) => ({
         id: o.id,
         name: o.name,
-        imageUrl: o.imageUrl,
+        imageUrl: this.fixImageUrl(o.imageUrl),
         tags: o.tags,
         occasion: o.occasion,
         season: o.season,
@@ -103,7 +104,7 @@ export class SearchService {
       wardrobeItems: response.wardrobeItems.map((w) => ({
         id: w.id,
         name: w.name,
-        imageUrl: w.imageUrl,
+        imageUrl: this.fixImageUrl(w.imageUrl),
         brand: w.brand,
         category: w.category,
         primaryColor: w.primaryColor,
@@ -116,6 +117,37 @@ export class SearchService {
         colors: this.parseFacets(response.facets, 'color_'),
       },
     };
+  }
+
+  /**
+   * Fixes image URL to be a full URL
+   * - Full URLs (http://...) - returned as-is
+   * - Paths starting with /uploads/ or uploads/ - prepends backend base
+   * - Simple filenames or relative paths - prepends backend base
+   */
+  private fixImageUrl(url: string | undefined): string | undefined {
+    if (!url) return url;
+    
+    // If it's already a full URL, return as-is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+
+    // If it's a path starting with /uploads/ or uploads/, prepend backend base
+    if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+      const path = url.startsWith('/') ? url : `/${url}`;
+      return `${this.backendBase}${path}`;
+    }
+
+    // For outfit images (e.g., outfit-xxx.jpg)
+    if (url.startsWith('outfit-') || url.startsWith('/outfit-')) {
+      const path = url.startsWith('/') ? url : `/${url}`;
+      return `${this.backendBase}${path}`;
+    }
+
+    // For any other relative path, prepend backend base
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${this.backendBase}${path}`;
   }
 
   private parseFacets(facets: { [key: string]: number }, prefix: string): { name: string; count: number }[] {

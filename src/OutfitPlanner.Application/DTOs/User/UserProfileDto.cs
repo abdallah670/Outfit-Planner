@@ -30,6 +30,7 @@ public class UserStyleProfileDto
     public string FitPreferences { get; set; } = string.Empty;
     public int ComfortPriority { get; set; }
     public bool AcceptsTrends { get; set; }
+    public List<StyleRuleDto> CustomRules { get; set; } = new();
 }
 
 public class UserPreferencesDto

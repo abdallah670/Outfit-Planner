@@ -25,6 +25,7 @@ public class AppDbContext : IdentityDbContext<User>
     public DbSet<UserPreferences> UserPreferences { get; set; }
     public DbSet<StyleRule> StyleRules { get; set; }
     public DbSet<OutfitFeedback> OutfitFeedbacks { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

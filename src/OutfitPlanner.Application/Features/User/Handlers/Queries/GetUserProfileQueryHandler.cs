@@ -67,7 +67,15 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, U
                 PreferredColors = styleProfile.PreferredColors,
                 FitPreferences = styleProfile.FitPreferences,
                 ComfortPriority = styleProfile.ComfortPriority,
-                AcceptsTrends = styleProfile.AcceptsTrends
+                AcceptsTrends = styleProfile.AcceptsTrends,
+                CustomRules = styleProfile.CustomRules.Select(r => new StyleRuleDto
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    Description = r.Description,
+                    IsActive = r.IsActive,
+                    CriteriaJson = r.CriteriaJson
+                }).ToList()
             } : null,
             Preferences = preferences != null ? new UserPreferencesDto
             {

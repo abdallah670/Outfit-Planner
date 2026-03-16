@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.DTOs.User;
+using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Features.User.Requests.Commands;
 using OutfitPlanner.Application.Features.User.Requests.Queries;
 
@@ -213,4 +214,147 @@ public class UserController : ControllerBase
             return StatusCode(500, new { message = "Failed to update email" });
         }
     }
+
+    #region Style Rules
+
+    /// <summary>
+    /// Get all style rules for current user
+    /// </summary>
+    [HttpGet("style-rules")]
+    public async Task<ActionResult<List<StyleRuleDto>>> GetStyleRules()
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var query = new GetStyleRulesQuery { UserId = userId };
+            var rules = await _mediator.Send(query);
+            return Ok(rules);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving style rules");
+            return StatusCode(500, new { message = "Failed to retrieve style rules" });
+        }
+    }
+
+    /// <summary>
+    /// Create a new style rule
+    /// </summary>
+    [HttpPost("style-rules")]
+    public async Task<IActionResult> CreateStyleRule([FromBody] CreateStyleRuleDto request)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var command = new CreateStyleRuleCommand 
+            { 
+                UserId = userId, 
+                Rule = request 
+            };
+            var response = await _mediator.Send(command);
+            
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            
+            return BadRequest(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating style rule");
+            return StatusCode(500, new { message = "Failed to create style rule" });
+        }
+    }
+
+    /// <summary>
+    /// Update a style rule
+    /// </summary>
+    [HttpPut("style-rules/{id}")]
+    public async Task<IActionResult> UpdateStyleRule(Guid id, [FromBody] UpdateStyleRuleDto request)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var command = new UpdateStyleRuleCommand 
+            { 
+                UserId = userId,
+                RuleId = id,
+                Rule = request 
+            };
+            var response = await _mediator.Send(command);
+            
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            
+            return BadRequest(response);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound(new { message = "Style rule not found" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating style rule");
+            return StatusCode(500, new { message = "Failed to update style rule" });
+        }
+    }
+
+    /// <summary>
+    /// Delete a style rule
+    /// </summary>
+    [HttpDelete("style-rules/{id}")]
+    public async Task<IActionResult> DeleteStyleRule(Guid id)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var command = new DeleteStyleRuleCommand 
+            { 
+                UserId = userId,
+                RuleId = id
+            };
+            var response = await _mediator.Send(command);
+            
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            
+            return BadRequest(response);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound(new { message = "Style rule not found" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting style rule");
+            return StatusCode(500, new { message = "Failed to delete style rule" });
+        }
+    }
+
+    #endregion
 }

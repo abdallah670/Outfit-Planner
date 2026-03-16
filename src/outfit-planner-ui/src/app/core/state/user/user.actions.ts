@@ -4,6 +4,9 @@ import {
   UpdateUserProfileRequest,
   ChangePasswordRequest,
   UpdateEmailRequest,
+  StyleRule,
+  CreateStyleRuleRequest,
+  UpdateStyleRuleRequest,
 } from '../../../domain/entities/user-profile.entity';
 
 export const UserActions = createActionGroup({
@@ -37,6 +40,23 @@ export const UserActions = createActionGroup({
     'Update Email': props<{ request: UpdateEmailRequest }>(),
     'Update Email Success': props<{ email: string }>(),
     'Update Email Failure': props<{ error: string }>(),
+
+    // Style Rules
+    'Load Style Rules': emptyProps(),
+    'Load Style Rules Success': props<{ rules: StyleRule[] }>(),
+    'Load Style Rules Failure': props<{ error: string }>(),
+
+    'Create Style Rule': props<{ rule: CreateStyleRuleRequest }>(),
+    'Create Style Rule Success': props<{ rule: StyleRule }>(),
+    'Create Style Rule Failure': props<{ error: string }>(),
+
+    'Update Style Rule': props<{ id: string; rule: UpdateStyleRuleRequest }>(),
+    'Update Style Rule Success': props<{ rule: StyleRule }>(),
+    'Update Style Rule Failure': props<{ error: string }>(),
+
+    'Delete Style Rule': props<{ id: string }>(),
+    'Delete Style Rule Success': props<{ id: string }>(),
+    'Delete Style Rule Failure': props<{ error: string }>(),
 
     // Clear Error
     'Clear Error': emptyProps(),

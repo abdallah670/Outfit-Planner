@@ -1,4 +1,5 @@
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Persistence;
 
 namespace OutfitPlanner.Persistence.Repositories;
@@ -21,6 +22,7 @@ public class UnitOfWork : IUnitOfWork
     public IVoteRepository Votes { get; }
     public IUserPreferencesRepository UserPreferences { get; }
     public ICalendarEventRepository CalendarEvents { get; }
+    public INotificationRepository Notifications { get; }
 
     public UnitOfWork(
         AppDbContext context,
@@ -37,7 +39,8 @@ public class UnitOfWork : IUnitOfWork
         IPollOptionRepository pollOptions,
         IVoteRepository votes,
         IUserPreferencesRepository userPreferences,
-        ICalendarEventRepository calendarEvents)
+        ICalendarEventRepository calendarEvents,
+        INotificationRepository notifications)
     {
         _context = context;
         ClothingItems = clothingItems;
@@ -54,6 +57,7 @@ public class UnitOfWork : IUnitOfWork
         Votes = votes;
         UserPreferences = userPreferences;
         CalendarEvents = calendarEvents;
+        Notifications = notifications;
     }
     
 

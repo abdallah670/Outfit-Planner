@@ -1,3 +1,5 @@
+using OutfitPlanner.Application.Contracts.Persistence;
+
 namespace OutfitPlanner.Application.Common.Interfaces.Persistence;
 
 public interface IUnitOfWork : IDisposable
@@ -16,6 +18,7 @@ public interface IUnitOfWork : IDisposable
     IVoteRepository Votes { get; }
     IUserPreferencesRepository UserPreferences { get; }
     ICalendarEventRepository CalendarEvents { get; }
+    INotificationRepository Notifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
