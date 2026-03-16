@@ -11,14 +11,6 @@
         Name must be less than 100 characters
       </mat-error>
     </mat-form-field>
-
-    <div class="profile-picture-section">
-      <label for="profilePicture">Profile Picture</label>
-      <input type="file" id="profilePicture" (change)="onFileSelected($event)" accept="image/*" />
-      <div *ngIf="selectedFilePreview" class="preview">
-        <img [src]="selectedFilePreview" alt="Profile preview" />
-      </div>
-    </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

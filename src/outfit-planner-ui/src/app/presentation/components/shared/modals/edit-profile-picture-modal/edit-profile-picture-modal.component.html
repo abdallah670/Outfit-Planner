@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>Change Profile Photo</h2>
+<mat-dialog-content class="picture-modal-content">
+  <div class="picture-container">
+    <!-- Hidden file input -->
+    <input 
+      type="file" 
+      id="profilePictureInput" 
+      (change)="onFileSelected($event)" 
+      accept="image/*"
+      style="display: none;"
+    />
+    
+    <!-- Profile picture preview -->
+    <div class="profile-picture-wrapper">
+      <img 
+        [src]="previewUrl || 'assets/default-avatar.png'" 
+        alt="Profile Preview" 
+        class="profile-picture"
+      />
+      
+      <!-- Camera icon button -->
+      <button 
+        mat-mini-fab 
+        color="primary" 
+        class="camera-button"
+        (click)="triggerFileInput()"
+        [disabled]="isLoading"
+      >
+        <mat-icon>camera_alt</mat-icon>
+      </button>
+    </div>
+    
+    <p class="hint-text">Click the camera icon to choose a photo</p>
+    
+    <!-- Loading spinner -->
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isLoading">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="!selectedFile || isLoading"
+    (click)="onSave()"
+  >
+    {{ isLoading ? 'Uploading...' : 'Save' }}
+  </button>
+</mat-dialog-actions>

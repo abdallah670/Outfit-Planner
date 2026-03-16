@@ -5,7 +5,6 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
 import { UserProfile } from '../../../../../domain/entities/user-profile.entity';
 import { UserActions } from '../../../../../core/state/user/user.actions';
 import { Store } from '@ngrx/store';
@@ -22,12 +21,10 @@ import { Store } from '@ngrx/store';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule,
   ],
 })
 export class EditProfileModalComponent {
   profileForm: FormGroup;
-  selectedFilePreview: string | null = null;
   isLoading = false;
 
   constructor(
@@ -40,20 +37,6 @@ export class EditProfileModalComponent {
     this.profileForm = this.fb.group({
       name: [data.profile.name, [Validators.required, Validators.maxLength(100)]],
     });
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const reader = new FileReader();
-
-      reader.onload = (e: any) => {
-        this.selectedFilePreview = e.target.result;
-      };
-
-      reader.readAsDataURL(file);
-    }
   }
 
   onSubmit(): void {
