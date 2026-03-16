@@ -18,12 +18,35 @@ export interface UserProfile {
   preferences?: UserPreferences;
 }
 
+export interface StyleRule {
+  id: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+  criteriaJson: string;
+}
+
 export interface UserStyleProfile {
   style: StylePreference;
   preferredColors: string[];
   fitPreferences: string;
   comfortPriority: number;
   acceptsTrends: boolean;
+  customRules: StyleRule[];
+}
+
+export interface CreateStyleRuleRequest {
+  name: string;
+  description: string;
+  criteriaJson: string;
+}
+
+export interface UpdateStyleRuleRequest {
+  id: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+  criteriaJson: string;
 }
 
 export interface UserPreferences {

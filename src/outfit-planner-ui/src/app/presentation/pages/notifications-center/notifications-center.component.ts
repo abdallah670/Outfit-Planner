@@ -1,19 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
-
-interface Notification {
-  id: string;
-  type: 'social' | 'weather' | 'reminder' | 'system';
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  actionUrl?: string;
-}
+import { NotificationService, Notification } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-notifications-center',
@@ -23,103 +14,52 @@ interface Notification {
   styleUrl: './notifications-center.component.scss'
 })
 export class NotificationsCenterComponent implements OnInit {
+  private readonly notificationService = inject(NotificationService);
+  
   activeTab = signal(0);
   
-  // Mock notifications
-  notifications = signal<Notification[]>([
-    {
-      id: '1',
-      type: 'social',
-      title: 'New Like',
-      message: 'Sarah liked your "Date Night Outfit"',
-      timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-      isRead: false,
-      actionUrl: '/outfits/1'
-    },
-    {
-      id: '2',
-      type: 'weather',
-      title: 'Weather Alert',
-      message: 'Rain expected tomorrow. Your planned outfit might need adjustment.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-      isRead: false,
-      actionUrl: '/outfits/today'
-    },
-    {
-      id: '3',
-      type: 'reminder',
-      title: 'Outfit Reminder',
-      message: 'You have "Business Meeting" scheduled for tomorrow at 2:00 PM',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-      isRead: true,
-      actionUrl: '/calendar'
-    },
-    {
-      id: '4',
-      type: 'social',
-      title: 'New Comment',
-      message: 'Mike commented on your "Weekend Brunch Look"',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-      isRead: true,
-      actionUrl: '/outfits/2'
-    },
-    {
-      id: '5',
-      type: 'system',
-      title: 'Welcome to Outfit Planner!',
-      message: 'Get started by adding your first clothing items',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-      isRead: true,
-      actionUrl: '/wardrobe/new'
-    },
-    {
-      id: '6',
-      type: 'reminder',
-      title: 'Wear Count Update',
-      message: 'You\'ve worn your "Blue Denim Jacket" 10 times this month!',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
-      isRead: true,
-      actionUrl: '/wardrobe/1'
-    }
-  ]);
+  // Use service signals
+  get notifications(): Notification[] {
+    return this.notificationService.notifications();
+  }
+  
+  get unreadCount(): number {
+    return this.notificationService.unreadCount();
+  }
+  
+  get isLoading(): boolean {
+    return this.notificationService.isLoading();
+  }
 
   ngOnInit(): void {
-    // Initialize
+    // Load notifications from the backend
+    this.notificationService.getNotifications().subscribe();
   }
 
   get filteredNotifications(): Notification[] {
     const tab = this.activeTab();
     if (tab === 1) {
-      return this.notifications().filter(n => !n.isRead);
+      return this.notifications.filter(n => !n.isRead);
     }
-    return this.notifications();
-  }
-
-  get unreadCount(): number {
-    return this.notifications().filter(n => !n.isRead).length;
+    return this.notifications;
   }
 
   markAsRead(id: string): void {
-    this.notifications.update(notifications =>
-      notifications.map(n => {
-        if (n.id === id) {
-          return { ...n, isRead: true };
-        }
-        return n;
-      })
-    );
+    this.notificationService.markAsRead(id).subscribe({
+      error: (err: unknown) => console.error('Error marking notification as read:', err)
+    });
   }
 
   markAllAsRead(): void {
-    this.notifications.update(notifications =>
-      notifications.map(n => ({ ...n, isRead: true }))
-    );
+    this.notificationService.markAllAsRead().subscribe({
+      error: (err: unknown) => console.error('Error marking all notifications as read:', err)
+    });
   }
 
   deleteNotification(id: string): void {
-    this.notifications.update(notifications =>
-      notifications.filter(n => n.id !== id)
-    );
+    this.notificationService.deleteNotification(id).subscribe({
+      error: (err: unknown) => console.error('Error deleting notification:', err)
+    });
   }
 
   getTypeIcon(type: string): string {
@@ -142,7 +82,8 @@ export class NotificationsCenterComponent implements OnInit {
     }
   }
 
-  formatTimestamp(date: Date): string {
+  formatTimestamp(dateStr: string): string {
+    const date = new Date(dateStr);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const minutes = Math.floor(diff / (1000 * 60));

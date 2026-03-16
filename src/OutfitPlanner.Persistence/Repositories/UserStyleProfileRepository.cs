@@ -13,6 +13,7 @@ public class UserStyleProfileRepository : GenericRepository<UserStyleProfile>, I
     public async Task<UserStyleProfile?> GetByUserIdAsync(string userId)
     {
         return await _dbSet
+            .Include(p => p.CustomRules)
             .FirstOrDefaultAsync(p => p.UserId == userId);
     }
 }

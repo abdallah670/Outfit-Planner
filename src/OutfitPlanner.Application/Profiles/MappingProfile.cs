@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using OutfitPlanner.Application.DTOs.Calendar;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.DTOs.Social;
@@ -124,13 +124,19 @@ public class MappingProfile : Profile
             .ForMember(d => d.StyleProfile, opt => opt.MapFrom(s => s.StyleProfile))
             .ForMember(d => d.Preferences, opt => opt.MapFrom(s => s.Preferences));
 
+        // StyleRule mappings
+        CreateMap<StyleRule, StyleRuleDto>();
+        CreateMap<CreateStyleRuleDto, StyleRule>();
+        CreateMap<UpdateStyleRuleDto, StyleRule>();
+
         // UserStyleProfile mappings
         CreateMap<UserStyleProfile, UserStyleProfileDto>()
             .ForMember(d => d.Style, opt => opt.MapFrom(s => s.Style.ToString()))
             .ForMember(d => d.PreferredColors, opt => opt.MapFrom(s => s.PreferredColors))
             .ForMember(d => d.FitPreferences, opt => opt.MapFrom(s => s.FitPreferences))
             .ForMember(d => d.ComfortPriority, opt => opt.MapFrom(s => s.ComfortPriority))
-            .ForMember(d => d.AcceptsTrends, opt => opt.MapFrom(s => s.AcceptsTrends));
+            .ForMember(d => d.AcceptsTrends, opt => opt.MapFrom(s => s.AcceptsTrends))
+            .ForMember(d => d.CustomRules, opt => opt.MapFrom(s => s.CustomRules));
 
         // UserPreferences mappings
         CreateMap<UserPreferences, UserPreferencesDto>()

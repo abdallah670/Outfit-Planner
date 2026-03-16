@@ -55,25 +55,21 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     public async Task AddRangeAsync(IEnumerable<T> entities)
     {
          await _dbSet.AddRangeAsync(entities);
-         await _context.SaveChangesAsync();
     }
 
     public async Task RemoveAsync(T entity)
     {
         _dbSet.Remove(entity);
-        await _context.SaveChangesAsync();
     }
 
     public async Task RemoveRangeAsync(IEnumerable<T> entities)
     {
         _dbSet.RemoveRange(entities);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
-        await _context.SaveChangesAsync();
     }
     public virtual async Task<int> CountAsync() => await _dbSet.CountAsync();
     public virtual async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)

@@ -19,6 +19,7 @@ public class SearchController : ControllerBase
         _searchService = searchService;
         _logger = logger;
     }
+    private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
     /// <summary>
     /// Search outfits and wardrobe items
@@ -34,7 +35,7 @@ public class SearchController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
@@ -71,7 +72,7 @@ public class SearchController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<string>>> GetSuggestions([FromQuery] string q)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
@@ -88,7 +89,7 @@ public class SearchController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<string>>> GetRecentSearches()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
@@ -105,7 +106,7 @@ public class SearchController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ClearRecentSearches()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
