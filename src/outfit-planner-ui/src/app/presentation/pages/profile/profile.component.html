@@ -16,20 +16,22 @@
     <!-- Profile Header -->
     <div class="profile-header">
       <div class="profile-info">
-        <div class="avatar-container" (click)="openEditProfilePictureModal()">
-          <img
-            [src]="$any(profile).profilePictureUrl || 'assets/default-avatar.png'"
-            [alt]="$any(profile).name"
-            class="profile-avatar"
-            (error)="onImageError($event)"
-          />
-          <div class="avatar-overlay">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="avatar-wrapper">
+          <div class="avatar-container">
+            <img
+              [src]="$any(profile).profilePictureUrl || 'assets/default-avatar.png'"
+              [alt]="$any(profile).name"
+              class="profile-avatar"
+              (error)="onImageError($event)"
+            />
+          </div>
+          <!-- Small camera icon under profile picture -->
+          <button class="camera-icon-btn" (click)="openEditProfilePictureModal()" title="Change Photo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
               <circle cx="12" cy="13" r="4"></circle>
             </svg>
-            <span>Change Photo</span>
-          </div>
+          </button>
         </div>
         <div class="profile-details">
           <h1 class="profile-name">{{ $any(profile).name }}</h1>
