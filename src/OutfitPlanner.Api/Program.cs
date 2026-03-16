@@ -84,37 +84,35 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 // Add OAuth providers (chains to existing JWT auth configured in AddPersistence)
-var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
-var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-var facebookAppId = builder.Configuration["Authentication:Facebook:AppId"];
-var facebookAppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
+var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
+var facebookAppId = builder.Configuration["Authentication:Facebook:AppId"] ?? "";
+var facebookAppSecret = builder.Configuration["Authentication:Facebook:AppSecret"] ?? "";
 
-bool hasGoogleOAuth = !string.IsNullOrEmpty(googleClientId) && 
-                      !string.IsNullOrEmpty(googleClientSecret) &&
+// Check if OAuth credentials are configured (not empty and not placeholders)
+bool hasGoogleOAuth = !string.IsNullOrWhiteSpace(googleClientId) && 
+                      !string.IsNullOrWhiteSpace(googleClientSecret) &&
                       !googleClientId.Contains("YOUR_") &&
                       !googleClientId.Contains("example");
 
-bool hasFacebookOAuth = !string.IsNullOrEmpty(facebookAppId) && 
-                        !string.IsNullOrEmpty(facebookAppSecret) &&
+bool hasFacebookOAuth = !string.IsNullOrWhiteSpace(facebookAppId) && 
+                        !string.IsNullOrWhiteSpace(facebookAppSecret) &&
                         !facebookAppId.Contains("YOUR_") &&
                         !facebookAppId.Contains("example");
 
-// Build authentication chain starting with external cookie
+// Build authentication chain
 var authBuilder = builder.Services.AddAuthentication();
 
-// Add external cookie for OAuth callbacks
-if (hasGoogleOAuth || hasFacebookOAuth)
+// Always add external cookie handler (needed for OAuth flow)
+authBuilder.AddCookie("Identity.External", options =>
 {
-    authBuilder.AddCookie("Identity.External", options =>
-    {
-        options.Cookie.Name = "Identity.External";
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-    });
-}
+    options.Cookie.Name = "Identity.External";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+});
 
-// Add Google OAuth
+// Add Google OAuth if credentials exist
 if (hasGoogleOAuth)
 {
     authBuilder.AddGoogle(options =>
@@ -125,10 +123,10 @@ if (hasGoogleOAuth)
         options.SignInScheme = "Identity.External";
         options.SaveTokens = true;
     });
-    Log.Information("Google OAuth configured successfully");
+    Log.Information("Google OAuth configured");
 }
 
-// Add Facebook OAuth
+// Add Facebook OAuth if credentials exist
 if (hasFacebookOAuth)
 {
     authBuilder.AddFacebook(options =>
@@ -139,12 +137,12 @@ if (hasFacebookOAuth)
         options.SignInScheme = "Identity.External";
         options.SaveTokens = true;
     });
-    Log.Information("Facebook OAuth configured successfully");
+    Log.Information("Facebook OAuth configured");
 }
 
 if (!hasGoogleOAuth && !hasFacebookOAuth)
 {
-    Log.Warning("No OAuth credentials configured. Social login will not work.");
+    Log.Warning("OAuth credentials not found. Social login buttons will fail if clicked.");
 }
 
 var app = builder.Build();
