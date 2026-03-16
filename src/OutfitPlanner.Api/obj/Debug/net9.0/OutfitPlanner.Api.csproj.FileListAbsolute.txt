@@ -39,6 +39,7 @@ C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.Relational.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.SqlServer.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Caching.Abstractions.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Caching.Memory.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Configuration.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Abstractions.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Binder.dll
@@ -49,6 +50,7 @@ C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Abstractions.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Http.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Identity.Core.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Identity.Stores.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Logging.dll
@@ -213,4 +215,3 @@ C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\OutfitPla
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\OutfitPlanner.Api.pdb
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\OutfitPlanner.Api.genruntimeconfig.cache
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\ref\OutfitPlanner.Api.dll
-C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
