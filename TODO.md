@@ -1,12 +1,21 @@
-l # Search Tests Task Progress
+# Fix ASP.NET Identity.External Scheme Duplicate Registration
 
-## Plan Steps:
+## Status: In Progress
 
-- [x] Add Microsoft.EntityFrameworkCore.InMemory package to UnitTests.csproj- [x] Run `dotnet restore` and `dotnet test` on UnitTests - SearchServiceTests now compiles (Calendar errors unrelated)
-- [ ] Fix Calendar test Moq expression tree errors (CS0854)
-- [x] Created CustomWebApplicationFactory.cs for integration tests
-- [ ] Run integration tests on IntegrationTests project (minor using fix needed)
-- [x] Verified search tests build (unit compiles, integration almost)
-- [ ] Enhance tests: add more assertions for recent searches save/clear, error cases, pagination exact counts
-- [ ] Run full solution tests: dotnet test
-- [ ] Complete task
+### Plan Steps:
+
+- [x] Create TODO.md
+- [x] Update src/OutfitPlanner.Api/Program.cs
+  - [x] Remove explicit `authBuilder.AddCookie("Identity.External")` block
+  - [x] Remove `ConfigureApplicationCookie()` with conflicting name
+- [ ] Test application startup (`dotnet run` in src/OutfitPlanner.Api)
+- [ ] Verify OAuth flow (if credentials configured)
+- [ ] Mark complete
+
+### Current Issue:
+
+```
+Scheme already exists: Identity.External
+```
+
+Caused by triple registration of scheme from AddIdentity() + explicit registrations.

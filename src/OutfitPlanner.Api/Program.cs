@@ -76,12 +76,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Add Application Services
 builder.Services.AddApplication(builder.Configuration);
 
-// Add Cookie authentication for external providers
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/api/auth/external-callback";
-    options.Cookie.Name = "Identity.External";
-});
+// Identity.Application cookie scheme used automatically by AddIdentity for external login callbacks
 
 // Add OAuth providers (chains to existing JWT auth configured in AddPersistence)
 var googleClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
@@ -103,14 +98,8 @@ bool hasFacebookOAuth = !string.IsNullOrWhiteSpace(facebookAppId) &&
 // Build authentication chain
 var authBuilder = builder.Services.AddAuthentication();
 
-// Always add external cookie handler (needed for OAuth flow)
-authBuilder.AddCookie("Identity.External", options =>
-{
-    options.Cookie.Name = "Identity.External";
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-});
+// Identity.External cookie scheme provided automatically by AddIdentity
+// OAuth providers will chain to it via SignInScheme = "Identity.External"
 
 // Add Google OAuth if credentials exist
 if (hasGoogleOAuth)

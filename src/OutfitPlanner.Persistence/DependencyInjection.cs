@@ -13,6 +13,7 @@ using OutfitPlanner.Application.Models.Identity;
 using OutfitPlanner.Application.Contracts.Identity;
 using OutfitPlanner.Persistence.Security;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace OutfitPlanner.Persistence;
 
@@ -27,9 +28,13 @@ public static class DependencyInjection
 
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
-        services.AddIdentity<User, IdentityRole>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
+        // Add Identity only if it hasn't been registered yet to avoid duplicate authentication schemes
+        if (!services.Any(sd => sd.ServiceType == typeof(UserManager<User>)))
+        {
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+        }
 
         var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
@@ -78,3 +83,4 @@ public static class DependencyInjection
         return services;
     }
 }
+

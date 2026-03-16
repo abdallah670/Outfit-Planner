@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -35,6 +35,7 @@ export class EditProfileModalComponent {
     private dialogRef: MatDialogRef<EditProfileModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { profile: UserProfile },
     private store: Store,
+    private cdRef: ChangeDetectorRef,
   ) {
     this.profileForm = this.fb.group({
       name: [data.profile.name, [Validators.required, Validators.maxLength(100)]],
@@ -52,16 +53,14 @@ export class EditProfileModalComponent {
       };
 
       reader.readAsDataURL(file);
-
-      // TODO: Handle file upload to backend
-      // For now, we'll just show preview
-      // In a real implementation, you would upload the file and update the profile
     }
   }
 
   onSubmit(): void {
     if (this.profileForm.valid) {
       this.isLoading = true;
+      this.cdRef.detectChanges();
+      
       const request = {
         name: this.profileForm.get('name')?.value,
       };
