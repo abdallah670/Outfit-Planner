@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OutfitPlanner.Application.UnitTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8432fc225289d92f5409e7c2dc2838498087f022")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+54dd968b9964cf87cc9eb623fd25049f2ad11683")]
 [assembly: System.Reflection.AssemblyProductAttribute("OutfitPlanner.Application.UnitTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OutfitPlanner.Application.UnitTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

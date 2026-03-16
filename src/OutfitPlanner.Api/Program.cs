@@ -83,13 +83,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "Identity.External";
 });
 
-// Add OAuth authentication (JWT is already configured in AddPersistence)
+// Add OAuth providers (chains to existing JWT auth configured in AddPersistence)
 var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
 var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 var facebookAppId = builder.Configuration["Authentication:Facebook:AppId"];
 var facebookAppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
 
-// Check if any OAuth is configured
 bool hasGoogleOAuth = !string.IsNullOrEmpty(googleClientId) && 
                       !string.IsNullOrEmpty(googleClientSecret) &&
                       !googleClientId.Contains("YOUR_") &&
@@ -100,54 +99,53 @@ bool hasFacebookOAuth = !string.IsNullOrEmpty(facebookAppId) &&
                         !facebookAppId.Contains("YOUR_") &&
                         !facebookAppId.Contains("example");
 
+// Build authentication chain starting with external cookie
+var authBuilder = builder.Services.AddAuthentication();
+
+// Add external cookie for OAuth callbacks
 if (hasGoogleOAuth || hasFacebookOAuth)
 {
-    // Add external cookie authentication for OAuth callbacks
-    builder.Services.AddAuthentication()
-        .AddCookie("Identity.External", options =>
-        {
-            options.Cookie.Name = "Identity.External";
-            options.Cookie.HttpOnly = true;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-        });
-
-    // Add Google OAuth if configured
-    if (hasGoogleOAuth)
+    authBuilder.AddCookie("Identity.External", options =>
     {
-        builder.Services.AddAuthentication()
-            .AddGoogle(options =>
-            {
-                options.ClientId = googleClientId;
-                options.ClientSecret = googleClientSecret;
-                options.CallbackPath = "/signin-google";
-                options.SignInScheme = "Identity.External";
-                options.SaveTokens = true;
-            });
-        Log.Information("Google OAuth configured successfully");
-    }
-
-    // Add Facebook OAuth if configured
-    if (hasFacebookOAuth)
-    {
-        builder.Services.AddAuthentication()
-            .AddFacebook(options =>
-            {
-                options.AppId = facebookAppId;
-                options.AppSecret = facebookAppSecret;
-                options.CallbackPath = "/signin-facebook";
-                options.SignInScheme = "Identity.External";
-                options.SaveTokens = true;
-            });
-        Log.Information("Facebook OAuth configured successfully");
-    }
+        options.Cookie.Name = "Identity.External";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+    });
 }
-else
+
+// Add Google OAuth
+if (hasGoogleOAuth)
+{
+    authBuilder.AddGoogle(options =>
+    {
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
+        options.CallbackPath = "/signin-google";
+        options.SignInScheme = "Identity.External";
+        options.SaveTokens = true;
+    });
+    Log.Information("Google OAuth configured successfully");
+}
+
+// Add Facebook OAuth
+if (hasFacebookOAuth)
+{
+    authBuilder.AddFacebook(options =>
+    {
+        options.AppId = facebookAppId;
+        options.AppSecret = facebookAppSecret;
+        options.CallbackPath = "/signin-facebook";
+        options.SignInScheme = "Identity.External";
+        options.SaveTokens = true;
+    });
+    Log.Information("Facebook OAuth configured successfully");
+}
+
+if (!hasGoogleOAuth && !hasFacebookOAuth)
 {
     Log.Warning("No OAuth credentials configured. Social login will not work.");
 }
-
-
 
 var app = builder.Build();
 
@@ -191,25 +189,6 @@ app.MapGet("/api", () => Results.Redirect("/swagger"));
 
 app.MapControllers();
 
-// var summaries = new[]
-// {
-//     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-// };
-
-// app.MapGet("/weatherforecast", () =>
-// {
-//     var forecast =  Enumerable.Range(1, 5).Select(index =>
-//         new WeatherForecast
-//         (
-//             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-//             Random.Shared.Next(-20, 55),
-//             summaries[Random.Shared.Next(summaries.Length)]
-//         ))
-//         .ToArray();
-//     return forecast;
-// })
-// .WithName("GetWeatherForecast");
-
 try 
 {
     Log.Information("Starting web host");
@@ -231,11 +210,6 @@ finally
 {
     Log.CloseAndFlush();
 }
-
-// record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-// {
-//     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-// }
 
 // Make Program class accessible for integration testing
 public partial class Program { }
