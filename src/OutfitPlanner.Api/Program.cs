@@ -89,44 +89,62 @@ var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecr
 var facebookAppId = builder.Configuration["Authentication:Facebook:AppId"];
 var facebookAppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
 
-// Only add Google OAuth if credentials are properly configured
-if (!string.IsNullOrEmpty(googleClientId) && 
-    !string.IsNullOrEmpty(googleClientSecret) &&
-    !googleClientId.Contains("YOUR_") &&
-    !googleClientId.Contains("example"))
-{
-    builder.Services.AddAuthentication()
-        .AddGoogle(options =>
-        {
-            options.ClientId = googleClientId;
-            options.ClientSecret = googleClientSecret;
-            options.CallbackPath = "/signin-google";
-            options.SaveTokens = true;
-        });
-}
-else
-{
-    Log.Warning("Google OAuth credentials not configured. Social login with Google will not work.");
-}
+// Check if any OAuth is configured
+bool hasGoogleOAuth = !string.IsNullOrEmpty(googleClientId) && 
+                      !string.IsNullOrEmpty(googleClientSecret) &&
+                      !googleClientId.Contains("YOUR_") &&
+                      !googleClientId.Contains("example");
 
-// Only add Facebook OAuth if credentials are properly configured
-if (!string.IsNullOrEmpty(facebookAppId) && 
-    !string.IsNullOrEmpty(facebookAppSecret) &&
-    !facebookAppId.Contains("YOUR_") &&
-    !facebookAppId.Contains("example"))
+bool hasFacebookOAuth = !string.IsNullOrEmpty(facebookAppId) && 
+                        !string.IsNullOrEmpty(facebookAppSecret) &&
+                        !facebookAppId.Contains("YOUR_") &&
+                        !facebookAppId.Contains("example");
+
+if (hasGoogleOAuth || hasFacebookOAuth)
 {
+    // Add external cookie authentication for OAuth callbacks
     builder.Services.AddAuthentication()
-        .AddFacebook(options =>
+        .AddCookie("Identity.External", options =>
         {
-            options.AppId = facebookAppId;
-            options.AppSecret = facebookAppSecret;
-            options.CallbackPath = "/signin-facebook";
-            options.SaveTokens = true;
+            options.Cookie.Name = "Identity.External";
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
         });
+
+    // Add Google OAuth if configured
+    if (hasGoogleOAuth)
+    {
+        builder.Services.AddAuthentication()
+            .AddGoogle(options =>
+            {
+                options.ClientId = googleClientId;
+                options.ClientSecret = googleClientSecret;
+                options.CallbackPath = "/signin-google";
+                options.SignInScheme = "Identity.External";
+                options.SaveTokens = true;
+            });
+        Log.Information("Google OAuth configured successfully");
+    }
+
+    // Add Facebook OAuth if configured
+    if (hasFacebookOAuth)
+    {
+        builder.Services.AddAuthentication()
+            .AddFacebook(options =>
+            {
+                options.AppId = facebookAppId;
+                options.AppSecret = facebookAppSecret;
+                options.CallbackPath = "/signin-facebook";
+                options.SignInScheme = "Identity.External";
+                options.SaveTokens = true;
+            });
+        Log.Information("Facebook OAuth configured successfully");
+    }
 }
 else
 {
-    Log.Warning("Facebook OAuth credentials not configured. Social login with Facebook will not work.");
+    Log.Warning("No OAuth credentials configured. Social login will not work.");
 }
 
 
