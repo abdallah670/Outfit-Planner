@@ -3,7 +3,10 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { exhaustMap, map, catchError, of, switchMap } from 'rxjs';
 import { UserActions } from './user.actions';
 import { UserRepositoryImpl } from '../../../data/repositories/user.repository.impl';
-import { UserProfile } from '../../../domain/entities/user-profile.entity';
+import { UserProfile, StyleRule } from '../../../domain/entities/user-profile.entity';
+import { StyleRuleService } from '../../services/style-rule.service';
+import { AppPreferencesService, AppPreferences } from '../../services/app-preferences.service';
+import { NotificationSettingsService, NotificationSettings } from '../../services/notification-settings.service';
 
 export const loadProfile$ = createEffect(
   (actions$ = inject(Actions), userRepository = inject(UserRepositoryImpl)) => {
@@ -135,6 +138,179 @@ export const updateEmail$ = createEffect(
           catchError((error) =>
             of(
               UserActions.updateEmailFailure({ error: error?.message || 'Failed to update email' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+// Style Rules Effects
+export const loadStyleRules$ = createEffect(
+  (actions$ = inject(Actions), styleRuleService = inject(StyleRuleService)) => {
+    return actions$.pipe(
+      ofType(UserActions.loadStyleRules),
+      exhaustMap(() =>
+        styleRuleService.getStyleRules().pipe(
+          map((rules: StyleRule[]) => UserActions.loadStyleRulesSuccess({ rules })),
+          catchError((error) =>
+            of(
+              UserActions.loadStyleRulesFailure({ error: error?.message || 'Failed to load style rules' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const createStyleRule$ = createEffect(
+  (actions$ = inject(Actions), styleRuleService = inject(StyleRuleService)) => {
+    return actions$.pipe(
+      ofType(UserActions.createStyleRule),
+      exhaustMap(({ rule }) =>
+        styleRuleService.createStyleRule(rule).pipe(
+          map((createdRule: StyleRule) => UserActions.createStyleRuleSuccess({ rule: createdRule })),
+          catchError((error) =>
+            of(
+              UserActions.createStyleRuleFailure({ error: error?.message || 'Failed to create style rule' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const updateStyleRule$ = createEffect(
+  (actions$ = inject(Actions), styleRuleService = inject(StyleRuleService)) => {
+    return actions$.pipe(
+      ofType(UserActions.updateStyleRule),
+      exhaustMap(({ id, rule }) =>
+        styleRuleService.updateStyleRule(id, rule).pipe(
+          map(() => UserActions.updateStyleRuleSuccess({ rule: { ...rule, id } as StyleRule })),
+          catchError((error) =>
+            of(
+              UserActions.updateStyleRuleFailure({ error: error?.message || 'Failed to update style rule' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const deleteStyleRule$ = createEffect(
+  (actions$ = inject(Actions), styleRuleService = inject(StyleRuleService)) => {
+    return actions$.pipe(
+      ofType(UserActions.deleteStyleRule),
+      exhaustMap(({ id }) =>
+        styleRuleService.deleteStyleRule(id).pipe(
+          map(() => UserActions.deleteStyleRuleSuccess({ id })),
+          catchError((error) =>
+            of(
+              UserActions.deleteStyleRuleFailure({ error: error?.message || 'Failed to delete style rule' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+// App Preferences Effects
+export const loadAppPreferences$ = createEffect(
+  (actions$ = inject(Actions), appPreferencesService = inject(AppPreferencesService)) => {
+    return actions$.pipe(
+      ofType(UserActions.loadAppPreferences),
+      exhaustMap(() =>
+        appPreferencesService.getPreferences().pipe(
+          map((preferences: AppPreferences) => UserActions.loadAppPreferencesSuccess({ preferences })),
+          catchError((error) =>
+            of(
+              UserActions.loadAppPreferencesFailure({ error: error?.message || 'Failed to load app preferences' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const updateAppPreferences$ = createEffect(
+  (actions$ = inject(Actions), appPreferencesService = inject(AppPreferencesService)) => {
+    return actions$.pipe(
+      ofType(UserActions.updateAppPreferences),
+      exhaustMap(({ request }) =>
+        appPreferencesService.updatePreferences(request).pipe(
+          switchMap(() =>
+            appPreferencesService.getPreferences().pipe(
+              map((preferences: AppPreferences) => UserActions.updateAppPreferencesSuccess({ preferences })),
+              catchError((error) =>
+                of(
+                  UserActions.updateAppPreferencesFailure({ error: error?.message || 'Failed to update app preferences' }),
+                ),
+              ),
+            ),
+          ),
+          catchError((error) =>
+            of(
+              UserActions.updateAppPreferencesFailure({ error: error?.message || 'Failed to update app preferences' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+// Notification Settings Effects
+export const loadNotificationSettings$ = createEffect(
+  (actions$ = inject(Actions), notificationSettingsService = inject(NotificationSettingsService)) => {
+    return actions$.pipe(
+      ofType(UserActions.loadNotificationSettings),
+      exhaustMap(() =>
+        notificationSettingsService.getSettings().pipe(
+          map((settings: NotificationSettings) => UserActions.loadNotificationSettingsSuccess({ settings })),
+          catchError((error) =>
+            of(
+              UserActions.loadNotificationSettingsFailure({ error: error?.message || 'Failed to load notification settings' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const updateNotificationSettings$ = createEffect(
+  (actions$ = inject(Actions), notificationSettingsService = inject(NotificationSettingsService)) => {
+    return actions$.pipe(
+      ofType(UserActions.updateNotificationSettings),
+      exhaustMap(({ request }) =>
+        notificationSettingsService.updateSettings(request).pipe(
+          switchMap(() =>
+            notificationSettingsService.getSettings().pipe(
+              map((settings: NotificationSettings) => UserActions.updateNotificationSettingsSuccess({ settings })),
+              catchError((error) =>
+                of(
+                  UserActions.updateNotificationSettingsFailure({ error: error?.message || 'Failed to update notification settings' }),
+                ),
+              ),
+            ),
+          ),
+          catchError((error) =>
+            of(
+              UserActions.updateNotificationSettingsFailure({ error: error?.message || 'Failed to update notification settings' }),
             ),
           ),
         ),

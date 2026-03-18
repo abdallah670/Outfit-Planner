@@ -10,6 +10,9 @@ import {
   ScheduleOutfitRequest,
   CalendarEvent,
   MonthlyStats,
+  CalendarEventItem,
+  CreateCalendarEventRequest,
+  UpdateCalendarEventRequest,
 } from '../entities/wear-event.entity';
 
 @Injectable({
@@ -74,5 +77,42 @@ export class WearEventUseCases {
    */
   deleteWearEvent(eventId: string): Observable<void> {
     return this.wearEventRepository.deleteWearEvent(eventId);
+  }
+
+  // ==================== Calendar Events (Time-based) ====================
+
+  /**
+   * Get calendar events for a specific date
+   */
+  getCalendarEventsByDate(date: Date): Observable<CalendarEventItem[]> {
+    return this.wearEventRepository.getCalendarEventsByDate(date);
+  }
+
+  /**
+   * Get calendar events for a specific month
+   */
+  getCalendarEventsForMonth(year: number, month: number): Observable<CalendarEventItem[]> {
+    return this.wearEventRepository.getCalendarEventsForMonth(year, month);
+  }
+
+  /**
+   * Create a new calendar event
+   */
+  createCalendarEvent(request: CreateCalendarEventRequest): Observable<CalendarEventItem> {
+    return this.wearEventRepository.createCalendarEvent(request);
+  }
+
+  /**
+   * Update an existing calendar event
+   */
+  updateCalendarEvent(id: string, request: UpdateCalendarEventRequest): Observable<CalendarEventItem> {
+    return this.wearEventRepository.updateCalendarEvent(id, request);
+  }
+
+  /**
+   * Delete a calendar event
+   */
+  deleteCalendarEvent(id: string): Observable<void> {
+    return this.wearEventRepository.deleteCalendarEvent(id);
   }
 }

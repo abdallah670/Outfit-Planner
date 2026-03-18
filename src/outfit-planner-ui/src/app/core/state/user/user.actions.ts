@@ -8,6 +8,8 @@ import {
   CreateStyleRuleRequest,
   UpdateStyleRuleRequest,
 } from '../../../domain/entities/user-profile.entity';
+import { AppPreferences, UpdateAppPreferencesRequest } from '../../services/app-preferences.service';
+import { NotificationSettings, UpdateNotificationSettingsRequest } from '../../services/notification-settings.service';
 
 export const UserActions = createActionGroup({
   source: 'User',
@@ -57,6 +59,22 @@ export const UserActions = createActionGroup({
     'Delete Style Rule': props<{ id: string }>(),
     'Delete Style Rule Success': props<{ id: string }>(),
     'Delete Style Rule Failure': props<{ error: string }>(),
+
+    // App Preferences
+    'Load App Preferences': emptyProps(),
+    'Load App Preferences Success': props<{ preferences: AppPreferences }>(),
+    'Load App Preferences Failure': props<{ error: string }>(),
+    'Update App Preferences': props<{ request: UpdateAppPreferencesRequest }>(),
+    'Update App Preferences Success': props<{ preferences: AppPreferences }>(),
+    'Update App Preferences Failure': props<{ error: string }>(),
+
+    // Notification Settings
+    'Load Notification Settings': emptyProps(),
+    'Load Notification Settings Success': props<{ settings: NotificationSettings }>(),
+    'Load Notification Settings Failure': props<{ error: string }>(),
+    'Update Notification Settings': props<{ request: UpdateNotificationSettingsRequest }>(),
+    'Update Notification Settings Success': props<{ settings: NotificationSettings }>(),
+    'Update Notification Settings Failure': props<{ error: string }>(),
 
     // Clear Error
     'Clear Error': emptyProps(),

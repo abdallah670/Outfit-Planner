@@ -1,21 +1,8 @@
-# Fix ASP.NET Identity.External Scheme Duplicate Registration
+# t u toSearch Page Layout Updates
 
-## Status: In Progress
-
-### Plan Steps:
-
-- [x] Create TODO.md
-- [x] Update src/OutfitPlanner.Api/Program.cs
-  - [x] Remove explicit `authBuilder.AddCookie("Identity.External")` block
-  - [x] Remove `ConfigureApplicationCookie()` with conflicting name
-- [ ] Test application startup (`dotnet run` in src/OutfitPlanner.Api)
-- [ ] Verify OAuth flow (if credentials configured)
-- [ ] Mark complete
-
-### Current Issue:
-
-```
-Scheme already exists: Identity.External
-```
-
-Caused by triple registration of scheme from AddIdentity() + explicit registrations.
+## [ ] 1. Fix main-content grid to 1fr 340px sidebar (scss)
+## [ ] 2. Add padding-right:8px to results-section (scss/html)
+## [ ] 3. Simplify filters to Category/Season/Color only (html/ts if needed)
+## [ ] 4. Match exact CSS classes/vars/hover effects (scss)
+## [ ] 5. Test layout `cd src/outfit-planner-ui && ng serve`
+## [ ] 6. Complete

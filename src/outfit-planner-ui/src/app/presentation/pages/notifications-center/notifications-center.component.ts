@@ -1,22 +1,29 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTabsModule } from '@angular/material/tabs';
 import { NotificationService, Notification } from '../../../core/services/notification.service';
+
+type NotificationCategory = 'all' | 'unread' | 'social' | 'weather' | 'reminder' | 'system';
+
+interface NotificationGroup {
+  title: string;
+  notifications: Notification[];
+}
 
 @Component({
   selector: 'app-notifications-center',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule],
   templateUrl: './notifications-center.component.html',
   styleUrl: './notifications-center.component.scss'
 })
 export class NotificationsCenterComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   
-  activeTab = signal(0);
+  // Category selection
+  selectedCategory: NotificationCategory = 'all';
   
   // Use service signals
   get notifications(): Notification[] {
@@ -36,12 +43,77 @@ export class NotificationsCenterComponent implements OnInit {
     this.notificationService.getNotifications().subscribe();
   }
 
-  get filteredNotifications(): Notification[] {
-    const tab = this.activeTab();
-    if (tab === 1) {
+  // Group notifications by time period
+  get groupedNotifications(): NotificationGroup[] {
+    const filtered = this.getFilteredNotifications();
+    const groups: NotificationGroup[] = [];
+    
+    const today: Notification[] = [];
+    const yesterday: Notification[] = [];
+    const lastWeek: Notification[] = [];
+    const older: Notification[] = [];
+    
+    const now = new Date();
+    const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterdayDate = new Date(todayDate.getTime() - 24 * 60 * 60 * 1000);
+    const lastWeekDate = new Date(todayDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    filtered.forEach(n => {
+      const notifDate = new Date(n.createdAt);
+      if (notifDate >= todayDate) {
+        today.push(n);
+      } else if (notifDate >= yesterdayDate) {
+        yesterday.push(n);
+      } else if (notifDate >= lastWeekDate) {
+        lastWeek.push(n);
+      } else {
+        older.push(n);
+      }
+    });
+    
+    if (today.length > 0) groups.push({ title: 'Today', notifications: today });
+    if (yesterday.length > 0) groups.push({ title: 'Yesterday', notifications: yesterday });
+    if (lastWeek.length > 0) groups.push({ title: 'Last Week', notifications: lastWeek });
+    if (older.length > 0) groups.push({ title: 'Earlier', notifications: older });
+    
+    return groups;
+  }
+
+  private getFilteredNotifications(): Notification[] {
+    if (this.selectedCategory === 'all') {
+      return this.notifications;
+    }
+    if (this.selectedCategory === 'unread') {
       return this.notifications.filter(n => !n.isRead);
     }
-    return this.notifications;
+    if (this.selectedCategory === 'weather') {
+      return this.notifications.filter(n => n.type === 'weather');
+    }
+    return this.notifications.filter(n => n.type === this.selectedCategory);
+  }
+
+  get filteredNotifications(): Notification[] {
+    return this.getFilteredNotifications();
+  }
+
+  selectCategory(category: NotificationCategory): void {
+    this.selectedCategory = category;
+  }
+
+  getCategoryCount(category: string): number {
+    return this.notifications.filter(n => n.type === category && !n.isRead).length;
+  }
+
+  getCategoryTitle(): string {
+    const titles: Record<NotificationCategory, string> = {
+      all: 'All Notifications',
+      unread: 'Unread',
+      social: 'Social',
+      weather: 'Weather',
+      reminder: 'Reminders',
+      system: 'System'
+    };
+    return titles[this.selectedCategory];
   }
 
   markAsRead(id: string): void {
@@ -64,11 +136,31 @@ export class NotificationsCenterComponent implements OnInit {
 
   getTypeIcon(type: string): string {
     switch (type) {
-      case 'social': return 'people';
+      case 'social': return 'favorite';
       case 'weather': return 'cloud';
-      case 'reminder': return 'notifications';
-      case 'system': return 'settings';
+      case 'reminder': return 'event';
+      case 'system': return 'auto_awesome';
       default: return 'notifications';
+    }
+  }
+
+  getActionText(type: string): string {
+    switch (type) {
+      case 'social': return 'View';
+      case 'weather': return 'Check';
+      case 'reminder': return 'Log now';
+      case 'system': return 'View details';
+      default: return 'View';
+    }
+  }
+
+  getActionIcon(type: string): string {
+    switch (type) {
+      case 'social': return 'arrow_forward';
+      case 'weather': return 'wb_sunny';
+      case 'reminder': return 'event';
+      case 'system': return 'bar_chart';
+      default: return 'arrow_forward';
     }
   }
 
@@ -90,10 +182,20 @@ export class NotificationsCenterComponent implements OnInit {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
+    const today = new Date();
+    if (date.toDateString() === today.toDateString()) {
+      if (minutes < 1) return 'Just now';
+      if (minutes < 60) return `${minutes}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+    }
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    }
+    
     if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 }

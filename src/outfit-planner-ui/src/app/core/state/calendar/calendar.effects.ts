@@ -6,7 +6,7 @@ import { catchError, map, mergeMap, of, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { WearEventUseCases } from '../../../domain/usecases/wear-event.usecases';
-import { WearEvent, CalendarEvent, MonthlyStats } from '../../../domain/entities/wear-event.entity';
+import { WearEvent, CalendarEvent, MonthlyStats, CalendarEventItem, CreateCalendarEventRequest } from '../../../domain/entities/wear-event.entity';
 
 @Injectable()
 export class CalendarEffects {
@@ -172,6 +172,138 @@ export class CalendarEffects {
           Swal.fire({
             title: 'Deleted!',
             text: 'Event has been deleted.',
+            icon: 'success',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
+          });
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  // ==================== Calendar Events (Time-based) ====================
+
+  loadCalendarEvents$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.loadCalendarEvents),
+        mergeMap((action: ReturnType<typeof CalendarActions.loadCalendarEvents>) =>
+          this.wearEventUseCases.getCalendarEventsForMonth(action.year, action.month).pipe(
+            map((events: CalendarEventItem[]) => CalendarActions.loadCalendarEventsSuccess({ events })),
+            catchError((error) =>
+              of(
+                CalendarActions.loadCalendarEventsFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  createCalendarEvent$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.createCalendarEvent),
+        mergeMap((action: ReturnType<typeof CalendarActions.createCalendarEvent>) =>
+          this.wearEventUseCases.createCalendarEvent(action.event as CreateCalendarEventRequest).pipe(
+            map((event: CalendarEventItem) => CalendarActions.createCalendarEventSuccess({ event })),
+            catchError((error) =>
+              of(
+                CalendarActions.createCalendarEventFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  createCalendarEventSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.createCalendarEventSuccess),
+        tap(() => {
+          Swal.fire({
+            title: 'Success!',
+            text: 'Calendar event created successfully.',
+            icon: 'success',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
+          });
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  updateCalendarEvent$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.updateCalendarEvent),
+        mergeMap((action: ReturnType<typeof CalendarActions.updateCalendarEvent>) =>
+          this.wearEventUseCases.updateCalendarEvent(action.eventId, action.event).pipe(
+            map((event: CalendarEventItem) => CalendarActions.updateCalendarEventSuccess({ event })),
+            catchError((error) =>
+              of(
+                CalendarActions.updateCalendarEventFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  updateCalendarEventSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.updateCalendarEventSuccess),
+        tap(() => {
+          Swal.fire({
+            title: 'Updated!',
+            text: 'Calendar event updated successfully.',
+            icon: 'success',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
+          });
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  deleteCalendarEvent$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.deleteCalendarEvent),
+        mergeMap((action: ReturnType<typeof CalendarActions.deleteCalendarEvent>) =>
+          this.wearEventUseCases.deleteCalendarEvent(action.eventId).pipe(
+            map(() => CalendarActions.deleteCalendarEventSuccess({ eventId: action.eventId })),
+            catchError((error) =>
+              of(
+                CalendarActions.deleteCalendarEventFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  deleteCalendarEventSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.deleteCalendarEventSuccess),
+        tap(() => {
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'Calendar event has been deleted.',
             icon: 'success',
             background: '#ffffff',
             color: '#2d3436',

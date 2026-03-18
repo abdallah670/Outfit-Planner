@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Persistence;
@@ -23,6 +24,8 @@ public class UnitOfWork : IUnitOfWork
     public IUserPreferencesRepository UserPreferences { get; }
     public ICalendarEventRepository CalendarEvents { get; }
     public INotificationRepository Notifications { get; }
+    public IAppPreferencesRepository AppPreferences { get; }
+    public INotificationSettingsRepository NotificationSettings { get; }
 
     public UnitOfWork(
         AppDbContext context,
@@ -40,7 +43,9 @@ public class UnitOfWork : IUnitOfWork
         IVoteRepository votes,
         IUserPreferencesRepository userPreferences,
         ICalendarEventRepository calendarEvents,
-        INotificationRepository notifications)
+        INotificationRepository notifications,
+        IAppPreferencesRepository appPreferences,
+        INotificationSettingsRepository notificationSettings)
     {
         _context = context;
         ClothingItems = clothingItems;
@@ -58,12 +63,18 @@ public class UnitOfWork : IUnitOfWork
         UserPreferences = userPreferences;
         CalendarEvents = calendarEvents;
         Notifications = notifications;
+        AppPreferences = appPreferences;
+        NotificationSettings = notificationSettings;
     }
-    
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<IAsyncDisposable> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public void Dispose()

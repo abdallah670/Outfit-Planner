@@ -1,126 +1,176 @@
 <div class="notifications-page">
   <div class="notifications-container">
     <!-- Header -->
-    <header class="notifications-header">
+    <header class="app-header">
       <div class="header-left">
-        <h1 class="page-title">Notifications</h1>
-        <p class="page-subtitle" *ngIf="unreadCount > 0">
-          You have {{ unreadCount }} unread notification{{ unreadCount > 1 ? 's' : '' }}
-        </p>
-        <p class="page-subtitle" *ngIf="unreadCount === 0">All caught up!</p>
+        <div class="logo-area">
+          <div class="logo-icon">
+            <mat-icon>checkroom</mat-icon>
+          </div>
+          <span>Outfit Planner</span>
+        </div>
+
+        <div class="nav-tabs">
+          <span class="nav-tab">Dashboard</span>
+          <span class="nav-tab">Calendar</span>
+          <span class="nav-tab">Wardrobe</span>
+        </div>
       </div>
-      <button
-        mat-stroked-button
-        class="mark-all-btn"
-        (click)="markAllAsRead()"
-        *ngIf="unreadCount > 0"
-      >
-        Mark All as Read
-      </button>
+
+      <div class="header-right">
+        <div class="notification-bell">
+          <mat-icon>notifications</mat-icon>
+          <span class="notification-dot" *ngIf="unreadCount > 0"></span>
+        </div>
+        <div class="user-profile">
+          <img src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F25-35%2FEuropean%2F3" alt="User" class="user-avatar" />
+          <span class="user-name">Sarah Johnson</span>
+        </div>
+      </div>
     </header>
 
-    <!-- Tabs -->
-    <mat-tab-group class="notifications-tabs" [(selectedIndex)]="activeTab">
-      <!-- All Tab -->
-      <mat-tab label="All">
-        <div class="tab-content">
-          <div class="notifications-list">
-            <article
-              class="notification-item"
-              *ngFor="let notification of filteredNotifications"
+    <!-- Content Layout -->
+    <div class="notifications-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div 
+          class="sidebar-item" 
+          [class.active]="selectedCategory === 'all'"
+          (click)="selectCategory('all')"
+        >
+          <mat-icon>inbox</mat-icon>
+          <span>All Notifications</span>
+          <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </div>
+        
+        <div 
+          class="sidebar-item"
+          [class.active]="selectedCategory === 'unread'"
+          (click)="selectCategory('unread')"
+        >
+          <mat-icon>mail_open</mat-icon>
+          <span>Unread</span>
+        </div>
+
+        <div class="sidebar-group-title">Categories</div>
+        
+        <div 
+          class="sidebar-item"
+          [class.active]="selectedCategory === 'reminder'"
+          (click)="selectCategory('reminder')"
+        >
+          <mat-icon>event</mat-icon>
+          <span>Outfit Reminders</span>
+        </div>
+        
+        <div 
+          class="sidebar-item"
+          [class.active]="selectedCategory === 'social'"
+          (click)="selectCategory('social')"
+        >
+          <mat-icon>favorite</mat-icon>
+          <span>Social</span>
+        </div>
+        
+        <div 
+          class="sidebar-item"
+          [class.active]="selectedCategory === 'weather'"
+          (click)="selectCategory('weather')"
+        >
+          <mat-icon>cloud</mat-icon>
+          <span>Weather</span>
+        </div>
+
+        <div 
+          class="sidebar-item"
+          [class.active]="selectedCategory === 'system'"
+          (click)="selectCategory('system')"
+        >
+          <mat-icon>settings</mat-icon>
+          <span>System</span>
+        </div>
+
+        <div class="sidebar-group-title">Settings</div>
+        
+        <div class="sidebar-item">
+          <mat-icon>notifications_active</mat-icon>
+          <span>Push Preferences</span>
+        </div>
+      </aside>
+
+      <!-- Main List -->
+      <main class="notification-content">
+        <div class="section-header">
+          <h1 class="section-title">Notifications</h1>
+          <div class="header-actions">
+            <button class="btn-text" (click)="markAllAsRead()">
+              <mat-icon>done_all</mat-icon>
+              Mark all as read
+            </button>
+            <button class="btn-text btn-danger" (click)="markAllAsRead()">
+              Delete all
+            </button>
+          </div>
+        </div>
+
+        <div class="notification-list">
+          <!-- Grouped by time -->
+          <ng-container *ngFor="let group of groupedNotifications">
+            <div class="time-group">{{ group.title }}</div>
+
+            <!-- Notification Cards -->
+            <div 
+              class="notification-card"
+              *ngFor="let notification of group.notifications"
               [class.unread]="!notification.isRead"
               [routerLink]="notification.actionUrl"
               (click)="markAsRead(notification.id)"
             >
-              <div
-                class="notification-icon"
-                [style.background-color]="getTypeColor(notification.type) + '20'"
-              >
-                <mat-icon [style.color]="getTypeColor(notification.type)">
-                  {{ getTypeIcon(notification.type) }}
-                </mat-icon>
+              <!-- Icon based on type -->
+              <div class="icon-box" [ngClass]="notification.type">
+                <mat-icon>{{ getTypeIcon(notification.type) }}</mat-icon>
               </div>
-
-              <div class="notification-content">
-                <div class="notification-header">
-                  <h3 class="notification-title">{{ notification.title }}</h3>
-                  <span class="notification-time">{{
-                    formatTimestamp(notification.createdAt)
-                  }}</span>
+              
+              <!-- Body -->
+              <div class="notif-body">
+                <div class="notif-header">
+                  <span class="notif-title">{{ notification.title }}</span>
+                  <span class="notif-time">{{ formatTimestamp(notification.createdAt) }}</span>
                 </div>
-                <p class="notification-message">{{ notification.message }}</p>
+                <div class="notif-message">
+                  {{ notification.message }}
+                </div>
+                <a 
+                  *ngIf="notification.actionUrl" 
+                  class="notif-action-link"
+                  [routerLink]="notification.actionUrl"
+                  (click)="$event.stopPropagation()"
+                >
+                  {{ getActionText(notification.type) }}
+                  <mat-icon>{{ getActionIcon(notification.type) }}</mat-icon>
+                </a>
               </div>
-
-              <button
-                class="delete-btn"
-                (click)="deleteNotification(notification.id); $event.stopPropagation()"
-                aria-label="Delete notification"
+              
+              <!-- Mark as read button -->
+              <button 
+                class="mark-read-btn" 
+                title="Mark as read"
+                *ngIf="!notification.isRead"
+                (click)="markAsRead(notification.id); $event.stopPropagation()"
               >
                 <mat-icon>close</mat-icon>
               </button>
-
-              <div class="unread-indicator" *ngIf="!notification.isRead"></div>
-            </article>
-          </div>
+            </div>
+          </ng-container>
 
           <!-- Empty State -->
           <div class="empty-state" *ngIf="filteredNotifications.length === 0">
-            <div class="empty-icon">🔔</div>
+            <mat-icon class="empty-icon">notifications_none</mat-icon>
             <h3>No Notifications</h3>
             <p>You're all caught up!</p>
           </div>
         </div>
-      </mat-tab>
-
-      <!-- Unread Tab -->
-      <mat-tab label="Unread">
-        <div class="tab-content">
-          <div class="notifications-list">
-            <article
-              class="notification-item unread"
-              *ngFor="let notification of filteredNotifications"
-              [routerLink]="notification.actionUrl"
-              (click)="markAsRead(notification.id)"
-            >
-              <div
-                class="notification-icon"
-                [style.background-color]="getTypeColor(notification.type) + '20'"
-              >
-                <mat-icon [style.color]="getTypeColor(notification.type)">
-                  {{ getTypeIcon(notification.type) }}
-                </mat-icon>
-              </div>
-
-              <div class="notification-content">
-                <div class="notification-header">
-                  <h3 class="notification-title">{{ notification.title }}</h3>
-                  <span class="notification-time">{{
-                    formatTimestamp(notification.createdAt)
-                  }}</span>
-                </div>
-                <p class="notification-message">{{ notification.message }}</p>
-              </div>
-
-              <button
-                class="delete-btn"
-                (click)="deleteNotification(notification.id); $event.stopPropagation()"
-                aria-label="Delete notification"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
-
-              <div class="unread-indicator"></div>
-            </article>
-          </div>
-
-          <!-- Empty State -->
-          <div class="empty-state" *ngIf="filteredNotifications.length === 0">
-            <div class="empty-icon">✅</div>
-            <h3>No Unread Notifications</h3>
-            <p>You're all caught up!</p>
-          </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
+      </main>
+    </div>
   </div>
 </div>

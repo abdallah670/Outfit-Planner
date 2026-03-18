@@ -11,6 +11,9 @@ import {
   ScheduleOutfitRequest,
   CalendarEvent,
   MonthlyStats,
+  CalendarEventItem,
+  CreateCalendarEventRequest,
+  UpdateCalendarEventRequest,
 } from '../../domain/entities/wear-event.entity';
 
 @Injectable({
@@ -49,6 +52,28 @@ export class WearEventRepositoryImpl implements WearEventRepository {
 
   deleteWearEvent(eventId: string): Observable<void> {
     return this.wearEventDataSource.deleteWearEvent(eventId);
+  }
+
+  // ==================== Calendar Events (Time-based) ====================
+
+  getCalendarEventsByDate(date: Date): Observable<CalendarEventItem[]> {
+    return this.wearEventDataSource.getCalendarEventsByDate(date);
+  }
+
+  getCalendarEventsForMonth(year: number, month: number): Observable<CalendarEventItem[]> {
+    return this.wearEventDataSource.getCalendarEventsForMonth(year, month);
+  }
+
+  createCalendarEvent(request: CreateCalendarEventRequest): Observable<CalendarEventItem> {
+    return this.wearEventDataSource.createCalendarEvent(request);
+  }
+
+  updateCalendarEvent(id: string, request: UpdateCalendarEventRequest): Observable<CalendarEventItem> {
+    return this.wearEventDataSource.updateCalendarEvent(id, request);
+  }
+
+  deleteCalendarEvent(id: string): Observable<void> {
+    return this.wearEventDataSource.deleteCalendarEvent(id);
   }
 }
 

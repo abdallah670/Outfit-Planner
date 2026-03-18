@@ -4,6 +4,7 @@ using OutfitPlanner.Application.DTOs.User;
 using OutfitPlanner.Application.Features.User.Requests.Commands;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
+using OutfitPlanner.Domain.Enums;
 
 namespace OutfitPlanner.Application.Features.User.Handlers.Commands;
 
@@ -31,7 +32,7 @@ public class CreateStyleRuleCommandHandler : IRequestHandler<CreateStyleRuleComm
             {
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
-                Style = StylePreference.Casual,
+                Style = StylePreference.Classic,
                 PreferredColors = new List<string>(),
                 FitPreferences = string.Empty,
                 ComfortPriority = 50,

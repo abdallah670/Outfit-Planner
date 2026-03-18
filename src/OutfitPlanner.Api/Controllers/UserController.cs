@@ -357,4 +357,202 @@ public class UserController : ControllerBase
     }
 
     #endregion
+
+    #region App Preferences
+
+    /// <summary>
+    /// Get app preferences for current user
+    /// </summary>
+    [HttpGet("app-preferences")]
+    public async Task<ActionResult<AppPreferencesDto>> GetAppPreferences()
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            var query = new GetAppPreferencesQuery { UserId = userId };
+            var preferences = await _mediator.Send(query);
+            return Ok(preferences);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving app preferences");
+            return StatusCode(500, new { message = "Failed to retrieve app preferences" });
+        }
+    }
+
+    /// <summary>
+    /// Update app preferences for current user
+    /// </summary>
+    [HttpPut("app-preferences")]
+    public async Task<IActionResult> UpdateAppPreferences([FromBody] UpdateAppPreferencesDto request)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            var command = new UpdateAppPreferencesCommand { UserId = userId, Preferences = request };
+            var response = await _mediator.Send(command);
+            
+            if (response.Success)
+                return Ok(response);
+            
+            return BadRequest(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating app preferences");
+            return StatusCode(500, new { message = "Failed to update app preferences" });
+        }
+    }
+
+    #endregion
+
+    #region Notification Settings
+
+    /// <summary>
+    /// Get notification settings for current user
+    /// </summary>
+    [HttpGet("notification-settings")]
+    public async Task<ActionResult<NotificationSettingsDto>> GetNotificationSettings()
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            var query = new GetNotificationSettingsQuery { UserId = userId };
+            var settings = await _mediator.Send(query);
+            return Ok(settings);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving notification settings");
+            return StatusCode(500, new { message = "Failed to retrieve notification settings" });
+        }
+    }
+
+    /// <summary>
+    /// Update notification settings for current user
+    /// </summary>
+    [HttpPut("notification-settings")]
+    public async Task<IActionResult> UpdateNotificationSettings([FromBody] UpdateNotificationSettingsDto request)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            var command = new UpdateNotificationSettingsCommand { UserId = userId, Settings = request };
+            var response = await _mediator.Send(command);
+            
+            if (response.Success)
+                return Ok(response);
+            
+            return BadRequest(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating notification settings");
+            return StatusCode(500, new { message = "Failed to update notification settings" });
+        }
+    }
+
+    #endregion
+
+    #region Connected Accounts
+
+    /// <summary>
+    /// Get connected social accounts
+    /// </summary>
+    [HttpGet("connected-accounts")]
+    public async Task<ActionResult<ConnectedAccountsDto>> GetConnectedAccounts()
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            var query = new GetConnectedAccountsQuery { UserId = userId };
+            var accounts = await _mediator.Send(query);
+            return Ok(accounts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving connected accounts");
+            return StatusCode(500, new { message = "Failed to retrieve connected accounts" });
+        }
+    }
+
+    #endregion
+
+    #region Account Management
+
+    /// <summary>
+    /// Delete user account
+    /// </summary>
+    [HttpDelete("account")]
+    public async Task<IActionResult> DeleteAccount()
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            var command = new DeleteAccountCommand { UserId = userId };
+            var response = await _mediator.Send(command);
+            
+            if (response.Success)
+                return Ok(response);
+            
+            return BadRequest(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting account");
+            return StatusCode(500, new { message = "Failed to delete account" });
+        }
+    }
+
+    /// <summary>
+    /// Export user data
+    /// </summary>
+    [HttpGet("export-data")]
+    public async Task<IActionResult> ExportData()
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            var query = new ExportUserDataQuery { UserId = userId };
+            var exportData = await _mediator.Send(query);
+            
+            if (exportData.Data == null || exportData.Data.Length == 0)
+                return BadRequest(new { message = "No data to export" });
+            
+            return File(exportData.Data, "application/json", $"outfit-planner-data-{DateTime.UtcNow:yyyyMMdd}.json");
+        }
+        catch (OutfitPlanner.Application.Exceptions.NotFoundException ex)
+        {
+            _logger.LogWarning(ex, "User not found while exporting data");
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error exporting user data");
+            return StatusCode(500, new { message = "Failed to export user data" });
+        }
+    }
+
+    #endregion
 }

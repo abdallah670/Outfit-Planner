@@ -26,7 +26,7 @@ public class NotificationsController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized(new { message = "User not authenticated" });
@@ -43,12 +43,38 @@ public class NotificationsController : ControllerBase
         }
     }
 
+    [HttpPost]
+    public async Task<ActionResult<NotificationDto>> CreateNotification([FromBody] CreateNotificationDto request)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var command = new CreateNotificationCommand
+            {
+                UserId = userId,
+                Request = request
+            };
+            var notification = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetNotifications), new { id = notification.Id }, notification);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating notification");
+            return StatusCode(500, new { message = "Failed to create notification" });
+        }
+    }
+
     [HttpGet("unread-count")]
     public async Task<ActionResult<int>> GetUnreadCount()
     {
         try
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized(new { message = "User not authenticated" });
@@ -70,7 +96,7 @@ public class NotificationsController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized(new { message = "User not authenticated" });
@@ -102,7 +128,7 @@ public class NotificationsController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized(new { message = "User not authenticated" });
@@ -130,7 +156,7 @@ public class NotificationsController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized(new { message = "User not authenticated" });

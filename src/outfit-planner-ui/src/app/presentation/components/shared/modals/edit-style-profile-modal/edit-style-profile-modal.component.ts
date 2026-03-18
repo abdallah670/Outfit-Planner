@@ -69,12 +69,14 @@ export class EditStyleProfileModalComponent {
     if (this.styleForm.valid) {
       this.isLoading = true;
 
+      const existingStyle = this.data.styleProfile;
       const styleProfile = {
         style: this.styleForm.get('style')?.value,
         fitPreferences: this.styleForm.get('fitPreferences')?.value,
         comfortPriority: this.styleForm.get('comfortPriority')?.value,
         acceptsTrends: this.styleForm.get('acceptsTrends')?.value,
         preferredColors: this.selectedColors,
+        customRules: existingStyle?.customRules || [],
       };
 
       // Dispatch the update action

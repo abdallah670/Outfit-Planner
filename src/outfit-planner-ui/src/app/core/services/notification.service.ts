@@ -41,7 +41,7 @@ export class NotificationService {
     this.error.set(null);
 
     return this.http.get<Notification[]>(`${this.apiUrl}`).pipe(
-      tap((notifications) => {
+      tap((notifications:Notification[]) => {
         this.notifications.set(notifications);
         this.updateUnreadCount();
         this.isLoading.set(false);
@@ -60,7 +60,7 @@ export class NotificationService {
    */
   getUnreadCount(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/unread-count`).pipe(
-      tap((count) => {
+      tap((count:number) => {
         this.unreadCount.set(count);
       }),
       catchError((err) => {

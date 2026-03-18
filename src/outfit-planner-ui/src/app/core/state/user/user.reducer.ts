@@ -1,6 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
 import { UserActions } from './user.actions';
-import { UserProfile } from '../../../domain/entities/user-profile.entity';
+import { UserProfile, StyleRule } from '../../../domain/entities/user-profile.entity';
+import { AppPreferences } from '../../services/app-preferences.service';
+import { NotificationSettings } from '../../services/notification-settings.service';
 
 export interface UserState {
   profile: UserProfile | null;
@@ -10,6 +12,11 @@ export interface UserState {
   changingPassword: boolean;
   updatingEmail: boolean;
   error: string | null;
+  styleRules: StyleRule[];
+  styleRulesLoading: boolean;
+  appPreferences: AppPreferences | null;
+  notificationSettings: NotificationSettings | null;
+  settingsLoading: boolean;
 }
 
 export const initialState: UserState = {
@@ -20,6 +27,11 @@ export const initialState: UserState = {
   changingPassword: false,
   updatingEmail: false,
   error: null,
+  styleRules: [],
+  styleRulesLoading: false,
+  appPreferences: null,
+  notificationSettings: null,
+  settingsLoading: false,
 };
 
 export const userReducer = createReducer(
@@ -129,6 +141,84 @@ export const userReducer = createReducer(
     ...state,
     updatingEmail: false,
     error,
+  })),
+
+  // Style Rules
+  on(UserActions.loadStyleRules, (state) => ({
+    ...state,
+    styleRulesLoading: true,
+  })),
+  on(UserActions.loadStyleRulesSuccess, (state, { rules }) => ({
+    ...state,
+    styleRules: rules,
+    styleRulesLoading: false,
+  })),
+  on(UserActions.loadStyleRulesFailure, (state, { error }) => ({
+    ...state,
+    styleRulesLoading: false,
+    error,
+  })),
+  on(UserActions.createStyleRuleSuccess, (state, { rule }) => ({
+    ...state,
+    styleRules: [...state.styleRules, rule],
+  })),
+  on(UserActions.updateStyleRuleSuccess, (state, { rule }) => ({
+    ...state,
+    styleRules: state.styleRules.map((r) => (r.id === rule.id ? rule : r)),
+  })),
+  on(UserActions.deleteStyleRuleSuccess, (state, { id }) => ({
+    ...state,
+    styleRules: state.styleRules.filter((r) => r.id !== id),
+  })),
+
+  // App Preferences
+  on(UserActions.loadAppPreferences, (state) => ({
+    ...state,
+    settingsLoading: true,
+  })),
+  on(UserActions.loadAppPreferencesSuccess, (state, { preferences }) => ({
+    ...state,
+    appPreferences: preferences,
+    settingsLoading: false,
+  })),
+  on(UserActions.loadAppPreferencesFailure, (state, { error }) => ({
+    ...state,
+    settingsLoading: false,
+    error,
+  })),
+  on(UserActions.updateAppPreferences, (state) => ({
+    ...state,
+    settingsLoading: true,
+  })),
+  on(UserActions.updateAppPreferencesSuccess, (state, { preferences }) => ({
+    ...state,
+    appPreferences: preferences,
+    settingsLoading: false,
+  })),
+  on(UserActions.updateAppPreferencesFailure, (state, { error }) => ({
+    ...state,
+    settingsLoading: false,
+    error,
+  })),
+
+  // Notification Settings
+  on(UserActions.loadNotificationSettings, (state) => ({
+    ...state,
+    settingsLoading: true,
+  })),
+  on(UserActions.loadNotificationSettingsSuccess, (state, { settings }) => ({
+    ...state,
+    notificationSettings: settings,
+    settingsLoading: false,
+  })),
+  on(UserActions.loadNotificationSettingsFailure, (state, { error }) => ({
+    ...state,
+    settingsLoading: false,
+    error,
+  })),
+  on(UserActions.updateNotificationSettingsSuccess, (state, { settings }) => ({
+    ...state,
+    notificationSettings: settings,
   })),
 
   // Clear Error

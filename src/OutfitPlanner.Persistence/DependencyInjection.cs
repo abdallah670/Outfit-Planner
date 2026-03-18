@@ -1,19 +1,20 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using OutfitPlanner.Domain.Entities;
-using OutfitPlanner.Application.Common.Interfaces.Persistence;
-using OutfitPlanner.Persistence.Repositories;
-using OutfitPlanner.Persistence.Data;
-using OutfitPlanner.Application.Models.Identity;
-using OutfitPlanner.Application.Contracts.Identity;
-using OutfitPlanner.Persistence.Security;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts.Identity;
+using OutfitPlanner.Application.Contracts.Persistence;
+using OutfitPlanner.Application.Models.Identity;
+using OutfitPlanner.Domain.Entities;
+using OutfitPlanner.Persistence.Data;
+using OutfitPlanner.Persistence.Repositories;
+using OutfitPlanner.Persistence.Security;
 using System.Linq;
+using System.Text;
 
 namespace OutfitPlanner.Persistence;
 
@@ -79,6 +80,9 @@ public static class DependencyInjection
         services.AddScoped<IUserPreferencesRepository, UserPreferencesRepository>();
         services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
         services.AddScoped<ITrendingOutfitRepository, TrendingOutfitRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IAppPreferencesRepository, AppPreferencesRepository>();
+        services.AddScoped<INotificationSettingsRepository, NotificationSettingsRepository>();
         services.AddScoped<DataSeeder>();
         return services;
     }

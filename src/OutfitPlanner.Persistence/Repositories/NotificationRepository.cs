@@ -44,4 +44,27 @@ public class NotificationRepository : GenericRepository<Notification>, INotifica
             .ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
     }
 
+    public Task MarkAsUnreadAsync(Guid notificationId)
+    {
+        var notification = _context.Notifications.Find(notificationId);
+        if (notification != null)
+        {
+            notification.IsRead = false;
+            return _context.SaveChangesAsync();
+        }
+        return Task.CompletedTask;
+
+
+    }
+
+    public Task<bool> DeleteAsync(Guid notificationId)
+    {
+        var notification = _context.Notifications.Find(notificationId);
+        if (notification != null)
+        {
+            _context.Notifications.Remove(notification);
+            return _context.SaveChangesAsync().ContinueWith(task => task.Result > 0);
+        }
+        return Task.FromResult(false);
+    }
 }
