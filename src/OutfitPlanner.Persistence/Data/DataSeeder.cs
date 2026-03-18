@@ -61,6 +61,9 @@ public class DataSeeder
             // Seed trending outfits
             await SeedTrendingOutfitsAsync();
 
+            // Seed sample notifications
+            await SeedNotificationsAsync();
+
             _logger.LogInformation("Database seeding completed successfully!");
         }
         catch (Exception ex)
@@ -405,6 +408,156 @@ public class DataSeeder
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Seeded {Count} trending outfits", trendingOutfits.Count);
+    }
+
+    /// <summary>
+    /// Seeds sample notifications for a specific user
+    /// </summary>
+    public async Task SeedNotificationsAsync(string userId = "6262154e-6c0d-4c7d-aa16-a58b6a14397f")
+    {
+        if (string.IsNullOrEmpty(userId))
+        {
+            _logger.LogWarning("No user ID provided for notifications seeding");
+            return;
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            _logger.LogWarning("User {UserId} not found for notifications seeding", userId);
+            return;
+        }
+
+        // Check if notifications already exist for this user
+        if (await _context.Notifications.AnyAsync(n => n.UserId == userId))
+        {
+            _logger.LogInformation("Notifications already exist for user {UserId}, skipping...", userId);
+            return;
+        }
+
+        var notifications = new List<Notification>
+        {
+            // Today's notifications (unread)
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.Reminder,
+                Title = "Log your outfit for today",
+                Message = "You scheduled \"Weekend Casual\" for today. Did you wear it?",
+                ActionUrl = "/calendar",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow.AddHours(-2)
+            },
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.Social,
+                Title = "New like on your outfit",
+                Message = "Emma W. liked your \"Office Chic\" outfit combination.",
+                ActionUrl = "/outfits/1",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow.AddHours(-4)
+            },
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.System,
+                Title = "Weekly Style Report Ready",
+                Message = "Your style stats for last week are now available. You wore Blue Jeans 4 times!",
+                ActionUrl = "/profile/stats",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow.AddHours(-5)
+            },
+
+            // Yesterday's notifications (read and unread)
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.Weather,
+                Title = "Rain Forecast Alert",
+                Message = "Rain is expected tomorrow. Don't forget your raincoat or umbrella!",
+                ActionUrl = "/weather",
+                IsRead = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-1)
+            },
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.Social,
+                Title = "Comment on \"Summer Dress\"",
+                Message = "Sophie commented: \"Love this color on you! Where did you get it?\"",
+                ActionUrl = "/outfits/2",
+                IsRead = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-1).AddHours(-3)
+            },
+
+            // Last week notifications (read)
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.System,
+                Title = "Account Security",
+                Message = "New login detected from Chrome on MacOS.",
+                ActionUrl = "/settings/security",
+                IsRead = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-7)
+            },
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.Reminder,
+                Title = "Outfit Reminder",
+                Message = "You have \"Business Meeting\" scheduled for tomorrow at 2:00 PM",
+                ActionUrl = "/calendar",
+                IsRead = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-2)
+            },
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.Social,
+                Title = "New Follower",
+                Message = "Michael T. started following you.",
+                ActionUrl = "/community",
+                IsRead = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-3)
+            },
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.System,
+                Title = "Wear Count Update",
+                Message = "You've worn your \"Blue Denim Jacket\" 10 times this month!",
+                ActionUrl = "/wardrobe/1",
+                IsRead = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-4)
+            },
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.Weather,
+                Title = "Cold Weather Alert",
+                Message = "Temperature dropping to 5°C tomorrow. Time to bundle up!",
+                ActionUrl = "/weather",
+                IsRead = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-5)
+            }
+        };
+
+        await _context.Notifications.AddRangeAsync(notifications);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} notifications for user {UserId}", notifications.Count, userId);
     }
 
     private static string GetOutfitName(int index)

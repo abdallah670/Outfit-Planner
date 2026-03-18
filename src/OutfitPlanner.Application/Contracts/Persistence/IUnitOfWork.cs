@@ -19,6 +19,13 @@ public interface IUnitOfWork : IDisposable
     IUserPreferencesRepository UserPreferences { get; }
     ICalendarEventRepository CalendarEvents { get; }
     INotificationRepository Notifications { get; }
+    IAppPreferencesRepository AppPreferences { get; }
+    INotificationSettingsRepository NotificationSettings { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Begins a new database transaction
+    /// </summary>
+    Task<IAsyncDisposable> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

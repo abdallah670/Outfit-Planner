@@ -62,3 +62,29 @@ export const selectUserPreferences = createSelector(
   selectUserProfile,
   (profile) => profile?.preferences
 );
+
+export const selectStyleRules = createSelector(
+  selectUserState,
+  (state) => state.styleRules
+);
+
+export const selectStyleRulesLoading = createSelector(
+  selectUserState,
+  (state) => state.styleRulesLoading
+);
+
+// Settings Selectors
+export const selectAppPreferences = createSelector(
+  selectUserState,
+  (state) => state.appPreferences
+);
+
+export const selectNotificationSettings = createSelector(
+  selectUserState,
+  (state) => state.notificationSettings
+);
+
+export const selectSettingsLoading = createSelector(
+  selectUserState,
+  (state) => state.settingsLoading
+);

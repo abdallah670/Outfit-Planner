@@ -8,6 +8,10 @@ import {
   ScheduleOutfitRequest,
   CalendarEvent,
   MonthlyStats,
+  CalendarEventItem,
+  CreateCalendarEventRequest,
+  UpdateCalendarEventRequest,
+  CalendarEventType,
 } from '../../domain/entities/wear-event.entity';
 
 // DTOs matching the API response structure
@@ -44,6 +48,23 @@ interface MonthlyStatsDto {
   wornCount: number;
   scheduledCount: number;
   favoriteCount: number;
+}
+
+/**
+ * DTO for Calendar Event Items (time-based events)
+ */
+interface CalendarEventItemDto {
+  id: string;
+  title: string;
+  description?: string;
+  location?: string;
+  eventDate: string;
+  startTime?: string;
+  endTime?: string;
+  eventType: number;
+  wearEventId?: string;
+  notes?: string;
+  isRecurring: boolean;
 }
 
 @Injectable({
@@ -124,6 +145,60 @@ export class WearEventDataSource {
     return this.http.delete<void>(`${this.apiUrl}/events/${eventId}`);
   }
 
+  // ==================== Calendar Events (Time-based) ====================
+
+  /**
+   * Get calendar events for a specific date
+   */
+  getCalendarEventsByDate(date: Date): Observable<CalendarEventItem[]> {
+    const dateStr = date.toISOString();
+    return this.http
+      .get<CalendarEventItemDto[]>(`${this.apiUrl}/calendar-events/by-date?date=${dateStr}`)
+      .pipe(
+        map((events: CalendarEventItemDto[]) =>
+          events.map((e) => this.mapCalendarEventItemDtoToEntity(e))
+        )
+      );
+  }
+
+  /**
+   * Get calendar events for a specific month
+   */
+  getCalendarEventsForMonth(year: number, month: number): Observable<CalendarEventItem[]> {
+    return this.http
+      .get<CalendarEventItemDto[]>(`${this.apiUrl}/calendar-events?year=${year}&month=${month}`)
+      .pipe(
+        map((events: CalendarEventItemDto[]) =>
+          events.map((e) => this.mapCalendarEventItemDtoToEntity(e))
+        )
+      );
+  }
+
+  /**
+   * Create a new calendar event
+   */
+  createCalendarEvent(request: CreateCalendarEventRequest): Observable<CalendarEventItem> {
+    return this.http
+      .post<CalendarEventItemDto>(`${this.apiUrl}/calendar-events`, request)
+      .pipe(map((e: CalendarEventItemDto) => this.mapCalendarEventItemDtoToEntity(e)));
+  }
+
+  /**
+   * Update an existing calendar event
+   */
+  updateCalendarEvent(id: string, request: UpdateCalendarEventRequest): Observable<CalendarEventItem> {
+    return this.http
+      .put<CalendarEventItemDto>(`${this.apiUrl}/calendar-events/${id}`, request)
+      .pipe(map((e: CalendarEventItemDto) => this.mapCalendarEventItemDtoToEntity(e)));
+  }
+
+  /**
+   * Delete a calendar event
+   */
+  deleteCalendarEvent(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/calendar-events/${id}`);
+  }
+
   /**
    * Map WearEvent DTO to entity
    */
@@ -156,6 +231,25 @@ export class WearEventDataSource {
       worn: dto.worn,
       occasion: dto.occasion,
       weather: dto.weather,
+    };
+  }
+
+  /**
+   * Map CalendarEventItem DTO to entity
+   */
+  private mapCalendarEventItemDtoToEntity(dto: CalendarEventItemDto): CalendarEventItem {
+    return {
+      id: dto.id,
+      title: dto.title,
+      description: dto.description,
+      location: dto.location,
+      eventDate: new Date(dto.eventDate),
+      startTime: dto.startTime,
+      endTime: dto.endTime,
+      eventType: dto.eventType as CalendarEventType,
+      wearEventId: dto.wearEventId,
+      notes: dto.notes,
+      isRecurring: dto.isRecurring,
     };
   }
 }

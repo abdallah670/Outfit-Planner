@@ -43,7 +43,8 @@ public enum StylePreference
     Professional,
     Athleisure,
     Eclectic,
-    Vintage
+    Vintage,
+    
 }
 
 public enum PrivacyLevel

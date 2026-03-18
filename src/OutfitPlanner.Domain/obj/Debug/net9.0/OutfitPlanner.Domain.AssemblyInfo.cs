@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OutfitPlanner.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+21c29d71076d3b6ccf383ac848364c44851ae39c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4751c38f53a63733a03cccef9aae07b7eb8fa2b9")]
 [assembly: System.Reflection.AssemblyProductAttribute("OutfitPlanner.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OutfitPlanner.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

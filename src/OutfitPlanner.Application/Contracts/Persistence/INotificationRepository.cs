@@ -9,4 +9,6 @@ public interface INotificationRepository : IGenericRepository<Notification>
     Task<int> GetUnreadCountAsync(string userId);
     Task MarkAsReadAsync(Guid notificationId);
     Task MarkAllAsReadAsync(string userId);
+    Task MarkAsUnreadAsync(Guid notificationId);
+    Task<bool> DeleteAsync(Guid notificationId);
 }

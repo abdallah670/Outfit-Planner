@@ -6,6 +6,9 @@ import {
   ScheduleOutfitRequest,
   CalendarEvent,
   MonthlyStats,
+  CalendarEventItem,
+  CreateCalendarEventRequest,
+  UpdateCalendarEventRequest,
 } from '../entities/wear-event.entity';
 
 export const WEAR_EVENT_REPOSITORY = new InjectionToken<WearEventRepository>('WearEventRepository');
@@ -53,4 +56,31 @@ export interface WearEventRepository {
    * Delete a wear event
    */
   deleteWearEvent(eventId: string): Observable<void>;
+
+  // ==================== Calendar Events (Time-based) ====================
+
+  /**
+   * Get calendar events for a specific date
+   */
+  getCalendarEventsByDate(date: Date): Observable<CalendarEventItem[]>;
+
+  /**
+   * Get calendar events for a specific month
+   */
+  getCalendarEventsForMonth(year: number, month: number): Observable<CalendarEventItem[]>;
+
+  /**
+   * Create a new calendar event
+   */
+  createCalendarEvent(request: CreateCalendarEventRequest): Observable<CalendarEventItem>;
+
+  /**
+   * Update an existing calendar event
+   */
+  updateCalendarEvent(id: string, request: UpdateCalendarEventRequest): Observable<CalendarEventItem>;
+
+  /**
+   * Delete a calendar event
+   */
+  deleteCalendarEvent(id: string): Observable<void>;
 }
