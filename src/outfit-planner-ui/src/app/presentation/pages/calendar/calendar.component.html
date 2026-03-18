@@ -1,7 +1,7 @@
 <!-- Calendar Page - Matching Design/calender.html exactly -->
 <div class="calendar-page">
   <div class="calendar-container">
-   
+    
     <!-- Main Content -->
     <div class="main-content">
       <!-- Calendar Section -->
@@ -51,7 +51,7 @@
             
             <!-- Weather Mini -->
             <div class="weather-mini" *ngIf="day.weather && day.isCurrentMonth">
-              <span>{{ day.weather.icon }}</span> {{ day.weather.temp }}°
+              <mat-icon>{{ getWeatherIconName(day.weather.icon) }}</mat-icon> {{ day.weather.temp }}°
             </div>
             
             <div class="day-content">
@@ -70,7 +70,7 @@
                 />
                 <img
                   *ngIf="!outfit.imageUrl"
-                  src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=150&auto=format&fit=crop"
+                  src="/outfit_placeholder.png"
                   class="pill-img"
                   alt=""
                 />
@@ -110,7 +110,7 @@
             </svg>
             <div>
               <div>{{ selectedDayWeather()!.condition }}</div>
-              <div class="weather-detail">High {{ selectedDayWeather()!.temp }}° • Low {{ selectedDayWeather()!.temp! - 6 }}°</div>
+              <div class="weather-detail">High {{ selectedDayWeather()!.temp }}° • Low --°</div>
             </div>
           </div>
           
@@ -149,7 +149,14 @@
           <div class="outfit-preview-card" *ngIf="selectedDayOutfits().length > 0; else noOutfit">
             <div class="preview-img-container">
               <img
-                src="https://storage.googleapis.com/banani-generated-images/generated-images/4e3307e4-59bf-4d31-8dd1-514fe7c342f4.jpg"
+                *ngIf="selectedDayOutfits()[0]?.imageUrl"
+                [src]="selectedDayOutfits()[0]!.imageUrl"
+                class="preview-img"
+                alt="Scheduled Outfit"
+              />
+              <img
+                *ngIf="!selectedDayOutfits()[0]?.imageUrl"
+                src="/outfit_placeholder.png"
                 class="preview-img"
                 alt="Scheduled Outfit"
               />
@@ -164,9 +171,8 @@
             <div class="outfit-info">
               <h3>{{ selectedDayOutfits()[0]?.name || 'Casual Outfit' }}</h3>
               <div class="outfit-items">
-                <span class="item-chip">Blue Shirt</span>
-                <span class="item-chip">Dark Jeans</span>
-                <span class="item-chip">White Sneakers</span>
+                <span class="item-chip" *ngIf="selectedDayOutfits()[0]?.occasion">{{ selectedDayOutfits()[0]!.occasion }}</span>
+                <span class="item-chip" *ngIf="!selectedDayOutfits()[0]?.occasion">Casual</span>
               </div>
             </div>
             
@@ -193,15 +199,15 @@
           <div class="event-label">WEAR HISTORY</div>
           <div class="stats-row">
             <div class="stat-item">
-              <span class="stat-value">12</span>
+              <span class="stat-value">{{ stats()?.wornCount || 0 }}</span>
               <span class="stat-label">Days tracked</span>
             </div>
             <div class="stat-item">
-              <span class="stat-value">85%</span>
+              <span class="stat-value">{{ getAdherence() }}%</span>
               <span class="stat-label">Adherence</span>
             </div>
             <div class="stat-item">
-              <span class="stat-value">3</span>
+              <span class="stat-value">{{ stats()?.favoriteCount || 0 }}</span>
               <span class="stat-label">New Outfits</span>
             </div>
           </div>

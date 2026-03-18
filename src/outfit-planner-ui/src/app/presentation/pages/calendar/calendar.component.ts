@@ -13,8 +13,11 @@ import {
   selectCurrentYear,
   selectCurrentMonth,
   selectLoading,
+  selectCalendarEvents,
+  selectSelectedDayCalendarEvents,
+  selectWeatherData,
 } from '../../../core/state/calendar/calendar.selectors';
-import { CalendarEvent, MonthlyStats, CalendarEventItem, CalendarEventType } from '../../../domain/entities/wear-event.entity';
+import { CalendarEvent, MonthlyStats, CalendarEventItem, CalendarEventType, WeatherData } from '../../../domain/entities/wear-event.entity';
 
 interface CalendarDay {
   date: Date;
@@ -35,7 +38,7 @@ interface ScheduledOutfit {
   items?: string[];
 }
 
-interface WeatherData {
+interface WeatherDisplayData {
   temp: number;
   icon: string;
   condition: string;
@@ -61,60 +64,49 @@ export class CalendarComponent implements OnInit {
   weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   
   // NgRx signals - get data from store
-  private eventsSignal = toSignal(this.store.select(selectEvents), { initialValue: [] as CalendarEvent[] }) as () => CalendarEvent[];
-  stats = toSignal(this.store.select(selectStats), { initialValue: null as MonthlyStats | null }) as () => MonthlyStats | null;
+  private eventsSignal = toSignal(this.store.select(selectEvents), {
+    initialValue: [] as CalendarEvent[],
+  }) as () => CalendarEvent[];
+  stats = toSignal(this.store.select(selectStats), {
+    initialValue: null as MonthlyStats | null,
+  }) as () => MonthlyStats | null;
   loading = toSignal(this.store.select(selectLoading), { initialValue: false }) as () => boolean;
   
+  // Calendar events from store (time-based events)
+  private calendarEventsSignal = toSignal(this.store.select(selectCalendarEvents), {
+    initialValue: [] as CalendarEventItem[],
+  }) as () => CalendarEventItem[];
+
+  // Weather data from store (as a Map)
+  private weatherMapSignal = toSignal(this.store.select(selectWeatherData), {
+    initialValue: new Map<string, WeatherData>(),
+  }) as () => Map<string, WeatherData>;
+  
   // Get current year/month from store
-  year = toSignal(this.store.select(selectCurrentYear), { initialValue: new Date().getFullYear() }) as () => number;
-  month = toSignal(this.store.select(selectCurrentMonth), { initialValue: new Date().getMonth() + 1 }) as () => number;
+  year = toSignal(this.store.select(selectCurrentYear), {
+    initialValue: new Date().getFullYear(),
+  }) as () => number;
+  month = toSignal(this.store.select(selectCurrentMonth), {
+    initialValue: new Date().getMonth() + 1,
+  }) as () => number;
 
   // Selected date signals for sidebar display
   selectedDate = signal<Date | null>(null);
   
-  // Calendar events for selected day (new feature)
+  // Calendar events for selected day (from store, not mock data)
   selectedDayEvents = computed((): CalendarEventItem[] => {
     const date = this.selectedDate();
-    if (!date) return [];
+    const calendarEvents = this.calendarEventsSignal();
+    if (!date || !calendarEvents.length) return [];
     
-    // Mock data for demonstration - in real app, this would come from store/API
-    const mockEvents: CalendarEventItem[] = [
-      {
-        id: '1',
-        title: 'Team Meeting',
-        description: 'Weekly standup with the dev team',
-        location: 'Conference Room A',
-        eventDate: date,
-        startTime: '9:00 AM',
-        endTime: '10:00 AM',
-        eventType: CalendarEventType.Work,
-        isRecurring: true
-      },
-      {
-        id: '2',
-        title: 'Lunch with Client',
-        description: 'Discussing new project requirements',
-        location: 'Downtown Cafe',
-        eventDate: date,
-        startTime: '12:30 PM',
-        endTime: '1:30 PM',
-        eventType: CalendarEventType.Meeting,
-        isRecurring: false
-      },
-      {
-        id: '3',
-        title: 'Gym Session',
-        description: 'Cardio and weights',
-        location: 'Fitness Center',
-        eventDate: date,
-        startTime: '6:00 PM',
-        endTime: '7:30 PM',
-        eventType: CalendarEventType.Sport,
-        isRecurring: true
-      }
-    ];
-    
-    return mockEvents;
+    return calendarEvents.filter(event => {
+      const eventDate = new Date(event.eventDate);
+      return (
+        eventDate.getDate() === date.getDate() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getFullYear() === date.getFullYear()
+      );
+    });
   });
   
   // Computed signals for selected day data
@@ -139,43 +131,60 @@ export class CalendarComponent implements OnInit {
       }));
   });
   
-  selectedDayWeather = computed((): WeatherData | null => {
+  selectedDayWeather = computed((): WeatherDisplayData | null => {
     const date = this.selectedDate();
     if (!date) return null;
     
-    // For demo, return mock weather data
-    // In real app, this would come from weather API based on date
-    return {
-      temp: 22,
-      icon: '☀️',
-      condition: 'Sunny'
-    };
+    // Get weather from store based on selected date
+    const weatherMap = this.weatherMapSignal();
+    const dateKey = date.toISOString().split('T')[0];
+    const weather = weatherMap.get(dateKey);
+    
+    if (weather) {
+      return {
+        temp: weather.temperature,
+        icon: weather.icon,
+        condition: weather.condition
+      };
+    }
+    
+    // Fallback: return null to show empty weather widget
+    return null;
   });
 
-  // Calendar days computed from events
+  // Calendar days computed from events and weather
   calendarDays = computed((): CalendarDay[] => {
     const yr = this.year();
     const monthNum = this.month();
     const events = this.eventsSignal();
-    return this.generateCalendarDays(yr, monthNum, events);
+    const weatherMap = this.weatherMapSignal();
+    return this.generateCalendarDays(yr, monthNum, events, weatherMap);
   });
 
   ngOnInit(): void {
     // Load scheduled outfits from API
     const now = new Date();
-    this.store.dispatch(CalendarActions.loadScheduledOutfits({ year: now.getFullYear(), month: now.getMonth() + 1 }));
-    this.store.dispatch(CalendarActions.loadMonthlyStats({ year: now.getFullYear(), month: now.getMonth() + 1 }));
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    
+    this.store.dispatch(CalendarActions.loadScheduledOutfits({ year, month }));
+    this.store.dispatch(CalendarActions.loadMonthlyStats({ year, month }));
+    
+    // Load calendar events (time-based) for current month
+    this.store.dispatch(CalendarActions.loadCalendarEvents({ year, month }));
+    
+    // Load weather forecast for current month
+    this.store.dispatch(CalendarActions.loadWeatherForecast({ year, month }));
     
     // Set current month display
-    const date = new Date();
-    this.currentMonth.set(date.toLocaleString('default', { month: 'long' }));
-    this.currentYear.set(date.getFullYear());
+    this.currentMonth.set(now.toLocaleString('default', { month: 'long' }));
+    this.currentYear.set(year);
   }
 
   /**
    * Generate calendar days for the given month
    */
-  private generateCalendarDays(year: number, month: number, events: CalendarEvent[]): CalendarDay[] {
+  private generateCalendarDays(year: number, month: number, events: CalendarEvent[], weatherMap: Map<string, WeatherData>): CalendarDay[] {
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 0);
     const today = new Date();
@@ -188,12 +197,15 @@ export class CalendarComponent implements OnInit {
     for (let i = startDayOfWeek - 1; i >= 0; i--) {
       const dayNum = prevMonthLastDay - i;
       const date = new Date(year, month - 2, dayNum);
+      const dateKey = date.toISOString().split('T')[0];
+      const weather = weatherMap.get(dateKey);
       days.push({
         date,
         dayNumber: dayNum,
         isCurrentMonth: false,
         isToday: false,
-        outfits: this.getOutfitsForDate(date, events)
+        outfits: this.getOutfitsForDate(date, events),
+        weather: weather ? this.mapWeatherToDisplay(weather) : undefined
       });
     }
     
@@ -201,12 +213,15 @@ export class CalendarComponent implements OnInit {
     for (let day = 1; day <= lastDay.getDate(); day++) {
       const date = new Date(year, month - 1, day);
       const isToday = date.toDateString() === today.toDateString();
+      const dateKey = date.toISOString().split('T')[0];
+      const weather = weatherMap.get(dateKey);
       days.push({
         date,
         dayNumber: day,
         isCurrentMonth: true,
         isToday,
-        outfits: this.getOutfitsForDate(date, events)
+        outfits: this.getOutfitsForDate(date, events),
+        weather: weather ? this.mapWeatherToDisplay(weather) : undefined
       });
     }
     
@@ -214,16 +229,58 @@ export class CalendarComponent implements OnInit {
     const remainingDays = 42 - days.length;
     for (let day = 1; day <= remainingDays; day++) {
       const date = new Date(year, month, day);
+      const dateKey = date.toISOString().split('T')[0];
+      const weather = weatherMap.get(dateKey);
       days.push({
         date,
         dayNumber: day,
         isCurrentMonth: false,
         isToday: false,
-        outfits: this.getOutfitsForDate(date, events)
+        outfits: this.getOutfitsForDate(date, events),
+        weather: weather ? this.mapWeatherToDisplay(weather) : undefined
       });
     }
     
     return days;
+  }
+
+  /**
+   * Map weather API data to display format with icon
+   */
+  private mapWeatherToDisplay(weather: WeatherData): { temp: number; icon: string; condition: string } {
+    return {
+      temp: weather.temperature,
+      icon: this.getWeatherIconName(weather.icon),
+      condition: weather.condition
+    };
+  }
+
+  /**
+   * Convert OpenWeatherMap icon code to Material icon name
+   */
+  getWeatherIconName(iconCode: string): string {
+    // Map OpenWeatherMap icon codes to Material icon names
+    const iconMap: Record<string, string> = {
+      '01d': 'wb_sunny',
+      '01n': 'nightlight_round',
+      '02d': 'partly_cloudy_day',
+      '02n': 'partly_cloudy_night',
+      '03d': 'cloud',
+      '03n': 'cloud',
+      '04d': 'cloud',
+      '04n': 'cloud',
+      '09d': 'grain',
+      '09n': 'grain',
+      '10d': 'rainy',
+      '10n': 'rainy',
+      '11d': 'flash_on',
+      '11n': 'flash_on',
+      '13d': 'ac_unit',
+      '13n': 'ac_unit',
+      '50d': 'air',
+      '50n': 'air'
+    };
+    return iconMap[iconCode] || 'cloud';
   }
 
   /**
@@ -260,6 +317,8 @@ export class CalendarComponent implements OnInit {
     this.store.dispatch(CalendarActions.setCurrentMonth({ year: newYear, month: newMonth }));
     this.store.dispatch(CalendarActions.loadScheduledOutfits({ year: newYear, month: newMonth }));
     this.store.dispatch(CalendarActions.loadMonthlyStats({ year: newYear, month: newMonth }));
+    this.store.dispatch(CalendarActions.loadCalendarEvents({ year: newYear, month: newMonth }));
+    this.store.dispatch(CalendarActions.loadWeatherForecast({ year: newYear, month: newMonth }));
     
     const date = new Date(newYear, newMonth - 1, 1);
     this.currentMonth.set(date.toLocaleString('default', { month: 'long' }));
@@ -280,6 +339,8 @@ export class CalendarComponent implements OnInit {
     this.store.dispatch(CalendarActions.setCurrentMonth({ year: newYear, month: newMonth }));
     this.store.dispatch(CalendarActions.loadScheduledOutfits({ year: newYear, month: newMonth }));
     this.store.dispatch(CalendarActions.loadMonthlyStats({ year: newYear, month: newMonth }));
+    this.store.dispatch(CalendarActions.loadCalendarEvents({ year: newYear, month: newMonth }));
+    this.store.dispatch(CalendarActions.loadWeatherForecast({ year: newYear, month: newMonth }));
     
     const date = new Date(newYear, newMonth - 1, 1);
     this.currentMonth.set(date.toLocaleString('default', { month: 'long' }));
@@ -293,7 +354,7 @@ export class CalendarComponent implements OnInit {
   selectDay(day: CalendarDay): void {
     // Set the selected date
     this.selectedDate.set(day.date);
-    console.log('Selected day:', day);
+    this.store.dispatch(CalendarActions.selectDate({ date: day.date }));
   }
 
   isSameDate(date1: Date, date2: Date): boolean {
@@ -305,5 +366,14 @@ export class CalendarComponent implements OnInit {
     const date = new Date();
     date.setDate(date.getDate() + days);
     return date;
+  }
+
+  /**
+   * Calculate adherence percentage
+   */
+  getAdherence(): number {
+    const s = this.stats();
+    if (!s || !s.scheduledCount) return 0;
+    return Math.round((s.wornCount / s.scheduledCount) * 100);
   }
 }
