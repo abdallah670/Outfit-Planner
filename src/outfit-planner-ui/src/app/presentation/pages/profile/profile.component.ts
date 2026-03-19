@@ -20,12 +20,14 @@ import { EditStyleProfileModalComponent } from '../../components/shared/modals/e
 import { EditPreferencesModalComponent } from '../../components/shared/modals/edit-preferences-modal/edit-preferences-modal.component';
 import { ChangePasswordModalComponent } from '../../components/shared/modals/change-password-modal/change-password-modal.component';
 import { EditEmailModalComponent } from '../../components/shared/modals/edit-email-modal/edit-email-modal.component';
+import { EditStyleRulesModalComponent } from '../../components/shared/modals/edit-style-rules-modal/edit-style-rules-modal.component';
 import {
   UserProfile,
   StylePreference,
   PrivacyLevel,
   UserStyleProfile,
   UserPreferences,
+  StyleRule,
 } from '../../../domain/entities/user-profile.entity';
 import { UserActions } from '../../../core/state/user/user.actions';
 import {
@@ -34,6 +36,7 @@ import {
   selectUserError,
   selectStyleProfile,
   selectUserPreferences,
+  selectStyleRules,
 } from '../../../core/state/user/user.selectors';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -68,6 +71,7 @@ export class ProfileComponent implements OnInit {
   error$: Observable<string | null>;
   styleProfile$: Observable<UserStyleProfile | undefined>;
   preferences$: Observable<UserPreferences | undefined>;
+  styleRules$!: Observable<StyleRule[]>;
 
   // Enums for templates
   stylePreferences = Object.values(StylePreference);
@@ -79,10 +83,12 @@ export class ProfileComponent implements OnInit {
     this.error$ = this.store.select(selectUserError);
     this.styleProfile$ = this.store.select(selectStyleProfile);
     this.preferences$ = this.store.select(selectUserPreferences);
+    this.styleRules$ = this.store.select(selectStyleRules);
   }
 
   ngOnInit() {
     this.store.dispatch(UserActions.loadProfile());
+    this.store.dispatch(UserActions.loadStyleRules());
   }
 
   getMemberSince(createdAt: string | undefined): string {
@@ -168,6 +174,123 @@ export class ProfileComponent implements OnInit {
         }
       });
     });
+  }
+
+  openStyleRulesModal(): void {
+    // Load style rules before opening modal
+    this.store.dispatch(UserActions.loadStyleRules());
+    
+    this.styleRules$.pipe(take(1)).subscribe((rules: StyleRule[]) => {
+      const dialogRef = this.dialog.open(EditStyleRulesModalComponent, {
+        width: '500px',
+        data: {
+          rules: rules,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        if (result) {
+          this.snackBar.open('Style rules updated successfully', 'Close', {
+            duration: 3000,
+          });
+        }
+      });
+    });
+  }
+
+  // Inline Style Rules CRUD
+  addNewRule(): void {
+    // Open modal to create a new style rule
+    const dialogRef = this.dialog.open(EditStyleRulesModalComponent, {
+      width: '500px',
+      data: {
+        rule: null, // null means create mode
+        isNew: true,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.snackBar.open('New rule added successfully', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  editRule(rule: StyleRule): void {
+    // Open modal to edit existing style rule
+    const dialogRef = this.dialog.open(EditStyleRulesModalComponent, {
+      width: '500px',
+      data: {
+        rule: rule,
+        isNew: false,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.snackBar.open('Rule updated successfully', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  deleteRule(ruleId: string): void {
+    // Show confirmation dialog using MatDialog
+    const dialogRef = this.dialog.open(MatConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Rule',
+        message: 'Are you sure you want to delete this style rule?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.store.dispatch(UserActions.deleteStyleRule({ id: ruleId }));
+        this.snackBar.open('Rule deleted successfully', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  // Helper to convert style enum to display string
+  getStyleDisplayName(styleValue: number | string | undefined): string {
+    if (styleValue === undefined || styleValue === null) {
+      return 'Not Set';
+    }
+    
+    // Handle both number and string enum values
+    const styleNames: { [key: number]: string } = {
+      0: 'Minimalist',
+      1: 'Classic',
+      2: 'Bohemian',
+      3: 'Streetwear',
+      4: 'Professional',
+      5: 'Athleisure',
+      6: 'Eclectic',
+      7: 'Vintage',
+    };
+    
+    // If it's already a string, return it directly
+    if (typeof styleValue === 'string') {
+      return styleValue;
+    }
+    
+    return styleNames[styleValue] || 'Not Set';
+  }
+
+  toggleRuleActive(rule: StyleRule): void {
+    this.store.dispatch(
+      UserActions.updateStyleRule({
+        id: rule.id,
+        rule: {
+          name: rule.name,
+          description: rule.description,
+          isActive: !rule.isActive,
+          criteriaJson: rule.criteriaJson,
+        },
+      })
+    );
   }
 
   openEditEmailModal(): void {

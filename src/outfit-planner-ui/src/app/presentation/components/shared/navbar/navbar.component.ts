@@ -11,6 +11,7 @@ import {
   selectProfilePictureUrl,
   selectUserProfile,
 } from '../../../../core/state/user/user.selectors';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,14 +21,19 @@ import {
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
-  profilePictureUrl$: Observable<string | null>;
+  profilePictureUrl$!: Observable<string | null>;
   failedImages: Set<string> = new Set();
+  notificationsCount$!: Observable<number>;
+  
 
-  constructor(private store: Store) {
-    this.profilePictureUrl$ = this.store.select(selectProfilePictureUrl);
+  constructor(private store: Store, private notificationService: NotificationService) {
+    
   }
 
-  ngOnInit() {}
+  ngOnInit() { 
+    this.profilePictureUrl$ = this.store.select(selectProfilePictureUrl);
+    this.notificationsCount$ = this.notificationService.getUnreadCount();
+  }
 
   onImageError(event: Event, imageUrl: string | unknown) {
     const img = event.target as HTMLImageElement;

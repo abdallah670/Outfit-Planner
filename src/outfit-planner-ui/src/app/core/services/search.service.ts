@@ -47,17 +47,31 @@ export class SearchService {
 
     if (filters) {
       params = params.set('type', filters.type);
-      
+
       if (filters.categories?.length) {
         params = params.set('categories', filters.categories.join(','));
       }
-      
+
       if (filters.seasons?.length) {
         params = params.set('seasons', filters.seasons.join(','));
       }
-      
+
+      // Add occasions filter
+      if (filters.occasions?.length) {
+        params = params.set('occasions', filters.occasions.join(','));
+      }
+
       if (filters.color) {
         params = params.set('color', filters.color);
+      }
+
+      // Add price range filters
+      if (filters.minPrice !== null && filters.minPrice !== undefined) {
+        params = params.set('minPrice', filters.minPrice.toString());
+      }
+
+      if (filters.maxPrice !== null && filters.maxPrice !== undefined) {
+        params = params.set('maxPrice', filters.maxPrice.toString());
       }
     }
 
@@ -127,7 +141,7 @@ export class SearchService {
    */
   private fixImageUrl(url: string | undefined): string | undefined {
     if (!url) return url;
-    
+
     // If it's already a full URL, return as-is
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;

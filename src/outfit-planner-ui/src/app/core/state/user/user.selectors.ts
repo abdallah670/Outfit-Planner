@@ -33,6 +33,13 @@ export const selectChangingPassword = createSelector(
   (state) => state.changingPassword
 );
 
+export const selectUpdatingEmail = createSelector(
+  selectUserState,
+  (state) => state.updatingEmail
+);
+
+
+
 export const selectUserProfileLoading = createSelector(
   selectUserState,
   (state) => state.loading || state.updating || state.uploadingPicture || state.changingPassword
@@ -87,4 +94,15 @@ export const selectNotificationSettings = createSelector(
 export const selectSettingsLoading = createSelector(
   selectUserState,
   (state) => state.settingsLoading
+);
+
+// Connected Accounts Selectors
+export const selectConnectedAccounts = createSelector(
+  selectUserState,
+  (state) => state.connectedAccounts
+);
+
+export const selectConnectedAccountsLoading = createSelector(
+  selectUserState,
+  (state) => state.connectedAccountsLoading
 );

@@ -63,7 +63,10 @@ export const selectHasActiveFilters = createSelector(
   (filters) =>
     filters.categories.length > 0 ||
     filters.seasons.length > 0 ||
+    filters.occasions.length > 0 ||
     filters.color !== null ||
+    filters.minPrice !== null ||
+    filters.maxPrice !== null ||
     filters.type !== 'all'
 );
 
@@ -72,6 +75,9 @@ export const selectActiveFiltersCount = createSelector(
   (filters) =>
     filters.categories.length +
     filters.seasons.length +
+    filters.occasions.length +
     (filters.color ? 1 : 0) +
+    (filters.minPrice !== null ? 1 : 0) +
+    (filters.maxPrice !== null ? 1 : 0) +
     (filters.type !== 'all' ? 1 : 0)
 );

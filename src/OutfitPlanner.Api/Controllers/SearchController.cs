@@ -31,7 +31,10 @@ public class SearchController : ControllerBase
         [FromQuery] SearchType type = SearchType.All,
         [FromQuery] string? categories = null,
         [FromQuery] string? seasons = null,
+        [FromQuery] string? occasions = null,
         [FromQuery] string? color = null,
+        [FromQuery] decimal? minPrice = null,
+        [FromQuery] decimal? maxPrice = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
@@ -47,12 +50,16 @@ public class SearchController : ControllerBase
             Type = type,
             Categories = ParseList(categories),
             Seasons = ParseList(seasons),
+            Occasions = ParseList(occasions),
             Color = color,
+            MinPrice = minPrice,
+            MaxPrice = maxPrice,
             Page = page,
             PageSize = pageSize
         };
 
-        _logger.LogInformation("User {UserId} searching for: {Query}", userId, request.Query);
+        _logger.LogInformation("User {UserId} searching for: {Query} with {FilterCount} filters", 
+            userId, request.Query, request.Categories.Count + request.Seasons.Count + request.Occasions.Count);
 
         var result = await _searchService.SearchAsync(userId, request);
 

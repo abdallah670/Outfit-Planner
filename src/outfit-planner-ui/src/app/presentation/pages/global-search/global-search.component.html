@@ -45,6 +45,25 @@
   <div class="main-content">
     <!-- Left: Search Results -->
     <div class="results-section">
+      <!-- Active Filter Badges -->
+      @if (activeFilterBadges().length > 0) {
+        <div class="active-filters">
+          @for (badge of activeFilterBadges(); track badge.type + badge.value) {
+            <div class="filter-badge" [class.color-badge]="badge.type === 'color'">
+              @if (badge.type === 'color') {
+                <span
+                  class="badge-color-dot"
+                  [style.background-color]="badge.value.toLowerCase()"
+                  [style.border]="badge.value === 'White' ? '1px solid #e5e7eb' : 'none'"
+                ></span>
+              }
+              <span>{{ badge.value }}</span>
+              <mat-icon class="badge-remove" (click)="onRemoveFilter(badge.type, badge.type === 'color' ? badge.value : badge.value)">close</mat-icon>
+            </div>
+          }
+        </div>
+      }
+
       <!-- Loading State -->
       @if (loading()) {
         <div class="loading-state">
@@ -139,6 +158,17 @@
             <span class="clear-link" (click)="onClearFilters()">Clear all</span>
           }
         </div>
+
+        <!-- Apply Filters Button -->
+        @if (hasPendingChanges()) {
+          <div class="apply-filters-container">
+            <button class="btn-apply-filters" (click)="onApplyFilters()">
+              <mat-icon>check</mat-icon>
+              Apply Filters
+            </button>
+            <span class="pending-badge">{{ pendingFilters().categories.length + pendingFilters().seasons.length + (pendingFilters().occasions?.length || 0) + (pendingFilters().color ? 1 : 0) }} selected</span>
+          </div>
+        }
 
         <!-- Category Filter (Items tab only) -->
         @if (showCategoryFilter()) {
@@ -236,16 +266,16 @@
                 type="number"
                 placeholder="Min"
                 class="price-input"
-                [value]="minPrice()"
-                (change)="onMinPriceChange($event)"
+                [value]="pendingMinPrice()"
+                (input)="onMinPriceChange($event)"
               />
               <span>-</span>
               <input
                 type="number"
                 placeholder="Max"
                 class="price-input"
-                [value]="maxPrice()"
-                (change)="onMaxPriceChange($event)"
+                [value]="pendingMaxPrice()"
+                (input)="onMaxPriceChange($event)"
               />
             </div>
           </div>

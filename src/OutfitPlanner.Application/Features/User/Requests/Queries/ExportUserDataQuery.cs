@@ -10,4 +10,6 @@ public class ExportUserDataQuery : IRequest<ExportUserDataResult>
 public class ExportUserDataResult
 {
     public byte[] Data { get; set; } = Array.Empty<byte>();
+    public string ContentType { get; set; } = "text/csv";
+    public string FileName { get; set; } = "export.csv";
 }

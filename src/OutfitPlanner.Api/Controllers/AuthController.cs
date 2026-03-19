@@ -75,29 +75,39 @@ public class AuthController : ControllerBase
     #region Social Login
 
     /// <summary>
-    /// Initiate Google OAuth login
+    /// Initiate Google OAuth login or link to existing account
     /// </summary>
     [HttpGet("google")]
-    public IActionResult GoogleLogin()
+    public IActionResult GoogleLogin([FromQuery] string? userId = null, [FromQuery] string? returnUrl = null)
     {
         var props = new AuthenticationProperties
         {
             RedirectUri = Url.Action(nameof(ExternalCallback), new { provider = "Google" }),
-            Items = { { "LoginProvider", "Google" } }
+            Items = 
+            { 
+                { "LoginProvider", "Google" },
+                { "UserId", userId ?? string.Empty },
+                { "ReturnUrl", returnUrl ?? string.Empty }
+            }
         };
         return Challenge(props, GoogleDefaults.AuthenticationScheme);
     }
 
     /// <summary>
-    /// Initiate Facebook OAuth login
+    /// Initiate Facebook OAuth login or link to existing account
     /// </summary>
     [HttpGet("facebook")]
-    public IActionResult FacebookLogin()
+    public IActionResult FacebookLogin([FromQuery] string? userId = null, [FromQuery] string? returnUrl = null)
     {
         var props = new AuthenticationProperties
         {
             RedirectUri = Url.Action(nameof(ExternalCallback), new { provider = "Facebook" }),
-            Items = { { "LoginProvider", "Facebook" } }
+            Items = 
+            { 
+                { "LoginProvider", "Facebook" },
+                { "UserId", userId ?? string.Empty },
+                { "ReturnUrl", returnUrl ?? string.Empty }
+            }
         };
         return Challenge(props, FacebookDefaults.AuthenticationScheme);
     }
@@ -132,7 +142,51 @@ public class AuthController : ControllerBase
                 return Redirect($"{_configuration["FrontendUrl"] ?? "http://localhost:4200"}/login?error=email_required");
             }
 
-            // Use the social login service
+            // Check if this is account linking (userId provided)
+            string? userId = null;
+            string? returnUrl = null;
+            if (result.Properties?.Items != null)
+            {
+                result.Properties.Items.TryGetValue("UserId", out userId);
+                result.Properties.Items.TryGetValue("ReturnUrl", out returnUrl);
+            }
+            
+            if (!string.IsNullOrEmpty(userId))
+            {
+                // This is account linking - link the external account to existing user
+                try
+                {
+                    await _authenticationService.LinkExternalAccount(userId, email, provider, providerId ?? string.Empty, profilePicture);
+                    
+                    // Build the redirect URL - returnUrl may already contain the full URL
+                    var linkFrontendUrl = _configuration["FrontendUrl"] ?? "http://localhost:4200";
+                    string redirectUrl;
+                    if (!string.IsNullOrEmpty(returnUrl) && returnUrl.StartsWith("http"))
+                    {
+                        // returnUrl is already a full URL
+                        redirectUrl = returnUrl.Contains('?') 
+                            ? $"{returnUrl}&connected=true&provider={provider}" 
+                            : $"{returnUrl}?connected=true&provider={provider}";
+                    }
+                    else if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        // returnUrl is just a path
+                        redirectUrl = $"{linkFrontendUrl}{returnUrl}?connected=true&provider={provider}";
+                    }
+                    else
+                    {
+                        redirectUrl = $"{linkFrontendUrl}/settings?connected=true&provider={provider}";
+                    }
+                    return Redirect(redirectUrl);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error linking external account for user {UserId}", userId);
+                    return Redirect($"{_configuration["FrontendUrl"] ?? "http://localhost:4200"}/settings?error=link_failed");
+                }
+            }
+
+            // Regular social login - create new user or login existing
             var authResponse = await _authenticationService.SocialLogin(
                 email, 
                 name ?? email.Split('@')[0], 

@@ -1,32 +1,42 @@
 using MediatR;
-using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using Microsoft.AspNetCore.Identity;
 using OutfitPlanner.Application.DTOs.User;
 using OutfitPlanner.Application.Features.User.Requests.Queries;
+using OutfitPlanner.Domain.Entities;
 
 namespace OutfitPlanner.Application.Features.User.Handlers.Queries;
 
-public class GetConnectedAccountsQueryHandler : IRequestHandler<GetConnectedAccountsQuery, ConnectedAccountsDto>
+public class GetConnectedAccountsQueryHandler : IRequestHandler<GetConnectedAccountsQuery, List<ConnectedAccountDto>>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly UserManager<OutfitPlanner.Domain.Entities.User> _userManager;
 
-    public GetConnectedAccountsQueryHandler(IUserRepository userRepository)
+    public GetConnectedAccountsQueryHandler(UserManager<OutfitPlanner.Domain.Entities.User> userManager)
     {
-        _userRepository = userRepository;
+        _userManager = userManager;
     }
 
-    public async Task<ConnectedAccountsDto> Handle(GetConnectedAccountsQuery request, CancellationToken cancellationToken)
+    public async Task<List<ConnectedAccountDto>> Handle(GetConnectedAccountsQuery request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(request.UserId);
+        var user = await _userManager.FindByIdAsync(request.UserId);
         
         if (user == null)
         {
-            return new ConnectedAccountsDto();
+            return new List<ConnectedAccountDto>();
         }
 
-        return new ConnectedAccountsDto
+        var externalLogins = await _userManager.GetLoginsAsync(user);
+        
+        if (externalLogins == null || !externalLogins.Any())
         {
-            Provider = user.Provider,
-            ProviderId = user.ProviderId
-        };
+            return new List<ConnectedAccountDto>();
+        }
+
+        return externalLogins.Select(login => new ConnectedAccountDto
+        {
+            Provider = login.LoginProvider,
+            ProviderId = login.ProviderKey,
+            Email = user.Email ?? string.Empty,
+            ConnectedAt = DateTime.UtcNow.ToString("yyyy-MM-dd")
+        }).ToList();
     }
 }

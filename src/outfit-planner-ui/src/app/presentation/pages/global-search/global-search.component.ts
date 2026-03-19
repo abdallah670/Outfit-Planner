@@ -58,12 +58,9 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   // Active tab signal
   activeTab = signal<SearchTab>('all');
 
-  // Price range signals
-  minPrice = signal<number | null>(null);
-  maxPrice = signal<number | null>(null);
-
-  // Occasion selection signal
-  selectedOccasions = signal<string[]>([]);
+  // Local pending filter state (batch filtering)
+  pendingFilters = signal<SearchFilters>({ ...initialSearchFilters });
+  hasPendingChanges = signal<boolean>(false);
 
   // Signals from NgRx store
   query: Signal<string> = toSignal(this.store.select(selectSearchQuery), { initialValue: '' });
@@ -112,39 +109,85 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   });
 
   // Filter visibility based on tab
-  // 'all' tab shows Season only (common filter)
-  // 'outfits' tab shows Season, Occasion
-  // 'items' tab shows Category, Season, Color, Price
   showCategoryFilter = computed(() => this.activeTab() === 'items');
-  showSeasonFilter = computed(() => true); // Show on all tabs
+  showSeasonFilter = computed(() => this.activeTab() === 'outfits'); // Only show for outfits - items don't have seasons
   showOccasionFilter = computed(() => this.activeTab() === 'outfits');
   showColorFilter = computed(() => this.activeTab() === 'items');
-  showPriceFilter = computed(() => this.activeTab() === 'items');
+  showPriceFilter = computed(() => false); // DISABLED - backend doesn't support price filtering
 
-  // Computed values
+  // Computed values - check results based on active tab
   hasResults = computed(() => {
+    const tab = this.activeTab();
     const r = this.results();
-    return r.outfits.length > 0 || r.wardrobeItems.length > 0;
+    
+    if (tab === 'outfits') {
+      return r.outfits.length > 0;
+    } else if (tab === 'items') {
+      return r.wardrobeItems.length > 0;
+    } else {
+      // 'all' tab - check both
+      return r.outfits.length > 0 || r.wardrobeItems.length > 0;
+    }
+  });
+
+  // Tab-specific result counts
+  tabResultsCount = computed(() => {
+    const tab = this.activeTab();
+    const r = this.results();
+    
+    if (tab === 'outfits') {
+      return r.outfits.length;
+    } else if (tab === 'items') {
+      return r.wardrobeItems.length;
+    } else {
+      return r.totalCount;
+    }
   });
 
   totalResults = computed(() => this.results().totalCount);
 
-  // Filter options
-  categoryOptions = ['Tops', 'Bottoms', 'Dresses', 'Shoes', 'Accessories', 'Outerwear'];
-  seasonOptions = ['Spring', 'Summer', 'Fall', 'Winter'];
-  occasionOptions = ['Casual', 'Formal', 'Work', 'Party', 'Sport', 'Date'];
+  // Active filters list for badges
+  activeFilterBadges = computed(() => {
+    const badges: { type: string; value: string }[] = [];
+    const f = this.filters();
+
+    f.categories.forEach(c => badges.push({ type: 'category', value: c }));
+    f.seasons.forEach(s => badges.push({ type: 'season', value: s }));
+    f.occasions?.forEach(o => badges.push({ type: 'occasion', value: o }));
+    if (f.color) badges.push({ type: 'color', value: f.color });
+
+    return badges;
+  });
+
+  // Filter options - MUST match backend enum values exactly
+  // ClothingType enum: Top, Bottom, Dress, Outerwear, Footwear, Accessory, Undergarment, Swimwear, Activewear
+  categoryOptions = ['Top', 'Bottom', 'Dress', 'Footwear', 'Accessory', 'Outerwear', 'Activewear'];
+  
+  // Season enum: Spring, Summer, Autumn, Winter, AllSeason
+  seasonOptions = ['Spring', 'Summer', 'Autumn', 'Winter'];
+  
+  // OccasionType enum: Casual, BusinessCasual, Formal, Athletic, Social, Work, Date, Travel
+  occasionOptions = ['Casual', 'BusinessCasual', 'Formal', 'Work', 'Date', 'Social', 'Athletic', 'Travel'];
+  
   colorOptions = ['Black', 'White', 'Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Pink', 'Gray', 'Brown'];
 
   ngOnInit(): void {
     // Load recent searches on init
     this.store.dispatch(SearchActions.loadRecentSearches());
 
-    // Setup debounced search input
+    // Setup debounced search input (500ms for better performance)
     this.searchInput$
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
       .subscribe((query: string) => {
         this.performSearch(query);
       });
+
+    // Initialize pending filters with current filters
+    this.pendingFilters.set({ ...this.filters() });
 
     // Load all results on initial page load
     this.performSearch('');
@@ -155,19 +198,35 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // Tab change handler
+  // Tab change handler - clears incompatible filters when switching tabs
   onTabChange(tab: SearchTab): void {
     this.activeTab.set(tab);
 
+    // Clear filters that don't apply to the new tab
+    const currentFilters = { ...this.filters() };
+    
+    if (tab === 'outfits') {
+      // Switching to outfits - clear item-specific filters
+      currentFilters.categories = [];
+      currentFilters.color = null;
+    } else if (tab === 'items') {
+      // Switching to items - clear outfit-specific filters
+      currentFilters.seasons = [];
+      currentFilters.occasions = [];
+    }
+    // For 'all' tab, keep all filters
+
+    // Update pending filters to match
+    this.pendingFilters.set({ ...currentFilters });
+    this.hasPendingChanges.set(false);
+
     // Update search type in filters
     const searchType: SearchType = tab === 'items' ? 'wardrobe' : tab === 'outfits' ? 'outfits' : 'all';
-    this.store.dispatch(SearchActions.updateFilters({ filters: { type: searchType } }));
+    this.store.dispatch(SearchActions.updateFilters({ filters: { ...currentFilters, type: searchType } }));
 
     // Trigger search with new filter
     const currentQuery = this.query();
-    if (currentQuery) {
-      this.performSearch(currentQuery);
-    }
+    this.performSearch(currentQuery);
   }
 
   onSearchInput(event: Event): void {
@@ -184,9 +243,6 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
 
   performSearch(query: string): void {
     this.store.dispatch(SearchActions.search({ query: query.trim() }));
-    if (query.trim()) {
-      this.store.dispatch(SearchActions.saveRecentSearch({ query: query.trim() }));
-    }
   }
 
   onRecentSearchClick(search: string): void {
@@ -201,98 +257,137 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
 
   onClearFilters(): void {
     this.store.dispatch(SearchActions.clearFilters());
-    this.selectedOccasions.set([]);
-    this.minPrice.set(null);
-    this.maxPrice.set(null);
+    this.pendingFilters.set({ ...initialSearchFilters });
+    this.hasPendingChanges.set(false);
 
     const currentQuery = this.query();
-    if (currentQuery) {
-      this.performSearch(currentQuery);
-    }
+    this.performSearch(currentQuery);
   }
 
-  // Category filter
+  // ========== BATCH FILTER METHODS ==========
+
+  // Category filter (local only until applied)
   onCategoryToggle(category: string): void {
-    const currentCategories = this.filters().categories;
-    const updatedCategories = currentCategories.includes(category)
-      ? currentCategories.filter((c: string) => c !== category)
-      : [...currentCategories, category];
+    const current = this.pendingFilters().categories;
+    const updated = current.includes(category)
+      ? current.filter((c: string) => c !== category)
+      : [...current, category];
 
-    this.store.dispatch(
-      SearchActions.updateFilters({ filters: { categories: updatedCategories } }),
-    );
-
-    const currentQuery = this.query();
-    if (currentQuery) {
-      this.performSearch(currentQuery);
-    }
+    this.pendingFilters.update(f => ({ ...f, categories: updated }));
+    this.hasPendingChanges.set(true);
   }
 
   isCategorySelected(category: string): boolean {
-    return this.filters().categories.includes(category);
+    return this.pendingFilters().categories.includes(category);
   }
 
-  // Season filter
+  // Season filter (local only until applied)
   onSeasonToggle(season: string): void {
-    const currentSeasons = this.filters().seasons;
-    const updatedSeasons = currentSeasons.includes(season)
-      ? currentSeasons.filter((s: string) => s !== season)
-      : [...currentSeasons, season];
+    const current = this.pendingFilters().seasons;
+    const updated = current.includes(season)
+      ? current.filter((s: string) => s !== season)
+      : [...current, season];
 
-    this.store.dispatch(SearchActions.updateFilters({ filters: { seasons: updatedSeasons } }));
-
-    const currentQuery = this.query();
-    if (currentQuery) {
-      this.performSearch(currentQuery);
-    }
+    this.pendingFilters.update(f => ({ ...f, seasons: updated }));
+    this.hasPendingChanges.set(true);
   }
 
   isSeasonSelected(season: string): boolean {
-    return this.filters().seasons.includes(season);
+    return this.pendingFilters().seasons.includes(season);
   }
 
-  // Occasion filter
+  // Occasion filter (local only until applied)
   onOccasionToggle(occasion: string): void {
-    const currentOccasions = this.selectedOccasions();
-    const updatedOccasions = currentOccasions.includes(occasion)
-      ? currentOccasions.filter((o: string) => o !== occasion)
-      : [...currentOccasions, occasion];
+    const current = this.pendingFilters().occasions || [];
+    const updated = current.includes(occasion)
+      ? current.filter((o: string) => o !== occasion)
+      : [...current, occasion];
 
-    this.selectedOccasions.set(updatedOccasions);
-
-    const currentQuery = this.query();
-    if (currentQuery) {
-      this.performSearch(currentQuery);
-    }
+    this.pendingFilters.update(f => ({ ...f, occasions: updated }));
+    this.hasPendingChanges.set(true);
   }
 
   isOccasionSelected(occasion: string): boolean {
-    return this.selectedOccasions().includes(occasion);
+    return (this.pendingFilters().occasions || []).includes(occasion);
   }
 
-  // Color filter
+  // Color filter (local only until applied)
   onColorSelect(color: string | null): void {
-    this.store.dispatch(SearchActions.updateFilters({ filters: { color } }));
+    const currentColor = this.pendingFilters().color;
+    const newColor = currentColor === color ? null : color;
 
-    const currentQuery = this.query();
-    if (currentQuery) {
-      this.performSearch(currentQuery);
-    }
+    this.pendingFilters.update(f => ({ ...f, color: newColor }));
+    this.hasPendingChanges.set(true);
   }
 
   isColorSelected(color: string | null): boolean {
-    return this.filters().color === color;
+    return this.pendingFilters().color === color;
   }
 
-  // Price filter handlers
+  // Price filter (local only until applied)
+  pendingMinPrice(): number | null {
+    return this.pendingFilters().minPrice ?? null;
+  }
+
+  pendingMaxPrice(): number | null {
+    return this.pendingFilters().maxPrice ?? null;
+  }
+
   onMinPriceChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.minPrice.set(value ? parseFloat(value) : null);
+    const numValue = value ? parseFloat(value) : null;
+    this.pendingFilters.update(f => ({ ...f, minPrice: numValue }));
+    this.hasPendingChanges.set(true);
   }
 
   onMaxPriceChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.maxPrice.set(value ? parseFloat(value) : null);
+    const numValue = value ? parseFloat(value) : null;
+    this.pendingFilters.update(f => ({ ...f, maxPrice: numValue }));
+    this.hasPendingChanges.set(true);
+  }
+
+  // Apply all pending filters at once
+  onApplyFilters(): void {
+    const filtersToApply: SearchFilters = {
+      ...this.pendingFilters(),
+    };
+
+    this.store.dispatch(SearchActions.updateFilters({ filters: filtersToApply }));
+    this.hasPendingChanges.set(false);
+
+    // Trigger search with all filters applied
+    const currentQuery = this.query();
+    this.performSearch(currentQuery);
+  }
+
+  // Remove single filter badge
+  onRemoveFilter(type: string, value: string): void {
+    const currentFilters = { ...this.filters() };
+
+    switch (type) {
+      case 'category':
+        currentFilters.categories = currentFilters.categories.filter(c => c !== value);
+        break;
+      case 'season':
+        currentFilters.seasons = currentFilters.seasons.filter(s => s !== value);
+        break;
+      case 'occasion':
+        currentFilters.occasions = (currentFilters.occasions || []).filter(o => o !== value);
+        break;
+      case 'color':
+        currentFilters.color = null;
+        break;
+    }
+
+    this.store.dispatch(SearchActions.updateFilters({ filters: currentFilters }));
+
+    // Update pending filters to match
+    this.pendingFilters.set({ ...currentFilters });
+
+    // Trigger search
+    const currentQuery = this.query();
+    this.performSearch(currentQuery);
   }
 
   getContrastColor(color: string): string {

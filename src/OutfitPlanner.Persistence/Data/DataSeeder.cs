@@ -34,35 +34,28 @@ public class DataSeeder
     {
         try
         {
-            // Ensure database is created
-            await _context.Database.EnsureCreatedAsync();
-
-            // Check if already seeded
-            if (await _userManager.Users.AnyAsync())
-            {
-                _logger.LogInformation("Database already seeded, skipping...");
-                return;
-            }
+            // Apply pending migrations
+            await _context.Database.MigrateAsync();
 
             _logger.LogInformation("Starting database seeding...");
 
-            // Seed sample users
-            await SeedUsersAsync();
+            // Seed sample users only if none exist
+            if (!await _userManager.Users.AnyAsync())
+            {
+                await SeedUsersAsync();
+            }
+            else
+            {
+                _logger.LogInformation("Users already exist, skipping user seeding.");
+            }
 
-            // Seed sample clothing items
+            // Other seed methods perform their own existence checks
             await SeedClothingItemsAsync();
-
-            // Seed sample outfits with images
             await SeedOutfitsAsync();
-
-            // Seed validation polls
             await SeedPollsAsync();
-
-            // Seed trending outfits
             await SeedTrendingOutfitsAsync();
-
-            // Seed sample notifications
             await SeedNotificationsAsync();
+            await SeedStyleProfilesAsync();
 
             _logger.LogInformation("Database seeding completed successfully!");
         }
@@ -202,8 +195,8 @@ public class DataSeeder
         var footwear = clothingItems.Where(c => c.Category == "Footwear").ToList();
         var outerwear = clothingItems.Where(c => c.Category == "Outerwear").ToList();
 
-        // Create 5 sample outfits
-        for (int i = 0; i < 5; i++)
+            // Create 8 sample outfits (one for each occasion type)
+        for (int i = 0; i < 8; i++)
         {
             var user = users[i % users.Count];
             
@@ -212,8 +205,8 @@ public class DataSeeder
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
                 Name = GetOutfitName(i),
-                Occasion = (OccasionType)(i % 5),
-                Season = (Season)(i % 4),
+                Occasion = (OccasionType)(i % 8),
+                Season = (Season)(i % 5),
                 WeatherCondition = GetWeatherCondition(i),
                 ComfortRating = random.Next(3, 6),
                 StyleRating = random.Next(3, 6),
@@ -378,6 +371,13 @@ public class DataSeeder
 
     private async Task SeedTrendingOutfitsAsync()
     {
+        // Check if trending outfits already exist
+        if (await _context.TrendingOutfits.AnyAsync())
+        {
+            _logger.LogInformation("Trending outfits already exist, skipping trending outfits seeding.");
+            return;
+        }
+
         var outfits = await _context.Outfits.Take(10).ToListAsync();
         var polls = await _context.ValidationPolls.Take(5).ToListAsync();
 
@@ -413,12 +413,18 @@ public class DataSeeder
     /// <summary>
     /// Seeds sample notifications for a specific user
     /// </summary>
-    public async Task SeedNotificationsAsync(string userId = "6262154e-6c0d-4c7d-aa16-a58b6a14397f")
+   public async Task SeedNotificationsAsync(string? userId = null)
     {
-        if (string.IsNullOrEmpty(userId))
+        // If no user ID provided, try to get the first user
+        if (string.IsNullOrEmpty(userId))   
         {
-            _logger.LogWarning("No user ID provided for notifications seeding");
-            return;
+            var firstUser = await _userManager.Users.FirstOrDefaultAsync();
+            if (firstUser == null)
+            {
+                _logger.LogWarning("No users found for notifications seeding");
+                return;
+            }
+            userId = firstUser.Id;
         }
 
         var user = await _userManager.FindByIdAsync(userId);
@@ -560,6 +566,117 @@ public class DataSeeder
         _logger.LogInformation("Seeded {Count} notifications for user {UserId}", notifications.Count, userId);
     }
 
+    /// <summary>
+    /// Seeds style profiles and custom rules for users
+    /// </summary>
+    private async Task SeedStyleProfilesAsync()
+    {
+        var users = await _userManager.Users.Take(3).ToListAsync();
+        if (users.Count == 0)
+        {
+            _logger.LogWarning("No users found. Skipping style profiles seeding.");
+            return;
+        }
+
+        // Check if style profiles already exist
+        if (await _context.UserStyleProfiles.AnyAsync())
+        {
+            _logger.LogInformation("Style profiles already exist, skipping style profiles seeding.");
+            return;
+        }
+
+        var random = new Random(42);
+        var styles = new[] 
+        { 
+            StylePreference.Classic, 
+            StylePreference.Streetwear, 
+            StylePreference.Bohemian 
+        };
+        var fitPreferences = new[] { "Slim", "Regular", "Relaxed", "Oversized" };
+        var colorPalettes = new[]
+        {
+            new[] { "Black", "White", "Gray", "Navy" },
+            new[] { "Blue", "White", "Beige", "Brown" },
+            new[] { "Earth Tones", "Olive", "Tan", "Rust" }
+        };
+
+        var styleProfiles = new List<UserStyleProfile>();
+
+        for (int i = 0; i < users.Count; i++)
+        {
+            var user = users[i];
+            var styleProfile = new UserStyleProfile
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Style = styles[i % styles.Length],
+                PreferredColors = colorPalettes[i % colorPalettes.Length].ToList(),
+                FitPreferences = fitPreferences[random.Next(fitPreferences.Length)],
+                ComfortPriority = random.Next(50, 100),
+                AcceptsTrends = random.Next(2) == 0
+            };
+
+            // Add some custom rules
+            var ruleCount = random.Next(2, 4);
+            for (int j = 0; j < ruleCount; j++)
+            {
+                var rule = new StyleRule
+                {
+                    Id = Guid.NewGuid(),
+                    UserStyleProfileId = styleProfile.Id,
+                    Name = GetRuleName(j),
+                    Description = GetRuleDescription(j),
+                    IsActive = true,
+                    CriteriaJson = GetRuleCriteria(j)
+                };
+                styleProfile.CustomRules.Add(rule);
+            }
+
+            styleProfiles.Add(styleProfile);
+        }
+
+        await _context.UserStyleProfiles.AddRangeAsync(styleProfiles);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} style profiles with custom rules", styleProfiles.Count);
+    }
+
+    private static string GetRuleName(int index)
+    {
+        return index switch
+        {
+            0 => "No Black with Brown",
+            1 => "Monochrome Days",
+            2 => "Mix Metals",
+            3 => "Casual Friday",
+            _ => $"Style Rule {index + 1}"
+        };
+    }
+
+    private static string GetRuleDescription(int index)
+    {
+        return index switch
+        {
+            0 => "Avoid wearing black items with brown items",
+            1 => "Stick to one color family for outfit cohesion",
+            2 => "Mix gold and silver accessories freely",
+            3 => "Business casual is allowed on Fridays",
+            _ => "Custom style rule"
+        };
+    }
+
+    private static string GetRuleCriteria(int index)
+    {
+        return index switch
+        {
+            0 => "{\"colors\": [\"Black\", \"Brown\"], \"operator\": \"not_both\"}",
+            1 => "{\"colors\": [\"same_family\"], \"operator\": \"monochrome\"}",
+            2 => "{\"accessories\": [\"gold\", \"silver\"], \"operator\": \"mix\"}",
+            3 => "{\"dressCode\": \"business_casual\", \"day\": \"friday\"}",
+            _ => "{}"
+        };
+    }
+
     private static string GetOutfitName(int index)
     {
         return index switch
@@ -569,6 +686,9 @@ public class DataSeeder
             2 => "Date Night Style",
             3 => "Office Professional",
             4 => "Weekend Brunch",
+            5 => "Business Meeting",
+            6 => "Travel Comfort",
+            7 => "Social Gathering",
             _ => $"Outfit {index + 1}"
         };
     }

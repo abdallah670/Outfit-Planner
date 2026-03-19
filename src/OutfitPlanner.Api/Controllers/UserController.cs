@@ -62,6 +62,12 @@ public class UserController : ControllerBase
                 return Unauthorized(new { message = "User not authenticated" });
             }
 
+            // Log the request for debugging (excluding PII)
+            _logger.LogInformation("Updating profile for user {UserId}. HasPreferences: {HasPreferences}, HasStyleProfile: {HasStyleProfile}", 
+                userId, 
+                request.Preferences != null, 
+                request.StyleProfile != null);
+
             var command = new UpdateUserProfileCommand 
             { 
                 UserId = userId, 
@@ -74,12 +80,13 @@ public class UserController : ControllerBase
                 return Ok(response);
             }
             
+            _logger.LogWarning("Profile update failed for user {UserId}: {Message}", userId, response.Message);
             return BadRequest(response);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating user profile");
-            return StatusCode(500, new { message = "Failed to update profile" });
+            return StatusCode(500, new { message = "Failed to update profile", error = ex.Message });
         }
     }
     /// <summary>
@@ -246,7 +253,7 @@ public class UserController : ControllerBase
     /// Create a new style rule
     /// </summary>
     [HttpPost("style-rules")]
-    public async Task<IActionResult> CreateStyleRule([FromBody] CreateStyleRuleDto request)
+    public async Task<ActionResult<StyleRuleDto>> CreateStyleRule([FromBody] CreateStyleRuleDto request)
     {
         try
         {
@@ -261,14 +268,8 @@ public class UserController : ControllerBase
                 UserId = userId, 
                 Rule = request 
             };
-            var response = await _mediator.Send(command);
-            
-            if (response.Success)
-            {
-                return Ok(response);
-            }
-            
-            return BadRequest(response);
+            var createdRule = await _mediator.Send(command);
+            return Ok(createdRule);
         }
         catch (Exception ex)
         {
@@ -472,7 +473,7 @@ public class UserController : ControllerBase
     /// Get connected social accounts
     /// </summary>
     [HttpGet("connected-accounts")]
-    public async Task<ActionResult<ConnectedAccountsDto>> GetConnectedAccounts()
+    public async Task<ActionResult<List<ConnectedAccountDto>>> GetConnectedAccounts()
     {
         try
         {
@@ -491,7 +492,74 @@ public class UserController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Initiate connection of an external account (Google/Facebook)
+    /// Returns the OAuth authorization URL
+    /// </summary>
+    [HttpPost("connected-accounts/connect")]
+    public async Task<ActionResult<ConnectAccountResponseDto>> ConnectAccount([FromBody] ConnectAccountRequestDto request)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            // Return the OAuth URL for the requested provider
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            string authorizationUrl = request.Provider.ToLower() switch
+            {
+                "google" => $"{baseUrl}/api/Auth/google?userId={userId}&returnUrl={Uri.EscapeDataString(request.ReturnUrl)}",
+                "facebook" => $"{baseUrl}/api/Auth/facebook?userId={userId}&returnUrl={Uri.EscapeDataString(request.ReturnUrl)}",
+                _ => throw new ArgumentException("Unsupported provider")
+            };
+
+            return Ok(new ConnectAccountResponseDto { AuthorizationUrl = authorizationUrl });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error initiating account connection");
+            return StatusCode(500, new { message = "Failed to initiate account connection" });
+        }
+    }
+
+    /// <summary>
+    /// Disconnect an external account
+    /// </summary>
+    [HttpPost("connected-accounts/disconnect")]
+    public async Task<IActionResult> DisconnectAccount([FromBody] DisconnectAccountRequestDto request)
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User not authenticated" });
+
+            var command = new DisconnectAccountCommand 
+            { 
+                UserId = userId, 
+                Provider = request.Provider 
+            };
+            var response = await _mediator.Send(command);
+            
+            if (response.Success)
+                return Ok(response);
+            
+            return BadRequest(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error disconnecting account");
+            return StatusCode(500, new { message = "Failed to disconnect account" });
+        }
+    }
+
     #endregion
+
 
     #region Account Management
 
@@ -523,7 +591,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Export user data
+    /// Export user data as CSV
     /// </summary>
     [HttpGet("export-data")]
     public async Task<IActionResult> ExportData()
@@ -540,7 +608,7 @@ public class UserController : ControllerBase
             if (exportData.Data == null || exportData.Data.Length == 0)
                 return BadRequest(new { message = "No data to export" });
             
-            return File(exportData.Data, "application/json", $"outfit-planner-data-{DateTime.UtcNow:yyyyMMdd}.json");
+            return File(exportData.Data, exportData.ContentType, exportData.FileName);
         }
         catch (OutfitPlanner.Application.Exceptions.NotFoundException ex)
         {

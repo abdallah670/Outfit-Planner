@@ -67,8 +67,8 @@ public class UpdateCalendarEventDetailsCommandHandlerTests
             .ReturnsAsync(existingEvent);
         _unitOfWorkMock.Setup(u => u.CalendarEvents.UpdateAsync(It.IsAny<Domain.Entities.CalendarEvent>()))
             .Returns(Task.CompletedTask);
-        _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-            .ReturnsAsync(1);
+        //_unitOfWorkMock.Setup(u => u.SaveChangesAsync())
+          //  .ReturnsAsync(1);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -174,8 +174,8 @@ public class UpdateCalendarEventDetailsCommandHandlerTests
             .ReturnsAsync(outfit);
         _unitOfWorkMock.Setup(u => u.WearEvents.AddAsync(It.IsAny<WearEvent>()))
             .Returns(Task.CompletedTask);
-        _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-            .ReturnsAsync(1);
+      //  _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
+        //    .ReturnsAsync(1);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);

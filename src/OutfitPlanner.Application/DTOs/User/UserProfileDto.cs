@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OutfitPlanner.Domain.Enums;
 
 namespace OutfitPlanner.Application.DTOs.User;
@@ -25,6 +26,7 @@ public class UserProfileDto
 
 public class UserStyleProfileDto
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public StylePreference Style { get; set; }
     public List<string> PreferredColors { get; set; } = new();
     public string FitPreferences { get; set; } = string.Empty;
@@ -38,6 +40,7 @@ public class UserPreferencesDto
     public bool ShareOutfitsAnonymously { get; set; }
     public bool IncludeInTrendAnalysis { get; set; }
     public bool AllowFriendRequests { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public PrivacyLevel DefaultOutfitPrivacy { get; set; }
     public bool ShowBodyMetrics { get; set; }
     public bool AllowLocationTracking { get; set; }

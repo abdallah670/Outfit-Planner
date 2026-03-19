@@ -13,10 +13,6 @@ public class User : IdentityUser
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiration { get; set; }
     
-    // Social login fields
-    public string? Provider { get; set; } // "Google", "Facebook", "Instagram"
-    public string? ProviderId { get; set; } // The unique ID from the provider
-    
     // Navigation properties
     public UserStyleProfile? StyleProfile { get; set; }
     public UserPreferences? Preferences { get; set; }

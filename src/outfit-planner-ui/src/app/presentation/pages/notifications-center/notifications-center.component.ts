@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NotificationService, Notification } from '../../../core/services/notification.service';
 
-type NotificationCategory = 'all' | 'unread' | 'social' | 'weather' | 'reminder' | 'system';
+type NotificationCategory = 'all' | 'unread' | 'social' | 'reminder' | 'system';
 
 interface NotificationGroup {
   title: string;
@@ -86,10 +86,31 @@ export class NotificationsCenterComponent implements OnInit {
     if (this.selectedCategory === 'unread') {
       return this.notifications.filter(n => !n.isRead);
     }
-    if (this.selectedCategory === 'weather') {
-      return this.notifications.filter(n => n.type === 'weather');
+    // Case-insensitive comparison for notification types
+    return this.notifications.filter(n => {
+      const typeStr = this.getNormalizedType(n);
+      if (this.selectedCategory === 'reminder') {
+        return typeStr === 'reminder' || typeStr === 'weather';
+      }
+      return typeStr === this.selectedCategory;
+    });
+  }
+
+  // Utility to handle both enum numbers and strings, and property casing
+  getNormalizedType(n: any): string {
+    const type = n.type !== undefined ? n.type : n.Type;
+    if (type === undefined || type === null) return '';
+    
+    if (typeof type === 'number') {
+      const types = ['social', 'reminder', 'weather', 'system'];
+      return types[type] || '';
     }
-    return this.notifications.filter(n => n.type === this.selectedCategory);
+    return String(type).toLowerCase();
+  }
+
+  isUnread(n: any): boolean {
+    const isRead = n.isRead !== undefined ? n.isRead : n.IsRead;
+    return !isRead;
   }
 
   get filteredNotifications(): Notification[] {
@@ -109,14 +130,14 @@ export class NotificationsCenterComponent implements OnInit {
       all: 'All Notifications',
       unread: 'Unread',
       social: 'Social',
-      weather: 'Weather',
-      reminder: 'Reminders',
+      reminder: 'Outfit Reminders',
       system: 'System'
     };
     return titles[this.selectedCategory];
   }
 
-  markAsRead(id: string): void {
+  markAsRead(id: any): void {
+    if (!id) return;
     this.notificationService.markAsRead(id).subscribe({
       error: (err: unknown) => console.error('Error marking notification as read:', err)
     });
@@ -128,50 +149,80 @@ export class NotificationsCenterComponent implements OnInit {
     });
   }
 
-  deleteNotification(id: string): void {
+  deleteNotification(id: any): void {
+    if (!id) return;
     this.notificationService.deleteNotification(id).subscribe({
       error: (err: unknown) => console.error('Error deleting notification:', err)
     });
   }
 
-  getTypeIcon(type: string): string {
-    switch (type) {
-      case 'social': return 'favorite';
-      case 'weather': return 'cloud';
-      case 'reminder': return 'event';
-      case 'system': return 'auto_awesome';
-      default: return 'notifications';
+  getTypeIcon(type: any): string {
+    const typeStr = this.getNormalizedType({ type: type });
+    switch (typeStr) {
+      case 'social': return 'favorite_border'; // Matches lucide:heart
+      case 'reminder': return 'calendar_month'; // Matches lucide:calendar-clock roughly
+      case 'weather': return 'umbrella'; // Matches lucide:umbrella
+      case 'system': return 'auto_awesome'; // Matches lucide:sparkles
+      default: return 'notifications_none';
     }
   }
 
-  getActionText(type: string): string {
-    switch (type) {
-      case 'social': return 'View';
-      case 'weather': return 'Check';
-      case 'reminder': return 'Log now';
-      case 'system': return 'View details';
-      default: return 'View';
+  getActionText(n: any): string {
+    const actionUrl = (n.actionUrl || n.ActionUrl || '').toLowerCase();
+    const title = (n.title || n.Title || '').toLowerCase();
+
+    if (actionUrl.includes('/calendar')) {
+      return title.includes('log') ? 'Log now' : 'View calendar';
     }
+    if (actionUrl.includes('/outfits/')) {
+      return title.includes('comment') ? 'Reply' : 'View outfit';
+    }
+    if (actionUrl.includes('/profile/stats')) {
+      return 'View stats';
+    }
+    if (actionUrl.includes('/weather')) {
+      return 'View forecast';
+    }
+    if (actionUrl.includes('/settings')) {
+      return 'Review settings';
+    }
+    if (actionUrl.includes('/community')) {
+      return 'View profile';
+    }
+    if (actionUrl.includes('/wardrobe/')) {
+      return 'View item';
+    }
+
+    return 'View details';
   }
 
-  getActionIcon(type: string): string {
-    switch (type) {
-      case 'social': return 'arrow_forward';
-      case 'weather': return 'wb_sunny';
-      case 'reminder': return 'event';
-      case 'system': return 'bar_chart';
-      default: return 'arrow_forward';
-    }
-  }
+  getActionIcon(n: any): string {
+    const actionUrl = (n.actionUrl || n.ActionUrl || '').toLowerCase();
+    const title = (n.title || n.Title || '').toLowerCase();
 
-  getTypeColor(type: string): string {
-    switch (type) {
-      case 'social': return '#f8b4c4';
-      case 'weather': return '#74b9ff';
-      case 'reminder': return '#9caf88';
-      case 'system': return '#636e72';
-      default: return '#636e72';
+    if (actionUrl.includes('/calendar')) {
+      return title.includes('log') ? 'arrow_forward' : 'event';
     }
+    if (actionUrl.includes('/outfits/')) {
+      return title.includes('comment') ? 'reply' : 'arrow_forward';
+    }
+    if (actionUrl.includes('/profile/stats')) {
+      return 'bar_chart';
+    }
+    if (actionUrl.includes('/weather')) {
+      return 'cloud';
+    }
+    if (actionUrl.includes('/settings')) {
+      return 'security';
+    }
+    if (actionUrl.includes('/community')) {
+      return 'person';
+    }
+    if (actionUrl.includes('/wardrobe/')) {
+      return 'checkroom';
+    }
+
+    return 'arrow_forward';
   }
 
   formatTimestamp(dateStr: string): string {

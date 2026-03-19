@@ -42,7 +42,7 @@ export interface CreateStyleRuleRequest {
 }
 
 export interface UpdateStyleRuleRequest {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   isActive: boolean;
@@ -74,11 +74,12 @@ export enum StylePreference {
 export enum PrivacyLevel {
   Private = 'Private',
   Friends = 'Friends',
+  Community = 'Community',
   Public = 'Public',
 }
 
 export interface UpdateUserProfileRequest {
-  name: string;
+  name?: string;
   styleProfile?: UserStyleProfile;
   preferences?: UserPreferences;
 }

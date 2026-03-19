@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>Manage Style Rules</h2>
+<mat-dialog-content>
+  <div class="rules-list">
+    <div *ngFor="let rule of rules; let i = index" class="rule-item">
+      <div class="rule-header">
+        <mat-form-field appearance="fill" class="rule-name-field">
+          <mat-label>Rule Name</mat-label>
+          <input matInput [(ngModel)]="rule.name" placeholder="Enter rule name">
+        </mat-form-field>
+        <button mat-icon-button color="warn" (click)="removeRule(i)" [disabled]="rules.length === 1 && !rule.id">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+      
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="rule.description" placeholder="Describe this rule"></textarea>
+      </mat-form-field>
+      
+      <mat-slide-toggle [(ngModel)]="rule.isActive">
+        {{ rule.isActive ? 'Active' : 'Inactive' }}
+      </mat-slide-toggle>
+    </div>
+    
+    <button mat-stroked-button color="primary" (click)="addRule()" class="add-rule-btn">
+      <mat-icon>add</mat-icon>
+      Add Rule
+    </button>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="onSave()" [disabled]="isLoading">
+    {{ isLoading ? 'Saving...' : 'Save Rules' }}
+  </button>
+</mat-dialog-actions>

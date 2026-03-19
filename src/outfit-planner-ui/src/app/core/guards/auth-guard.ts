@@ -9,7 +9,6 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   // Access the signal value correctly by calling it
   const isAuth = authService.isAuthenticated();
-  console.log('[AuthGuard] Checking authentication:', isAuth);
 
   if (!isAuth) {
     Swal.fire({

@@ -269,8 +269,6 @@ public class JwtService : IJWTService
                 Name = name,
                 UserName = username,
                 EmailConfirmed = true,
-                Provider = provider,
-                ProviderId = providerId,
                 ProfilePictureUrl = profilePictureUrl
             };
 
@@ -295,18 +293,8 @@ public class JwtService : IJWTService
         }
         else
         {
-            // Update existing user with social login info if not already set
-            if (string.IsNullOrEmpty(user.Provider))
-            {
-                user.Provider = provider;
-                user.ProviderId = providerId;
-                if (!string.IsNullOrEmpty(profilePictureUrl) && string.IsNullOrEmpty(user.ProfilePictureUrl))
-                {
-                    user.ProfilePictureUrl = profilePictureUrl;
-                }
-                await _userManager.UpdateAsync(user);
-                _logger.LogInformation("Linked existing user to {Provider} social login: {Email}", provider, email);
-            }
+            // For existing users, the external login is already linked via ASP.NET Identity's external login system
+            _logger.LogInformation("Existing user logged in via {Provider} social login: {Email}", provider, email);
         }
 
         // Update last login
@@ -365,5 +353,47 @@ public class JwtService : IJWTService
             throw new SecurityTokenException("Invalid token");
 
         return principal;
+    }
+
+    public async Task LinkExternalAccount(string userId, string email, string provider, string providerId, string? profilePictureUrl = null)
+    {
+        // Find the user by ID
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            throw new Exception($"User with ID {userId} not found");
+        }
+
+        // Check if this external login is already linked
+        var existingLogins = await _userManager.GetLoginsAsync(user);
+        var existingLogin = existingLogins.FirstOrDefault(l => l.LoginProvider == provider);
+        
+        if (existingLogin != null)
+        {
+            _logger.LogInformation("External account {Provider} is already linked to user {UserId}", provider, userId);
+            return; // Already linked
+        }
+
+        // Create the external login info
+        var externalLogin = new UserLoginInfo(provider, providerId, provider);
+        
+        // Add the external login to the user
+        var result = await _userManager.AddLoginAsync(user, externalLogin);
+        
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            _logger.LogError("Failed to link external account: {Errors}", errors);
+            throw new Exception($"Failed to link external account: {errors}");
+        }
+
+        // Update profile picture if provided and user doesn't have one
+        if (!string.IsNullOrEmpty(profilePictureUrl) && string.IsNullOrEmpty(user.ProfilePictureUrl))
+        {
+            user.ProfilePictureUrl = profilePictureUrl;
+            await _userManager.UpdateAsync(user);
+        }
+
+        _logger.LogInformation("Successfully linked {Provider} account to user {UserId}", provider, userId);
     }
 }
