@@ -1,0 +1,31 @@
+.rules-list {
+  min-width: 400px;
+  max-width: 600px;
+}
+
+.rule-item {
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.rule-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.rule-name-field {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.add-rule-btn {
+  margin-top: 16px;
+}

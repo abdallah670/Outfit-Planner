@@ -4,7 +4,10 @@ export interface SearchFilters {
   type: SearchType;
   categories: string[];
   seasons: string[];
+  occasions: string[];
   color: string | null;
+  minPrice: number | null;
+  maxPrice: number | null;
 }
 
 export interface SearchResults {
@@ -54,7 +57,10 @@ export const initialSearchFilters: SearchFilters = {
   type: 'all',
   categories: [],
   seasons: [],
+  occasions: [],
   color: null,
+  minPrice: null,
+  maxPrice: null,
 };
 
 export const initialSearchResults: SearchResults = {

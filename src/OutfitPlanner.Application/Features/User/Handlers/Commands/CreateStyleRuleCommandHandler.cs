@@ -2,26 +2,28 @@ using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.DTOs.User;
 using OutfitPlanner.Application.Features.User.Requests.Commands;
-using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
 
 namespace OutfitPlanner.Application.Features.User.Handlers.Commands;
 
-public class CreateStyleRuleCommandHandler : IRequestHandler<CreateStyleRuleCommand, BaseCommandResponse>
+public class CreateStyleRuleCommandHandler : IRequestHandler<CreateStyleRuleCommand, StyleRuleDto>
 {
     private readonly IUserStyleProfileRepository _styleProfileRepository;
+    private readonly IStyleRuleRepository _styleRuleRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateStyleRuleCommandHandler(
         IUserStyleProfileRepository styleProfileRepository,
+        IStyleRuleRepository styleRuleRepository,
         IUnitOfWork unitOfWork)
     {
         _styleProfileRepository = styleProfileRepository;
+        _styleRuleRepository = styleRuleRepository;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<BaseCommandResponse> Handle(CreateStyleRuleCommand request, CancellationToken cancellationToken)
+    public async Task<StyleRuleDto> Handle(CreateStyleRuleCommand request, CancellationToken cancellationToken)
     {
         var profile = await _styleProfileRepository.GetByUserIdAsync(request.UserId);
         
@@ -39,6 +41,7 @@ public class CreateStyleRuleCommandHandler : IRequestHandler<CreateStyleRuleComm
                 AcceptsTrends = false
             };
             await _styleProfileRepository.AddAsync(profile);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         var rule = new StyleRule
@@ -51,14 +54,18 @@ public class CreateStyleRuleCommandHandler : IRequestHandler<CreateStyleRuleComm
             IsActive = true
         };
 
-        profile.CustomRules.Add(rule);
+        // Use the StyleRuleRepository to add the new rule
+        await _styleRuleRepository.AddAsync(rule);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new BaseCommandResponse
+        // Return the created rule as DTO
+        return new StyleRuleDto
         {
-            Success = true,
-            Message = "Style rule created successfully",
-            Id = rule.Id
+            Id = rule.Id,
+            Name = rule.Name,
+            Description = rule.Description,
+            CriteriaJson = rule.CriteriaJson,
+            IsActive = rule.IsActive
         };
     }
 }

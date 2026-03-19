@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { SearchActions } from './search.actions';
+import { selectSearchFilters } from './search.selectors';
 import { SearchService } from '../../services/search.service';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { SearchFilters, SearchResults, SearchType } from '../../../domain/entities/search.entity';
@@ -31,18 +32,20 @@ interface RemoveRecentSearchAction {
   query: string;
 }
 
-// Functional effect for search
+// Functional effect for search - uses withLatestFrom to get filters from store
 export const search$ = createEffect(
-  (actions$ = inject(Actions), searchService = inject(SearchService)) => {
+  (actions$ = inject(Actions), store = inject(Store), searchService = inject(SearchService)) => {
     return actions$.pipe(
       ofType(SearchActions.search),
       debounceTime(300),
-      distinctUntilChanged((prev: SearchAction, curr: SearchAction) => 
-        prev.query === curr.query && 
-        JSON.stringify(prev.filters) === JSON.stringify(curr.filters)
+      withLatestFrom(store.select(selectSearchFilters)),
+      distinctUntilChanged(
+        (prev: [SearchAction, SearchFilters], curr: [SearchAction, SearchFilters]) =>
+          prev[0].query === curr[0].query &&
+          JSON.stringify(prev[1]) === JSON.stringify(curr[1])
       ),
-      switchMap((action: SearchAction) =>
-        searchService.search(action.query, action.filters, action.page).pipe(
+      switchMap(([action, filters]: [SearchAction, SearchFilters]) =>
+        searchService.search(action.query, filters, action.page).pipe(
           map((results: SearchResults) => SearchActions.searchSuccess({ results })),
           catchError((error) =>
             of(SearchActions.searchFailure({ error: error.message }))

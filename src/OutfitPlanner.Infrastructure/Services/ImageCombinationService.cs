@@ -5,6 +5,8 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Domain.Enums;
+using OutfitPlanner.Infrastructure.Services.Models;
+
 
 namespace OutfitPlanner.Infrastructure.Services;
 
@@ -169,7 +171,7 @@ public class ImageCombinationService : IImageCombinationService
     }
 
     /// <summary>
-    /// Main processing pipeline following AI guide principles
+    /// Main processing pipeline with grid-based layout
     /// </summary>
     private async Task<byte[]> ProcessAndCombineImagesAsync(
         List<(Stream Stream, ClothingType Type, string Name)> imageStreams)
@@ -178,51 +180,39 @@ public class ImageCombinationService : IImageCombinationService
         var processedItems = await _processingService.ProcessOutfitItemsAsync(
             imageStreams.Select(x => (x.Stream, x.Type, x.Name)).ToList());
 
-        // Calculate final canvas dimensions
-        int maxContentWidth = 0;
-        int totalContentHeight = _layoutConfig.Padding;
-        
-        foreach (var tuple in processedItems)
+        if (processedItems.Count == 0)
         {
-            var contentBounds = _processingService.DetectBoundingBox(tuple.Item.Image);
-            maxContentWidth = Math.Max(maxContentWidth, contentBounds.Width);
-            totalContentHeight += contentBounds.Height + _layoutConfig.VerticalSpacing;
+            _logger?.LogWarning("No items to combine");
+            return new byte[0];
         }
-        
-        totalContentHeight += _layoutConfig.Padding - _layoutConfig.VerticalSpacing;
 
-        // Create final composition canvas
-        int canvasWidth = Math.Max(_layoutConfig.CanvasWidth, maxContentWidth + _layoutConfig.Padding * 2);
-        int canvasHeight = Math.Max(_layoutConfig.CanvasHeight, totalContentHeight);
+        // Calculate grid layout based on item count
+        var layout = CalculateGridLayout(processedItems.Count);
         
-        using var finalCanvas = new Image<Rgba32>(canvasWidth, canvasHeight);
-        
-        // Fill with white background
+        // Create canvas with appropriate dimensions
+        using var finalCanvas = new Image<Rgba32>(layout.CanvasWidth, layout.CanvasHeight);
         finalCanvas.Mutate(ctx => ctx.BackgroundColor(Color.White));
-
-        // Draw each processed item at its calculated position
-        foreach (var tuple in processedItems)
+        
+        // Draw each item in its grid cell
+        for (int i = 0; i < processedItems.Count; i++)
         {
-            var item = tuple.Item;
-            var position = tuple.Position;
+            var cell = layout.Cells[i];
+            var item = processedItems[i].Item;
             
-            // Get the actual content bounds to draw only the non-transparent part
-            var contentBounds = _processingService.DetectBoundingBox(item.Image);
+            // Resize item to fit cell
+            using var resizedItem = ResizeForCell(item.Image, cell.Width, cell.Height);
             
-            // Calculate centered X position
-            int drawX = (canvasWidth - contentBounds.Width) / 2;
+            // Calculate centered position within cell
+            int drawX = cell.X + (cell.Width - resizedItem.Width) / 2;
+            int drawY = cell.Y + (cell.Height - resizedItem.Height) / 2;
             
-            // Crop to just the content for drawing
-            using var contentImage = item.Image.Clone(ctx => ctx.Crop(contentBounds));
-            
-            // Draw the content image
-            finalCanvas.Mutate(ctx => ctx.DrawImage(contentImage, new Point(drawX, position.Y), 1f));
+            // Draw on canvas
+            finalCanvas.Mutate(ctx => ctx.DrawImage(resizedItem, new Point(drawX, drawY), 1f));
         }
-
-        // Save to byte array
+        
+        // Save and return
         using var outputStream = new MemoryStream();
         await finalCanvas.SaveAsJpegAsync(outputStream, new JpegEncoder { Quality = 90 });
-        
         return outputStream.ToArray();
     }
 
@@ -484,5 +474,89 @@ public class ImageCombinationService : IImageCombinationService
         await combined.SaveAsJpegAsync(outputStream, new JpegEncoder { Quality = 90 });
         
         return outputStream.ToArray();
+    }
+
+    /// <summary>
+    /// Calculates grid layout based on item count
+    /// </summary>
+    private GridLayout CalculateGridLayout(int itemCount)
+    {
+        const int CanvasWidth = 400;
+        const int CellHeight = 200;
+        
+        var layout = new GridLayout { CanvasWidth = CanvasWidth };
+        
+        switch (itemCount)
+        {
+            case 1:
+                layout.CanvasHeight = 400;
+                layout.Cells.Add(new GridCell(0, 0, 400, 400));
+                break;
+                
+            case 2:
+                layout.CanvasHeight = 400;
+                layout.Cells.Add(new GridCell(0, 0, 200, 400));
+                layout.Cells.Add(new GridCell(200, 0, 200, 400));
+                break;
+                
+            case 3:
+                layout.CanvasHeight = 400;
+                layout.Cells.Add(new GridCell(0, 0, 200, 200));
+                layout.Cells.Add(new GridCell(200, 0, 200, 200));
+                layout.Cells.Add(new GridCell(0, 200, 400, 200));
+                break;
+                
+            case 4:
+                layout.CanvasHeight = 400;
+                layout.Cells.Add(new GridCell(0, 0, 200, 200));
+                layout.Cells.Add(new GridCell(200, 0, 200, 200));
+                layout.Cells.Add(new GridCell(0, 200, 200, 200));
+                layout.Cells.Add(new GridCell(200, 200, 200, 200));
+                break;
+                
+            default: // 5+
+                int rows = (int)Math.Ceiling(itemCount / 2.0);
+                layout.CanvasHeight = rows * CellHeight;
+                
+                for (int i = 0; i < itemCount; i++)
+                {
+                    int row = i / 2;
+                    int col = i % 2;
+                    bool isLastInOddRow = (i == itemCount - 1) && (itemCount % 2 == 1);
+                    
+                    if (isLastInOddRow)
+                    {
+                        layout.Cells.Add(new GridCell(0, row * CellHeight, CanvasWidth, CellHeight));
+                    }
+                    else
+                    {
+                        layout.Cells.Add(new GridCell(col * 200, row * CellHeight, 200, CellHeight));
+                    }
+                }
+                break;
+        }
+        
+        return layout;
+    }
+
+    /// <summary>
+    /// Resizes an image to fit within a grid cell while maintaining aspect ratio
+    /// </summary>
+    private Image<Rgba32> ResizeForCell(Image<Rgba32> image, int cellWidth, int cellHeight)
+    {
+        // Get content bounds (remove transparent areas)
+        var bounds = _processingService.DetectBoundingBox(image);
+        using var contentImage = image.Clone(ctx => ctx.Crop(bounds));
+        
+        // Calculate scaling to fit within cell while maintaining aspect ratio
+        double scaleX = (double)cellWidth / contentImage.Width;
+        double scaleY = (double)cellHeight / contentImage.Height;
+        double scale = Math.Min(scaleX, scaleY) * 0.9; // 90% to leave some padding
+        
+        int newWidth = (int)(contentImage.Width * scale);
+        int newHeight = (int)(contentImage.Height * scale);
+        
+        // Resize
+        return contentImage.Clone(ctx => ctx.Resize(newWidth, newHeight));
     }
 }

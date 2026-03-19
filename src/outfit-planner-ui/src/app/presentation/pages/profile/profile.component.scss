@@ -434,6 +434,191 @@ $red-accent: #dc2626;
   color: $text-dark;
 }
 
+/* Rules List */
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rule-card {
+  padding: 0.75rem 1rem;
+  background-color: $bg-light;
+  border-radius: 8px;
+  border: 1px solid $border-color;
+}
+
+.rule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.rule-name {
+  font-weight: 600;
+  color: $text-dark;
+  font-size: 0.9rem;
+}
+
+.rule-status {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  background-color: $text-light;
+  color: white;
+
+  &.active {
+    background-color: #10b981; // green
+  }
+}
+
+.rule-description {
+  font-size: 0.8rem;
+  color: $text-gray;
+  margin: 0;
+}
+
+.rule-card-inline {
+  padding: 0.75rem 1rem;
+  background-color: $bg-light;
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rule-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Style Rules Card */
+.style-rules-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid $border-color;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-main);
+    }
+
+    .card-icon {
+      color: $primary-pink;
+    }
+  }
+
+  .card-content {
+    .rules-list {
+      margin-bottom: 1rem;
+    }
+
+    .no-rules-text {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.rule-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.edit-btn-small {
+  background-color: $primary-pink;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: darken($primary-pink, 10%);
+  }
+  
+  &:disabled {
+    background-color: lighten($primary-pink, 20%);
+    cursor: not-allowed;
+  }
+}
+
+.delete-btn {
+  background: none;
+  border: 1px solid $red-accent;
+  color: $red-accent;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: $red-accent;
+    color: white;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: $red-accent;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  align-self: flex-start;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.view-more-btn {
+  background: none;
+  border: none;
+  color: $primary-pink;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  text-align: left;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 /* Settings List */
 .settings-list {
   padding: 0.5rem 0;

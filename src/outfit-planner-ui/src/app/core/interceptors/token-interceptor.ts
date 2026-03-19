@@ -10,7 +10,6 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
   const token = cookieService.get('token');
-  console.log(`[TokenInterceptor] Request to ${req.url}: Token ${token ? 'found' : 'NOT FOUND'}`);
 
   // Clone the request and add the Bearer token
   let authReq = req;
@@ -21,7 +20,6 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
       },
       withCredentials: true,
     });
-    console.log('[TokenInterceptor] Added Authorization header');
   } else {
     // Still include credentials even without token
     authReq = req.clone({

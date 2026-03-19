@@ -3,6 +3,7 @@ import { UserActions } from './user.actions';
 import { UserProfile, StyleRule } from '../../../domain/entities/user-profile.entity';
 import { AppPreferences } from '../../services/app-preferences.service';
 import { NotificationSettings } from '../../services/notification-settings.service';
+import { ConnectedAccount } from '../../services/connected-accounts.service';
 
 export interface UserState {
   profile: UserProfile | null;
@@ -17,6 +18,8 @@ export interface UserState {
   appPreferences: AppPreferences | null;
   notificationSettings: NotificationSettings | null;
   settingsLoading: boolean;
+  connectedAccounts: ConnectedAccount[];
+  connectedAccountsLoading: boolean;
 }
 
 export const initialState: UserState = {
@@ -32,6 +35,8 @@ export const initialState: UserState = {
   appPreferences: null,
   notificationSettings: null,
   settingsLoading: false,
+  connectedAccounts: [],
+  connectedAccountsLoading: false,
 };
 
 export const userReducer = createReducer(
@@ -161,14 +166,29 @@ export const userReducer = createReducer(
   on(UserActions.createStyleRuleSuccess, (state, { rule }) => ({
     ...state,
     styleRules: [...state.styleRules, rule],
+    error: null,
   })),
   on(UserActions.updateStyleRuleSuccess, (state, { rule }) => ({
     ...state,
     styleRules: state.styleRules.map((r) => (r.id === rule.id ? rule : r)),
+    error: null,
   })),
   on(UserActions.deleteStyleRuleSuccess, (state, { id }) => ({
     ...state,
     styleRules: state.styleRules.filter((r) => r.id !== id),
+    error: null,
+  })),
+  on(UserActions.createStyleRuleFailure, (state, { error }) => ({
+    ...state,
+    error,
+  })),
+  on(UserActions.updateStyleRuleFailure, (state, { error }) => ({
+    ...state,
+    error,
+  })),
+  on(UserActions.deleteStyleRuleFailure, (state, { error }) => ({
+    ...state,
+    error,
   })),
 
   // App Preferences
@@ -225,5 +245,49 @@ export const userReducer = createReducer(
   on(UserActions.clearError, (state) => ({
     ...state,
     error: null,
+  })),
+
+  // Connected Accounts
+  on(UserActions.loadConnectedAccounts, (state) => ({
+    ...state,
+    connectedAccountsLoading: true,
+  })),
+  on(UserActions.loadConnectedAccountsSuccess, (state, { accounts }) => ({
+    ...state,
+    connectedAccounts: accounts,
+    connectedAccountsLoading: false,
+  })),
+  on(UserActions.loadConnectedAccountsFailure, (state, { error }) => ({
+    ...state,
+    connectedAccountsLoading: false,
+    error,
+  })),
+  on(UserActions.connectAccount, (state) => ({
+    ...state,
+    connectedAccountsLoading: true,
+  })),
+  on(UserActions.connectAccountSuccess, (state, { accounts }) => ({
+    ...state,
+    connectedAccounts: accounts,
+    connectedAccountsLoading: false,
+  })),
+  on(UserActions.connectAccountFailure, (state, { error }) => ({
+    ...state,
+    connectedAccountsLoading: false,
+    error,
+  })),
+  on(UserActions.disconnectAccount, (state) => ({
+    ...state,
+    connectedAccountsLoading: true,
+  })),
+  on(UserActions.disconnectAccountSuccess, (state, { accounts }) => ({
+    ...state,
+    connectedAccounts: accounts,
+    connectedAccountsLoading: false,
+  })),
+  on(UserActions.disconnectAccountFailure, (state, { error }) => ({
+    ...state,
+    connectedAccountsLoading: false,
+    error,
   })),
 );

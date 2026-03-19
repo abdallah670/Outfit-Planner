@@ -76,6 +76,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Add Application Services
 builder.Services.AddApplication(builder.Configuration);
 
+// Add Memory Cache for search results
+builder.Services.AddMemoryCache();
+
 // Identity.Application cookie scheme used automatically by AddIdentity for external login callbacks
 
 // Add OAuth providers (chains to existing JWT auth configured in AddPersistence)

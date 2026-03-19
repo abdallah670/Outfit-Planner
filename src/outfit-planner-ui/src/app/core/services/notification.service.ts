@@ -77,8 +77,10 @@ export class NotificationService {
     return this.http.put<void>(`${this.apiUrl}/${notificationId}/read`, {}).pipe(
       tap(() => {
         this.notifications.update((notifications) =>
-          notifications.map((n) =>
-            n.id === notificationId ? { ...n, isRead: true } : n
+          notifications.map((n: any) =>
+            (n.id === notificationId || n.Id === notificationId) 
+              ? { ...n, isRead: true, IsRead: true } 
+              : n
           )
         );
         this.updateUnreadCount();
@@ -97,7 +99,7 @@ export class NotificationService {
     return this.http.put<void>(`${this.apiUrl}/read-all`, {}).pipe(
       tap(() => {
         this.notifications.update((notifications) =>
-          notifications.map((n) => ({ ...n, isRead: true }))
+          notifications.map((n: any) => ({ ...n, isRead: true, IsRead: true }))
         );
         this.unreadCount.set(0);
       }),
@@ -114,15 +116,18 @@ export class NotificationService {
   deleteNotification(notificationId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${notificationId}`).pipe(
       tap(() => {
-        const deletedNotification = this.notifications().find(
-          (n) => n.id === notificationId
+        const deletedNotification: any = this.notifications().find(
+          (n: any) => n.id === notificationId || n.Id === notificationId
         );
         this.notifications.update((notifications) =>
-          notifications.filter((n) => n.id !== notificationId)
+          notifications.filter((n: any) => n.id !== notificationId && n.Id !== notificationId)
         );
         // Update unread count if the deleted notification was unread
-        if (deletedNotification && !deletedNotification.isRead) {
-          this.updateUnreadCount();
+        if (deletedNotification) {
+          const isRead = deletedNotification.isRead !== undefined ? deletedNotification.isRead : deletedNotification.IsRead;
+          if (!isRead) {
+            this.updateUnreadCount();
+          }
         }
       }),
       catchError((err) => {
@@ -136,7 +141,10 @@ export class NotificationService {
    * Update unread count from current notifications
    */
   private updateUnreadCount(): void {
-    const count = this.notifications().filter((n) => !n.isRead).length;
+    const count = this.notifications().filter((n: any) => {
+      const isRead = n.isRead !== undefined ? n.isRead : n.IsRead;
+      return !isRead;
+    }).length;
     this.unreadCount.set(count);
   }
 

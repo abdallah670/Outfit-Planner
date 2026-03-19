@@ -10,6 +10,7 @@ import {
 } from '../../../domain/entities/user-profile.entity';
 import { AppPreferences, UpdateAppPreferencesRequest } from '../../services/app-preferences.service';
 import { NotificationSettings, UpdateNotificationSettingsRequest } from '../../services/notification-settings.service';
+import { ConnectedAccount } from '../../services/connected-accounts.service';
 
 export const UserActions = createActionGroup({
   source: 'User',
@@ -78,5 +79,26 @@ export const UserActions = createActionGroup({
 
     // Clear Error
     'Clear Error': emptyProps(),
+
+    // Connected Accounts
+    'Load Connected Accounts': emptyProps(),
+    'Load Connected Accounts Success': props<{ accounts: ConnectedAccount[] }>(),
+    'Load Connected Accounts Failure': props<{ error: string }>(),
+    'Connect Account': props<{ provider: 'Google' | 'Facebook' }>(),
+    'Connect Account Success': props<{ accounts: ConnectedAccount[] }>(),
+    'Connect Account Failure': props<{ error: string }>(),
+    'Disconnect Account': props<{ provider: string }>(),
+    'Disconnect Account Success': props<{ accounts: ConnectedAccount[] }>(),
+    'Disconnect Account Failure': props<{ error: string }>(),
+
+    // Export User Data
+    'Export User Data': emptyProps(),
+    'Export User Data Success': props<{ blob: Blob; filename: string }>(),
+    'Export User Data Failure': props<{ error: string }>(),
+
+    // Delete Account
+    'Delete Account': emptyProps(),
+    'Delete Account Success': emptyProps(),
+    'Delete Account Failure': props<{ error: string }>(),
   },
 });

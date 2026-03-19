@@ -1,33 +1,6 @@
 <div class="notifications-page">
   <div class="notifications-container">
-    <!-- Header -->
-    <header class="app-header">
-      <div class="header-left">
-        <div class="logo-area">
-          <div class="logo-icon">
-            <mat-icon>checkroom</mat-icon>
-          </div>
-          <span>Outfit Planner</span>
-        </div>
-
-        <div class="nav-tabs">
-          <span class="nav-tab">Dashboard</span>
-          <span class="nav-tab">Calendar</span>
-          <span class="nav-tab">Wardrobe</span>
-        </div>
-      </div>
-
-      <div class="header-right">
-        <div class="notification-bell">
-          <mat-icon>notifications</mat-icon>
-          <span class="notification-dot" *ngIf="unreadCount > 0"></span>
-        </div>
-        <div class="user-profile">
-          <img src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F25-35%2FEuropean%2F3" alt="User" class="user-avatar" />
-          <span class="user-name">Sarah Johnson</span>
-        </div>
-      </div>
-    </header>
+   
 
     <!-- Content Layout -->
     <div class="notifications-layout">
@@ -48,7 +21,7 @@
           [class.active]="selectedCategory === 'unread'"
           (click)="selectCategory('unread')"
         >
-          <mat-icon>mail_open</mat-icon>
+          <mat-icon>mark_email_unread</mat-icon>
           <span>Unread</span>
         </div>
 
@@ -59,7 +32,7 @@
           [class.active]="selectedCategory === 'reminder'"
           (click)="selectCategory('reminder')"
         >
-          <mat-icon>event</mat-icon>
+          <mat-icon>checkroom</mat-icon>
           <span>Outfit Reminders</span>
         </div>
         
@@ -72,16 +45,7 @@
           <span>Social</span>
         </div>
         
-        <div 
-          class="sidebar-item"
-          [class.active]="selectedCategory === 'weather'"
-          (click)="selectCategory('weather')"
-        >
-          <mat-icon>cloud</mat-icon>
-          <span>Weather</span>
-        </div>
-
-        <div 
+        <div
           class="sidebar-item"
           [class.active]="selectedCategory === 'system'"
           (click)="selectCategory('system')"
@@ -92,7 +56,7 @@
 
         <div class="sidebar-group-title">Settings</div>
         
-        <div class="sidebar-item">
+        <div class="sidebar-item" [routerLink]="['/settings']" [fragment]="'notifications'">
           <mat-icon>notifications_active</mat-icon>
           <span>Push Preferences</span>
         </div>
@@ -108,7 +72,7 @@
               Mark all as read
             </button>
             <button class="btn-text btn-danger" (click)="markAllAsRead()">
-              Delete all
+              Clear all
             </button>
           </div>
         </div>
@@ -122,55 +86,66 @@
             <div 
               class="notification-card"
               *ngFor="let notification of group.notifications"
-              [class.unread]="!notification.isRead"
+              [class.unread]="isUnread(notification)"
               [routerLink]="notification.actionUrl"
-              (click)="markAsRead(notification.id)"
+              (click)="markAsRead(notification.id || $any(notification).Id)"
             >
               <!-- Icon based on type -->
-              <div class="icon-box" [ngClass]="notification.type">
-                <mat-icon>{{ getTypeIcon(notification.type) }}</mat-icon>
+              <div class="icon-box" [ngClass]="getNormalizedType(notification)">
+                <mat-icon>{{ getTypeIcon(getNormalizedType(notification)) }}</mat-icon>
               </div>
               
               <!-- Body -->
               <div class="notif-body">
                 <div class="notif-header">
-                  <span class="notif-title">{{ notification.title }}</span>
-                  <span class="notif-time">{{ formatTimestamp(notification.createdAt) }}</span>
+                  <span class="notif-title">{{ (notification.title || $any(notification).Title) }}</span>
+                  <span class="notif-time" style="margin-right: 24px;">{{ formatTimestamp(notification.createdAt || $any(notification).CreatedAt) }}</span>
                 </div>
                 <div class="notif-message">
-                  {{ notification.message }}
+                  {{ notification.message || $any(notification).Message }}
                 </div>
                 <a 
-                  *ngIf="notification.actionUrl" 
+                  *ngIf="notification.actionUrl || $any(notification).ActionUrl" 
                   class="notif-action-link"
-                  [routerLink]="notification.actionUrl"
+                  [routerLink]="notification.actionUrl || $any(notification).ActionUrl"
                   (click)="$event.stopPropagation()"
                 >
-                  {{ getActionText(notification.type) }}
-                  <mat-icon>{{ getActionIcon(notification.type) }}</mat-icon>
+                  {{ getActionText(notification) }}
+                  <mat-icon class="action-arrow">{{ getActionIcon(notification) }}</mat-icon>
                 </a>
               </div>
               
-              <!-- Mark as read button -->
-              <button 
-                class="mark-read-btn" 
-                title="Mark as read"
-                *ngIf="!notification.isRead"
-                (click)="markAsRead(notification.id); $event.stopPropagation()"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
+              <div class="card-actions">
+                <button 
+                  *ngIf="isUnread(notification)"
+                  class="action-btn" 
+                  title="Mark as read"
+                  (click)="markAsRead(notification.id || $any(notification).Id); $event.stopPropagation()"
+                >
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button 
+                  class="action-btn delete-btn" 
+                  title="Delete"
+                  (click)="deleteNotification(notification.id || $any(notification).Id); $event.stopPropagation()"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
             </div>
           </ng-container>
 
           <!-- Empty State -->
           <div class="empty-state" *ngIf="filteredNotifications.length === 0">
-            <mat-icon class="empty-icon">notifications_none</mat-icon>
+            <div class="empty-icon-wrapper">
+              <mat-icon class="empty-icon">notifications_none</mat-icon>
+            </div>
             <h3>No Notifications</h3>
-            <p>You're all caught up!</p>
+            <p>You're all caught up! Check back later for new updates.</p>
           </div>
         </div>
       </main>
     </div>
   </div>
 </div>
+

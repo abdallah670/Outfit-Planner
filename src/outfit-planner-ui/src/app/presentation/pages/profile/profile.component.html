@@ -128,7 +128,7 @@
           <div class="profile-section" *ngIf="$any(profile).styleProfile?.style">
             <label>Core Style</label>
             <div class="tag-list">
-              <span class="tag">{{ $any(profile).styleProfile.style }}</span>
+              <span class="tag">{{ getStyleDisplayName($any(profile).styleProfile.style) }}</span>
             </div>
           </div>
 
@@ -139,6 +139,26 @@
               <span class="tag">{{ $any(profile).styleProfile.fitPreferences }}</span>
             </div>
           </div>
+
+          <!-- Comfort Priority -->
+          <div class="profile-section" *ngIf="$any(profile).styleProfile?.comfortPriority">
+            <label>Comfort Level</label>
+            <div class="tag-list">
+              <span class="tag">{{ $any(profile).styleProfile.comfortPriority }}/10</span>
+            </div>
+          </div>
+
+          <!-- Accepts Trends -->
+          <div class="profile-section" *ngIf="$any(profile).styleProfile?.acceptsTrends !== undefined">
+            <label>Trends</label>
+            <div class="tag-list">
+              <span class="tag" [class.active]="$any(profile).styleProfile.acceptsTrends">
+                {{ $any(profile).styleProfile.acceptsTrends ? 'Accepts Trends' : 'Classic Only' }}
+              </span>
+            </div>
+          </div>
+
+         
 
           <!-- Style Tags -->
           <div
@@ -155,7 +175,7 @@
           </div>
         </div>
       </div>
-
+      
       <!-- Account Settings -->
       <div class="account-settings-card">
         <div class="card-header">
@@ -261,7 +281,7 @@
             </svg>
           </div>
 
-          <!-- Notifications -->
+          <!-- Preferences -->
           <div class="setting-item" (click)="openEditPreferencesModal()">
             <div class="setting-icon">
               <svg
@@ -280,10 +300,8 @@
               </svg>
             </div>
             <div class="setting-info">
-              <span class="setting-label">Notifications</span>
-              <span class="setting-value">{{
-                ($any(profile).preferences?.includeInTrendAnalysis ?? true) ? 'Enabled' : 'Disabled'
-              }}</span>
+              <span class="setting-label">Preferences</span>
+              <span class="setting-value">Manage your preferences</span>
             </div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -301,44 +319,8 @@
             </svg>
           </div>
 
-          <!-- Privacy Settings -->
-          <div class="setting-item" (click)="openEditPreferencesModal()">
-            <div class="setting-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-              </svg>
-            </div>
-            <div class="setting-info">
-              <span class="setting-label">Default Outfit Privacy</span>
-              <span class="setting-value">{{
-                $any(profile).preferences?.defaultOutfitPrivacy || 'Private'
-              }}</span>
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="chevron"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </div>
+        
+           
 
           <!-- Export Data -->
           <div class="setting-item" (click)="exportData()">
@@ -381,6 +363,54 @@
         </div>
       </div>
     </div>
+
+    <!-- Style Rules -->
+    <div class="style-rules-card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="card-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h3>Style Rules</h3>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="rules-list" *ngIf="$any(styleRules$ | async)?.length">
+            <div *ngFor="let rule of $any(styleRules$ | async)" class="rule-card-inline">
+              <div class="rule-info">
+                <span class="rule-name">{{ rule.name }}</span>
+                <span class="rule-status" [class.active]="rule.isActive" (click)="toggleRuleActive(rule)" style="cursor: pointer;">
+                  {{ rule.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+              <p class="rule-description" *ngIf="rule.description">{{ rule.description }}</p>
+              <div class="rule-actions">
+                <button class="edit-btn-small" (click)="editRule(rule)">Edit</button>
+                <button class="delete-btn" (click)="deleteRule(rule.id)">Delete</button>
+              </div>
+            </div>
+          </div>
+          <p *ngIf="!$any(styleRules$ | async)?.length" class="no-rules-text">
+            No style rules yet. Click "Add Rule" below to create your first rule.
+          </p>
+          <button class="view-more-btn" (click)="addNewRule()">+ Add Rule</button>
+        </div>
+      </div>
 
     <!-- Footer Actions -->
     <div class="footer-actions">

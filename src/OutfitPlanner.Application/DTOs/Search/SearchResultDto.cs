@@ -9,7 +9,10 @@ public class SearchRequest
     public SearchType Type { get; set; } = SearchType.All;
     public List<string> Categories { get; set; } = new();
     public List<string> Seasons { get; set; } = new();
+    public List<string> Occasions { get; set; } = new();
     public string? Color { get; set; }
+    public decimal? MinPrice { get; set; }
+    public decimal? MaxPrice { get; set; }
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 20;
 }

@@ -98,10 +98,8 @@ export class AuthService{
 
   private checkAuthStatus(): void {
     const token = this.cookieService.get('token');
-    console.log('[AuthService] checkAuthStatus - Token found:', !!token);
     if (token) {
       this.isAuthenticated.set(true);
-      console.log('[AuthService] Restored auth state from cookies');
       // Optional: Logic to fetch user profile using the token
     }
   }

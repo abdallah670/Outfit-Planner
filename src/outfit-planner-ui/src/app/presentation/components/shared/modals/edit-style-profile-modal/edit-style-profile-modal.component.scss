@@ -74,3 +74,55 @@
 mat-slide-toggle {
   margin: 1rem 0;
 }
+
+// Custom Rules Section
+.rules-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+
+  .rules-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+  }
+
+  .no-rules {
+    text-align: center;
+    padding: 1rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .rule-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+
+    .rule-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+
+      span {
+        font-weight: 600;
+        color: #374151;
+      }
+    }
+
+    mat-slide-toggle {
+      margin-top: 0.5rem;
+    }
+  }
+}

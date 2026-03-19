@@ -1,12 +1,15 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { exhaustMap, map, catchError, of, switchMap } from 'rxjs';
+import { exhaustMap, map, catchError, of, switchMap, tap, distinctUntilChanged } from 'rxjs';
 import { UserActions } from './user.actions';
 import { UserRepositoryImpl } from '../../../data/repositories/user.repository.impl';
 import { UserProfile, StyleRule } from '../../../domain/entities/user-profile.entity';
 import { StyleRuleService } from '../../services/style-rule.service';
 import { AppPreferencesService, AppPreferences } from '../../services/app-preferences.service';
 import { NotificationSettingsService, NotificationSettings } from '../../services/notification-settings.service';
+import { ConnectedAccountsService, ConnectedAccount, ConnectAccountResponse } from '../../services/connected-accounts.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 export const loadProfile$ = createEffect(
   (actions$ = inject(Actions), userRepository = inject(UserRepositoryImpl)) => {
@@ -229,6 +232,7 @@ export const loadAppPreferences$ = createEffect(
   (actions$ = inject(Actions), appPreferencesService = inject(AppPreferencesService)) => {
     return actions$.pipe(
       ofType(UserActions.loadAppPreferences),
+      distinctUntilChanged(),
       exhaustMap(() =>
         appPreferencesService.getPreferences().pipe(
           map((preferences: AppPreferences) => UserActions.loadAppPreferencesSuccess({ preferences })),
@@ -311,6 +315,140 @@ export const updateNotificationSettings$ = createEffect(
           catchError((error) =>
             of(
               UserActions.updateNotificationSettingsFailure({ error: error?.message || 'Failed to update notification settings' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+// Connected Accounts Effects
+export const loadConnectedAccounts$ = createEffect(
+  (actions$ = inject(Actions), connectedAccountsService = inject(ConnectedAccountsService)) => {
+    return actions$.pipe(
+      ofType(UserActions.loadConnectedAccounts),
+      distinctUntilChanged(),
+      exhaustMap(() =>
+        connectedAccountsService.getConnectedAccounts().pipe(
+          map((accounts: ConnectedAccount[]) => UserActions.loadConnectedAccountsSuccess({ accounts })),
+          catchError((error) =>
+            of(
+              UserActions.loadConnectedAccountsFailure({ error: error?.message || 'Failed to load connected accounts' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const connectAccount$ = createEffect(
+  (actions$ = inject(Actions), connectedAccountsService = inject(ConnectedAccountsService)) => {
+    return actions$.pipe(
+      ofType(UserActions.connectAccount),
+      exhaustMap(({ provider }) =>
+        connectedAccountsService.connectAccount(provider).pipe(
+          tap((response: ConnectAccountResponse) => {
+            // Redirect to OAuth provider
+            if (response.authorizationUrl) {
+              window.location.href = response.authorizationUrl;
+            }
+          }),
+          map(() => UserActions.loadConnectedAccounts()),
+          catchError((error) =>
+            of(
+              UserActions.connectAccountFailure({ error: error?.message || 'Failed to connect account' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const disconnectAccount$ = createEffect(
+  (actions$ = inject(Actions), connectedAccountsService = inject(ConnectedAccountsService)) => {
+    return actions$.pipe(
+      ofType(UserActions.disconnectAccount),
+      exhaustMap(({ provider }) =>
+        connectedAccountsService.disconnectAccount(provider).pipe(
+          switchMap(() =>
+            connectedAccountsService.getConnectedAccounts().pipe(
+              map((accounts: ConnectedAccount[]) => UserActions.disconnectAccountSuccess({ accounts })),
+              catchError((error) =>
+                of(
+                  UserActions.disconnectAccountFailure({ error: error?.message || 'Failed to disconnect account' }),
+                ),
+              ),
+            ),
+          ),
+          catchError((error) =>
+            of(
+              UserActions.disconnectAccountFailure({ error: error?.message || 'Failed to disconnect account' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+// Export User Data Effect
+export const exportUserData$ = createEffect(
+  (actions$ = inject(Actions), http = inject(HttpClient)) => {
+    return actions$.pipe(
+      ofType(UserActions.exportUserData),
+      exhaustMap(() =>
+        http.get(`${environment.baseUrl}/user/export-data`, {
+          responseType: 'blob',
+          withCredentials: true,
+        }).pipe(
+          map((blob: Blob) => {
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `outfit-planner-data-${new Date().toISOString().split('T')[0].replace(/-/g, '')}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            return UserActions.exportUserDataSuccess({ blob, filename: link.download });
+          }),
+          catchError((error) =>
+            of(
+              UserActions.exportUserDataFailure({ error: error?.message || 'Failed to export data' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+// Delete Account Effect
+export const deleteAccount$ = createEffect(
+  (actions$ = inject(Actions), http = inject(HttpClient)) => {
+    return actions$.pipe(
+      ofType(UserActions.deleteAccount),
+      exhaustMap(() =>
+        http.delete(`${environment.baseUrl}/user/account`, {
+          withCredentials: true,
+        }).pipe(
+          map(() => {
+            // Redirect to home page after successful deletion
+            window.location.href = '/';
+            return UserActions.deleteAccountSuccess();
+          }),
+          catchError((error) =>
+            of(
+              UserActions.deleteAccountFailure({ error: error?.message || 'Failed to delete account' }),
             ),
           ),
         ),

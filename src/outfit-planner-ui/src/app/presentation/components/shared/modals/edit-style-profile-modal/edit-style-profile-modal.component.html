@@ -52,6 +52,49 @@
         </div>
       </div>
     </div>
+
+    <!-- Custom Rules Section -->
+    <div class="rules-section">
+      <div class="rules-header">
+        <label>Style Rules</label>
+        <button type="button" mat-stroked-button (click)="addCustomRule()">
+          <mat-icon>add</mat-icon> Add Rule
+        </button>
+      </div>
+      
+      <div *ngIf="customRules.length === 0" class="no-rules">
+        <p>No custom rules added. Click "Add Rule" to create style rules.</p>
+      </div>
+      
+      <div *ngFor="let rule of customRules; let i = index" class="rule-item">
+        <div class="rule-header">
+          <span>Rule {{ i + 1 }}</span>
+          <button type="button" mat-icon-button (click)="removeCustomRule(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Rule Name</mat-label>
+          <input matInput 
+            [value]="rule.name" 
+            (input)="updateCustomRule(i, 'name', $any($event.target).value)"
+            placeholder="e.g., No black with brown" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput 
+            [value]="rule.description"
+            (input)="updateCustomRule(i, 'description', $any($event.target).value)"
+            placeholder="Describe your style rule..."
+            rows="2"></textarea>
+        </mat-form-field>
+        <mat-slide-toggle 
+          [checked]="rule.isActive"
+          (change)="updateCustomRule(i, 'isActive', $event.checked)">
+          Active
+        </mat-slide-toggle>
+      </div>
+    </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

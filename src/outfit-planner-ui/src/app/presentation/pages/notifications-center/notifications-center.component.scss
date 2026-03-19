@@ -4,6 +4,7 @@
 
 // CSS Variables matching the design
 :host {
+  // Theme from notification.html :root and bottom style tag
   --background: #fdf2f8;
   --foreground: #1f2937;
   --card: #ffffff;
@@ -24,6 +25,7 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --font-family-body: system-ui, -apple-system, sans-serif;
 }
 
 .notifications-page {
@@ -314,12 +316,15 @@
   gap: 16px;
   position: relative;
   transition: box-shadow 0.2s;
-  cursor: pointer;
 
   &:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 
     .mark-read-btn {
+      opacity: 1;
+    }
+    
+    .delete-btn {
       opacity: 1;
     }
   }
@@ -352,6 +357,11 @@
 
   mat-icon {
     font-size: 20px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &.reminder {
@@ -370,13 +380,8 @@
   }
 
   &.weather {
-    background-color: #dbeafe;
-    color: #2563eb;
-  }
-
-  &.reminder {
-    background-color: #fef3c7;
-    color: #d97706;
+    background-color: #e0f2fe;
+    color: #0284c7;
   }
 }
 
@@ -422,13 +427,28 @@
   gap: 4px;
 
   mat-icon {
+    font-size: 14px; /* Changed from 16px to 14px */
+    width: 14px;   /* Changed from 16px to 14px */
+    height: 14px;  /* Changed from 16px to 14px */
+  }
+
+  .action-arrow {
     font-size: 14px;
     width: 14px;
     height: 14px;
+    margin-left: 2px;
+    display: flex; /* Added for alignment */
+    align-items: center; /* Added for alignment */
+    justify-content: center; /* Added for alignment */
+    transition: none; /* Removed transform transition */
   }
 
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    
+    .action-arrow {
+      transform: translateX(4px);
+    }
   }
 }
 
@@ -441,14 +461,46 @@
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 16px;
+  top: 16px;
 
   mat-icon {
     font-size: 16px;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &:hover {
     background-color: var(--muted);
     color: var(--foreground);
+  }
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s;
+  margin-left: 4px;
+
+  mat-icon {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
   }
 }
 
@@ -460,9 +512,22 @@
   padding: 60px 20px;
   color: var(--muted-foreground);
 
+  .empty-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+
   .empty-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: var(--muted-foreground);
   }
 
   h3 {

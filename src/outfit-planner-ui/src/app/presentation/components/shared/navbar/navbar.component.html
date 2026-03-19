@@ -22,7 +22,8 @@
       routerLink="/notifications"
       mat-icon-button
       class="nav-icon-btn"
-      matBadge="2"
+      [matBadge]="notificationsCount$ | async"
+      [matBadgeHidden]="!(notificationsCount$ | async)"
       matBadgeColor="warn"
       aria-label="Notifications"
     >
