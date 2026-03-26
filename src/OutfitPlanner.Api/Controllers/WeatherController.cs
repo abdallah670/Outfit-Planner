@@ -79,4 +79,31 @@ public class WeatherController : ControllerBase
         var result = await _mediator.Send(query);
         return Ok(result);
     }
+
+    /// <summary>
+    /// Get weather forecast for a specific month (for calendar display)
+    /// </summary>
+    /// <param name="year">Year (e.g., 2026)</param>
+    /// <param name="month">Month (1-12)</param>
+    /// <param name="city">City name (optional, defaults to Cairo)</param>
+    [HttpGet("forecast/month")]
+    [ProducesResponseType(typeof(List<WeatherForecastDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<WeatherForecastDto>>> GetWeatherForMonth(
+        [FromQuery] int year,
+        [FromQuery] int month,
+        [FromQuery] string? city = null)
+    {
+        _logger.LogInformation("Getting weather forecast for {Year}-{Month}, City: {City}", 
+            year, month, city ?? "default");
+
+        var query = new GetWeatherForMonthQuery
+        {
+            Year = year,
+            Month = month,
+            City = city ?? "Cairo"
+        };
+
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
 }

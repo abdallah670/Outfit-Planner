@@ -21,6 +21,7 @@ public interface IUnitOfWork : IDisposable
     INotificationRepository Notifications { get; }
     IAppPreferencesRepository AppPreferences { get; }
     INotificationSettingsRepository NotificationSettings { get; }
+    IOutfitEngagementRepository OutfitEngagement { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 

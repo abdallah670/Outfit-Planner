@@ -965,11 +965,12 @@ namespace OutfitPlanner.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OptionId");
-
                     b.HasIndex("PollId");
 
                     b.HasIndex("VoterId");
+
+                    b.HasIndex("OptionId", "VoterId")
+                        .IsUnique();
 
                     b.ToTable("Votes");
                 });

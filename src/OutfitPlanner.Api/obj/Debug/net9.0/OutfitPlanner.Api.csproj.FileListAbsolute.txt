@@ -215,3 +215,4 @@ C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\OutfitPla
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\obj\Debug\net9.0\ref\OutfitPlanner.Api.dll
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Caching.Memory.dll
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\Microsoft.Extensions.Http.dll
+C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Api\bin\Debug\net9.0\CsvHelper.dll

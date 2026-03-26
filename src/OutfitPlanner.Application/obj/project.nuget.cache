@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "3VERlrVmN3Q=",
+  "dgSpecHash": "HfpzUi3hDPU=",
   "success": true,
   "projectFilePath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\abdallh\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
+    "C:\\Users\\abdallh\\.nuget\\packages\\csvhelper\\33.1.0\\csvhelper.33.1.0.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",
     "C:\\Users\\abdallh\\.nuget\\packages\\mediatr\\14.0.0\\mediatr.14.0.0.nupkg.sha512",

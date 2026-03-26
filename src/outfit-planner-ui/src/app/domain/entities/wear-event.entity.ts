@@ -106,8 +106,8 @@ export interface CreateCalendarEventRequest {
   description?: string;
   location?: string;
   eventDate: Date;
-  startTime?: string;
-  endTime?: string;
+  startTime?: string; // Format: "HH:mm:ss" (e.g., "14:30:00") for .NET TimeSpan compatibility
+  endTime?: string;   // Format: "HH:mm:ss" (e.g., "16:00:00") for .NET TimeSpan compatibility
   eventType: CalendarEventType;
   outfitId?: string;
   notes?: string;
@@ -121,8 +121,8 @@ export interface UpdateCalendarEventRequest {
   description?: string;
   location?: string;
   eventDate?: Date;
-  startTime?: string;
-  endTime?: string;
+  startTime?: string; // Format: "HH:mm:ss" (e.g., "14:30:00") for .NET TimeSpan compatibility
+  endTime?: string;   // Format: "HH:mm:ss" (e.g., "16:00:00") for .NET TimeSpan compatibility
   eventType?: CalendarEventType;
   outfitId?: string;
   notes?: string;

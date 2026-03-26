@@ -26,6 +26,7 @@ public class UnitOfWork : IUnitOfWork
     public INotificationRepository Notifications { get; }
     public IAppPreferencesRepository AppPreferences { get; }
     public INotificationSettingsRepository NotificationSettings { get; }
+    public IOutfitEngagementRepository OutfitEngagement { get; }
 
     public UnitOfWork(
         AppDbContext context,
@@ -45,7 +46,8 @@ public class UnitOfWork : IUnitOfWork
         ICalendarEventRepository calendarEvents,
         INotificationRepository notifications,
         IAppPreferencesRepository appPreferences,
-        INotificationSettingsRepository notificationSettings)
+        INotificationSettingsRepository notificationSettings,
+        IOutfitEngagementRepository outfitEngagement)
     {
         _context = context;
         ClothingItems = clothingItems;
@@ -65,6 +67,7 @@ public class UnitOfWork : IUnitOfWork
         Notifications = notifications;
         AppPreferences = appPreferences;
         NotificationSettings = notificationSettings;
+        OutfitEngagement = outfitEngagement;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

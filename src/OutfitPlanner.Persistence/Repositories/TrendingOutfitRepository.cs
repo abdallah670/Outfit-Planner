@@ -13,7 +13,6 @@ public class TrendingOutfitRepository : GenericRepository<TrendingOutfit>, ITren
 
     public async Task<IEnumerable<TrendingOutfit>> GetTrendingByLocationAsync(string location, int count = 10)
     {
-        // Note: TrendingOutfit doesn't have a Location property, using Date instead
         return await _dbSet
             .Where(t => t.Date.Date == DateTime.Today)
             .OrderByDescending(t => t.TrendingScore)
@@ -23,21 +22,13 @@ public class TrendingOutfitRepository : GenericRepository<TrendingOutfit>, ITren
 
     public async Task<IEnumerable<TrendingOutfit>> GetGlobalTrendingAsync(int count = 20)
     {
+        // Only return recent trending data (last 7 days) and order by score
+        var cutoffDate = DateTime.Today.AddDays(-7);
         return await _dbSet
+            .Where(t => t.Date >= cutoffDate)
             .OrderByDescending(t => t.TrendingScore)
             .Take(count)
             .ToListAsync();
-    }
-
-    public async Task IncrementViewCountAsync(Guid outfitId)
-    {
-        var trending = await _dbSet.FirstOrDefaultAsync(t => t.OutfitId == outfitId);
-        if (trending != null)
-        {
-            // Increment VoteCount as a proxy for view count
-            trending.VoteCount++;
-            await _context.SaveChangesAsync();
-        }
     }
 
     public async Task<IEnumerable<TrendingOutfit>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)

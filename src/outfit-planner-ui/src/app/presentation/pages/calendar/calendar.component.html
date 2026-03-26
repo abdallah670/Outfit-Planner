@@ -1,4 +1,4 @@
-<!-- Calendar Page - Matching Design/calender.html exactly -->
+<!-- Calendar Page - Fully Implemented -->
 <div class="calendar-page">
   <div class="calendar-container">
     
@@ -6,19 +6,37 @@
     <div class="main-content">
       <!-- Calendar Section -->
       <section class="calendar-section" aria-label="Calendar">
+        <!-- Controls -->
         <div class="calendar-controls">
           <div class="month-title">
-            <button class="control-btn" (click)="previousMonth()" aria-label="Previous month">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M15 18l-6-6 6-6"/>
-              </svg>
-            </button>
-            <span>{{ currentMonth() }} {{ currentYear() }}</span>
-            <button class="control-btn" (click)="nextMonth()" aria-label="Next month">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6"/>
-              </svg>
-            </button>
+            <!-- Month/Week Navigation -->
+            <ng-container *ngIf="currentView() === 'month'">
+              <button class="control-btn" (click)="previousMonth()" aria-label="Previous month">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <span>{{ currentMonth() }} {{ currentYear() }}</span>
+              <button class="control-btn" (click)="nextMonth()" aria-label="Next month">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            </ng-container>
+            
+            <ng-container *ngIf="currentView() === 'week'">
+              <button class="control-btn" (click)="previousWeek()" aria-label="Previous week">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <span>{{ currentMonth() }} {{ currentYear() }}</span>
+              <button class="control-btn" (click)="nextWeek()" aria-label="Next week">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            </ng-container>
           </div>
           
           <div class="view-toggles">
@@ -27,59 +45,126 @@
           </div>
         </div>
         
-        <!-- Calendar Grid -->
-        <div class="calendar-grid" role="grid" aria-label="Calendar dates">
-          <!-- Day Headers -->
-          <div class="day-header" *ngFor="let day of weekDays" role="columnheader">{{ day }}</div>
-          
-          <!-- Calendar Days -->
-          <div
-            class="calendar-day"
-            *ngFor="let day of calendarDays()"
-            [class.other-month]="!day.isCurrentMonth"
-            [class.today]="day.isToday"
-            [class.selected]="selectedDate() && isSameDate(day.date, selectedDate()!)"
-            (click)="selectDay(day)"
-            (keydown.enter)="selectDay(day)"
-            (keydown.space)="selectDay(day); $event.preventDefault()"
-            role="gridcell"
-            tabindex="0"
-            [attr.aria-label]="day.date | date: 'fullDate'"
-            [attr.aria-selected]="selectedDate() && isSameDate(day.date, selectedDate()!)"
-          >
-            <div class="day-number" [class.today]="day.isToday">{{ day.dayNumber }}</div>
+        <!-- MONTH VIEW -->
+        <div *ngIf="currentView() === 'month'" class="month-view">
+          <!-- Calendar Grid -->
+          <div class="calendar-grid" role="grid" aria-label="Calendar dates">
+            <!-- Day Headers -->
+            <div class="day-header" *ngFor="let day of weekDays" role="columnheader">{{ day }}</div>
             
-            <!-- Weather Mini -->
-            <div class="weather-mini" *ngIf="day.weather && day.isCurrentMonth">
-              <mat-icon>{{ getWeatherIconName(day.weather.icon) }}</mat-icon> {{ day.weather.temp }}°
-            </div>
-            
-            <div class="day-content">
-              <!-- Outfit Pills -->
-              <div
-                class="outfit-pill"
-                *ngFor="let outfit of day.outfits.slice(0, 1)"
-                [class.worn]="outfit.worn"
-                [class.scheduled]="!outfit.worn"
-              >
-                <img
-                  *ngIf="outfit.imageUrl"
-                  [src]="outfit.imageUrl"
-                  class="pill-img"
-                  alt=""
-                />
-                <img
-                  *ngIf="!outfit.imageUrl"
-                  src="/outfit_placeholder.png"
-                  class="pill-img"
-                  alt=""
-                />
-                <span class="pill-text">{{ outfit.name }}</span>
+            <!-- Calendar Days -->
+            <div
+              class="calendar-day"
+              *ngFor="let day of calendarDays()"
+              [class.other-month]="!day.isCurrentMonth"
+              [class.today]="day.isToday"
+              [class.selected]="selectedDate() && isSameDate(day.date, selectedDate()!)"
+              (click)="selectDay(day)"
+              (keydown.enter)="selectDay(day)"
+              (keydown.space)="selectDay(day); $event.preventDefault()"
+              role="gridcell"
+              tabindex="0"
+              [attr.aria-label]="day.date | date: 'fullDate'"
+              [attr.aria-selected]="selectedDate() && isSameDate(day.date, selectedDate()!)"
+            >
+              <div class="day-number" [class.today]="day.isToday">{{ day.dayNumber }}</div>
+              
+              <!-- Weather Mini - Show on ALL days -->
+              <div class="weather-mini" *ngIf="day.weather">
+                <mat-icon>{{ getWeatherIconName(day.weather.icon) }}</mat-icon> {{ day.weather.temp }}°
               </div>
               
-              <!-- Event Dot -->
-              <div class="event-dot" *ngIf="day.outfits.length > 1">
-                • +{{ day.outfits.length - 1 }} more
+              <div class="day-content">
+                <!-- Outfit Pills -->
+                <div
+                  class="outfit-pill"
+                  *ngFor="let outfit of day.outfits.slice(0, 1)"
+                  [class.worn]="outfit.worn"
+                  [class.scheduled]="!outfit.worn"
+                >
+                  <img
+                    *ngIf="outfit.imageUrl"
+                    [src]="outfit.imageUrl"
+                    class="pill-img"
+                    alt=""
+                  />
+                  <img
+                    *ngIf="!outfit.imageUrl"
+                    src="/outfit_placeholder.png"
+                    class="pill-img"
+                    alt=""
+                  />
+                  <span class="pill-text">{{ outfit.name }}</span>
+                </div>
+                
+                <!-- More Indicator -->
+                <div class="event-dot" *ngIf="day.outfits.length > 1">
+                  • +{{ day.outfits.length - 1 }} more
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- WEEK VIEW (Google Calendar Style) -->
+        <div *ngIf="currentView() === 'week'" class="week-view">
+          <div class="week-grid">
+            <!-- Header Row with Days -->
+            <div class="week-header">
+              <div class="time-column-header"></div>
+              <div 
+                class="day-column-header" 
+                *ngFor="let day of weekViewDays()"
+                [class.today]="day.isToday"
+                [class.selected]="selectedDate() && isSameDate(day.date, selectedDate()!)"
+                (click)="selectWeekDay(day)"
+              >
+                <div class="day-name">{{ day.dayName }}</div>
+                <div class="day-number" [class.today]="day.isToday">{{ day.dayNumber }}</div>
+                <div class="weather-mini-week" *ngIf="day.weather">
+                  <mat-icon>{{ getWeatherIconName(day.weather.icon) }}</mat-icon>
+                  <span>{{ day.weather.temp }}°</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Time Grid -->
+            <div class="week-body">
+              <div class="time-column">
+                <div class="time-slot-label" *ngFor="let slot of timeSlots()">
+                  {{ slot.displayTime }}
+                </div>
+              </div>
+              
+              <div class="days-columns">
+                <div 
+                  class="day-column" 
+                  *ngFor="let day of weekViewDays()"
+                  [class.today]="day.isToday"
+                >
+                  <!-- All-day Events/Outfits at top -->
+                  <div class="all-day-section">
+                    <div 
+                      class="all-day-outfit" 
+                      *ngFor="let outfit of day.outfits"
+                      (click)="selectedDate.set(day.date)"
+                    >
+                      {{ outfit.name }}
+                    </div>
+                    <div 
+                      class="all-day-event" 
+                      *ngFor="let event of day.events"
+                      (click)="selectedDate.set(day.date)"
+                    >
+                      {{ event.title }}
+                    </div>
+                  </div>
+                  
+                  <!-- Time Slots -->
+                  <div class="time-slots">
+                    <div class="time-slot" *ngFor="let slot of timeSlots()"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -114,36 +199,59 @@
             </div>
           </div>
           
-          <!-- Events List -->
-          <div class="events-list" *ngIf="selectedDayEvents().length > 0">
-            <div class="event-label">EVENTS</div>
+          <!-- Events List with Add and Delete -->
+          <div class="events-list">
+            <div class="event-label" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>EVENTS</span>
+              <button 
+                class="btn-add-event" 
+                (click)="openAddEventModal()"
+                matTooltip="Add new event"
+                aria-label="Add new event"
+              >
+                <mat-icon>add</mat-icon>
+                Add
+              </button>
+            </div>
+            
             <div class="event-item" *ngFor="let event of selectedDayEvents()">
-              <div class="event-time">{{ event.startTime }}</div>
-              <div class="event-details">
-                <div class="event-title">{{ event.title }}</div>
-                <div class="event-location" *ngIf="event.location">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                  </svg>
-                  {{ event.location }}
+              <div class="event-content">
+                <div class="event-time">{{ event.startTime || '--:--' }}</div>
+                <div class="event-details">
+                  <div class="event-title">{{ event.title }}</div>
+                  <div class="event-outfit" *ngIf="event.wearEventId">
+                    <mat-icon style="font-size: 12px; width: 12px; height: 12px;">checkroom</mat-icon>
+                    Has outfit
+                  </div>
+                  <div class="event-location" *ngIf="event.location">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    {{ event.location }}
+                  </div>
                 </div>
               </div>
+              <button 
+                class="delete-btn" 
+                (click)="deleteCalendarEvent(event.id)"
+                matTooltip="Delete event"
+                aria-label="Delete event"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
-          </div>
-          <div class="events-list" *ngIf="selectedDayEvents().length === 0">
-            <div class="event-label">EVENTS</div>
-            <div class="event-item">
-              <div class="event-time">--:--</div>
+            
+            <div class="event-item empty" *ngIf="selectedDayEvents().length === 0">
               <div class="event-details">No events</div>
             </div>
           </div>
         </div>
         
-        <!-- Scheduled Outfit Card -->
+        <!-- Scheduled Outfit Card with Delete -->
         <div class="detail-card">
           <div class="detail-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
             <span class="event-label">SCHEDULED OUTFIT</span>
-            <span style="color: #ff6fa8; cursor: pointer; font-size: 12px;">Change</span>
+            <span style="color: #ff6fa8; cursor: pointer; font-size: 12px;" (click)="openScheduleOutfitModal()">Change</span>
           </div>
           
           <div class="outfit-preview-card" *ngIf="selectedDayOutfits().length > 0; else noOutfit">
@@ -166,6 +274,15 @@
                 </svg>
                 Planned
               </div>
+              <!-- Delete Button -->
+              <button 
+                class="delete-outfit-btn"
+                (click)="deleteScheduledOutfit(selectedDayOutfits()[0].id)"
+                matTooltip="Delete scheduled outfit"
+                aria-label="Delete scheduled outfit"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
             
             <div class="outfit-info">
@@ -187,7 +304,10 @@
           <ng-template #noOutfit>
             <div class="empty-slot">
               <p>No outfit scheduled</p>
-              <button class="action-btn btn-primary" routerLink="/outfits/build">
+              <button class="action-btn btn-primary" (click)="openScheduleOutfitModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
                 Schedule Outfit
               </button>
             </div>

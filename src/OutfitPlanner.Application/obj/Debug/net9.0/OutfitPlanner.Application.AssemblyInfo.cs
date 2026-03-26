@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OutfitPlanner.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4751c38f53a63733a03cccef9aae07b7eb8fa2b9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a5764d469e2f39353775f6db31a32fc7b56dbd6")]
 [assembly: System.Reflection.AssemblyProductAttribute("OutfitPlanner.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OutfitPlanner.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

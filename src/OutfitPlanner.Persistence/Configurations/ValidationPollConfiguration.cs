@@ -58,5 +58,12 @@ public class VoteConfiguration : IEntityTypeConfiguration<Vote>
             .WithMany()
             .HasForeignKey(v => v.VoterId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        // Prevent duplicate votes: one vote per user per option
+        builder.HasIndex(v => new { v.OptionId, v.VoterId })
+            .IsUnique();
+
+        // Fast lookup for "has user voted?" queries
+        builder.HasIndex(v => v.VoterId);
     }
 }
