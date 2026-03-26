@@ -18,6 +18,8 @@ public class AppDbContext : IdentityDbContext<User>
     public DbSet<PollOption> PollOptions { get; set; }
     public DbSet<Vote> Votes { get; set; }
     public DbSet<VoteReaction> VoteReactions { get; set; }
+    public DbSet<OutfitLike> OutfitLikes { get; set; }
+    public DbSet<OutfitComment> OutfitComments { get; set; }
     public DbSet<TrendingOutfit> TrendingOutfits { get; set; }
     public DbSet<WearEvent> WearEvents { get; set; }
     public DbSet<CalendarEvent> CalendarEvents { get; set; }

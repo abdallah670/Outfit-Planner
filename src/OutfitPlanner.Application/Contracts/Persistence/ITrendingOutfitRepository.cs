@@ -6,6 +6,5 @@ public interface ITrendingOutfitRepository : IGenericRepository<TrendingOutfit>
 {
     Task<IEnumerable<TrendingOutfit>> GetTrendingByLocationAsync(string location, int count = 10);
     Task<IEnumerable<TrendingOutfit>> GetGlobalTrendingAsync(int count = 20);
-    Task IncrementViewCountAsync(Guid outfitId);
     Task<IEnumerable<TrendingOutfit>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
 }

@@ -9,6 +9,7 @@ using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Application.Contracts.Infrastructure;
+using OutfitPlanner.Application.Exceptions;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -84,6 +85,54 @@ public class OutfitsController : ControllerBase
             return BadRequest("Failed to create outfit");
 
         _logger.LogInformation("User {UserId} created outfit {OutfitId}", userId, response.Id);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+    }
+
+    /// <summary>
+    /// Creates a new outfit with a photo upload (no clothing items required)
+    /// </summary>
+    [HttpPost("with-photo")]
+    [ProducesResponseType(typeof(CreateOutfitWithPhotoResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<CreateOutfitWithPhotoResponseDto>> CreateWithPhoto(
+        [FromForm] string name,
+        [FromForm] string? occasion,
+        [FromForm] string? season,
+        [FromForm] string? weatherCondition,
+        [FromForm] IFormFile photo)
+    {
+        var userId = GetUserId();
+        
+        if (photo == null || photo.Length == 0)
+        {
+            return BadRequest(new BaseCommandResponse 
+            { 
+                Success = false, 
+                Message = "Photo is required",
+                Errors = new List<string> { "Photo file is required" }
+            });
+        }
+
+        var command = new CreateOutfitWithPhotoCommand 
+        { 
+            UserId = userId, 
+            Name = name,
+            Occasion = occasion,
+            Season = season,
+            WeatherCondition = weatherCondition,
+            Photo = photo
+        };
+        
+        var response = await _mediator.Send(command);
+
+        if (response == null)
+            return BadRequest(new BaseCommandResponse 
+            { 
+                Success = false, 
+                Message = "Failed to create outfit with photo" 
+            });
+
+        _logger.LogInformation("User {UserId} created outfit {OutfitId} with photo", userId, response.Id);
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 

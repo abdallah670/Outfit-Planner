@@ -1,0 +1,113 @@
+<h2 mat-dialog-title>Add Event</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="eventForm" class="event-form">
+    <!-- Event Title -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Event Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter event title">
+      <mat-error *ngIf="eventForm.get('title')?.invalid && eventForm.get('title')?.touched">
+        Title is required (min 2 characters)
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Event Date -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="eventDate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Time Row -->
+    <div class="time-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Start Time</mat-label>
+        <input matInput formControlName="startTime" type="time">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End Time</mat-label>
+        <input matInput formControlName="endTime" type="time">
+      </mat-form-field>
+    </div>
+
+    <!-- Event Type -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Event Type</mat-label>
+      <mat-select formControlName="eventType">
+        <mat-option *ngFor="let type of eventTypeOptions" [value]="type.value">
+          {{ type.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Location -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Location (Optional)</mat-label>
+      <input matInput formControlName="location" placeholder="Enter location">
+      <mat-icon matSuffix>location_on</mat-icon>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description (Optional)</mat-label>
+      <textarea matInput formControlName="description" rows="2" placeholder="Enter description"></textarea>
+    </mat-form-field>
+
+    <!-- Associate with Outfit Checkbox -->
+    <div class="outfit-section">
+      <mat-checkbox formControlName="associateOutfit" color="primary">
+        Associate with an outfit
+      </mat-checkbox>
+    </div>
+
+    <!-- Outfit Selection (shown when checkbox is checked) -->
+    <div class="outfit-selection" *ngIf="associateWithOutfit()">
+      <div class="outfit-label">Select an outfit:</div>
+      
+      <div class="outfit-list">
+        <div 
+          class="outfit-item" 
+          *ngFor="let outfit of data.outfits"
+          [class.selected]="isOutfitSelected(outfit.id)"
+          (click)="selectOutfit(outfit.id)"
+        >
+          <img 
+            [src]="outfit.imageUrl || '/outfit_placeholder.png'" 
+            class="outfit-thumb"
+            [alt]="outfit.name"
+          />
+          <div class="outfit-info">
+            <div class="outfit-name">{{ outfit.name }}</div>
+            <div class="outfit-occasion" *ngIf="outfit.occasion">{{ outfit.occasion }}</div>
+          </div>
+          <mat-icon *ngIf="isOutfitSelected(outfit.id)" class="check-icon">check_circle</mat-icon>
+        </div>
+      </div>
+
+      <div class="selected-outfit" *ngIf="selectedOutfitId()">
+        <mat-icon>checkroom</mat-icon>
+        Selected: <strong>{{ getSelectedOutfitName() }}</strong>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes (Optional)</mat-label>
+      <textarea matInput formControlName="notes" rows="2" placeholder="Add notes..."></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button 
+    mat-flat-button 
+    color="primary" 
+    (click)="onSubmit()"
+    [disabled]="!canSubmit"
+  >
+    Add Event
+  </button>
+</mat-dialog-actions>

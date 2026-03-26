@@ -7,11 +7,13 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { WearEventUseCases } from '../../../domain/usecases/wear-event.usecases';
 import { WearEvent, CalendarEvent, MonthlyStats, CalendarEventItem, CreateCalendarEventRequest } from '../../../domain/entities/wear-event.entity';
+import { WeatherService } from '../../services/weather.service';
 
 @Injectable()
 export class CalendarEffects {
   private actions$ = inject(Actions);
   private wearEventUseCases = inject(WearEventUseCases);
+  private weatherService = inject(WeatherService);
   private router = inject(Router);
 
   loadScheduledOutfits$ = createEffect(
@@ -312,5 +314,28 @@ export class CalendarEffects {
         }),
       ),
     { dispatch: false },
+  );
+
+  // ==================== Weather ====================
+
+  loadWeatherForecast$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.loadWeatherForecast),
+        mergeMap((action: ReturnType<typeof CalendarActions.loadWeatherForecast>) =>
+          this.weatherService.getWeatherForMonth(action.year, action.month).pipe(
+            map((weatherData: Map<string, import('../../../domain/entities/wear-event.entity').WeatherData>) => 
+              CalendarActions.loadWeatherForecastSuccess({ weatherData })
+            ),
+            catchError((error) =>
+              of(
+                CalendarActions.loadWeatherForecastFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
   );
 }

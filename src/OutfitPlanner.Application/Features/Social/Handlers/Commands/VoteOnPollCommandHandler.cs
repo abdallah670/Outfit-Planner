@@ -77,9 +77,8 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
                 return response;
             }
 
-            // 3. Check user hasn't already voted on this poll
-            var existingVotes = await _voteRepository.GetByPollIdAsync(request.PollId);
-            var hasVoted = existingVotes.Any(v => v.VoterId == request.UserId);
+            // 3. Check user hasn't already voted on this poll (efficient server-side check)
+            var hasVoted = await _voteRepository.HasUserVotedAsync(request.PollId, request.UserId);
             if (hasVoted)
             {
                 response.Success = false;

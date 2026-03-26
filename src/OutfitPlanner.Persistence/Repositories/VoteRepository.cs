@@ -19,4 +19,9 @@ public class VoteRepository : GenericRepository<Vote>, IVoteRepository
     {
         return await _dbSet.Where(v => v.OptionId == optionId).ToListAsync();
     }
+
+    public async Task<bool> HasUserVotedAsync(Guid pollId, string userId)
+    {
+        return await _dbSet.AnyAsync(v => v.PollId == pollId && v.VoterId == userId);
+    }
 }

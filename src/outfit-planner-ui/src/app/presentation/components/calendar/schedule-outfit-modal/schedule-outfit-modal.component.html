@@ -1,53 +1,251 @@
 <h2 mat-dialog-title>Schedule Outfit</h2>
 
-<mat-dialog-content>
-  <form [formGroup]="scheduleForm" class="schedule-form">
-    <!-- Outfit Selection -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Select Outfit</mat-label>
-      <mat-select formControlName="outfitId" required>
-        <mat-option *ngFor="let outfit of data.outfits" [value]="outfit.id">
-          {{ outfit.name }}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="scheduleForm.get('outfitId')?.hasError('required')">
-        Please select an outfit
-      </mat-error>
-    </mat-form-field>
+<mat-dialog-content class="schedule-outfit-modal">
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button 
+      type="button"
+      class="tab-btn" 
+      [class.active]="activeTab() === 'existing'"
+      (click)="setTab('existing')">
+      <mat-icon>checkroom</mat-icon>
+      Select Existing
+    </button>
+    <button 
+      type="button"
+      class="tab-btn" 
+      [class.active]="activeTab() === 'create'"
+      (click)="setTab('create')">
+      <mat-icon>add</mat-icon>
+      Create New
+    </button>
+  </div>
 
-    <!-- Date Picker -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Date</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="scheduledDate" required>
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      <mat-error *ngIf="scheduleForm.get('scheduledDate')?.hasError('required')">
-        Please select a date
-      </mat-error>
-    </mat-form-field>
+  <!-- TAB 1: Select Existing Outfit -->
+  <div *ngIf="activeTab() === 'existing'" class="tab-content">
+    <!-- Search -->
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input 
+        type="text" 
+        placeholder="Search outfits..." 
+        [value]="searchQuery()"
+        (input)="onSearchChange($any($event).target.value)">
+    </div>
 
-    <!-- Occasion -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Occasion</mat-label>
-      <mat-select formControlName="occasion">
-        <mat-option value="">None</mat-option>
-        <mat-option *ngFor="let occasion of occasions" [value]="occasion">
-          {{ occasion }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <!-- Outfit Grid -->
+    <div class="outfits-grid">
+      <div 
+        *ngFor="let outfit of filteredOutfits()" 
+        class="outfit-card"
+        [class.selected]="isOutfitSelected(outfit.id)"
+        (click)="selectOutfit(outfit.id)">
+        <div class="outfit-image">
+          <img 
+            [src]="outfit.imageUrl || '/outfit_placeholder.png'" 
+            [alt]="outfit.name"
+            loading="lazy">
+          <div class="selection-indicator" *ngIf="isOutfitSelected(outfit.id)">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+        </div>
+        <div class="outfit-info">
+          <span class="outfit-name">{{ outfit.name }}</span>
+          <span class="outfit-occasion" *ngIf="outfit.occasion">{{ outfit.occasion }}</span>
+        </div>
+      </div>
+    </div>
 
-    <!-- Notes -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Notes</mat-label>
-      <textarea matInput formControlName="notes" rows="3" placeholder="Add any notes..."></textarea>
-    </mat-form-field>
-  </form>
+    <!-- Empty State -->
+    <div *ngIf="filteredOutfits().length === 0" class="empty-state">
+      <mat-icon>checkroom</mat-icon>
+      <p>No outfits found</p>
+      <button mat-button color="primary" (click)="setTab('create')">
+        Create your first outfit
+      </button>
+    </div>
+
+    <!-- Schedule Form -->
+    <form [formGroup]="scheduleForm" class="schedule-form">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="scheduledDate" required>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="scheduleForm.get('scheduledDate')?.hasError('required')">
+            Please select a date
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Occasion</mat-label>
+          <mat-select formControlName="occasion">
+            <mat-option value="">None</mat-option>
+            <mat-option *ngFor="let occasion of occasions" [value]="occasion">
+              {{ occasion }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="2" placeholder="Add any notes..."></textarea>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- TAB 2: Create New Outfit -->
+  <div *ngIf="activeTab() === 'create'" class="tab-content">
+    <form [formGroup]="createOutfitForm" class="create-form">
+      <!-- Outfit Name -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Outfit Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g., Weekend Casual" required>
+        <mat-error *ngIf="createOutfitForm.get('name')?.hasError('required')">
+          Outfit name is required
+        </mat-error>
+        <mat-error *ngIf="createOutfitForm.get('name')?.hasError('minlength')">
+          Name must be at least 2 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Create Mode Toggle -->
+      <div class="create-mode-toggle">
+        <button 
+          type="button"
+          class="mode-btn" 
+          [class.active]="createMode() === 'photo'"
+          (click)="setCreateMode('photo')">
+          <mat-icon>photo_camera</mat-icon>
+          Upload Photo
+        </button>
+        <button 
+          type="button"
+          class="mode-btn" 
+          [class.active]="createMode() === 'items'"
+          (click)="setCreateMode('items')">
+          <mat-icon>layers</mat-icon>
+          Build from Items
+        </button>
+      </div>
+
+      <!-- MODE 1: Photo Upload -->
+      <div *ngIf="createMode() === 'photo'" class="photo-upload-section">
+        <div 
+          class="upload-area"
+          [class.has-preview]="photoPreviewUrl()"
+          (click)="!photoPreviewUrl() && fileInput.click()">
+          
+          <input 
+            #fileInput
+            type="file" 
+            accept="image/jpeg,image/png,image/webp"
+            (change)="onFileSelected($event)"
+            hidden>
+          
+          <ng-container *ngIf="!photoPreviewUrl()">
+            <mat-icon>cloud_upload</mat-icon>
+            <p class="upload-text">Click to upload outfit photo</p>
+            <p class="upload-hint">JPEG, PNG or WebP (max 5MB)</p>
+          </ng-container>
+          
+          <ng-container *ngIf="photoPreviewUrl()">
+            <img [src]="photoPreviewUrl()" alt="Outfit preview" class="preview-image">
+            <button 
+              type="button"
+              class="remove-photo-btn"
+              (click)="$event.stopPropagation(); removePhoto()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- MODE 2: Build from Items -->
+      <div *ngIf="createMode() === 'items'" class="items-section">
+        <p class="section-hint">Select clothing items to combine:</p>
+        
+        <div class="clothing-items-grid" *ngIf="data.clothingItems && data.clothingItems.length > 0">
+          <div 
+            *ngFor="let item of data.clothingItems" 
+            class="clothing-item"
+            [class.selected]="isItemSelected(item.id)"
+            (click)="toggleClothingItem(item)">
+            <img 
+              [src]="item.imageUrl || '/clothing-placeholder.png'" 
+              [alt]="item.name"
+              loading="lazy">
+            <div class="item-overlay" *ngIf="isItemSelected(item.id)">
+              <mat-icon>check</mat-icon>
+            </div>
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-type">{{ item.type }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="!data.clothingItems || data.clothingItems.length === 0" class="empty-items">
+          <mat-icon>wardrobe</mat-icon>
+          <p>No clothing items in your wardrobe</p>
+          <p class="hint">Add items to your wardrobe first</p>
+        </div>
+
+        <div class="selected-count" *ngIf="selectedClothingItems().length > 0">
+          {{ selectedClothingItems().length }} item(s) selected
+        </div>
+      </div>
+
+      <!-- Date and Occasion -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="createPicker" formControlName="scheduledDate" required>
+          <mat-datepicker-toggle matIconSuffix [for]="createPicker"></mat-datepicker-toggle>
+          <mat-datepicker #createPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Occasion</mat-label>
+          <mat-select formControlName="occasion">
+            <mat-option value="">None</mat-option>
+            <mat-option *ngFor="let occasion of occasions" [value]="occasion">
+              {{ occasion }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="2" placeholder="Add any notes..."></textarea>
+      </mat-form-field>
+    </form>
+  </div>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions align="end" class="modal-actions">
   <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="scheduleForm.invalid">
-    Schedule
-  </button>
+  
+  <ng-container *ngIf="activeTab() === 'existing'">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onScheduleExisting()"
+      [disabled]="!canScheduleExisting">
+      Schedule Outfit
+    </button>
+  </ng-container>
+  
+  <ng-container *ngIf="activeTab() === 'create'">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onCreateAndSchedule()"
+      [disabled]="!canCreateAndSchedule">
+      <mat-icon *ngIf="isUploading()">hourglass_empty</mat-icon>
+      <span *ngIf="!isUploading()">Create & Schedule</span>
+      <span *ngIf="isUploading()">Creating...</span>
+    </button>
+  </ng-container>
 </mat-dialog-actions>

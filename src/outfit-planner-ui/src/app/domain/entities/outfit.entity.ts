@@ -82,3 +82,17 @@ export enum OutfitStatus {
   Archived = 'archived',
   Favorite = 'favorite',
 }
+
+/**
+ * Clothing Item entity for wardrobe
+ */
+export interface ClothingItem {
+  id: string;
+  name: string;
+  type: ClothingType;
+  category?: string;
+  color?: string;
+  imageUrl?: string;
+  userId?: string;
+  createdAt?: Date;
+}

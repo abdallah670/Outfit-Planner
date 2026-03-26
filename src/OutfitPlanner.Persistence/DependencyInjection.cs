@@ -83,6 +83,7 @@ public static class DependencyInjection
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IAppPreferencesRepository, AppPreferencesRepository>();
         services.AddScoped<INotificationSettingsRepository, NotificationSettingsRepository>();
+        services.AddScoped<IOutfitEngagementRepository, OutfitEngagementRepository>();
         services.AddScoped<DataSeeder>();
         return services;
     }
