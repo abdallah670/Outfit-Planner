@@ -91,11 +91,17 @@ export interface CalendarEventItem {
   location?: string;
   eventDate: Date;
   startTime?: string; // Formatted as "2:00 PM"
+  startTimeDisplay?: string;
   endTime?: string;   // Formatted as "4:00 PM"
+  endTimeDisplay?: string;
   eventType: CalendarEventType;
   wearEventId?: string;
   notes?: string;
   isRecurring: boolean;
+  // Associated outfit info (from backend)
+  outfitName?: string;
+  outfitImageUrl?: string;
+  hasOutfit?: boolean;
 }
 
 /**
@@ -121,8 +127,8 @@ export interface UpdateCalendarEventRequest {
   description?: string;
   location?: string;
   eventDate?: Date;
-  startTime?: string; // Format: "HH:mm:ss" (e.g., "14:30:00") for .NET TimeSpan compatibility
-  endTime?: string;   // Format: "HH:mm:ss" (e.g., "16:00:00") for .NET TimeSpan compatibility
+  startTime?: string | { hours: number; minutes: number; seconds: number } | null;
+  endTime?: string | { hours: number; minutes: number; seconds: number } | null;
   eventType?: CalendarEventType;
   outfitId?: string;
   notes?: string;
@@ -138,4 +144,58 @@ export interface WeatherData {
   icon: string;
   humidity?: number;
   windSpeed?: number;
+}
+// DTOs matching the API response structure
+export interface WearEventDto {
+  id: string;
+  userId: string;
+  outfitId?: string;
+  clothingItemId?: string;
+  eventId?: string;
+  wornAt: string;
+  durationMinutes?: number;
+  weatherCondition?: string;
+  rating?: number;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface CalendarEventDto {
+  id: string;
+  outfitId: string;
+  outfitName: string;
+  outfitImageUrl?: string;
+  scheduledDate: string;
+  worn: boolean;
+  occasion?: string;
+  weather?: {
+    temp: number;
+    icon: string;
+    condition: string;
+  };
+}
+
+export interface MonthlyStatsDto {
+  totalWorn: number;
+  totalScheduled: number;
+  uniqueOutfitsWorn: number;
+}
+
+/**
+ * DTO for Calendar Event Items (time-based events)
+ */
+export interface CalendarEventItemDto {
+  id: string;
+  title: string;
+  description?: string;
+  location?: string;
+  eventDate: string;
+  startTime?: string;
+  startTimeDisplay?: string;
+  endTime?: string;
+  endTimeDisplay?: string;
+  eventType: number;
+  wearEventId?: string;
+  notes?: string;
+  isRecurring: boolean;
 }

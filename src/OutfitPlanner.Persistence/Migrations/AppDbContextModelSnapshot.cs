@@ -553,6 +553,44 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.ToTable("Outfits");
                 });
 
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.OutfitComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("OutfitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OutfitId");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("OutfitComments", (string)null);
+                });
+
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.OutfitFeedback", b =>
                 {
                     b.Property<Guid>("Id")
@@ -621,6 +659,32 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.HasIndex("OutfitId");
 
                     b.ToTable("OutfitItems");
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.OutfitLike", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("OutfitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("OutfitId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("OutfitLikes", (string)null);
                 });
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.PollOption", b =>
@@ -697,16 +761,26 @@ namespace OutfitPlanner.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("CommentCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("LikeCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<Guid>("OutfitId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PollId")
+                    b.Property<Guid?>("PollId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("RankPosition")
@@ -727,6 +801,8 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.HasIndex("PollId");
 
                     b.HasIndex("Date", "RankPosition");
+
+                    b.HasIndex("Date", "TrendingScore");
 
                     b.HasIndex("OutfitId", "Date")
                         .IsUnique();
@@ -1184,6 +1260,32 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.OutfitComment", b =>
+                {
+                    b.HasOne("OutfitPlanner.Domain.Entities.Outfit", "Outfit")
+                        .WithMany()
+                        .HasForeignKey("OutfitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OutfitPlanner.Domain.Entities.OutfitComment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Outfit");
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.OutfitFeedback", b =>
                 {
                     b.HasOne("OutfitPlanner.Domain.Entities.Outfit", "Outfit")
@@ -1220,6 +1322,25 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Navigation("ClothingItem");
 
                     b.Navigation("Outfit");
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.OutfitLike", b =>
+                {
+                    b.HasOne("OutfitPlanner.Domain.Entities.Outfit", "Outfit")
+                        .WithMany()
+                        .HasForeignKey("OutfitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Outfit");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.PollOption", b =>
@@ -1260,8 +1381,7 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.HasOne("OutfitPlanner.Domain.Entities.ValidationPoll", "Poll")
                         .WithMany()
                         .HasForeignKey("PollId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Outfit");
 
@@ -1382,6 +1502,11 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("PollOptions");
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.OutfitComment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.PollOption", b =>

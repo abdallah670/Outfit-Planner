@@ -9,10 +9,10 @@ import {
 import {
   TrendingOutfit,
   OutfitEngagement,
-  VoteComment,
-  OutfitVoteResult,
-  UpdatePollRequest,
-} from '../../data/datasources/social.datasource';
+  OutfitComment,
+  AddCommentRequest,
+} from '../entities/social-engagement.entity';
+import { UpdatePollRequest } from '../../data/datasources/social.datasource';
 
 export const SOCIAL_REPOSITORY = new InjectionToken<SocialRepository>('SocialRepository');
 
@@ -50,17 +50,17 @@ export interface SocialRepository {
   /**
    * Like an outfit
    */
-  likeOutfit(outfitId: string): Observable<OutfitVoteResult>;
+  likeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }>;
 
   /**
    * Unlike an outfit
    */
-  unlikeOutfit(outfitId: string): Observable<OutfitVoteResult>;
+  unlikeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }>;
 
   /**
    * Comment on an outfit
    */
-  commentOnOutfit(outfitId: string, content: string): Observable<VoteComment>;
+  commentOnOutfit(outfitId: string, content: string): Observable<OutfitComment>;
 
   /**
    * Get outfit engagement stats
@@ -74,7 +74,7 @@ export interface SocialRepository {
     outfitId: string,
     page?: number,
     pageSize?: number,
-  ): Observable<{ items: VoteComment[]; totalCount: number }>;
+  ): Observable<{ items: OutfitComment[]; totalCount: number }>;
 
   /**
    * React to a vote/comment

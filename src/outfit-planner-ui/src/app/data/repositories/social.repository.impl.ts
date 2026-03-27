@@ -5,10 +5,6 @@ import {
 } from '../../domain/repositories/social.repository';
 import {
   SocialDataSource,
-  TrendingOutfit,
-  OutfitEngagement,
-  VoteComment,
-  OutfitVoteResult,
   UpdatePollRequest,
 } from '../datasources/social.datasource';
 import { Observable } from 'rxjs';
@@ -18,6 +14,11 @@ import {
   CastVoteRequest,
   CommandResponse,
 } from '../../domain/entities/validation-poll.entity';
+import {
+  TrendingOutfit,
+  OutfitEngagement,
+  OutfitComment,
+} from '../../domain/entities/social-engagement.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -47,15 +48,15 @@ export class SocialRepositoryImpl implements SocialRepository {
 
   // ============ Outfit Poll Methods ============
 
-  likeOutfit(outfitId: string): Observable<OutfitVoteResult> {
+  likeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }> {
     return this.socialDataSource.likeOutfit(outfitId);
   }
 
-  unlikeOutfit(outfitId: string): Observable<OutfitVoteResult> {
+  unlikeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }> {
     return this.socialDataSource.unlikeOutfit(outfitId);
   }
 
-  commentOnOutfit(outfitId: string, content: string): Observable<VoteComment> {
+  commentOnOutfit(outfitId: string, content: string): Observable<OutfitComment> {
     return this.socialDataSource.commentOnOutfit(outfitId, content);
   }
 
@@ -67,7 +68,7 @@ export class SocialRepositoryImpl implements SocialRepository {
     outfitId: string,
     page?: number,
     pageSize?: number,
-  ): Observable<{ items: VoteComment[]; totalCount: number }> {
+  ): Observable<{ items: OutfitComment[]; totalCount: number }> {
     return this.socialDataSource.getOutfitVotes(outfitId, page, pageSize);
   }
 

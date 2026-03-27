@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { SocialUseCases } from '../../../domain/usecases/social.usecases';
 import { ValidationPoll, CommandResponse } from '../../../domain/entities/validation-poll.entity';
+import { TrendingOutfit, OutfitComment } from '../../../domain/entities/social-engagement.entity';
 
 @Injectable()
 export class SocialEffects {
@@ -170,5 +171,100 @@ export class SocialEffects {
         }),
       ),
     { dispatch: false },
+  );
+
+  loadTrending$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(SocialActions.loadTrending),
+        mergeMap(() =>
+          this.socialUseCases.getTrendingOutfits().pipe(
+            map((outfits: TrendingOutfit[]) => SocialActions.loadTrendingSuccess({ outfits })),
+            catchError((error) =>
+              of(
+                SocialActions.loadTrendingFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  likeOutfit$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(SocialActions.likeOutfit),
+        mergeMap((action: ReturnType<typeof SocialActions.likeOutfit>) =>
+          this.socialUseCases.likeOutfit(action.outfitId).pipe(
+            map(() => SocialActions.likeOutfitSuccess({ outfitId: action.outfitId })),
+            catchError((error) =>
+              of(
+                SocialActions.likeOutfitFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  unlikeOutfit$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(SocialActions.unlikeOutfit),
+        mergeMap((action: ReturnType<typeof SocialActions.unlikeOutfit>) =>
+          this.socialUseCases.unlikeOutfit(action.outfitId).pipe(
+            map(() => SocialActions.unlikeOutfitSuccess({ outfitId: action.outfitId })),
+            catchError((error) =>
+              of(
+                SocialActions.unlikeOutfitFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  addComment$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(SocialActions.addComment),
+        mergeMap((action: ReturnType<typeof SocialActions.addComment>) =>
+          this.socialUseCases.addComment(action.outfitId, action.content).pipe(
+            map((comment: OutfitComment) => SocialActions.addCommentSuccess({ outfitId: action.outfitId, comment })),
+            catchError((error) =>
+              of(
+                SocialActions.addCommentFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
+  );
+
+  loadComments$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(SocialActions.loadComments),
+        mergeMap((action: ReturnType<typeof SocialActions.loadComments>) =>
+          this.socialUseCases.getComments(action.outfitId).pipe(
+            map((response: { items: OutfitComment[]; totalCount: number }) => SocialActions.loadCommentsSuccess({ outfitId: action.outfitId, comments: response.items })),
+            catchError((error) =>
+              of(
+                SocialActions.loadCommentsFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ) as Observable<Action>,
   );
 }

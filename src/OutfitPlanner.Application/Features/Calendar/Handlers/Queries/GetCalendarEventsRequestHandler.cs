@@ -37,16 +37,13 @@ public class GetCalendarEventsRequestHandler : IRequestHandler<GetCalendarEvents
                 outfit = await _unitOfWork.Outfits.GetByIdAsync(we.OutfitId.Value);
             }
             
-            var firstItem = outfit?.Items.FirstOrDefault();
-            var clothingItem = firstItem?.ClothingItem;
-            
             dtos.Add(new CalendarEventDto
             {
                 Id = we.Id,
                 UserId = we.UserId,
                 OutfitId = we.OutfitId,
                 OutfitName = outfit?.Name,
-                OutfitImageUrl = clothingItem?.ImageUrl,
+                OutfitImageUrl = outfit?.ImageUrl,
                 ClothingItemId = we.ClothingItemId,
                 WornAt = we.WornAt,
                 DurationMinutes = we.DurationMinutes,

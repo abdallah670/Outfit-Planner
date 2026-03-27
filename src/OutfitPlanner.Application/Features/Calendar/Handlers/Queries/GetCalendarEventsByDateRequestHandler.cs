@@ -40,13 +40,21 @@ public class GetCalendarEventsByDateRequestHandler
             Location = e.Location,
             EventDate = e.EventDate,
             StartTime = e.StartTime.HasValue 
+                ? e.StartTime.Value.ToString(@"hh\:mm\:ss") 
+                : null,
+            StartTimeDisplay = e.StartTime.HasValue 
                 ? DateTime.Today.Add(e.StartTime.Value).ToString("h:mm tt") 
                 : null,
             EndTime = e.EndTime.HasValue 
+                ? e.EndTime.Value.ToString(@"hh\:mm\:ss") 
+                : null,
+            EndTimeDisplay = e.EndTime.HasValue 
                 ? DateTime.Today.Add(e.EndTime.Value).ToString("h:mm tt") 
                 : null,
             EventType = (DtoCalendarEventType)e.EventType,
             WearEventId = e.WearEventId,
+            OutfitName = e.WearEvent?.Outfit?.Name,
+            OutfitImageUrl = e.WearEvent?.Outfit?.ImageUrl,
             Notes = e.Notes,
             IsRecurring = e.IsRecurring
         };
@@ -86,13 +94,21 @@ public class GetCalendarEventsForMonthRequestHandler
             Location = e.Location,
             EventDate = e.EventDate,
             StartTime = e.StartTime.HasValue 
+                ? e.StartTime.Value.ToString(@"hh\:mm\:ss") 
+                : null,
+            StartTimeDisplay = e.StartTime.HasValue 
                 ? DateTime.Today.Add(e.StartTime.Value).ToString("h:mm tt") 
                 : null,
             EndTime = e.EndTime.HasValue 
+                ? e.EndTime.Value.ToString(@"hh\:mm\:ss") 
+                : null,
+            EndTimeDisplay = e.EndTime.HasValue 
                 ? DateTime.Today.Add(e.EndTime.Value).ToString("h:mm tt") 
                 : null,
             EventType = (DtoCalendarEventType)e.EventType,
             WearEventId = e.WearEventId,
+            OutfitName = e.WearEvent?.Outfit?.Name,
+            OutfitImageUrl = e.WearEvent?.Outfit?.ImageUrl,
             Notes = e.Notes,
             IsRecurring = e.IsRecurring
         };

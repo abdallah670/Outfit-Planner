@@ -49,7 +49,7 @@ public class GetMonthlyStatsRequestHandler : IRequestHandler<GetMonthlyStatsRequ
             Year = request.Year,
             Month = request.Month,
             TotalWorn = wornEvents.Count,
-            TotalScheduled = scheduledEvents.Count,
+            TotalScheduled = events.Count, // Total events scheduled for the month (past + future)
             UniqueOutfitsWorn = wornEvents.Where(we => we.OutfitId.HasValue).Select(we => we.OutfitId).Distinct().Count(),
             FavoriteOutfitId = favoriteGroup?.Key,
             FavoriteOutfitName = favoriteOutfitName,

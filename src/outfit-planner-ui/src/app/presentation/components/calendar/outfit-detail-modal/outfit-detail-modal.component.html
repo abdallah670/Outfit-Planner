@@ -4,7 +4,7 @@
   <div class="outfit-detail">
     <!-- Outfit Image -->
     <div class="outfit-image" *ngIf="data.event.outfitImageUrl">
-      <img [src]="data.event.outfitImageUrl" [alt]="data.event.outfitName">
+      <img [src]="data.event.outfitImageUrl" [alt]="data.event.outfitName" (error)="handleImageError($event)">
     </div>
     
     <!-- Outfit Info -->

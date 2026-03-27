@@ -38,8 +38,7 @@ public class MarkAsWornCommandHandler : IRequestHandler<MarkAsWornCommand, BaseC
         wearEvent.WeatherCondition = request.Request.WeatherCondition ?? string.Empty;
         wearEvent.Rating = request.Request.Rating;
         wearEvent.Notes = request.Request.Notes ?? wearEvent.Notes;
-        wearEvent.WornAt = DateTimeOffset.UtcNow;
-
+        
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         response.Success = true;

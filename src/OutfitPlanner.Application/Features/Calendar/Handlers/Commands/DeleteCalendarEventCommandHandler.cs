@@ -7,6 +7,10 @@ using OutfitPlanner.Application.Responses;
 
 namespace OutfitPlanner.Application.Features.Calendar.Handlers.Commands;
 
+/// <summary>
+/// Handler for deleting a calendar event (time-based event)
+/// Also deletes associated WearEvent if one exists
+/// </summary>
 public class DeleteCalendarEventCommandHandler : IRequestHandler<DeleteCalendarEventCommand, BaseCommandResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -22,23 +26,35 @@ public class DeleteCalendarEventCommandHandler : IRequestHandler<DeleteCalendarE
     {
         var response = new BaseCommandResponse();
 
-        var wearEvent = await _unitOfWork.WearEvents.GetByIdAsync(request.Id);
-        if (wearEvent == null)
+        // Get the CalendarEvent (not WearEvent!)
+        var calendarEvent = await _unitOfWork.CalendarEvents.GetByIdAsync(request.Id);
+        if (calendarEvent == null)
         {
-            throw new NotFoundException("Event not found", request.Id);
+            throw new NotFoundException("Calendar event not found", request.Id);
         }
 
-        if (wearEvent.UserId != request.UserId)
+        if (calendarEvent.UserId != request.UserId)
         {
             throw new Exceptions.UnauthorizedAccessException("You do not have permission to delete this event");
         }
 
-        await _unitOfWork.WearEvents.RemoveAsync(wearEvent);
+        // If there's an associated WearEvent, delete it first
+        if (calendarEvent.WearEventId.HasValue)
+        {
+            var wearEvent = await _unitOfWork.WearEvents.GetByIdAsync(calendarEvent.WearEventId.Value);
+            if (wearEvent != null)
+            {
+                await _unitOfWork.WearEvents.RemoveAsync(wearEvent);
+            }
+        }
+
+        // Delete the CalendarEvent
+        await _unitOfWork.CalendarEvents.RemoveAsync(calendarEvent);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         response.Success = true;
-        response.Message = "Event deleted successfully";
-        response.Id = wearEvent.Id;
+        response.Message = "Calendar event deleted successfully";
+        response.Id = calendarEvent.Id;
 
         return response;
     }

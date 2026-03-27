@@ -115,4 +115,11 @@ export class WearEventUseCases {
   deleteCalendarEvent(id: string): Observable<void> {
     return this.wearEventRepository.deleteCalendarEvent(id);
   }
+
+  /**
+   * Get a single calendar event by ID
+   */
+  getCalendarEventById(id: string): Observable<CalendarEventItem> {
+    return this.wearEventRepository.getCalendarEventById(id);
+  }
 }

@@ -10,6 +10,11 @@ import {
   CastVoteRequest,
   CommandResponse,
 } from '../entities/validation-poll.entity';
+import {
+  TrendingOutfit,
+  OutfitEngagement,
+  OutfitComment,
+} from '../entities/social-engagement.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -45,5 +50,40 @@ export class SocialUseCases {
    */
   voteOnPoll(pollId: string, dto: CastVoteRequest): Observable<CommandResponse> {
     return this.socialRepository.vote(pollId, dto);
+  }
+
+  /**
+   * Get trending outfits
+   */
+  getTrendingOutfits(): Observable<TrendingOutfit[]> {
+    return this.socialRepository.getTrendingOutfits();
+  }
+
+  /**
+   * Like an outfit
+   */
+  likeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }> {
+    return this.socialRepository.likeOutfit(outfitId);
+  }
+
+  /**
+   * Unlike an outfit
+   */
+  unlikeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }> {
+    return this.socialRepository.unlikeOutfit(outfitId);
+  }
+
+  /**
+   * Add a comment
+   */
+  addComment(outfitId: string, content: string): Observable<OutfitComment> {
+    return this.socialRepository.commentOnOutfit(outfitId, content);
+  }
+
+  /**
+   * Get comments for an outfit
+   */
+  getComments(outfitId: string, page = 1, pageSize = 20): Observable<{ items: OutfitComment[]; totalCount: number }> {
+    return this.socialRepository.getOutfitVotes(outfitId, page, pageSize);
   }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -13,6 +13,15 @@ namespace OutfitPlanner.Persistence.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Votes_OptionId",
                 table: "Votes");
+
+            // Cleanup duplicate votes: keep only the most recent vote for each (OptionId, VoterId)
+            migrationBuilder.Sql(@"
+                DELETE FROM Votes 
+                WHERE Id NOT IN (
+                    SELECT MIN(Id) 
+                    FROM Votes 
+                    GROUP BY OptionId, VoterId
+                )");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Votes_OptionId_VoterId",

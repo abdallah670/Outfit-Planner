@@ -36,6 +36,17 @@ export const selectExpiredPolls = createSelector(
     polls.filter((poll) => poll.status === 'expired'),
 );
 
+export const selectTrendingOutfits = createSelector(
+  selectSocialState,
+  (state: SocialState) => state?.trendingOutfits || [],
+);
+
+export const selectCommentsByOutfit = (outfitId: string) =>
+  createSelector(
+    selectSocialState,
+    (state: SocialState) => state?.commentsByOutfit[outfitId] || [],
+  );
+
 export const selectPollById = (pollId: string) =>
   createSelector(selectAllPolls, (polls: ValidationPoll[]): ValidationPoll | undefined =>
     polls.find((poll) => poll.id === pollId),

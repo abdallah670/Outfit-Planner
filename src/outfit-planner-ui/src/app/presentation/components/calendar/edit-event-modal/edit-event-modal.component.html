@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>Edit Event</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="eventForm" class="event-form">
+    <!-- Title -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Event Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter event title">
+      <mat-error *ngIf="eventForm.get('title')?.hasError('required')">
+        Title is required
+      </mat-error>
+      <mat-error *ngIf="eventForm.get('title')?.hasError('minlength')">
+        Title must be at least 2 characters
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Event Type -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Event Type</mat-label>
+      <mat-select formControlName="eventType">
+        <mat-option *ngFor="let type of eventTypes" [value]="type.value">
+          {{ type.label }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="eventForm.get('eventType')?.hasError('required')">
+        Event type is required
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Date -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="eventDate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="eventForm.get('eventDate')?.hasError('required')">
+        Date is required
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Time Row -->
+    <div class="time-row">
+      <mat-form-field appearance="outline" class="time-field">
+        <mat-label>Start Time</mat-label>
+        <input matInput type="time" formControlName="startTime">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="time-field">
+        <mat-label>End Time</mat-label>
+        <input matInput type="time" formControlName="endTime">
+      </mat-form-field>
+    </div>
+
+    <!-- Location -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Location</mat-label>
+      <input matInput formControlName="location" placeholder="Enter location">
+      <mat-icon matSuffix>location_on</mat-icon>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Enter description"></textarea>
+    </mat-form-field>
+
+    <!-- Notes -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" rows="2" placeholder="Enter notes"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="eventForm.invalid">
+    Save Changes
+  </button>
+</mat-dialog-actions>

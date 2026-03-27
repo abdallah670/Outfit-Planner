@@ -1,0 +1,42 @@
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.time-row {
+  display: flex;
+  gap: 16px;
+
+  .time-field {
+    flex: 1;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 0;
+}
+
+// Snackbar styles
+:host ::ng-deep .success-snackbar {
+  background-color: #4caf50;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+:host ::ng-deep .error-snackbar {
+  background-color: #f44336;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}

@@ -11,7 +11,9 @@ public class CalendarEventItemDto
     public string? Location { get; set; }
     public DateTimeOffset EventDate { get; set; }
     public string? StartTime { get; set; }
+    public string? StartTimeDisplay { get; set; }
     public string? EndTime { get; set; }
+    public string? EndTimeDisplay { get; set; }
     public CalendarEventType EventType { get; set; }
     public string EventTypeLabel => EventType.ToString();
 
@@ -35,8 +37,8 @@ public class CreateCalendarEventRequest
     public string? Description { get; set; }
     public string? Location { get; set; }
     public DateTimeOffset EventDate { get; set; }
-    public TimeSpan? StartTime { get; set; }
-    public TimeSpan? EndTime { get; set; }
+    public string? StartTime { get; set; }  // Format: "HH:mm:ss" for API compatibility
+    public string? EndTime { get; set; }    // Format: "HH:mm:ss" for API compatibility
     public CalendarEventType EventType { get; set; } = CalendarEventType.General;
     public Guid? OutfitId { get; set; }
     public string? Notes { get; set; }

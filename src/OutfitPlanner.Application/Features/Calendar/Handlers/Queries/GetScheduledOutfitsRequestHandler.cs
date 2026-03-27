@@ -21,27 +21,21 @@ public class GetScheduledOutfitsRequestHandler : IRequestHandler<GetScheduledOut
     {
         var startDate = new DateTimeOffset(new DateTime(request.Year, request.Month, 1));
         var endDate = startDate.AddMonths(1);
-        var now = DateTimeOffset.UtcNow;
-
         var wearEvents = await _unitOfWork.WearEvents
             .FindAsync(we => we.UserId == request.UserId 
                 && we.WornAt >= startDate 
-                && we.WornAt < endDate
-                && we.WornAt > now);
+                && we.WornAt < endDate);
 
         var dtos = new List<ScheduledOutfitDto>();
         foreach (var we in wearEvents)
         {
             var outfit = we.OutfitId.HasValue ? await _unitOfWork.Outfits.GetByIdAsync(we.OutfitId.Value) : null;
-            var firstItem = outfit?.Items.FirstOrDefault();
-            var clothingItem = firstItem?.ClothingItem;
-            
             dtos.Add(new ScheduledOutfitDto
             {
                 Id = we.Id,
                 OutfitId = we.OutfitId ?? Guid.Empty,
                 OutfitName = outfit?.Name ?? "Unknown",
-                OutfitImageUrl = clothingItem?.ImageUrl,
+                OutfitImageUrl = outfit?.ImageUrl,
                 Occasion = outfit?.Occasion.ToString(),
                 ScheduledDate = we.WornAt,
                 Notes = we.Notes,

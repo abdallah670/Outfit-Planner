@@ -367,6 +367,24 @@ $radius-xl: 12px;
   padding-left: 4px;
 }
 
+.grid-event-title {
+  font-size: 10px;
+  color: $color-primary;
+  padding: 2px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  .dot {
+    font-size: 14px;
+    line-height: 1;
+  }
+}
+
 // ============================================
 // Sidebar Section
 // ============================================

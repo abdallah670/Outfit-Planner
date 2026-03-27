@@ -1,17 +1,19 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Action } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { CalendarActions } from './calendar.actions';
-import { catchError, map, mergeMap, of, Observable, tap } from 'rxjs';
+import { catchError, map, mergeMap, of, Observable, tap, withLatestFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { WearEventUseCases } from '../../../domain/usecases/wear-event.usecases';
 import { WearEvent, CalendarEvent, MonthlyStats, CalendarEventItem, CreateCalendarEventRequest } from '../../../domain/entities/wear-event.entity';
 import { WeatherService } from '../../services/weather.service';
+import { selectCurrentYear, selectCurrentMonth } from './calendar.selectors';
 
 @Injectable()
 export class CalendarEffects {
   private actions$ = inject(Actions);
+  private store = inject(Store);
   private wearEventUseCases = inject(WearEventUseCases);
   private weatherService = inject(WeatherService);
   private router = inject(Router);
@@ -110,11 +112,16 @@ export class CalendarEffects {
       ) as Observable<Action>,
   );
 
+  // FIXED: Reload calendar data after scheduling outfit
   scheduleOutfitSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(CalendarActions.scheduleOutfitSuccess),
-        tap(() => {
+        withLatestFrom(
+          this.store.select(selectCurrentYear),
+          this.store.select(selectCurrentMonth)
+        ),
+        tap(([_action, year, month]: [ReturnType<typeof CalendarActions.scheduleOutfitSuccess>, number, number]) => {
           Swal.fire({
             title: 'Success!',
             text: 'Outfit scheduled successfully.',
@@ -123,6 +130,9 @@ export class CalendarEffects {
             color: '#2d3436',
             confirmButtonColor: '#f8b4c4',
           });
+          // Reload calendar data
+          this.store.dispatch(CalendarActions.loadScheduledOutfits({ year, month }));
+          this.store.dispatch(CalendarActions.loadMonthlyStats({ year, month }));
         }),
       ),
     { dispatch: false },
@@ -147,6 +157,50 @@ export class CalendarEffects {
       ) as Observable<Action>,
   );
 
+  // FIXED: Reload calendar data after marking as worn
+  markAsWornSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.markAsWornSuccess),
+        withLatestFrom(
+          this.store.select(selectCurrentYear),
+          this.store.select(selectCurrentMonth)
+        ),
+        tap(([_action, year, month]: [ReturnType<typeof CalendarActions.markAsWornSuccess>, number, number]) => {
+          Swal.fire({
+            title: 'Success!',
+            text: 'Outfit marked as worn successfully.',
+            icon: 'success',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
+          });
+          // Reload calendar data to refresh stats and view
+          this.store.dispatch(CalendarActions.loadScheduledOutfits({ year, month }));
+          this.store.dispatch(CalendarActions.loadMonthlyStats({ year, month }));
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  markAsWornFailure$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CalendarActions.markAsWornFailure),
+        tap((action: ReturnType<typeof CalendarActions.markAsWornFailure>) => {
+          Swal.fire({
+            title: 'Error!',
+            text: `Failed to mark outfit as worn: ${action.error}`,
+            icon: 'error',
+            background: '#ffffff',
+            color: '#2d3436',
+            confirmButtonColor: '#f8b4c4',
+          });
+        }),
+      ),
+    { dispatch: false },
+  );
+
   deleteWearEvent$ = createEffect(
     () =>
       this.actions$.pipe(
@@ -166,11 +220,16 @@ export class CalendarEffects {
       ) as Observable<Action>,
   );
 
+  // FIXED: Reload calendar data after deleting wear event
   deleteWearEventSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(CalendarActions.deleteWearEventSuccess),
-        tap(() => {
+        withLatestFrom(
+          this.store.select(selectCurrentYear),
+          this.store.select(selectCurrentMonth)
+        ),
+        tap(([_action, year, month]: [ReturnType<typeof CalendarActions.deleteWearEventSuccess>, number, number]) => {
           Swal.fire({
             title: 'Deleted!',
             text: 'Event has been deleted.',
@@ -179,6 +238,9 @@ export class CalendarEffects {
             color: '#2d3436',
             confirmButtonColor: '#f8b4c4',
           });
+          // Reload calendar data
+          this.store.dispatch(CalendarActions.loadScheduledOutfits({ year, month }));
+          this.store.dispatch(CalendarActions.loadMonthlyStats({ year, month }));
         }),
       ),
     { dispatch: false },
@@ -224,11 +286,16 @@ export class CalendarEffects {
       ) as Observable<Action>,
   );
 
+  // FIXED: Reload calendar events after creating event
   createCalendarEventSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(CalendarActions.createCalendarEventSuccess),
-        tap(() => {
+        withLatestFrom(
+          this.store.select(selectCurrentYear),
+          this.store.select(selectCurrentMonth)
+        ),
+        tap(([_action, year, month]: [ReturnType<typeof CalendarActions.createCalendarEventSuccess>, number, number]) => {
           Swal.fire({
             title: 'Success!',
             text: 'Calendar event created successfully.',
@@ -237,6 +304,8 @@ export class CalendarEffects {
             color: '#2d3436',
             confirmButtonColor: '#f8b4c4',
           });
+          // Reload calendar events
+          this.store.dispatch(CalendarActions.loadCalendarEvents({ year, month }));
         }),
       ),
     { dispatch: false },
@@ -261,11 +330,16 @@ export class CalendarEffects {
       ) as Observable<Action>,
   );
 
+  // FIXED: Reload calendar events after updating event
   updateCalendarEventSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(CalendarActions.updateCalendarEventSuccess),
-        tap(() => {
+        withLatestFrom(
+          this.store.select(selectCurrentYear),
+          this.store.select(selectCurrentMonth)
+        ),
+        tap(([_action, year, month]: [ReturnType<typeof CalendarActions.updateCalendarEventSuccess>, number, number]) => {
           Swal.fire({
             title: 'Updated!',
             text: 'Calendar event updated successfully.',
@@ -274,6 +348,8 @@ export class CalendarEffects {
             color: '#2d3436',
             confirmButtonColor: '#f8b4c4',
           });
+          // Reload calendar events
+          this.store.dispatch(CalendarActions.loadCalendarEvents({ year, month }));
         }),
       ),
     { dispatch: false },
@@ -298,11 +374,16 @@ export class CalendarEffects {
       ) as Observable<Action>,
   );
 
+  // FIXED: Reload calendar events after deleting event
   deleteCalendarEventSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(CalendarActions.deleteCalendarEventSuccess),
-        tap(() => {
+        withLatestFrom(
+          this.store.select(selectCurrentYear),
+          this.store.select(selectCurrentMonth)
+        ),
+        tap(([_action, year, month]: [ReturnType<typeof CalendarActions.deleteCalendarEventSuccess>, number, number]) => {
           Swal.fire({
             title: 'Deleted!',
             text: 'Calendar event has been deleted.',
@@ -311,6 +392,8 @@ export class CalendarEffects {
             color: '#2d3436',
             confirmButtonColor: '#f8b4c4',
           });
+          // Reload calendar events
+          this.store.dispatch(CalendarActions.loadCalendarEvents({ year, month }));
         }),
       ),
     { dispatch: false },

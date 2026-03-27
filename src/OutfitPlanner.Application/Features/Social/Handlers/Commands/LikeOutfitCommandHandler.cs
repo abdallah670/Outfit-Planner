@@ -1,6 +1,7 @@
 using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Responses;
+using OutfitPlanner.Application.Features.Social.Requests.Commands;
 
 namespace OutfitPlanner.Application.Features.Social.Handlers.Commands;
 

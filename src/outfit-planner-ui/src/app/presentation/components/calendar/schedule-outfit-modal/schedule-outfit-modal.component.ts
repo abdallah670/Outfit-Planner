@@ -12,7 +12,21 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import { CalendarActions } from '../../../../core/state/calendar/calendar.actions';
-import { Outfit, ClothingItem, OccasionType } from '../../../../domain/entities/outfit.entity';
+import { Outfit, ClothingItem } from '../../../../domain/entities/outfit.entity';
+
+// Occasion types must match backend OccasionType enum exactly
+const OCCASION_TYPES = [
+  'Casual',
+  'BusinessCasual', 
+  'Formal',
+  'Athletic',
+  'Social',
+  'Work',
+  'Date',
+  'Travel'
+] as const;
+
+type OccasionTypeValue = typeof OCCASION_TYPES[number];
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
@@ -47,7 +61,7 @@ type CreateMode = 'photo' | 'items';
 export class ScheduleOutfitModalComponent implements OnInit {
   scheduleForm!: FormGroup;
   createOutfitForm!: FormGroup;
-  occasions = Object.values(OccasionType);
+  occasions = [...OCCASION_TYPES];
   
   // Tab management
   activeTab = signal<'existing' | 'create'>('existing');
@@ -85,15 +99,15 @@ export class ScheduleOutfitModalComponent implements OnInit {
     // Form for scheduling existing outfit
     this.scheduleForm = this.fb.group({
       scheduledDate: [this.data.date, Validators.required],
-      occasion: [''],
+      occasion: ['Casual', Validators.required],
       notes: [''],
     });
 
     // Form for creating new outfit
     this.createOutfitForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      occasion: [''],
-      season: [''],
+      occasion: ['Casual', Validators.required],
+      season: ['AllSeason'],
       scheduledDate: [this.data.date, Validators.required],
       notes: [''],
     });
@@ -270,8 +284,8 @@ export class ScheduleOutfitModalComponent implements OnInit {
           request: {
             outfitId: response.id,
             scheduledDate: formValue.scheduledDate,
-            occasion: formValue.occasion,
-            notes: formValue.notes,
+            occasion: formValue.occasion || undefined,
+            notes: formValue.notes || undefined,
           },
         }),
       );
@@ -300,7 +314,7 @@ export class ScheduleOutfitModalComponent implements OnInit {
       const createOutfitRequest = {
         name: formValue.name,
         occasion: formValue.occasion || 'Casual',
-        season: formValue.season || 'AllSeason',
+        season: formValue.season || 'Spring',
         weatherCondition: '',
         items,
       };
@@ -318,8 +332,8 @@ export class ScheduleOutfitModalComponent implements OnInit {
           request: {
             outfitId: response.id,
             scheduledDate: formValue.scheduledDate,
-            occasion: formValue.occasion,
-            notes: formValue.notes,
+            occasion: formValue.occasion || undefined,
+            notes: formValue.notes || undefined,
           },
         }),
       );
