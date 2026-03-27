@@ -19,6 +19,14 @@ public class TrendingOutfitConfiguration : IEntityTypeConfiguration<TrendingOutf
         builder.Property(x => x.VoteCount)
             .IsRequired();
         
+        builder.Property(x => x.LikeCount)
+            .IsRequired()
+            .HasDefaultValue(0);
+        
+        builder.Property(x => x.CommentCount)
+            .IsRequired()
+            .HasDefaultValue(0);
+        
         builder.Property(x => x.ReactionCount)
             .IsRequired();
         
@@ -36,11 +44,13 @@ public class TrendingOutfitConfiguration : IEntityTypeConfiguration<TrendingOutf
         builder.HasOne(x => x.Poll)
             .WithMany()
             .HasForeignKey(x => x.PollId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
         
         builder.HasIndex(x => new { x.OutfitId, x.Date })
             .IsUnique();
         
+        builder.HasIndex(x => new { x.Date, x.TrendingScore });
         builder.HasIndex(x => new { x.Date, x.RankPosition });
     }
 }

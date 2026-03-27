@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using OutfitPlanner.Api.Middleware;
+using OutfitPlanner.Api.Converters;
 using OutfitPlanner.Infrastructure;
 using OutfitPlanner.Persistence.Data;
 using Serilog;
@@ -8,6 +9,7 @@ using System.Reflection;
 using OutfitPlanner.Application;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
+using System.Text.Json.Serialization;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -18,7 +20,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
+        options.JsonSerializerOptions.Converters.Add(new NullableTimeSpanConverter());
+    });
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(options =>
 {

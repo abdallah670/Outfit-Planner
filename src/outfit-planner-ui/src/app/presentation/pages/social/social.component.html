@@ -25,25 +25,37 @@
       <aside class="community-feed">
         <div class="section-header">
           <h2>Community Feed</h2>
-          <span class="badge">3 new</span>
+          <span class="badge" *ngIf="trendingOutfits().length > 0">{{ trendingOutfits().length }} trending</span>
         </div>
         
         <div class="feed-content">
           <h3 class="feed-subtitle">Trending Outfits</h3>
           
           <div class="outfit-grid">
-            <div class="outfit-card" *ngFor="let outfit of communityFeed()">
+            <div class="outfit-card" *ngFor="let outfit of trendingOutfits()">
               <div class="outfit-images">
-                <img [src]="outfit.image1" alt="Outfit 1">
-                <img [src]="outfit.image2" alt="Outfit 2">
+                <img [src]="outfit.imageUrl" alt="Outfit">
               </div>
               <div class="outfit-meta">
                 <img [src]="outfit.userAvatar" alt="User" class="user-avatar">
-                <span class="likes">
-                  <mat-icon class="heart-icon">favorite</mat-icon>
-                  {{ outfit.likes }} likes
-                </span>
+                <div class="user-info">
+                  <span class="username">{{ outfit.userName }}</span>
+                </div>
+                <div class="engagement-stats">
+                  <span class="likes">
+                    <mat-icon class="heart-icon">favorite</mat-icon>
+                    {{ outfit.likes }}
+                  </span>
+                  <span class="comments">
+                    <mat-icon>chat_bubble_outline</mat-icon>
+                    {{ outfit.comments }}
+                  </span>
+                </div>
               </div>
+            </div>
+            <div *ngIf="trendingOutfits().length === 0" class="no-outfits">
+              <mat-icon>explore</mat-icon>
+              <p>No trending outfits yet. Be the first to post!</p>
             </div>
           </div>
         </div>
@@ -57,7 +69,7 @@
           <div class="poll-header">
             <div class="poll-title-section">
               <h3>{{ featuredPoll()!.question }}</h3>
-              <p class="poll-subtitle">Countdown timer: {{ featuredPoll()!.createdAt }}</p>
+              <p class="poll-subtitle">Created: {{ featuredPoll()!.createdAt }}</p>
             </div>
             <div class="countdown">
               <span class="countdown-time">{{ featuredPoll()!.timeLeft }}</span>
@@ -86,20 +98,13 @@
             <h3>Community Feedback</h3>
             <div class="new-comments-badge">
               <mat-icon class="comment-icon">chat_bubble</mat-icon>
-              <span>5 new comments</span>
+              <span>Latest Activity</span>
             </div>
           </div>
           
           <div class="comments-list">
-            <div class="comment" *ngFor="let comment of comments()">
-              <img [src]="comment.userAvatar" alt="User" class="comment-avatar">
-              <div class="comment-content">
-                <div class="comment-header">
-                  <span class="comment-author">{{ comment.author }}</span>
-                  <span class="comment-time">{{ comment.time }}</span>
-                </div>
-                <p class="comment-text">{{ comment.text }}</p>
-              </div>
+            <div class="empty-state">
+              <p>Select a trending outfit to see detailed feedback and join the conversation.</p>
             </div>
           </div>
         </div>

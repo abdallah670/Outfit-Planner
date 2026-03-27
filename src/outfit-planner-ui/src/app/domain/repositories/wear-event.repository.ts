@@ -83,4 +83,9 @@ export interface WearEventRepository {
    * Delete a calendar event
    */
   deleteCalendarEvent(id: string): Observable<void>;
+
+  /**
+   * Get a single calendar event by ID
+   */
+  getCalendarEventById(id: string): Observable<CalendarEventItem>;
 }

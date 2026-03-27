@@ -120,7 +120,7 @@ public class OutfitPollController : ControllerBase
         // For simplicity returning a placeholder DTO. The frontend usually re-fetches or adds it optimistically.
         return CreatedAtAction(nameof(GetOutfitVotes), new { outfitId }, new OutfitCommentDto
         {
-            Id = response.Id ?? Guid.Empty,
+            Id = response.Id,
             OutfitId = outfitId,
             UserId = command.UserId,
             Content = command.Content,

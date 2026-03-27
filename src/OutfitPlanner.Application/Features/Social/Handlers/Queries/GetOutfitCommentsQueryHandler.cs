@@ -24,13 +24,13 @@ public class GetOutfitCommentsQueryHandler : IRequestHandler<GetOutfitCommentsQu
             OutfitId = c.OutfitId,
             UserId = c.UserId,
             UserName = c.User?.UserName ?? "Anonymous",
-            UserAvatarUrl = c.User?.AvatarUrl ?? string.Empty,
+            UserAvatarUrl = c.User?.ProfilePictureUrl ?? string.Empty,
             Content = c.Content,
             CreatedAt = c.CreatedAt,
             IsDeleted = c.IsDeleted
         }).ToList();
 
-        return new PagedResult<OutfitCommentDto>
+        return new OutfitPlanner.Application.Responses.PagedResult<OutfitCommentDto>
         {
             Items = dtos,
             TotalCount = comments.TotalCount,

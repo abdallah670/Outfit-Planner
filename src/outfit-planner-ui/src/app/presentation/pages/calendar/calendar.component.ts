@@ -23,6 +23,12 @@ import { ScheduleOutfitModalComponent } from '../../components/calendar/schedule
 import { AddEventModalComponent } from '../../components/calendar/add-event-modal/add-event-modal.component';
 import { Outfit, ClothingItem } from '../../../domain/entities/outfit.entity';
 import { MatConfirmDialogComponent } from '../../components/shared/mat-confirm-dialog/mat-confirm-dialog.component';
+import { EventDetailsModalComponent } from '../../components/calendar/event-details-modal/event-details-modal.component';
+import { EditEventModalComponent } from '../../components/calendar/edit-event-modal/edit-event-modal.component';
+import { selectAllOutfits } from '../../../core/state/outfit/outfit.selectors';
+import { selectAllItems } from '../../../core/state/wardrobe/wardrobe.selectors';
+import { OutfitsActions } from '../../../core/state/outfit/outfit.actions';
+import { WardrobeActions } from '../../../core/state/wardrobe/wardrobe.actions';
 
 interface WeekViewDay {
   date: Date;
@@ -46,6 +52,7 @@ interface CalendarDay {
   isCurrentMonth: boolean;
   isToday: boolean;
   outfits: ScheduledOutfit[];
+  events: CalendarEventItem[];
   weather?: { temp: number; icon: string; condition: string };
 }
 
@@ -76,70 +83,9 @@ export class CalendarComponent implements OnInit {
   store = inject(Store);
   private dialog = inject(MatDialog);
 
-  // Sample data for outfits (would come from a service in production)
-  private sampleOutfits: Outfit[] = [
-    {
-      id: '1',
-      userId: 'user1',
-      name: 'Weekend Casual',
-      imageUrl: '/outfit_placeholder.png',
-      items: [],
-      occasion: 'Casual' as any,
-      suitableWeather: { temperature: 20, condition: 'Sunny', precipitationProbability: 0, humidity: 50, windSpeed: 5 },
-      season: 'AllSeason' as any,
-      comfortLevel: 8,
-      styleRating: 7,
-      createdAt: new Date(),
-      lastWorn: new Date(),
-      timesWorn: 5,
-      status: 'active' as any,
-      feedback: []
-    },
-    {
-      id: '2',
-      userId: 'user1',
-      name: 'Office Look',
-      imageUrl: '/outfit_placeholder.png',
-      items: [],
-      occasion: 'Work' as any,
-      suitableWeather: { temperature: 22, condition: 'Cloudy', precipitationProbability: 10, humidity: 55, windSpeed: 3 },
-      season: 'AllSeason' as any,
-      comfortLevel: 7,
-      styleRating: 8,
-      createdAt: new Date(),
-      lastWorn: new Date(),
-      timesWorn: 3,
-      status: 'active' as any,
-      feedback: []
-    },
-    {
-      id: '3',
-      userId: 'user1',
-      name: 'Date Night',
-      imageUrl: '/outfit_placeholder.png',
-      items: [],
-      occasion: 'Date' as any,
-      suitableWeather: { temperature: 18, condition: 'Clear', precipitationProbability: 0, humidity: 60, windSpeed: 2 },
-      season: 'AllSeason' as any,
-      comfortLevel: 9,
-      styleRating: 9,
-      createdAt: new Date(),
-      lastWorn: new Date(),
-      timesWorn: 2,
-      status: 'favorite' as any,
-      feedback: []
-    }
-  ];
-
-  // Sample clothing items (would come from a service in production)
-  private sampleClothingItems: ClothingItem[] = [
-    { id: '1', name: 'Blue Jeans', type: 'Bottom' as any, category: 'Pants', color: 'Blue', imageUrl: '/clothing-placeholder.png' },
-    { id: '2', name: 'White T-Shirt', type: 'Top' as any, category: 'Shirts', color: 'White', imageUrl: '/clothing-placeholder.png' },
-    { id: '3', name: 'Black Jacket', type: 'Outerwear' as any, category: 'Jackets', color: 'Black', imageUrl: '/clothing-placeholder.png' },
-    { id: '4', name: 'White Sneakers', type: 'Footwear' as any, category: 'Shoes', color: 'White', imageUrl: '/clothing-placeholder.png' },
-    { id: '5', name: 'Leather Belt', type: 'Accessory' as any, category: 'Accessories', color: 'Brown', imageUrl: '/clothing-placeholder.png' },
-    { id: '6', name: 'Red Dress', type: 'Dress' as any, category: 'Dresses', color: 'Red', imageUrl: '/clothing-placeholder.png' },
-  ];
+  // Real data from store
+  allOutfits = toSignal(this.store.select(selectAllOutfits), { initialValue: [] });
+  allItems = toSignal(this.store.select(selectAllItems), { initialValue: [] });
 
   currentDate = signal(new Date());
   currentMonth = signal('');
@@ -254,7 +200,7 @@ export class CalendarComponent implements OnInit {
         return eventDate.toDateString() === date.toDateString();
       })
       .map(event => ({
-        id: event.outfitId,
+        id: event.id, // Use the unique wear event ID, not the outfitId
         name: event.outfitName,
         date: new Date(event.scheduledDate),
         occasion: event.occasion || 'Casual',
@@ -289,9 +235,10 @@ export class CalendarComponent implements OnInit {
   calendarDays = computed((): CalendarDay[] => {
     const yr = this.year();
     const monthNum = this.month();
-    const events = this.eventsSignal();
+    const outfitEvents = this.eventsSignal();
+    const calendarEvents = this.calendarEventsSignal();
     const weatherMap = this.weatherMapSignal();
-    return this.generateCalendarDays(yr, monthNum, events, weatherMap);
+    return this.generateCalendarDays(yr, monthNum, outfitEvents, calendarEvents, weatherMap);
   });
 
   ngOnInit(): void {
@@ -299,6 +246,9 @@ export class CalendarComponent implements OnInit {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
+    
+    // Set initial selected date to today
+    this.selectedDate.set(now);
     
     this.store.dispatch(CalendarActions.loadScheduledOutfits({ year, month }));
     this.store.dispatch(CalendarActions.loadMonthlyStats({ year, month }));
@@ -309,6 +259,10 @@ export class CalendarComponent implements OnInit {
     // Load weather forecast for current month
     this.store.dispatch(CalendarActions.loadWeatherForecast({ year, month }));
     
+    // Load outfits and wardrobe items
+    this.store.dispatch(OutfitsActions.loadOutfits());
+    this.store.dispatch(WardrobeActions.loadClothingItems());
+    
     // Set current month display
     this.currentMonth.set(now.toLocaleString('default', { month: 'long' }));
     this.currentYear.set(year);
@@ -317,7 +271,13 @@ export class CalendarComponent implements OnInit {
   /**
    * Generate calendar days for the given month
    */
-  private generateCalendarDays(year: number, month: number, events: CalendarEvent[], weatherMap: Map<string, WeatherData>): CalendarDay[] {
+  private generateCalendarDays(
+    year: number, 
+    month: number, 
+    outfitEvents: CalendarEvent[], 
+    calendarEvents: CalendarEventItem[],
+    weatherMap: Map<string, WeatherData>
+  ): CalendarDay[] {
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 0);
     const today = new Date();
@@ -337,7 +297,8 @@ export class CalendarComponent implements OnInit {
         dayNumber: dayNum,
         isCurrentMonth: false,
         isToday: false,
-        outfits: this.getOutfitsForDate(date, events),
+        outfits: this.getOutfitsForDate(date, outfitEvents),
+        events: calendarEvents.filter(e => new Date(e.eventDate).toDateString() === date.toDateString()),
         weather: weather ? this.mapWeatherToDisplay(weather) : undefined
       });
     }
@@ -353,7 +314,8 @@ export class CalendarComponent implements OnInit {
         dayNumber: day,
         isCurrentMonth: true,
         isToday,
-        outfits: this.getOutfitsForDate(date, events),
+        outfits: this.getOutfitsForDate(date, outfitEvents),
+        events: calendarEvents.filter(e => new Date(e.eventDate).toDateString() === date.toDateString()),
         weather: weather ? this.mapWeatherToDisplay(weather) : undefined
       });
     }
@@ -369,7 +331,8 @@ export class CalendarComponent implements OnInit {
         dayNumber: day,
         isCurrentMonth: false,
         isToday: false,
-        outfits: this.getOutfitsForDate(date, events),
+        outfits: this.getOutfitsForDate(date, outfitEvents),
+        events: calendarEvents.filter(e => new Date(e.eventDate).toDateString() === date.toDateString()),
         weather: weather ? this.mapWeatherToDisplay(weather) : undefined
       });
     }
@@ -426,7 +389,7 @@ export class CalendarComponent implements OnInit {
         return eventDate.toDateString() === date.toDateString();
       })
       .map(event => ({
-        id: event.outfitId,
+        id: event.id, // Use the unique wear event ID
         name: event.outfitName,
         date: new Date(event.scheduledDate),
         occasion: event.occasion || 'Casual',
@@ -480,6 +443,14 @@ export class CalendarComponent implements OnInit {
     this.currentYear.set(newYear);
   }
 
+  /**
+   * Handle image loading errors by showing a placeholder
+   */
+  handleImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = '/outfit_placeholder.png';
+  }
+
   setView(view: 'month' | 'week'): void {
     this.currentView.set(view);
   }
@@ -530,7 +501,7 @@ export class CalendarComponent implements OnInit {
       panelClass: 'add-event-dialog',
       data: {
         date: date,
-        outfits: this.sampleOutfits,
+        outfits: this.allOutfits(),
       },
     });
 
@@ -558,8 +529,8 @@ export class CalendarComponent implements OnInit {
       panelClass: 'schedule-outfit-dialog',
       data: {
         date: date,
-        outfits: this.sampleOutfits,
-        clothingItems: this.sampleClothingItems,
+        outfits: this.allOutfits(),
+        clothingItems: this.allItems(),
       },
     });
 
@@ -658,12 +629,20 @@ export class CalendarComponent implements OnInit {
       if (result) {
         // Find the event ID for this outfit
         const events = this.eventsSignal();
-        const event = events.find(e => e.outfitId === outfitId);
+        // Since we fixed the mapping, outfitId here is actually event.id
+        const event = events.find(e => e.id === outfitId);
         if (event) {
           this.store.dispatch(CalendarActions.deleteWearEvent({ eventId: event.id }));
         }
       }
     });
+  }
+
+  /**
+   * Log a scheduled outfit as worn
+   */
+  logAsWorn(outfitId: string): void {
+    this.store.dispatch(CalendarActions.markAsWorn({ eventId: outfitId }));
   }
 
   /**
@@ -686,5 +665,70 @@ export class CalendarComponent implements OnInit {
         this.store.dispatch(CalendarActions.deleteCalendarEvent({ eventId }));
       }
     });
+  }
+   openEditEventModal(event: CalendarEventItem): void {
+    const dialogRef = this.dialog.open(EditEventModalComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      panelClass: 'edit-event-dialog',
+      data: {
+        event: event,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result: { success: boolean; event?: CalendarEventItem } | undefined) => {
+      if (result?.success) {
+        console.log('Event edited successfully:', result);
+        if (result.event) {
+          this.store.dispatch(CalendarActions.updateCalendarEvent({
+            eventId: result.event.id,
+            event: result.event,
+          }));
+        }
+      }
+    });
+  }
+
+
+  // ==================== Event Details Modal ====================
+
+  /**
+   * Open the Event Details Modal
+   */
+  openEventDetailsModal(event: CalendarEventItem): void {
+    const dialogRef = this.dialog.open(EventDetailsModalComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      panelClass: 'event-details-dialog',
+      data: {
+        event: event,
+        onEdit: (evt: CalendarEventItem) => {
+          // Open edit modal
+          console.log('Edit event:', evt);
+        },
+        onDelete: (eventId: string) => {
+          this.deleteCalendarEvent(eventId);
+        },
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result: { action: string; eventId?: string; event?: CalendarEventItem } | undefined) => {
+      if (result?.action === 'edit') {
+        // Handle edit action - use event.id from the returned event object
+        const eventId = result.event?.id || result.eventId;
+        console.log('Edit action for event:', eventId);
+        // Open the edit modal with the event data
+        if (result.event) {
+          this.openEditEventModal(result.event);
+        }
+      } else if (result?.action === 'delete') {
+        // Handle delete action
+        const eventId = result.eventId;
+        if (eventId) {
+          this.deleteCalendarEvent(eventId);
+        }
+      }
+    });
+    
   }
 }

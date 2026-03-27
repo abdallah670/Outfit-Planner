@@ -43,7 +43,8 @@ public class ScheduleOutfitCommandHandler : IRequestHandler<ScheduleOutfitComman
             UserId = request.UserId,
             OutfitId = request.Request.OutfitId,
             WornAt = request.Request.ScheduledDate,
-            Notes = request.Request.Notes
+            Notes = request.Request.Notes ?? string.Empty,
+            WeatherCondition = request.Request.WeatherCondition ?? string.Empty
         };
 
         await _unitOfWork.WearEvents.AddAsync(wearEvent);

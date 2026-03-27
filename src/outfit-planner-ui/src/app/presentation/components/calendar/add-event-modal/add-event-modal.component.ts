@@ -13,11 +13,19 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Store } from '@ngrx/store';
 import { CalendarActions } from '../../../../core/state/calendar/calendar.actions';
 import { Outfit } from '../../../../domain/entities/outfit.entity';
-import { CalendarEventType, CreateCalendarEventRequest } from '../../../../domain/entities/wear-event.entity';
+import {
+  CalendarEventType,
+  CreateCalendarEventRequest,
+} from '../../../../domain/entities/wear-event.entity';
 
 export interface AddEventModalData {
   date: Date;
   outfits: Outfit[];
+}
+
+interface EventTypeOption {
+  value: CalendarEventType;
+  label: string;
 }
 
 @Component({
@@ -41,9 +49,9 @@ export interface AddEventModalData {
 })
 export class AddEventModalComponent implements OnInit {
   eventForm!: FormGroup;
-  
+
   // Event types for dropdown - map to enum values
-  eventTypeOptions = [
+  eventTypeOptions: EventTypeOption[] = [
     { value: CalendarEventType.General, label: 'General' },
     { value: CalendarEventType.Work, label: 'Work' },
     { value: CalendarEventType.Meeting, label: 'Meeting' },
@@ -54,10 +62,10 @@ export class AddEventModalComponent implements OnInit {
     { value: CalendarEventType.Travel, label: 'Travel' },
     { value: CalendarEventType.Appointment, label: 'Appointment' },
   ];
-  
+
   // Toggle for outfit association
   associateWithOutfit = signal(false);
-  
+
   // Selected outfit
   selectedOutfitId = signal<string | null>(null);
 
@@ -119,7 +127,7 @@ export class AddEventModalComponent implements OnInit {
 
   // Get selected outfit name
   getSelectedOutfitName(): string {
-    const outfit = this.data.outfits.find(o => o.id === this.selectedOutfitId());
+    const outfit = this.data.outfits.find((o) => o.id === this.selectedOutfitId());
     return outfit?.name || '';
   }
 
@@ -131,14 +139,14 @@ export class AddEventModalComponent implements OnInit {
     }
 
     const formValue = this.eventForm.value;
-    
+
     const request: CreateCalendarEventRequest = {
       title: formValue.title,
       description: formValue.description,
       location: formValue.location,
       eventDate: formValue.eventDate,
-      startTime: formValue.startTime,
-      endTime: formValue.endTime,
+      startTime: this.formatTimeForApi(formValue.startTime),
+      endTime: this.formatTimeForApi(formValue.endTime),
       eventType: formValue.eventType as CalendarEventType,
       outfitId: formValue.associateOutfit ? formValue.outfitId : undefined,
       notes: formValue.notes,
@@ -171,10 +179,19 @@ export class AddEventModalComponent implements OnInit {
     return formValid;
   }
 
-  // Format time for input type="time"
+  // Format time for input type="time" (HH:mm format for input)
   private formatTime(date: Date): string {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
+  }
+
+  // Format time for API (HH:mm:ss format for .NET TimeSpan)
+  private formatTimeForApi(timeStr: string): string | undefined {
+    if (!timeStr) return undefined;
+    // If already has seconds, return as-is
+    if (timeStr.length > 5) return timeStr;
+    // Add seconds
+    return `${timeStr}:00`;
   }
 }

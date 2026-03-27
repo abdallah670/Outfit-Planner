@@ -172,6 +172,13 @@ public class DataSeeder
 
     private async Task SeedOutfitsAsync()
     {
+        // Check if outfits already exist
+        if (await _context.Outfits.AnyAsync())
+        {
+            _logger.LogInformation("Outfits already exist, skipping outfits seeding.");
+            return;
+        }
+
         var users = await _userManager.Users.Take(3).ToListAsync();
         if (users.Count == 0) return;
 
@@ -195,7 +202,7 @@ public class DataSeeder
         var footwear = clothingItems.Where(c => c.Category == "Footwear").ToList();
         var outerwear = clothingItems.Where(c => c.Category == "Outerwear").ToList();
 
-            // Create 8 sample outfits (one for each occasion type)
+        // Create 8 sample outfits (one for each occasion type)
         for (int i = 0; i < 8; i++)
         {
             var user = users[i % users.Count];
@@ -291,6 +298,13 @@ public class DataSeeder
 
     private async Task SeedPollsAsync()
     {
+        // Check if polls already exist
+        if (await _context.ValidationPolls.AnyAsync())
+        {
+            _logger.LogInformation("Validation polls already exist, skipping polls seeding.");
+            return;
+        }
+
         var users = await _userManager.Users.Take(3).ToListAsync();
         if (users.Count == 0) return;
 
@@ -340,8 +354,10 @@ public class DataSeeder
                     CreatedAt = DateTimeOffset.UtcNow
                 };
 
-                // Add some votes
-                var voteCount = random.Next(1, 8);
+                // Add some votes (unique per user per option)
+                var availableUsers = users.OrderBy(x => random.Next()).ToList();
+                var voteCount = Math.Min(random.Next(1, 4), availableUsers.Count);
+                
                 for (int v = 0; v < voteCount; v++)
                 {
                     option.Votes.Add(new Vote
@@ -349,7 +365,7 @@ public class DataSeeder
                         Id = Guid.NewGuid(),
                         PollId = poll.Id,
                         OptionId = option.Id,
-                        VoterId = users[random.Next(users.Count)].Id,
+                        VoterId = availableUsers[v].Id,
                         Rating = random.Next(1, 6),
                         IsAnonymous = random.Next(2) == 0,
                         CreatedAt = DateTimeOffset.UtcNow.AddHours(-random.Next(1, 48))

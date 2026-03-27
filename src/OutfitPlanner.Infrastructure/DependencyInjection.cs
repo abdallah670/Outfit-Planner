@@ -58,6 +58,9 @@ public static class DependencyInjection
         // Register Search service
         services.AddScoped<ISearchService, SearchService>();
 
+        // Register Trending Calculation Service
+        services.AddHostedService<TrendingCalculationService>();
+
         return services;
     }
 }

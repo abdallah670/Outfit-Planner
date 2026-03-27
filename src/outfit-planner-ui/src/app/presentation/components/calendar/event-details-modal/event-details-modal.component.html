@@ -1,0 +1,110 @@
+<div class="event-details-modal">
+  <!-- Header -->
+  <div class="modal-header" [class]="'event-type-' + (event()?.eventType)">
+    <div class="header-content">
+      <div class="event-icon">
+        <mat-icon>{{ getEventTypeIcon(event()?.eventType ?? 0) }}</mat-icon>
+      </div>
+      <div class="event-title-section">
+        <h2 class="event-title">{{ event()?.title }}</h2>
+        <span class="event-type-badge">{{ getEventTypeLabel(event()?.eventType ?? 0) }}</span>
+      </div>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="onClose()" matTooltip="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="modal-content" *ngIf="event() as evt">
+    <!-- Date & Time -->
+    <div class="info-section">
+      <div class="info-row">
+        <mat-icon class="info-icon">calendar_today</mat-icon>
+        <div class="info-content">
+          <span class="info-label">Date</span>
+          <span class="info-value">{{ getFormattedDate(evt.eventDate) }}</span>
+        </div>
+      </div>
+
+      <div class="info-row" *ngIf="evt.startTime || evt.endTime">
+        <mat-icon class="info-icon">schedule</mat-icon>
+        <div class="info-content">
+          <span class="info-label">Time</span>
+          <span class="info-value">{{ getFormattedTime() }}</span>
+        </div>
+      </div>
+
+      <div class="info-row" *ngIf="evt.location">
+        <mat-icon class="info-icon">location_on</mat-icon>
+        <div class="info-content">
+          <span class="info-label">Location</span>
+          <span class="info-value">{{ evt.location }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="description-section" *ngIf="evt.description">
+      <h3 class="section-title">Description</h3>
+      <p class="description-text">{{ evt.description }}</p>
+    </div>
+
+    <!-- Associated Outfit -->
+    <div class="outfit-section" *ngIf="evt.hasOutfit">
+      <h3 class="section-title">Associated Outfit</h3>
+      <div class="outfit-card">
+        <div class="outfit-image" *ngIf="evt.outfitImageUrl">
+          <img [src]="evt.outfitImageUrl" [alt]="evt.outfitName">
+        </div>
+        <div class="outfit-image placeholder" *ngIf="!evt.outfitImageUrl">
+          <mat-icon>checkroom</mat-icon>
+        </div>
+        <div class="outfit-info">
+          <span class="outfit-name">{{ evt.outfitName || 'Unnamed Outfit' }}</span>
+          <span class="outfit-label">Scheduled for this event</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Outfit -->
+    <div class="no-outfit-section" *ngIf="!evt.hasOutfit">
+      <div class="no-outfit-message">
+        <mat-icon>event_note</mat-icon>
+        <span>No outfit associated with this event</span>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="notes-section" *ngIf="evt.notes">
+      <h3 class="section-title">Notes</h3>
+      <p class="notes-text">{{ evt.notes }}</p>
+    </div>
+
+    <!-- Recurring Badge -->
+    <div class="recurring-badge" *ngIf="evt.isRecurring">
+      <mat-icon>repeat</mat-icon>
+      <span>Recurring Event</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading()">
+    <mat-icon class="spin">refresh</mat-icon>
+    <span>Loading event details...</span>
+  </div>
+
+  <!-- Actions -->
+  <div class="modal-actions">
+    <button mat-button color="warn" (click)="onDelete()">
+      <mat-icon>delete</mat-icon>
+      Delete
+    </button>
+    <div class="action-spacer"></div>
+    <button mat-stroked-button (click)="onClose()">Close</button>
+    <button mat-raised-button color="primary" (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      Edit
+    </button>
+  </div>
+</div>

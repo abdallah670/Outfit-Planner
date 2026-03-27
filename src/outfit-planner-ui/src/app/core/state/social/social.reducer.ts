@@ -1,10 +1,13 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { SocialActions } from './social.actions';
 import { ValidationPoll } from '../../../domain/entities/validation-poll.entity';
+import { TrendingOutfit, OutfitComment } from '../../../domain/entities/social-engagement.entity';
 
 export interface SocialState {
   polls: ValidationPoll[];
   selectedPoll: ValidationPoll | null;
+  trendingOutfits: TrendingOutfit[];
+  commentsByOutfit: { [outfitId: string]: OutfitComment[] };
   loading: boolean;
   error: string | null;
 }
@@ -12,6 +15,8 @@ export interface SocialState {
 export const initialState: SocialState = {
   polls: [],
   selectedPoll: null,
+  trendingOutfits: [],
+  commentsByOutfit: {},
   loading: false,
   error: null,
 };
@@ -80,7 +85,10 @@ export const socialFeature = createFeature({
     on(SocialActions.voteSuccess, (state, { pollId }) => ({
       ...state,
       loading: false,
-      // Update the selected poll if it matches
+      // Update both the polls array and the selected poll
+      polls: state.polls.map(p => 
+        p.id === pollId ? { ...p, totalVotes: p.totalVotes + 1 } : p
+      ),
       selectedPoll:
         state.selectedPoll?.id === pollId
           ? { ...state.selectedPoll, totalVotes: state.selectedPoll.totalVotes + 1 }
@@ -91,6 +99,56 @@ export const socialFeature = createFeature({
       loading: false,
       error,
     })),
+
+    // Trending
+    on(SocialActions.loadTrending, (state) => ({
+      ...state,
+      loading: true,
+    })),
+    on(SocialActions.loadTrendingSuccess, (state, { outfits }) => ({
+      ...state,
+      trendingOutfits: outfits,
+      loading: false,
+    })),
+    on(SocialActions.loadTrendingFailure, (state, { error }) => ({
+      ...state,
+      error,
+      loading: false,
+    })),
+
+    // Likes
+    on(SocialActions.likeOutfitSuccess, (state, { outfitId }) => ({
+      ...state,
+      trendingOutfits: state.trendingOutfits.map(o => 
+        o.id === outfitId ? { ...o, likes: o.likes + 1 } : o
+      )
+    })),
+    on(SocialActions.unlikeOutfitSuccess, (state, { outfitId }) => ({
+      ...state,
+      trendingOutfits: state.trendingOutfits.map(o => 
+        o.id === outfitId ? { ...o, likes: Math.max(0, o.likes - 1) } : o
+      )
+    })),
+
+    // Comments
+    on(SocialActions.loadCommentsSuccess, (state, { outfitId, comments }) => ({
+      ...state,
+      commentsByOutfit: {
+        ...state.commentsByOutfit,
+        [outfitId]: comments
+      }
+    })),
+    on(SocialActions.addCommentSuccess, (state, { outfitId, comment }) => ({
+      ...state,
+      commentsByOutfit: {
+        ...state.commentsByOutfit,
+        [outfitId]: [comment, ...(state.commentsByOutfit[outfitId] || [])]
+      },
+      // Also update comment count in trending
+      trendingOutfits: state.trendingOutfits.map(o => 
+        o.id === outfitId ? { ...o, comments: o.comments + 1 } : o
+      )
+    })),
   ),
 });
 
@@ -100,6 +158,8 @@ export const {
   selectSocialState,
   selectPolls,
   selectSelectedPoll,
+  selectTrendingOutfits,
+  selectCommentsByOutfit,
   selectLoading,
   selectError,
 } = socialFeature;

@@ -79,6 +79,22 @@ public class CreateCalendarEventCommandHandler
             wearEventId = wearEvent.Id;
         }
 
+        // Parse time strings to TimeSpan
+        TimeSpan? startTime = null;
+        TimeSpan? endTime = null;
+
+        if (!string.IsNullOrEmpty(request.Request.StartTime) && 
+            TimeSpan.TryParse(request.Request.StartTime, out var parsedStartTime))
+        {
+            startTime = parsedStartTime;
+        }
+
+        if (!string.IsNullOrEmpty(request.Request.EndTime) && 
+            TimeSpan.TryParse(request.Request.EndTime, out var parsedEndTime))
+        {
+            endTime = parsedEndTime;
+        }
+
         // Create Calendar Event
         var calendarEvent = new CalendarEvent
         {
@@ -87,11 +103,11 @@ public class CreateCalendarEventCommandHandler
             Description = request.Request.Description,
             Location = request.Request.Location,
             EventDate = request.Request.EventDate,
-            StartTime = request.Request.StartTime,
-            EndTime = request.Request.EndTime,
+            StartTime = startTime,
+            EndTime = endTime,
             EventType = (DomainCalendarEventType)request.Request.EventType,
             WearEventId = wearEventId,
-            Notes = request.Request.Notes,
+            Notes = request.Request.Notes ?? string.Empty,
             IsRecurring = false
         };
 

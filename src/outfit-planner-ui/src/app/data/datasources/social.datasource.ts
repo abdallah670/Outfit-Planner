@@ -10,6 +10,11 @@ import {
   PollOption,
   PollStatus,
 } from '../../domain/entities/validation-poll.entity';
+import {
+  TrendingOutfit,
+  OutfitEngagement,
+  OutfitComment,
+} from '../../domain/entities/social-engagement.entity';
 
 // DTOs matching the API response structure
 interface ValidationPollDto {
@@ -39,91 +44,44 @@ interface PollOptionDto {
  */
 interface TrendingOutfitDto {
   id: string;
-  userId: string;
+  outfitId: string;
+  outfitImageUrl: string;
   userName: string;
-  userAvatar: string;
-  imageUrl: string;
-  likes: number;
-  occasion: string;
+  userAvatarUrl: string;
+  likeCount: number;
+  commentCount: number;
+  trendingScore: number;
+  rankPosition: number;
   createdAt: string;
-}
-
-/**
- * Domain entity for trending outfit
- */
-export interface TrendingOutfit {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar: string;
-  imageUrl: string;
-  likes: number;
-  occasion: string;
-  createdAt: Date;
 }
 
 /**
  * DTO for outfit engagement
  */
 interface OutfitEngagementDto {
-  voteCount: number;
+  outfitId: string;
+  likeCount: number;
   commentCount: number;
-  reactionCount: number;
-  userHasVoted: boolean;
-  userReaction?: string;
+  userHasLiked: boolean;
 }
 
 /**
- * DTO for vote comment
+ * DTO for outfit comment
  */
-interface VoteCommentDto {
+interface OutfitCommentDto {
   id: string;
+  outfitId: string;
+  userId: string;
   userName: string;
-  userAvatar?: string;
+  userAvatarUrl: string;
   content: string;
-  rating: number;
   createdAt: string;
-  reactions: VoteReactionDto[];
-}
-
-interface VoteReactionDto {
-  userId: string;
-  reactionType: string;
-}
-
-/**
- * Domain entity for outfit engagement
- */
-export interface OutfitEngagement {
-  voteCount: number;
-  commentCount: number;
-  reactionCount: number;
-  userHasVoted: boolean;
-  userReaction?: string;
-}
-
-/**
- * Domain entity for vote comment
- */
-export interface VoteComment {
-  id: string;
-  userName: string;
-  userAvatar?: string;
-  content: string;
-  rating: number;
-  createdAt: Date;
-  reactions: VoteReaction[];
-}
-
-export interface VoteReaction {
-  userId: string;
-  reactionType: string;
+  isDeleted: boolean;
 }
 
 export interface OutfitVoteResult {
   outfitId: string;
   voteCount: number;
-  userHasVoted: boolean;
 }
 
 export interface UpdatePollRequest {
@@ -173,13 +131,13 @@ export class SocialDataSource {
   /**
    * Comment on an outfit
    */
-  commentOnOutfit(outfitId: string, content: string): Observable<VoteComment> {
+  commentOnOutfit(outfitId: string, content: string): Observable<OutfitComment> {
     return this.http
-      .post<VoteCommentDto>(
+      .post<OutfitCommentDto>(
         `${this.outfitPollApiUrl}/outfits/${outfitId}/comment`,
         { content },
       )
-      .pipe(map((dto: VoteCommentDto) => this.mapVoteCommentDtoToEntity(dto)));
+      .pipe(map((dto: OutfitCommentDto) => this.mapCommentDtoToEntity(dto)));
   }
 
   /**
@@ -198,17 +156,17 @@ export class SocialDataSource {
     outfitId: string,
     page = 1,
     pageSize = 20,
-  ): Observable<{ items: VoteComment[]; totalCount: number }> {
+  ): Observable<{ items: OutfitComment[]; totalCount: number }> {
     return this.http
       .get<{
-        items: VoteCommentDto[];
+        items: OutfitCommentDto[];
         totalCount: number;
       }>(
         `${this.outfitPollApiUrl}/outfits/${outfitId}/votes?page=${page}&pageSize=${pageSize}`,
       )
       .pipe(
-        map((result: { items: VoteCommentDto[]; totalCount: number }) => ({
-          items: result.items.map((dto: VoteCommentDto) => this.mapVoteCommentDtoToEntity(dto)),
+        map((result: { items: OutfitCommentDto[]; totalCount: number }) => ({
+          items: result.items.map((dto: OutfitCommentDto) => this.mapCommentDtoToEntity(dto)),
           totalCount: result.totalCount,
         })),
       );
@@ -353,31 +311,31 @@ export class SocialDataSource {
   private mapTrendingOutfitDtoToEntity(dto: TrendingOutfitDto): TrendingOutfit {
     return {
       id: dto.id,
-      userId: dto.userId,
+      userId: '', // Not in DTO anymore for simplicity or fetch via userName
       userName: dto.userName,
-      userAvatar: dto.userAvatar,
-      imageUrl: dto.imageUrl,
-      likes: dto.likes,
-      occasion: dto.occasion,
+      userAvatar: dto.userAvatarUrl,
+      imageUrl: dto.outfitImageUrl,
+      likes: dto.likeCount,
+      comments: dto.commentCount,
+      occasion: 'Casual', // Default or handle if added to DTO
+      trendingScore: dto.trendingScore,
       createdAt: new Date(dto.createdAt),
     };
   }
 
   /**
-   * Map vote comment DTO to domain entity
+   * Map comment DTO to domain entity
    */
-  private mapVoteCommentDtoToEntity(dto: VoteCommentDto): VoteComment {
+  private mapCommentDtoToEntity(dto: OutfitCommentDto): OutfitComment {
     return {
       id: dto.id,
+      outfitId: dto.outfitId,
+      userId: dto.userId,
       userName: dto.userName,
-      userAvatar: dto.userAvatar,
+      userAvatarUrl: dto.userAvatarUrl,
       content: dto.content,
-      rating: dto.rating,
       createdAt: new Date(dto.createdAt),
-      reactions: dto.reactions.map((r) => ({
-        userId: r.userId,
-        reactionType: r.reactionType,
-      })),
+      isDeleted: dto.isDeleted
     };
   }
 }

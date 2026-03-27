@@ -75,6 +75,10 @@ export class WearEventRepositoryImpl implements WearEventRepository {
   deleteCalendarEvent(id: string): Observable<void> {
     return this.wearEventDataSource.deleteCalendarEvent(id);
   }
+
+  getCalendarEventById(id: string): Observable<CalendarEventItem> {
+    return this.wearEventDataSource.getCalendarEventById(id);
+  }
 }
 
 export const wearEventRepositoryProvider = {

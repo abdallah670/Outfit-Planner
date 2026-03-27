@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.DTOs.Calendar;
+using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Features.Calendar.Requests.Commands;
 using OutfitPlanner.Application.Features.Calendar.Requests.Queries;
 
@@ -142,7 +143,7 @@ public class CalendarController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a calendar event (unschedule)
+    /// Delete a wear event (unschedule an outfit)
     /// </summary>
     [HttpDelete("events/{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -151,7 +152,7 @@ public class CalendarController : ControllerBase
     public async Task<ActionResult> DeleteEvent(Guid id)
     {
         var userId = GetUserId();
-        var command = new DeleteCalendarEventCommand
+        var command = new DeleteWearEventCommand
         {
             Id = id,
             UserId = userId
@@ -193,6 +194,36 @@ public class CalendarController : ControllerBase
     }
 
     #region Calendar Events (Time-based events like "Team Meeting at 2:00 PM")
+
+    /// <summary>
+    /// Get a single calendar event by ID
+    /// </summary>
+    [HttpGet("calendar-events/{id:guid}")]
+    [ProducesResponseType(typeof(CalendarEventItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CalendarEventItemDto>> GetCalendarEventById(Guid id)
+    {
+        var userId = GetUserId();
+        var request = new GetCalendarEventByIdRequest
+        {
+            UserId = userId,
+            Id = id
+        };
+
+        try
+        {
+            var calendarEvent = await _mediator.Send(request);
+            return Ok(calendarEvent);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound(new { error = "Calendar event not found" });
+        }
+        catch (Application.Exceptions.UnauthorizedAccessException)
+        {
+            return Forbid();
+        }
+    }
 
     /// <summary>
     /// Get calendar events with time slots for a specific date (for sidebar display)

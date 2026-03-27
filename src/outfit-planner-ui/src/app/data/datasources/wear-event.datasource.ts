@@ -12,60 +12,13 @@ import {
   CreateCalendarEventRequest,
   UpdateCalendarEventRequest,
   CalendarEventType,
+  WeatherData,
+  WearEventDto,
+  CalendarEventDto,
+  MonthlyStatsDto,
+  CalendarEventItemDto,
 } from '../../domain/entities/wear-event.entity';
 
-// DTOs matching the API response structure
-interface WearEventDto {
-  id: string;
-  userId: string;
-  outfitId?: string;
-  clothingItemId?: string;
-  eventId?: string;
-  wornAt: string;
-  durationMinutes?: number;
-  weatherCondition?: string;
-  rating?: number;
-  notes?: string;
-  createdAt: string;
-}
-
-interface CalendarEventDto {
-  id: string;
-  outfitId: string;
-  outfitName: string;
-  outfitImageUrl?: string;
-  scheduledDate: string;
-  worn: boolean;
-  occasion?: string;
-  weather?: {
-    temp: number;
-    icon: string;
-    condition: string;
-  };
-}
-
-interface MonthlyStatsDto {
-  wornCount: number;
-  scheduledCount: number;
-  favoriteCount: number;
-}
-
-/**
- * DTO for Calendar Event Items (time-based events)
- */
-interface CalendarEventItemDto {
-  id: string;
-  title: string;
-  description?: string;
-  location?: string;
-  eventDate: string;
-  startTime?: string;
-  endTime?: string;
-  eventType: number;
-  wearEventId?: string;
-  notes?: string;
-  isRecurring: boolean;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -108,7 +61,13 @@ export class WearEventDataSource {
    * Get monthly statistics
    */
   getMonthlyStats(year: number, month: number): Observable<MonthlyStats> {
-    return this.http.get<MonthlyStatsDto>(`${this.apiUrl}/stats?year=${year}&month=${month}`);
+    return this.http.get<MonthlyStatsDto>(`${this.apiUrl}/stats?year=${year}&month=${month}`).pipe(
+      map((dto: MonthlyStatsDto) => ({
+        wornCount: dto.totalWorn,
+        scheduledCount: dto.totalScheduled,
+        favoriteCount: dto.uniqueOutfitsWorn // Using unique outfits as favorite count for now or mapping accordingly
+      }))
+    );
   }
 
   /**
@@ -133,8 +92,14 @@ export class WearEventDataSource {
    * Mark an outfit as worn
    */
   markAsWorn(eventId: string): Observable<WearEvent> {
+    const request = {
+      rating: 0,
+      durationMinutes: 0,
+      weatherCondition: '',
+      notes: ''
+    };
     return this.http
-      .put<WearEventDto>(`${this.apiUrl}/events/${eventId}/mark-worn`, {})
+      .post<WearEventDto>(`${this.apiUrl}/events/${eventId}/mark-worn`, request)
       .pipe(map((e: WearEventDto) => this.mapWearEventDtoToEntity(e)));
   }
 
@@ -200,6 +165,15 @@ export class WearEventDataSource {
   }
 
   /**
+   * Get a single calendar event by ID
+   */
+  getCalendarEventById(id: string): Observable<CalendarEventItem> {
+    return this.http
+      .get<CalendarEventItemDto>(`${this.apiUrl}/calendar-events/${id}`)
+      .pipe(map((e: CalendarEventItemDto) => this.mapCalendarEventItemDtoToEntity(e)));
+  }
+
+  /**
    * Map WearEvent DTO to entity
    */
   private mapWearEventDtoToEntity(dto: WearEventDto): WearEvent {
@@ -226,7 +200,7 @@ export class WearEventDataSource {
       id: dto.id,
       outfitId: dto.outfitId,
       outfitName: dto.outfitName,
-      outfitImageUrl: dto.outfitImageUrl,
+      outfitImageUrl: this.getImageUrl(dto.outfitImageUrl),
       scheduledDate: new Date(dto.scheduledDate),
       worn: dto.worn,
       occasion: dto.occasion,
@@ -245,11 +219,25 @@ export class WearEventDataSource {
       location: dto.location,
       eventDate: new Date(dto.eventDate),
       startTime: dto.startTime,
+      startTimeDisplay: dto.startTimeDisplay,
       endTime: dto.endTime,
+      endTimeDisplay: dto.endTimeDisplay,
       eventType: dto.eventType as CalendarEventType,
       wearEventId: dto.wearEventId,
       notes: dto.notes,
       isRecurring: dto.isRecurring,
+      outfitName: (dto as any).outfitName,
+      outfitImageUrl: this.getImageUrl((dto as any).outfitImageUrl),
+      hasOutfit: !!(dto as any).wearEventId || !!(dto as any).outfitName,
     };
+  }
+
+  /**
+   * Resolve image URL (prepend base URL if relative)
+   */
+  private getImageUrl(url: string | undefined): string | undefined {
+    if (!url) return undefined;
+    if (url.startsWith('http')) return url;
+    return `${environment.resourceBaseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   }
 }
