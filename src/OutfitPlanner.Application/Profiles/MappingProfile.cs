@@ -168,6 +168,37 @@ public class MappingProfile : Profile
             .ForMember(d => d.AllowLocationTracking, opt => opt.MapFrom(s => s.AllowLocationTracking));
 
         // ====================
+
+        // UserPreferences mappings
+        CreateMap<UserPreferences, UserPreferencesDto>()
+            .ForMember(d => d.ShareOutfitsAnonymously, opt => opt.MapFrom(s => s.ShareOutfitsAnonymously))
+            .ForMember(d => d.IncludeInTrendAnalysis, opt => opt.MapFrom(s => s.IncludeInTrendAnalysis))
+            .ForMember(d => d.AllowFriendRequests, opt => opt.MapFrom(s => s.AllowFriendRequests))
+            .ForMember(d => d.DefaultOutfitPrivacy, opt => opt.MapFrom(s => s.DefaultOutfitPrivacy.ToString()))
+            .ForMember(d => d.ShowBodyMetrics, opt => opt.MapFrom(s => s.ShowBodyMetrics))
+            .ForMember(d => d.AllowLocationTracking, opt => opt.MapFrom(s => s.AllowLocationTracking));
+
+        // Update DTOs to Entities
+        CreateMap<UpdateUserProfileDto, User>()
+            .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Name))
+            .ForMember(d => d.ProfilePictureUrl, opt => opt.Ignore());
+
+        CreateMap<UpdateStyleProfileDto, UserStyleProfile>()
+            .ForMember(d => d.Style, opt => opt.MapFrom(s => s.Style))
+            .ForMember(d => d.PreferredColors, opt => opt.MapFrom(s => s.PreferredColors))
+            .ForMember(d => d.FitPreferences, opt => opt.MapFrom(s => s.FitPreferences))
+            .ForMember(d => d.ComfortPriority, opt => opt.MapFrom(s => s.ComfortPriority))
+            .ForMember(d => d.AcceptsTrends, opt => opt.MapFrom(s => s.AcceptsTrends));
+
+        CreateMap<UpdateUserPreferencesDto, UserPreferences>()
+            .ForMember(d => d.ShareOutfitsAnonymously, opt => opt.MapFrom(s => s.ShareOutfitsAnonymously))
+            .ForMember(d => d.IncludeInTrendAnalysis, opt => opt.MapFrom(s => s.IncludeInTrendAnalysis))
+            .ForMember(d => d.AllowFriendRequests, opt => opt.MapFrom(s => s.AllowFriendRequests))
+            .ForMember(d => d.DefaultOutfitPrivacy, opt => opt.MapFrom(s => s.DefaultOutfitPrivacy))
+            .ForMember(d => d.ShowBodyMetrics, opt => opt.MapFrom(s => s.ShowBodyMetrics))
+            .ForMember(d => d.AllowLocationTracking, opt => opt.MapFrom(s => s.AllowLocationTracking));
+
+        // ====================
         // SOCIAL MAPPINGS
         // ====================
         
@@ -191,7 +222,17 @@ public class MappingProfile : Profile
         CreateMap<VoteDto, Vote>();
 
         // TrendingOutfit
-        CreateMap<TrendingOutfit, TrendingOutfitDto>();
+        CreateMap<TrendingOutfit, TrendingOutfitDto>()
+            .ForMember(d => d.VoteId, opt => opt.MapFrom(s => s.PollId))
+            .ForMember(d => d.Likes, opt => opt.MapFrom(s => s.LikeCount))
+            .ForMember(d => d.Rank, opt => opt.MapFrom(s => s.RankPosition))
+            .ForMember(d => d.OutfitName, opt => opt.MapFrom(s => s.Outfit.Name))
+            .ForMember(d => d.ImageUrl, opt => opt.MapFrom(s => s.Outfit.ImageUrl))
+            .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Outfit.Occasion.ToString()))
+            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
+            .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.Outfit.User.ProfilePictureUrl))
+            .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Outfit.UserId))
+            .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.Date));
 
         // ====================
         // CALENDAR MAPPINGS

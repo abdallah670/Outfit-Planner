@@ -10,6 +10,24 @@ export interface OutfitState {
   filter: { category: string | null };
   suggestions: Outfit[];
   todaysOutfit: Outfit | null;
+  todaysOutfitLoading: boolean;
+  todaysOutfitError: string | null;
+  todaysPickContext: {
+    weatherContext: {
+      condition: string;
+      temperature: number;
+      season: string;
+      city: string;
+    } | null;
+    todayEvent: {
+      title: string;
+      eventType: string;
+      eventDate: string;
+    } | null;
+    matchScore: number;
+    recommendationReason: string;
+    isBestEffort: boolean;
+  } | null;
 }
 
 export const initialState: OutfitState = {
@@ -20,6 +38,9 @@ export const initialState: OutfitState = {
   filter: { category: null },
   suggestions: [],
   todaysOutfit: null,
+  todaysOutfitLoading: false,
+  todaysOutfitError: null,
+  todaysPickContext: null,
 };
 
 export const outfitFeature = createFeature({
@@ -167,21 +188,23 @@ export const outfitFeature = createFeature({
       error,
     })),
 
-    // Load Todays Outfit
-    on(OutfitsActions.loadTodaysOutfit, (state) => ({
+    // Load Todays Pick
+    on(OutfitsActions.loadTodaysPick, (state) => ({
       ...state,
-      loading: true,
-      error: null,
+      todaysOutfitLoading: true,
+      todaysOutfitError: null,
     })),
-    on(OutfitsActions.loadTodaysOutfitSuccess, (state, { outfit }) => ({
+    on(OutfitsActions.loadTodaysPickSuccess, (state, { outfit, context }) => ({
       ...state,
       todaysOutfit: outfit,
-      loading: false,
+      todaysPickContext: context,
+      todaysOutfitLoading: false,
+      todaysOutfitError: null,
     })),
-    on(OutfitsActions.loadTodaysOutfitFailure, (state, { error }) => ({
+    on(OutfitsActions.loadTodaysPickFailure, (state, { error }) => ({
       ...state,
-      loading: false,
-      error,
+      todaysOutfitLoading: false,
+      todaysOutfitError: error,
     })),
   ),
 });

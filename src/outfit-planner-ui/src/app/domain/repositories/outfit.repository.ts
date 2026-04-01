@@ -11,6 +11,24 @@ export interface OutfitSuggestionsRequest {
   maxSuggestions?: number;
 }
 
+export interface TodaysPickResponse {
+  outfit: Outfit;
+  weatherContext: {
+    condition: string;
+    temperature: number;
+    season: string;
+    city: string;
+  } | null;
+  todayEvent: {
+    title: string;
+    eventType: string;
+    eventDate: string;
+  } | null;
+  matchScore: number;
+  recommendationReason: string;
+  isBestEffort: boolean;
+}
+
 export interface OutfitRepository {
   getAllOutfits(): Observable<Outfit[]>;
   getOutfitById(id: string): Observable<Outfit>;
@@ -18,6 +36,6 @@ export interface OutfitRepository {
   updateOutfit(id: string, outfit: Partial<Outfit>): Observable<Outfit>;
   deleteOutfit(id: string): Observable<boolean>;
   getOutfitsSuggestions(request: OutfitSuggestionsRequest): Observable<Outfit[]>;
-  getTodaysOutfit(): Observable<Outfit>;
+  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse>;
   recordOutfitWear(id: string): Observable<Outfit>;
 }

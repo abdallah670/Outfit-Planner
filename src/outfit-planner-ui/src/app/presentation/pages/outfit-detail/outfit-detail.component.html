@@ -33,7 +33,7 @@
   <main class="detail-content">
     <section class="outfit-hero">
       <div class="hero-info">
-        <span class="outfit-id">#{{ $any(outfit).id.substring(0, 8) }}</span>
+        <span class="outfit-id">Editorial #{{ $any(outfit).id.substring(0, 8) }}</span>
         <h1>{{ $any(outfit).name }}</h1>
 
         <div class="outfit-meta">
@@ -43,13 +43,13 @@
           </mat-chip-set>
 
           <div class="wear-stats">
+            <div class="stat" title="Trending Score">
+              <mat-icon>trending_up</mat-icon>
+              <span>Community Choice</span>
+            </div>
             <div class="stat">
               <mat-icon>history</mat-icon>
-              <span>Worn {{ $any(outfit).timesWorn }} times</span>
-            </div>
-            <div class="stat" *ngIf="$any(outfit).lastWorn">
-              <mat-icon>calendar_today</mat-icon>
-              <span>Last worn: {{ $any(outfit).lastWorn | date: 'MMM d, y' }}</span>
+              <span>{{ $any(outfit).timesWorn }} Wears</span>
             </div>
           </div>
         </div>
@@ -78,10 +78,12 @@
             <mat-icon *ngIf="!$any(item).clothingItemImageUrl">image_not_supported</mat-icon>
           </div>
           <div class="item-details">
+            <span class="item-category">{{ $any(item).clothingItemCategory }}</span>
             <h3>{{ $any(item).clothingItemName || 'Nameless Item' }}</h3>
-          </div>
         </div>
       </div>
+    </div>
+  </section>
 
       <ng-template #emptyItems>
         <div class="empty-items-state">
@@ -90,6 +92,40 @@
           <button mat-stroked-button (click)="onEdit($any(outfit).id)">Add Items</button>
         </div>
       </ng-template>
+    <section class="community-feedback">
+      <div class="section-header">
+        <h2>Community Love</h2>
+        <span class="trending-badge">Trending #1</span>
+      </div>
+      
+      <div class="feedback-stats">
+        <div class="stat-card">
+          <mat-icon>favorite</mat-icon>
+          <div class="stat-info">
+            <span class="value">1.2k</span>
+            <span class="label">Reactions</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <mat-icon>comment</mat-icon>
+          <div class="stat-info">
+            <span class="value">84</span>
+            <span class="label">Comments</span>
+          </div>
+        </div>
+        <div class="stat-card highlight">
+          <mat-icon>stars</mat-icon>
+          <div class="stat-info">
+            <span class="value">98%</span>
+            <span class="label">Approval</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="community-action">
+        <p>This outfit is turning heads in the community feed!</p>
+        <button mat-flat-button [routerLink]="['/social']">Join the Validation</button>
+      </div>
     </section>
   </main>
 </div>

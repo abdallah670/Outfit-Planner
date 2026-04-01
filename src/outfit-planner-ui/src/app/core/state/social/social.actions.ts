@@ -4,6 +4,7 @@ import {
   CreatePollRequest,
   CastVoteRequest,
 } from '../../../domain/entities/validation-poll.entity';
+import { AddVoteCommentRequest, VoteComment } from '../../../domain/entities/social-engagement.entity';
 
 export const SocialActions = createActionGroup({
   source: 'social',
@@ -34,20 +35,20 @@ export const SocialActions = createActionGroup({
     'Load Trending Failure': props<{ error: string }>(),
 
     // Engagement
-    'Like Outfit': props<{ outfitId: string }>(),
-    'Like Outfit Success': props<{ outfitId: string }>(),
-    'Like Outfit Failure': props<{ error: string }>(),
+    'React To Vote': props<{ voteId: string; reactionType: string }>(),
+    'React To Vote Success': props<{ voteId: string; reactionType: string }>(),
+    'React To Vote Failure': props<{ error: string }>(),
 
-    'Unlike Outfit': props<{ outfitId: string }>(),
-    'Unlike Outfit Success': props<{ outfitId: string }>(),
-    'Unlike Outfit Failure': props<{ error: string }>(),
+    'Add Vote Comment': props<{ request: AddVoteCommentRequest }>(),
+    'Add Vote Comment Success': props<{ comment: VoteComment }>(),
+    'Add Vote Comment Failure': props<{ error: string }>(),
 
-    'Add Comment': props<{ outfitId: string; content: string }>(),
-    'Add Comment Success': props<{ outfitId: string; comment: any }>(),
-    'Add Comment Failure': props<{ error: string }>(),
+    'Load Vote Comments': props<{ voteId: string; maxDepth?: number }>(),
+    'Load Vote Comments Success': props<{ voteId: string; comments: VoteComment[] }>(),
+    'Load Vote Comments Failure': props<{ error: string }>(),
 
-    'Load Comments': props<{ outfitId: string }>(),
-    'Load Comments Success': props<{ outfitId: string; comments: any[] }>(),
-    'Load Comments Failure': props<{ error: string }>(),
+    'Like Vote Comment': props<{ commentId: string }>(),
+    'Like Vote Comment Success': props<{ commentId: string }>(),
+    'Like Vote Comment Failure': props<{ error: string }>(),
   },
 });

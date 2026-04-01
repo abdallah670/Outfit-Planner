@@ -22,8 +22,17 @@ public class ValidationPollRepository : GenericRepository<ValidationPoll>, IVali
     public async Task<IEnumerable<ValidationPoll>> GetByUserIdAsync(string userId)
     {
         return await _dbSet
-            .Where(p => p.UserId == userId)
+            .Where(p => p.CreatedBy == userId)
             .Include(p => p.Options)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<ValidationPoll>> GetPollsForTrendingAsync()
+    {
+        return await _dbSet
+            .Include(p => p.Options)
+                .ThenInclude(o => o.Votes)
+                    .ThenInclude(v => v.Reactions)
             .ToListAsync();
     }
 }

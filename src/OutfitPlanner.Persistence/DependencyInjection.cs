@@ -77,6 +77,8 @@ public static class DependencyInjection
         services.AddScoped<IOutfitItemRepository, OutfitItemRepository>();
         services.AddScoped<IPollOptionRepository, PollOptionRepository>();
         services.AddScoped<IVoteRepository, VoteRepository>();
+        services.AddScoped<IVoteReactionRepository, VoteReactionRepository>();
+        services.AddScoped<IVoteCommentRepository, VoteCommentRepository>();
         services.AddScoped<IUserPreferencesRepository, UserPreferencesRepository>();
         services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
         services.AddScoped<ITrendingOutfitRepository, TrendingOutfitRepository>();

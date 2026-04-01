@@ -1,13 +1,13 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { SocialActions } from './social.actions';
 import { ValidationPoll } from '../../../domain/entities/validation-poll.entity';
-import { TrendingOutfit, OutfitComment } from '../../../domain/entities/social-engagement.entity';
+import { TrendingOutfit, VoteComment } from '../../../domain/entities/social-engagement.entity';
 
 export interface SocialState {
   polls: ValidationPoll[];
   selectedPoll: ValidationPoll | null;
   trendingOutfits: TrendingOutfit[];
-  commentsByOutfit: { [outfitId: string]: OutfitComment[] };
+  commentsByVote: { [voteId: string]: VoteComment[] };
   loading: boolean;
   error: string | null;
 }
@@ -16,7 +16,7 @@ export const initialState: SocialState = {
   polls: [],
   selectedPoll: null,
   trendingOutfits: [],
-  commentsByOutfit: {},
+  commentsByVote: {},
   loading: false,
   error: null,
 };
@@ -116,38 +116,32 @@ export const socialFeature = createFeature({
       loading: false,
     })),
 
-    // Likes
-    on(SocialActions.likeOutfitSuccess, (state, { outfitId }) => ({
+    // Likes / Reactions
+    on(SocialActions.reactToVoteSuccess, (state, { voteId, reactionType }) => ({
       ...state,
+      // Update reaction in trending list if applicable
       trendingOutfits: state.trendingOutfits.map(o => 
-        o.id === outfitId ? { ...o, likes: o.likes + 1 } : o
-      )
-    })),
-    on(SocialActions.unlikeOutfitSuccess, (state, { outfitId }) => ({
-      ...state,
-      trendingOutfits: state.trendingOutfits.map(o => 
-        o.id === outfitId ? { ...o, likes: Math.max(0, o.likes - 1) } : o
+        // Note: For now we don't know the voteId -> outfitId mapping easily here 
+        // without fetching trending again or having it in state.
+        // Assuming the UI will handle showing the immediate reaction locally.
+        o
       )
     })),
 
     // Comments
-    on(SocialActions.loadCommentsSuccess, (state, { outfitId, comments }) => ({
+    on(SocialActions.loadVoteCommentsSuccess, (state, { voteId, comments }) => ({
       ...state,
-      commentsByOutfit: {
-        ...state.commentsByOutfit,
-        [outfitId]: comments
+      commentsByVote: {
+        ...state.commentsByVote,
+        [voteId]: comments
       }
     })),
-    on(SocialActions.addCommentSuccess, (state, { outfitId, comment }) => ({
+    on(SocialActions.addVoteCommentSuccess, (state, { comment }) => ({
       ...state,
-      commentsByOutfit: {
-        ...state.commentsByOutfit,
-        [outfitId]: [comment, ...(state.commentsByOutfit[outfitId] || [])]
-      },
-      // Also update comment count in trending
-      trendingOutfits: state.trendingOutfits.map(o => 
-        o.id === outfitId ? { ...o, comments: o.comments + 1 } : o
-      )
+      commentsByVote: {
+        ...state.commentsByVote,
+        [comment.voteId]: [comment, ...(state.commentsByVote[comment.voteId] || [])]
+      }
     })),
   ),
 });
@@ -159,7 +153,7 @@ export const {
   selectPolls,
   selectSelectedPoll,
   selectTrendingOutfits,
-  selectCommentsByOutfit,
+  selectCommentsByVote,
   selectLoading,
   selectError,
 } = socialFeature;

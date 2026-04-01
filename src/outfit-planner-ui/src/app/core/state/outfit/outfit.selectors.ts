@@ -7,6 +7,26 @@ export interface OutfitStats {
   totalCost: number;
 }
 
+export interface TodaysPickContext {
+  outfit: Outfit | null;
+  weatherContext: {
+    condition: string;
+    temperature: number;
+    season: string;
+    city: string;
+  } | null;
+  todayEvent: {
+    title: string;
+    eventType: string;
+    eventDate: string;
+  } | null;
+  matchScore: number;
+  recommendationReason: string;
+  isBestEffort: boolean;
+  loading: boolean;
+  error: string | null;
+}
+
 export const selectOutfitState = createFeatureSelector<OutfitState>('outfit');
 
 export const selectAllOutfits = createSelector(
@@ -29,12 +49,27 @@ export const selectSelectedItem = createSelector(
   (state: OutfitState): Outfit | null => state?.selectedItem || null,
 );
 
+export const selectTodaysOutfit = createSelector(
+  selectOutfitState,
+  (state: OutfitState): Outfit | null => state?.todaysOutfit || null,
+);
+
+export const selectTodaysPickLoading = createSelector(
+  selectOutfitState,
+  (state: OutfitState): boolean => state?.todaysOutfitLoading || false,
+);
+
+export const selectTodaysPickError = createSelector(
+  selectOutfitState,
+  (state: OutfitState): string | null => state?.todaysOutfitError || null,
+);
+
 export const selectOutfitStats = createSelector(
   selectAllOutfits,
   (outfits: Outfit[]): OutfitStats => {
     return {
       totalOutfits: outfits.length || 0,
-      totalCost: 0, // Note: Outfit doesn't have a direct cost property; would need clothing items data to calculate
+      totalCost: 0,
     };
   },
 );

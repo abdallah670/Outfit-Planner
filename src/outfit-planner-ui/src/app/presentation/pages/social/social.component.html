@@ -3,20 +3,6 @@
     <!-- Header -->
     <header class="header">
       <h1 class="page-title">Outfit Planner - Social Validation</h1>
-      <div class="header-actions">
-        <button mat-stroked-button color="primary" routerLink="/social/feed">
-          <mat-icon>groups</mat-icon>
-          Community Feed
-        </button>
-        <button mat-raised-button color="accent" routerLink="/social/create">
-          <mat-icon>add</mat-icon>
-          Create Poll
-        </button>
-        <div class="notification-badge">
-          <mat-icon class="bell-icon">notifications</mat-icon>
-          <span>New Votes!</span>
-        </div>
-      </div>
     </header>
 
     <!-- Main Content -->
@@ -25,32 +11,29 @@
       <aside class="community-feed">
         <div class="section-header">
           <h2>Community Feed</h2>
-          <span class="badge" *ngIf="trendingOutfits().length > 0">{{ trendingOutfits().length }} trending</span>
+          <span class="badge">3 new</span>
         </div>
         
         <div class="feed-content">
-          <h3 class="feed-subtitle">Trending Outfits</h3>
+          <div class="feed-header-row">
+            <h3 class="feed-subtitle">Trending Outfits</h3>
+            <a routerLink="/social/trending" class="see-all-link">See All</a>
+          </div>
           
           <div class="outfit-grid">
-            <div class="outfit-card" *ngFor="let outfit of trendingOutfits()">
+            <div class="outfit-card" 
+                 *ngFor="let outfit of limitedTrendingOutfits()" 
+                 (click)="viewOutfitDetails(outfit)">
               <div class="outfit-images">
-                <img [src]="outfit.imageUrl" alt="Outfit">
+                <img [src]="outfit.imageUrl" alt="Outfit Option 1">
+                <img [src]="outfit.imageUrl" alt="Outfit Option 2"> <!-- Placeholder for second option if available -->
               </div>
               <div class="outfit-meta">
-                <img [src]="outfit.userAvatar" alt="User" class="user-avatar">
-                <div class="user-info">
-                  <span class="username">{{ outfit.userName }}</span>
-                </div>
-                <div class="engagement-stats">
-                  <span class="likes">
-                    <mat-icon class="heart-icon">favorite</mat-icon>
-                    {{ outfit.likes }}
-                  </span>
-                  <span class="comments">
-                    <mat-icon>chat_bubble_outline</mat-icon>
-                    {{ outfit.comments }}
-                  </span>
-                </div>
+                <img [src]="outfit.userAvatar || 'assets/default-avatar.png'" alt="User" class="user-avatar">
+                <span class="likes">
+                  <mat-icon class="heart-icon">favorite</mat-icon>
+                  {{ outfit.likes > 1000 ? (outfit.likes / 1000).toFixed(1) + 'k' : outfit.likes }} likes
+                </span>
               </div>
             </div>
             <div *ngIf="trendingOutfits().length === 0" class="no-outfits">
@@ -69,7 +52,7 @@
           <div class="poll-header">
             <div class="poll-title-section">
               <h3>{{ featuredPoll()!.question }}</h3>
-              <p class="poll-subtitle">Created: {{ featuredPoll()!.createdAt }}</p>
+              <p class="poll-subtitle">Countdown timer: {{ featuredPoll()!.createdAt }}</p>
             </div>
             <div class="countdown">
               <span class="countdown-time">{{ featuredPoll()!.timeLeft }}</span>
@@ -78,16 +61,15 @@
           </div>
           
           <div class="poll-options">
-            <div class="poll-option" *ngFor="let option of featuredPoll()!.options; let i = index">
-              <span class="option-label">{{ ['A', 'B', 'C'][i] }}</span>
-              <div class="option-image">
+            <div class="poll-option-card" *ngFor="let option of featuredPoll()!.options; let i = index">
+              <div class="option-image-container">
+                <span class="option-letter-tag">{{ ['A', 'B', 'C', 'D'][i] }}</span>
                 <img [src]="option.imageUrl" [alt]="'Option ' + ['A', 'B', 'C'][i]">
               </div>
-              <button class="vote-btn" (click)="vote(featuredPoll()!.id, option.id)">
-                <span class="vote-text">VOTE</span>
-                <mat-icon class="click-icon">touch_app</mat-icon>
+              <button class="vote-pink-btn" (click)="vote(featuredPoll()!.id, option.id)">
+                VOTE
               </button>
-              <p class="vote-count">{{ ['A', 'B', 'C'][i] }}: {{ option.votes }} votes</p>
+              <p class="vote-count-text">{{ ['A', 'B', 'C', 'D'][i] }}: {{ option.votes }} votes</p>
             </div>
           </div>
         </div>
@@ -96,15 +78,45 @@
         <div class="feedback-section">
           <div class="feedback-header">
             <h3>Community Feedback</h3>
-            <div class="new-comments-badge">
+            <div class="notif-badge danger">
               <mat-icon class="comment-icon">chat_bubble</mat-icon>
-              <span>Latest Activity</span>
+              <span>5 new comments</span>
             </div>
           </div>
-          
-          <div class="comments-list">
-            <div class="empty-state">
-              <p>Select a trending outfit to see detailed feedback and join the conversation.</p>
+
+          <div class="comments-scroll-area">
+            <div class="comment-item-refined" *ngFor="let comment of (selectedOutfitComments().length > 0 ? selectedOutfitComments() : [])">
+              <img [src]="comment.userAvatarUrl || 'assets/default-avatar.png'" alt="Avatar" class="comment-avatar-small">
+              <div class="comment-content-box">
+                <div class="comment-meta-row">
+                  <span class="comment-author-name">{{ comment.userName }}</span>
+                  <span class="comment-timestamp">{{ comment.createdAt | date:'shortTime' }} ago</span>
+                </div>
+                <p class="comment-body-text">{{ comment.content }}</p>
+              </div>
+            </div>
+            
+            <!-- Default Display Comments to match Design/social.html -->
+            <div class="comment-item-refined" *ngIf="selectedOutfitComments().length === 0">
+              <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop" alt="Avatar" class="comment-avatar-small">
+              <div class="comment-content-box">
+                <div class="comment-meta-row">
+                  <span class="comment-author-name">StyleMaven92</span>
+                  <span class="comment-timestamp">2 mins ago</span>
+                </div>
+                <p class="comment-body-text">Option B is super cute and perfect for the weather!</p>
+              </div>
+            </div>
+
+            <div class="comment-item-refined" *ngIf="selectedOutfitComments().length === 0">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="Avatar" class="comment-avatar-small">
+              <div class="comment-content-box">
+                <div class="comment-meta-row">
+                  <span class="comment-author-name">TrendSetter</span>
+                  <span class="comment-timestamp">5 mins ago</span>
+                </div>
+                <p class="comment-body-text">I love the colors in A!</p>
+              </div>
             </div>
           </div>
         </div>
@@ -118,24 +130,27 @@
           <h3>Live Results</h3>
           
           <div class="result-bars">
-            <div class="result-bar" *ngFor="let option of featuredPoll()!.options; let i = index">
+            <div class="result-bar-item" *ngFor="let option of featuredPoll()!.options; let i = index">
               <div class="bar-fill" [style.width.%]="getVotePercentage(featuredPoll()!, option.id)"></div>
-              <span class="bar-label">{{ ['A', 'B', 'C'][i] }}: {{ getVotePercentage(featuredPoll()!, option.id) }}%</span>
+              <span class="bar-percentage">{{ ['A', 'B', 'C'][i] }}: {{ getVotePercentage(featuredPoll()!, option.id) }}%</span>
             </div>
           </div>
         </div>
         
         <div class="share-card">
           <h3>Share Poll</h3>
-          <p class="share-subtitle">Unique link to your poll:</p>
-          <div class="link-box">
-            <span>outfitplanner.com/poll/{{ featuredPoll()?.id || '123xyz' }}</span>
+          <p class="share-subtitle">Unique link to your nami link:</p>
+          <div class="link-display">
+            <span>{{ currentPollLink() }}</span>
           </div>
-          <button class="copy-btn" (click)="copyLink()">Copy Link</button>
           
-          <div class="qr-code">
-            <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=outfitplanner.com/poll/' + (featuredPoll()?.id || '123xyz')" alt="QR Code">
-            <p>Scan to Vote!</p>
+          <button class="copy-link-btn" (click)="copyLink()">
+            Copy Link
+          </button>
+          
+          <div class="qr-section">
+            <img class="qr-image" [src]="qrCodeUrl()" alt="QR Code">
+            <p class="qr-text">Scan to Vote!</p>
           </div>
         </div>
       </aside>

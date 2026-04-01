@@ -16,8 +16,10 @@ import { CalendarComponent } from './presentation/pages/calendar/calendar.compon
 import { SocialComponent } from './presentation/pages/social/social.component';
 import { CommunityFeedComponent } from './presentation/pages/community-feed/community-feed.component';
 import { CreatePollComponent } from './presentation/pages/create-poll/create-poll.component';
+import { PollDetailComponent } from './presentation/pages/social/poll-detail/poll-detail.component';
 import { GlobalSearchComponent } from './presentation/pages/global-search/global-search.component';
 import { NotificationsCenterComponent } from './presentation/pages/notifications-center/notifications-center.component';
+import { TrendingOutfitsComponent } from './presentation/pages/social/trending-outfits/trending-outfits.component';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -40,6 +42,8 @@ export const routes: Routes = [
   { path: 'social', component: SocialComponent, canActivate: [authGuard] },
   { path: 'social/feed', component: CommunityFeedComponent, canActivate: [authGuard] },
   { path: 'social/create', component: CreatePollComponent, canActivate: [authGuard] },
+  { path: 'social/trending', component: TrendingOutfitsComponent, canActivate: [authGuard] },
+  { path: 'social/polls/:id', component: PollDetailComponent, canActivate: [authGuard] },
   { path: 'search', component: GlobalSearchComponent, canActivate: [authGuard] },
   { path: 'notifications', component: NotificationsCenterComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },

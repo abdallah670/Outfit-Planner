@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { SocialUseCases } from '../../../domain/usecases/social.usecases';
 import { ValidationPoll, CommandResponse } from '../../../domain/entities/validation-poll.entity';
-import { TrendingOutfit, OutfitComment } from '../../../domain/entities/social-engagement.entity';
+import { TrendingOutfit, VoteComment, AddVoteCommentRequest } from '../../../domain/entities/social-engagement.entity';
 
 @Injectable()
 export class SocialEffects {
@@ -192,16 +192,16 @@ export class SocialEffects {
       ) as Observable<Action>,
   );
 
-  likeOutfit$ = createEffect(
+  reactToVote$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(SocialActions.likeOutfit),
-        mergeMap((action: ReturnType<typeof SocialActions.likeOutfit>) =>
-          this.socialUseCases.likeOutfit(action.outfitId).pipe(
-            map(() => SocialActions.likeOutfitSuccess({ outfitId: action.outfitId })),
+        ofType(SocialActions.reactToVote),
+        mergeMap((action: { voteId: string; reactionType: string }) =>
+          this.socialUseCases.reactToVote(action.voteId, action.reactionType).pipe(
+            map(() => SocialActions.reactToVoteSuccess({ voteId: action.voteId, reactionType: action.reactionType })),
             catchError((error) =>
               of(
-                SocialActions.likeOutfitFailure({
+                SocialActions.reactToVoteFailure({
                   error: error.message,
                 }),
               ),
@@ -211,16 +211,16 @@ export class SocialEffects {
       ) as Observable<Action>,
   );
 
-  unlikeOutfit$ = createEffect(
+  addVoteComment$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(SocialActions.unlikeOutfit),
-        mergeMap((action: ReturnType<typeof SocialActions.unlikeOutfit>) =>
-          this.socialUseCases.unlikeOutfit(action.outfitId).pipe(
-            map(() => SocialActions.unlikeOutfitSuccess({ outfitId: action.outfitId })),
+        ofType(SocialActions.addVoteComment),
+        mergeMap((action: { request: AddVoteCommentRequest }) =>
+          this.socialUseCases.addVoteComment(action.request).pipe(
+            map((comment: VoteComment) => SocialActions.addVoteCommentSuccess({ comment })),
             catchError((error) =>
               of(
-                SocialActions.unlikeOutfitFailure({
+                SocialActions.addVoteCommentFailure({
                   error: error.message,
                 }),
               ),
@@ -230,16 +230,16 @@ export class SocialEffects {
       ) as Observable<Action>,
   );
 
-  addComment$ = createEffect(
+  loadVoteComments$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(SocialActions.addComment),
-        mergeMap((action: ReturnType<typeof SocialActions.addComment>) =>
-          this.socialUseCases.addComment(action.outfitId, action.content).pipe(
-            map((comment: OutfitComment) => SocialActions.addCommentSuccess({ outfitId: action.outfitId, comment })),
+        ofType(SocialActions.loadVoteComments),
+        mergeMap((action: { voteId: string; maxDepth?: number }) =>
+          this.socialUseCases.getVoteComments(action.voteId, action.maxDepth).pipe(
+            map((comments: VoteComment[]) => SocialActions.loadVoteCommentsSuccess({ voteId: action.voteId, comments })),
             catchError((error) =>
               of(
-                SocialActions.addCommentFailure({
+                SocialActions.loadVoteCommentsFailure({
                   error: error.message,
                 }),
               ),
@@ -249,16 +249,16 @@ export class SocialEffects {
       ) as Observable<Action>,
   );
 
-  loadComments$ = createEffect(
+  likeVoteComment$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(SocialActions.loadComments),
-        mergeMap((action: ReturnType<typeof SocialActions.loadComments>) =>
-          this.socialUseCases.getComments(action.outfitId).pipe(
-            map((response: { items: OutfitComment[]; totalCount: number }) => SocialActions.loadCommentsSuccess({ outfitId: action.outfitId, comments: response.items })),
+        ofType(SocialActions.likeVoteComment),
+        mergeMap((action: { commentId: string }) =>
+          this.socialUseCases.likeVoteComment(action.commentId).pipe(
+            map(() => SocialActions.likeVoteCommentSuccess({ commentId: action.commentId })),
             catchError((error) =>
               of(
-                SocialActions.loadCommentsFailure({
+                SocialActions.likeVoteCommentFailure({
                   error: error.message,
                 }),
               ),
