@@ -1,7 +1,7 @@
 using FluentValidation;
-using OutfitPlanner.Application.Features.Social.Requests.Commands;
+using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 
-namespace OutfitPlanner.Application.Features.Social.Requests.Commands.Validators;
+namespace OutfitPlanner.Application.Features.Feed.Requests.Commands.Validators;
 
 /// <summary>
 /// Validator for VoteOnPollCommand

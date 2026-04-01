@@ -70,25 +70,25 @@ public static class DependencyInjection
         services.AddScoped<IValidationPollRepository, ValidationPollRepository>();
         services.AddScoped<IWearEventRepository, WearEventRepository>();
         services.AddScoped<IUserStyleProfileRepository, UserStyleProfileRepository>();
-        services.AddScoped<IOutfitFeedbackRepository, OutfitFeedbackRepository>();
+
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IStyleRuleRepository, StyleRuleRepository>();
         services.AddScoped<IClothingTagRepository, ClothingTagRepository>();
         services.AddScoped<IOutfitItemRepository, OutfitItemRepository>();
         services.AddScoped<IPollOptionRepository, PollOptionRepository>();
         services.AddScoped<IVoteRepository, VoteRepository>();
-        services.AddScoped<IVoteReactionRepository, VoteReactionRepository>();
-        services.AddScoped<IVoteCommentRepository, VoteCommentRepository>();
+
         services.AddScoped<IUserPreferencesRepository, UserPreferencesRepository>();
         services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
         services.AddScoped<ITrendingOutfitRepository, TrendingOutfitRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IAppPreferencesRepository, AppPreferencesRepository>();
         services.AddScoped<INotificationSettingsRepository, NotificationSettingsRepository>();
-        services.AddScoped<IOutfitEngagementRepository, OutfitEngagementRepository>();
+   
         services.AddScoped<IFeedPostRepository, FeedPostRepository>();
         services.AddScoped<IPostReactionRepository, PostReactionRepository>();
         services.AddScoped<IPostCommentRepository, PostCommentRepository>();
+        services.AddScoped<IFollowRepository, FollowRepository>();
         services.AddScoped<DataSeeder>();
         return services;
     }

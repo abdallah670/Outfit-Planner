@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj": {}
+    "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj": {}
   },
   "projects": {
-    "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj": {
+    "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
+        "projectUniqueName": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
         "projectName": "OutfitPlanner.Api",
-        "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
+        "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\obj\\",
+        "outputPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,11 +32,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
-                "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
               },
-              "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
-                "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj"
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj"
               }
             }
           }
@@ -57,6 +57,14 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Hangfire.AspNetCore": {
+              "target": "Package",
+              "version": "[1.8.14, )"
+            },
+            "Hangfire.SqlServer": {
+              "target": "Package",
+              "version": "[1.8.14, )"
+            },
             "Microsoft.AspNetCore.Authentication.Facebook": {
               "target": "Package",
               "version": "[9.0.2, )"
@@ -137,14 +145,14 @@
         }
       }
     },
-    "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
+    "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
+        "projectUniqueName": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
         "projectName": "OutfitPlanner.Application",
-        "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
+        "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\obj\\",
+        "outputPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -165,8 +173,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
-                "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
               }
             }
           }
@@ -254,14 +262,14 @@
         }
       }
     },
-    "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
+    "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj",
+        "projectUniqueName": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj",
         "projectName": "OutfitPlanner.Domain",
-        "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj",
+        "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\obj\\",
+        "outputPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -339,14 +347,14 @@
         }
       }
     },
-    "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
+    "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
         "projectName": "OutfitPlanner.Infrastructure",
-        "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+        "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\obj\\",
+        "outputPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -367,14 +375,14 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
-                "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
               },
-              "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
-                "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
               },
-              "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
-                "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
               }
             }
           }
@@ -445,14 +453,14 @@
         }
       }
     },
-    "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
+    "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj",
+        "projectUniqueName": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj",
         "projectName": "OutfitPlanner.Persistence",
-        "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj",
+        "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\obj\\",
+        "outputPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Persistence\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -473,11 +481,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
-                "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
               },
-              "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
-                "projectPath": "c:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
+              "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Outfit Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
               }
             }
           }

@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OutfitPlanner.Application.DTOs.Social;
-using OutfitPlanner.Application.Features.Social.Requests.Commands;
-using OutfitPlanner.Application.Features.Social.Requests.Queries;
+using OutfitPlanner.Application.DTOs.Feed;
+using OutfitPlanner.Application.Features.Feed.Requests.Commands;
+using OutfitPlanner.Application.Features.Feed.Requests.Queries;
 using OutfitPlanner.Application.Responses;
 
 namespace OutfitPlanner.Api.Controllers;
@@ -38,7 +38,7 @@ public class TrendingController : ControllerBase
     /// <param name="page">Page number (default: 1)</param>
     /// <param name="pageSize">Items per page (default: 20)</param>
     [HttpGet("outfits")]
-    public async Task<ActionResult<PagedResult<TrendingOutfitDto>>> GetTrendingOutfits(
+    public async Task<ActionResult<PagedResult<TrendingDataDto>>> GetTrendingOutfits(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {

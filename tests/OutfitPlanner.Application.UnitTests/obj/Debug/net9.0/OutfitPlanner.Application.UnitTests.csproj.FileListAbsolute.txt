@@ -195,3 +195,5 @@ C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.UnitTests\obj\De
 C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.UnitTests\obj\Debug\net9.0\OutfitPlanner.Application.UnitTests.pdb
 C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.UnitTests\obj\Debug\net9.0\OutfitPlanner.Application.UnitTests.genruntimeconfig.cache
 C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.UnitTests\obj\Debug\net9.0\ref\OutfitPlanner.Application.UnitTests.dll
+C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.UnitTests\bin\Debug\net9.0\CsvHelper.dll
+C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.UnitTests\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.InMemory.dll

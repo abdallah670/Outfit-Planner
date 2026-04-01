@@ -1,10 +1,10 @@
 using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
-using OutfitPlanner.Application.Features.Social.Requests.Commands;
+using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Enums;
 
-namespace OutfitPlanner.Application.Features.Social.Handlers.Commands;
+namespace OutfitPlanner.Application.Features.Feed.Handlers.Commands;
 
 public class ClosePollCommandHandler : IRequestHandler<ClosePollCommand, BaseCommandResponse>
 {

@@ -41,11 +41,7 @@ public class DeleteOutfitCommandHandler : IRequestHandler<DeleteOutfitCommand, B
                await _unitOfWork.WearEvents.RemoveRangeAsync(wearEvents);
            }
 
-           var feedbacks = await _unitOfWork.OutfitFeedbacks.FindAsync(f => f.OutfitId == request.Id);
-           if (feedbacks.Any())
-           {
-               await _unitOfWork.OutfitFeedbacks.RemoveRangeAsync(feedbacks);
-           }
+        
            
            await _unitOfWork.Outfits.RemoveAsync(outfit);
            await _unitOfWork.SaveChangesAsync(cancellationToken);

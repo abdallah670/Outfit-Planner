@@ -1,7 +1,7 @@
 using MediatR;
-using OutfitPlanner.Application.DTOs.Social;
+using OutfitPlanner.Application.DTOs.Feed;
 
-namespace OutfitPlanner.Application.Features.Social.Requests.Queries;
+namespace OutfitPlanner.Application.Features.Feed.Requests.Queries;
 
 /// <summary>
 /// Request to get all polls for a user

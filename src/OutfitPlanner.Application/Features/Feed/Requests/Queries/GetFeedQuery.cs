@@ -1,14 +1,19 @@
 using MediatR;
+using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Domain.Enums;
 
 namespace OutfitPlanner.Application.Features.Feed.Requests.Queries;
 
-public class GetFeedQuery : IRequest<FeedPostResponse>
+/// <summary>
+/// Query to get feed posts with cursor-based pagination
+/// </summary>
+public class GetFeedQuery : IRequest<CursorPagination.CursorPagedResult<FeedPostDto>>
 {
     public string? UserId { get; set; }
-    public int Page { get; set; } = 1;
+    public string? Cursor { get; set; }
     public int PageSize { get; set; } = 20;
     public string SortBy { get; set; } = "popular";
-    public Visibility Visibility { get; set; } = Visibility.Public;
+    public string Visibility { get; set; } = "Public";
+    public string? PostType { get; set; }
 }

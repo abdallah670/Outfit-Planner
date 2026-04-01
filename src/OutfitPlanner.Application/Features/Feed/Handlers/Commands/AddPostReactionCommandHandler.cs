@@ -44,7 +44,7 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
         {
             PostId = request.PostId,
             UserId = request.UserId,
-            ReactionType = PostReactionType.Heart
+            ReactionType = (ReactionType)Enum.Parse(typeof(ReactionType), request.ReactionType)
         };
 
         await _reactionRepository.AddAsync(reaction);

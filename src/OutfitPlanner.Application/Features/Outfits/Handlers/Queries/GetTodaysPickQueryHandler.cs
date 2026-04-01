@@ -3,10 +3,12 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Infrastructure;
+using OutfitPlanner.Application.DTOs.Calendar;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.DTOs.Weather;
 using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
+using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
 
@@ -23,17 +25,17 @@ public class GetTodaysPickQueryHandler
     private readonly IMapper _mapper;
     private readonly ILogger<GetTodaysPickQueryHandler> _logger;
 
-    private static readonly Dictionary<CalendarEventType, OccasionType> EventToOccasionMap = new()
+    private static readonly Dictionary<Domain.Enums.CalendarEventType, OccasionType> EventToOccasionMap = new()
     {
-        { CalendarEventType.Work, OccasionType.BusinessCasual },
-        { CalendarEventType.Meeting, OccasionType.BusinessCasual },
-        { CalendarEventType.Social, OccasionType.Social },
-        { CalendarEventType.Date, OccasionType.Date },
-        { CalendarEventType.Party, OccasionType.Social },
-        { CalendarEventType.Sport, OccasionType.Athletic },
-        { CalendarEventType.Travel, OccasionType.Travel },
-        { CalendarEventType.Appointment, OccasionType.Casual },
-        { CalendarEventType.General, OccasionType.Casual }
+        { Domain.Enums.CalendarEventType.Work, OccasionType.BusinessCasual },
+        { Domain.Enums.CalendarEventType.Meeting, OccasionType.BusinessCasual },
+        { Domain.Enums.CalendarEventType.Social, OccasionType.Social },
+        { Domain.Enums.CalendarEventType.Date, OccasionType.Date },
+        { Domain.Enums.CalendarEventType.Party, OccasionType.Social },
+        { Domain.Enums.CalendarEventType.Sport, OccasionType.Athletic },
+        { Domain.Enums.CalendarEventType.Travel, OccasionType.Travel },
+        { Domain.Enums.CalendarEventType.Appointment, OccasionType.Casual },
+        { Domain.Enums.CalendarEventType.General, OccasionType.Casual }
     };
 
     private static readonly Dictionary<string, Season> WeatherToSeasonMap = new(StringComparer.OrdinalIgnoreCase)
@@ -278,7 +280,7 @@ public class GetTodaysPickQueryHandler
 
         if (todayEvent != null)
         {
-            if (Enum.TryParse<CalendarEventType>(todayEvent.EventType, out var eventType))
+            if (Enum.TryParse<Domain.Enums.CalendarEventType>(todayEvent.EventType, out var eventType))
             {
                 var occasion = EventToOccasionMap.GetValueOrDefault(eventType, OccasionType.Casual);
                 if (outfit.Occasion == occasion)
@@ -334,7 +336,7 @@ public class GetTodaysPickQueryHandler
 
         if (todayEvent != null)
         {
-            if (Enum.TryParse<CalendarEventType>(todayEvent.EventType, out var eventType))
+            if (Enum.TryParse<Domain.Enums.CalendarEventType>(todayEvent.EventType, out var eventType))
             {
                 var occasion = EventToOccasionMap.GetValueOrDefault(eventType, OccasionType.Casual);
                 if (outfit.Occasion == occasion)

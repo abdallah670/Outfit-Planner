@@ -7,3 +7,6 @@ c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests
 c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.AssemblyInfo.cs
 c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.csproj.CoreCompileInputs.cache
 c:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.sourcelink.json
+C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.dll
+C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\refint\OutfitPlanner.Application.IntegrationTests.dll
+C:\Meno\Projects\Outfit Planner\tests\OutfitPlanner.Application.IntegrationTests\obj\Debug\net9.0\OutfitPlanner.Application.IntegrationTests.pdb

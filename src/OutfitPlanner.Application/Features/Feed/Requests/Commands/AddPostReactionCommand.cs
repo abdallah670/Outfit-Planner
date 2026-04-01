@@ -7,5 +7,5 @@ public class AddPostReactionCommand : IRequest<BaseCommandResponse>
 {
     public Guid PostId { get; set; }
     public string UserId { get; set; } = string.Empty;
-    public string ReactionType { get; set; } = "Heart";
+    public string ReactionType{set;get;} = "Like";
 }

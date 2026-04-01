@@ -1,8 +1,8 @@
 using MediatR;
-using OutfitPlanner.Application.DTOs.Social;
+using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.Responses;
 
-namespace OutfitPlanner.Application.Features.Social.Requests.Commands;
+namespace OutfitPlanner.Application.Features.Feed.Requests.Commands;
 
 /// <summary>
 /// Command to vote on a poll

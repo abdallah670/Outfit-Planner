@@ -2,10 +2,13 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OutfitPlanner.Application.Common;
+using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.DTOs.User;
 using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Features.User.Requests.Commands;
 using OutfitPlanner.Application.Features.User.Requests.Queries;
+using OutfitPlanner.Application.Features.Feed.Requests.Queries;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -623,4 +626,137 @@ public class UserController : ControllerBase
     }
 
     #endregion
+    #region  Follow Operation
+     
+     /// <summary>
+     /// Get followers of a user with cursor-based pagination
+     /// </summary>
+     [HttpGet("users/{userId}/followers")]
+     [AllowAnonymous]
+     public async Task<ActionResult<CursorPagination.CursorPagedResult<FollowerDto>>> GetFollowers(
+         string userId,
+         [FromQuery] string? cursor = null,
+         [FromQuery] int pageSize = 20)
+     {
+         var query = new GetFollowersQuery
+         {
+             UserId = userId,
+             Cursor = cursor,
+             PageSize = pageSize
+         };
+         
+         var result = await _mediator.Send(query);
+         return Ok(result);
+     }
+
+     /// <summary>
+     /// Get users that a user is following with cursor-based pagination
+     /// </summary>
+     [HttpGet("users/{userId}/following")]
+     [AllowAnonymous]
+     public async Task<ActionResult<CursorPagination.CursorPagedResult<FollowingDto>>> GetFollowing(
+         string userId,
+         [FromQuery] string? cursor = null,
+         [FromQuery] int pageSize = 20)
+     {
+         var query = new GetFollowingQuery
+         {
+             UserId = userId,
+             Cursor = cursor,
+             PageSize = pageSize
+         };
+         
+         var result = await _mediator.Send(query);
+         return Ok(result);
+     }
+
+     /// <summary>
+     /// Follow a user
+     /// </summary>
+     [HttpPost("users/{userId}/follow")]
+     public async Task<IActionResult> FollowUser(string userId)
+     {
+         try
+         {
+             var currentUserId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+             if (string.IsNullOrEmpty(currentUserId))
+                 return Unauthorized(new { message = "User not authenticated" });
+
+             var command = new FollowUserCommand
+             {
+                 FollowerId = currentUserId,
+                 FollowingId = userId
+             };
+             
+             var response = await _mediator.Send(command);
+             
+             if (response.Success)
+                 return Ok(response);
+             
+             return BadRequest(response);
+         }
+         catch (Exception ex)
+         {
+             _logger.LogError(ex, "Error following user");
+             return StatusCode(500, new { message = "Failed to follow user" });
+         }
+     }
+
+     /// <summary>
+     /// Unfollow a user
+     /// </summary>
+     [HttpDelete("users/{userId}/follow")]
+     public async Task<IActionResult> UnfollowUser(string userId)
+     {
+         try
+         {
+             var currentUserId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+             if (string.IsNullOrEmpty(currentUserId))
+                 return Unauthorized(new { message = "User not authenticated" });
+
+             var command = new UnfollowUserCommand
+             {
+                 FollowerId = currentUserId,
+                 FollowingId = userId
+             };
+             
+             var response = await _mediator.Send(command);
+             
+             if (response.Success)
+                 return Ok(response);
+             
+             return BadRequest(response);
+         }
+         catch (Exception ex)
+         {
+             _logger.LogError(ex, "Error unfollowing user");
+             return StatusCode(500, new { message = "Failed to unfollow user" });
+         }
+     }
+
+     /// <summary>
+     /// Check if current user is following a specific user
+     /// </summary>
+     [HttpGet("users/{userId}/is-following")]
+     public async Task<ActionResult<bool>> IsFollowing(string userId)
+     {
+         try
+         {
+             var currentUserId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+             if (string.IsNullOrEmpty(currentUserId))
+                 return Unauthorized(new { message = "User not authenticated" });
+
+             var followRepository = HttpContext.RequestServices.GetRequiredService<IFollowRepository>();
+             var isFollowing = await followRepository.IsFollowingAsync(currentUserId, userId);
+             return Ok(isFollowing);
+         }
+         catch (Exception ex)
+         {
+             _logger.LogError(ex, "Error checking follow status");
+             return StatusCode(500, new { message = "Failed to check follow status" });
+         }
+     }
+
+   #endregion
+
 }

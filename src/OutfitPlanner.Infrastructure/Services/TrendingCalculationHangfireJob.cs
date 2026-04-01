@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using OutfitPlanner.Application.Features.Social.Requests.Commands;
+using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 
 namespace OutfitPlanner.Infrastructure.Services;
 

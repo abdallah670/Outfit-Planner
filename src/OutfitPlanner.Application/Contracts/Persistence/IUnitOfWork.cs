@@ -24,6 +24,7 @@ public interface IUnitOfWork : IDisposable
     IFeedPostRepository FeedPosts { get; }
     IPostReactionRepository PostReactions { get; }
     IPostCommentRepository PostComments { get; }
+    IFollowRepository Follows { get; }
    
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

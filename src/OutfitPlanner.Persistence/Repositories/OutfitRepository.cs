@@ -25,7 +25,6 @@ public class OutfitRepository : GenericRepository<Outfit>, IOutfitRepository
         return await _dbSet
             .Include(o => o.Items)
                 .ThenInclude(i => i.ClothingItem)
-            .Include(o => o.Feedback)
             .FirstOrDefaultAsync(o => o.Id == id);
     }
 }

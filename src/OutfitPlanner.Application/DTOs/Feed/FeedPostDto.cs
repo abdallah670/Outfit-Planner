@@ -1,5 +1,6 @@
 using System;
 using OutfitPlanner.Domain.Enums;
+using OutfitPlanner.Application.DTOs.Outfit;
 
 namespace OutfitPlanner.Application.DTOs.Feed;
 

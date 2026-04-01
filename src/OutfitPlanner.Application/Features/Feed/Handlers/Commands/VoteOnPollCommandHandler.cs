@@ -1,14 +1,15 @@
 using AutoMapper;
 using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.Exceptions;
-using OutfitPlanner.Application.Features.Social.Requests.Commands;
+using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
 using Microsoft.Extensions.Logging;
 
-namespace OutfitPlanner.Application.Features.Social.Handlers.Commands;
+namespace OutfitPlanner.Application.Features.Feed.Handlers.Commands;
 
 /// <summary>
 /// Handler for VoteOnPollCommand
@@ -18,6 +19,7 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
     private readonly IValidationPollRepository _validationPollRepository;
     private readonly IPollOptionRepository _pollOptionRepository;
     private readonly IVoteRepository _voteRepository;
+    private readonly IUnitOfWork _unitOfWork ;
     private readonly IMapper _mapper;
     private readonly ILogger<VoteOnPollCommandHandler> _logger;
 
@@ -25,12 +27,14 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
         IValidationPollRepository validationPollRepository,
         IPollOptionRepository pollOptionRepository,
         IVoteRepository voteRepository,
+        IUnitOfWork unitOfWork,
         IMapper mapper,
         ILogger<VoteOnPollCommandHandler> logger)
     {
         _validationPollRepository = validationPollRepository;
         _pollOptionRepository = pollOptionRepository;
         _voteRepository = voteRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
         _logger = logger;
     }
@@ -94,13 +98,27 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
                 OptionId = request.Request.OptionId,
                 VoterId = request.UserId,
                 Rating = request.Request.Rating,
-                Comment = request.Request.Comment,
                 IsAnonymous = request.Request.IsAnonymous
             };
-
-            // 5. Save vote
+            // 5. Create a reaction for feed post
+            var feedPost = await _unitOfWork.FeedPosts.GetByIdAsync(request.PollId);
+            if (feedPost == null)
+            {
+                response.Success = false;
+                response.Message = "Feed post not found";
+                response.Errors.Add("Feed post not found");
+                return response;
+            }
+            var reaction = new PostReaction
+            {
+                PostId = request.PollId,
+                UserId = request.UserId,
+                ReactionType = ReactionType.Like
+            };
+            // 6. Save vote
             await _voteRepository.AddAsync(vote);
-
+            await _unitOfWork.PostReactions.AddAsync(reaction);
+            await _unitOfWork.SaveChangesAsync();
             response.Id = vote.Id;
             response.Success = true;
             response.Message = "Vote submitted successfully";

@@ -10,7 +10,7 @@ namespace OutfitPlanner.Api.Middleware{
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionMiddleware> _logger;
-        private  ErrorDetails errorDetails;
+        private ErrorDetails? _errorDetails;
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
@@ -66,8 +66,8 @@ namespace OutfitPlanner.Api.Middleware{
     }
     public class ErrorDetails
     {
-        public string ErrorType { get; set; }
-        public string ErrorMessage { get; set; }
+        public string? ErrorType { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 
 }

@@ -1,7 +1,7 @@
 using AutoMapper;
 using OutfitPlanner.Application.DTOs.Calendar;
+using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.DTOs.Outfit;
-using OutfitPlanner.Application.DTOs.Social;
 using OutfitPlanner.Application.DTOs.User;
 using OutfitPlanner.Application.DTOs.Wardrobe;
 using OutfitPlanner.Domain.Entities;
@@ -223,15 +223,14 @@ public class MappingProfile : Profile
 
         // TrendingOutfit
         CreateMap<TrendingOutfit, TrendingOutfitDto>()
-            .ForMember(d => d.VoteId, opt => opt.MapFrom(s => s.PollId))
-            .ForMember(d => d.Likes, opt => opt.MapFrom(s => s.LikeCount))
-            .ForMember(d => d.Rank, opt => opt.MapFrom(s => s.RankPosition))
-            .ForMember(d => d.OutfitName, opt => opt.MapFrom(s => s.Outfit.Name))
+            .ForMember(d => d.Id, opt => opt.MapFrom(s => s.OutfitId))
+            .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Outfit.Name))
             .ForMember(d => d.ImageUrl, opt => opt.MapFrom(s => s.Outfit.ImageUrl))
-            .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Outfit.Occasion.ToString()))
-            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
-            .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.Outfit.User.ProfilePictureUrl))
             .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Outfit.UserId))
+            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
+            .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.VoteCount))
+            .ForMember(d => d.CommentCount, opt => opt.MapFrom(s => s.CommentCount))
+            .ForMember(d => d.TrendingScore, opt => opt.MapFrom(s => s.TrendingScore))
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.Date));
 
         // ====================
@@ -245,5 +244,26 @@ public class MappingProfile : Profile
         CreateMap<CalendarEventItemDto, CalendarEvent>()
             .ForMember(d => d.StartTime, opt => opt.MapFrom(s => !string.IsNullOrEmpty(s.StartTime) ? TimeSpan.Parse(s.StartTime) : (TimeSpan?)null))
             .ForMember(d => d.EndTime, opt => opt.MapFrom(s => !string.IsNullOrEmpty(s.EndTime) ? TimeSpan.Parse(s.EndTime) : (TimeSpan?)null));
-    }
+        // ====================
+// FEED MAPPINGS
+// ====================
+
+// FeedPost - Main feed entity
+CreateMap<FeedPost, FeedPostDto>()
+    .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Name))
+    .ForMember(d => d.UserAvatarUrl, opt => opt.MapFrom(s => s.User.ProfilePictureUrl))
+    .ForMember(d => d.Outfit, opt => opt.MapFrom(s => s.Outfit)) // Nested mapping
+    .ForMember(d => d.Poll, opt => opt.MapFrom(s => s.Poll))     // Nested mapping
+    .ForMember(d => d.UserReaction, opt => opt.MapFrom(s => 
+        s.Reactions.FirstOrDefault(r => r.UserId == s.UserId) != null ? 
+        s.Reactions.FirstOrDefault(r => r.UserId == s.UserId).ReactionType.ToString() : null));
+
+// PostComment
+CreateMap<PostComment, PostCommentDto>()
+    .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Name))
+    .ForMember(d => d.UserAvatarUrl, opt => opt.MapFrom(s => s.User.ProfilePictureUrl))
+    .ForMember(d => d.Replies, opt => opt.MapFrom(s => s.Replies));
+     } 
 }
+
+

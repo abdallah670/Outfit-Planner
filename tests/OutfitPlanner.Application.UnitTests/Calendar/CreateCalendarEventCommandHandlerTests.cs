@@ -48,8 +48,8 @@ public class CreateCalendarEventCommandHandlerTests
                 Description = "Weekly team sync",
                 Location = "Conference Room A",
                 EventDate = DateTimeOffset.Now.AddDays(1),
-                StartTime = TimeSpan.FromHours(10),
-                EndTime = TimeSpan.FromHours(11),
+                StartTime = TimeSpan.FromHours(10).ToString(@"hh\:mm\:ss"),
+                EndTime = TimeSpan.FromHours(11).ToString(@"hh\:mm\:ss"),
                 EventType = DtoCalendarEventType.Work,
                 OutfitId = null,
                 Notes = "Bring laptop"
@@ -95,8 +95,8 @@ public class CreateCalendarEventCommandHandlerTests
                 Description = "Important client presentation",
                 Location = "Main Office",
                 EventDate = DateTimeOffset.Now.AddDays(2),
-                StartTime = TimeSpan.FromHours(14),
-                EndTime = TimeSpan.FromHours(15),
+                StartTime = TimeSpan.FromHours(14).ToString(@"hh\:mm\:ss"),
+                EndTime = TimeSpan.FromHours(15).ToString(@"hh\:mm\:ss"),
                 EventType = DtoCalendarEventType.Meeting,
                 OutfitId = outfitId,
                 Notes = "Wear formal attire"
