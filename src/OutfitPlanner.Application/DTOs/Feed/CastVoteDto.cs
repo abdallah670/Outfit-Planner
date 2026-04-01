@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace OutfitPlanner.Application.DTOs.Social;
+namespace OutfitPlanner.Application.DTOs.Feed;
 
 /// <summary>
 /// DTO for casting a vote on a poll option

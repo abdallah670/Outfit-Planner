@@ -1,0 +1,184 @@
+using System.Security.Claims;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using OutfitPlanner.Application.DTOs.Feed;
+
+using OutfitPlanner.Application.Features.Feed.Requests.Commands;
+using OutfitPlanner.Application.Features.Feed.Requests.Queries;
+
+
+using OutfitPlanner.Application.Responses;
+using OutfitPlanner.Application.Common;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
+
+namespace OutfitPlanner.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class PollsController : ControllerBase
+{
+    private readonly IMediator _mediator;
+    private readonly ILogger<PollsController> _logger;
+
+    public PollsController(IMediator mediator, ILogger<PollsController> logger)
+    {
+        _mediator = mediator;
+        _logger = logger;
+    }
+
+    private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+    /// <summary>
+    /// Get all polls created by the current user
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<List<ValidationPollDto>>> GetMyPolls([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    {
+        var userId = GetUserId();
+        var query = new GetPollsRequest { UserId = userId };
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Get a specific poll by ID
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ValidationPollDto>> GetPoll(Guid id)
+    {
+        var query = new GetPollByIdRequest { Id = id };
+        var result = await _mediator.Send(query);
+        
+        if (result == null)
+            return NotFound();
+            
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Create a new poll
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<BaseCommandResponse>> CreatePoll([FromBody] CreatePollPostDto request)
+    {
+        var userId = GetUserId();
+        var command = new CreatePollPostCommand
+        {
+            UserId = userId,
+            Question = request.Question,
+            OutfitIds = request.OutfitIds,
+            ExpiresAt = request.ExpiresAt,
+            Visibility = request.Visibility
+        };
+        
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return BadRequest(response);
+            
+        _logger.LogInformation("User {UserId} created poll {PollId}", userId, response.Id);
+        return CreatedAtAction(nameof(GetPoll), new { id = response.Id }, response);
+    }
+
+    /// <summary>
+    /// Update an existing poll
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<BaseCommandResponse>> UpdatePoll(Guid id, [FromBody] UpdatePollPostDto request)
+    {
+        var userId = GetUserId();
+        var command = new UpdatePollPostCommand
+        {
+            PostId = id,
+            UserId = userId,
+            Question = request.Question,
+            ExpiresAt = request.ExpiresAt,
+            Visibility = request.Visibility
+        };
+        
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return BadRequest(response);
+            
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Delete a poll
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeletePoll(Guid id)
+    {
+        var userId = GetUserId();
+        var command = new DeletePollPostCommand { PostId = id, UserId = userId };
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return NotFound(response.Message);
+            
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Vote on a poll option
+    /// </summary>
+    [HttpPost("{id:guid}/vote")]
+    public async Task<ActionResult<BaseCommandResponse>> VoteOnPoll(Guid id, [FromBody] CastVoteDto request)
+    {
+        var userId = GetUserId();
+        var command = new VoteOnPollCommand
+        {
+            PollId = id,
+            UserId = userId,
+            Request = request
+        };
+        
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return BadRequest(response);
+            
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Close a poll (stop accepting votes)
+    /// </summary>
+    [HttpPost("{id:guid}/close")]
+    public async Task<ActionResult<BaseCommandResponse>> ClosePoll(Guid id)
+    {
+        var userId = GetUserId();
+        var command = new ClosePollCommand { Id = id, UserId = userId };
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return BadRequest(response);
+            
+        return Ok(response);
+    }
+    /// <summary>
+    /// Get the most voted active poll with cursor-paginated comments
+    /// </summary>
+    [HttpGet("recent-poll")]
+    [AllowAnonymous]
+    public async Task<ActionResult<RecentPollWithCommentsDto>> GetRecentPollWithComments(
+        [FromQuery] string? commentsCursor = null,
+        [FromQuery] int commentsPageSize = 20)
+    {
+        var userId = User.Identity?.IsAuthenticated == true ? GetUserId() : null;
+        
+        var query = new GetRecentPollWithCommentsQuery
+        {
+            UserId = userId,
+            CommentsCursor = commentsCursor,
+            CommentsPageSize = commentsPageSize
+        };
+        
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+    
+}

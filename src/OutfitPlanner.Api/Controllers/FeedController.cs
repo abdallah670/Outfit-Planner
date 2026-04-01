@@ -3,11 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.DTOs.Feed;
-using OutfitPlanner.Application.DTOs.Social;
+
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Features.Feed.Requests.Queries;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Enums;
+using OutfitPlanner.Application.Common;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -27,69 +28,34 @@ public class FeedController : ControllerBase
 
     private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
+   /// <summary>
+    /// Get Posts
+    /// </summary>
     [HttpGet]
-    public async Task<ActionResult<FeedPostResponse>> GetFeed(
-        [FromQuery] int page = 1,
+    public async Task<ActionResult<CursorPagination.CursorPagedResult<FeedPostDto>>> GetFeedPosts(
+        [FromQuery] string? cursor = null,
         [FromQuery] int pageSize = 20,
-        [FromQuery] string sortBy = "popular")
+        [FromQuery] string visibility = "Public",
+        [FromQuery] string? sortBy = "recent",
+        [FromQuery] string? postType = null)
     {
         var userId = GetUserId();
-        var query = new GetFeedQuery
-        {
-            UserId = userId,
-            Page = page,
+        var query = new GetFeedQuery 
+        { 
+            UserId = userId, 
+            Cursor = cursor, 
             PageSize = pageSize,
-            SortBy = sortBy,
-            Visibility = Visibility.Public
+            SortBy = sortBy ?? "recent",
+            Visibility = visibility,
+            PostType = postType 
         };
         
-        var result = await _mediator.Send(query);
-        return Ok(result);
+        var posts = await _mediator.Send(query);
+        return Ok(posts);
     }
-
-    [HttpPost("outfit-post")]
-    public async Task<ActionResult<BaseCommandResponse>> CreateOutfitPost([FromBody] CreateOutfitPostDto request)
-    {
-        var userId = GetUserId();
-        var command = new CreateOutfitPostCommand
-        {
-            UserId = userId,
-            OutfitId = request.OutfitId,
-            Caption = request.Caption,
-            Visibility = request.Visibility
-        };
-        
-        var response = await _mediator.Send(command);
-        
-        if (!response.Success)
-            return BadRequest(response);
-            
-        _logger.LogInformation("User {UserId} created outfit post {PostId}", userId, response.Id);
-        return CreatedAtAction(nameof(GetPostById), new { id = response.Id }, response);
-    }
-
-    [HttpPost("poll-post")]
-    public async Task<ActionResult<BaseCommandResponse>> CreatePollPost([FromBody] CreatePollPostDto request)
-    {
-        var userId = GetUserId();
-        var command = new CreatePollPostCommand
-        {
-            UserId = userId,
-            Question = request.Question,
-            OutfitIds = request.OutfitIds,
-            ExpiresAt = request.ExpiresAt,
-            Visibility = request.Visibility
-        };
-        
-        var response = await _mediator.Send(command);
-        
-        if (!response.Success)
-            return BadRequest(response);
-            
-        _logger.LogInformation("User {UserId} created poll post {PostId}", userId, response.Id);
-        return CreatedAtAction(nameof(GetPostById), new { id = response.Id }, response);
-    }
-
+    /// <summary>
+    /// Get a specific post by ID
+    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<FeedPostDto>> GetPostById(Guid id)
     {
@@ -103,6 +69,9 @@ public class FeedController : ControllerBase
         return Ok(post);
     }
 
+    /// <summary>
+    /// Delete a post (works for both outfit posts and poll posts)
+    /// </summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeletePost(Guid id)
     {
@@ -116,6 +85,9 @@ public class FeedController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Add heart reaction to a post
+    /// </summary>
     [HttpPost("{id:guid}/heart")]
     public async Task<ActionResult<BaseCommandResponse>> AddReaction(Guid id)
     {
@@ -135,6 +107,9 @@ public class FeedController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Remove heart reaction from a post
+    /// </summary>
     [HttpDelete("{id:guid}/heart")]
     public async Task<ActionResult<BaseCommandResponse>> RemoveReaction(Guid id)
     {
@@ -153,13 +128,19 @@ public class FeedController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Get comments on a post with cursor-based pagination
+    /// </summary>
     [HttpGet("{id:guid}/comments")]
-    public async Task<ActionResult<PostCommentsResponse>> GetComments(Guid id, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    public async Task<ActionResult<CursorPagination.CursorPagedResult<PostCommentDto>>> GetComments(
+        Guid id, 
+        [FromQuery] string? cursor = null, 
+        [FromQuery] int pageSize = 20)
     {
         var query = new GetPostCommentsQuery
         {
             PostId = id,
-            Page = page,
+            Cursor = cursor,
             PageSize = pageSize
         };
         
@@ -167,6 +148,9 @@ public class FeedController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Add a comment to a post
+    /// </summary>
     [HttpPost("{id:guid}/comments")]
     public async Task<ActionResult<BaseCommandResponse>> AddComment(Guid id, [FromBody] CreateCommentDto request)
     {
@@ -187,6 +171,9 @@ public class FeedController : ControllerBase
         return CreatedAtAction(nameof(GetComments), new { id }, response);
     }
 
+    /// <summary>
+    /// Delete a comment from a post
+    /// </summary>
     [HttpDelete("comments/{commentId:guid}")]
     public async Task<IActionResult> DeleteComment(Guid commentId)
     {
@@ -204,4 +191,6 @@ public class FeedController : ControllerBase
             
         return NoContent();
     }
+
+    
 }

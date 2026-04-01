@@ -72,10 +72,9 @@ export enum StylePreference {
 }
 
 export enum PrivacyLevel {
-  Private = 'Private',
-  Friends = 'Friends',
-  Community = 'Community',
-  Public = 'Public',
+  Private = 'private',
+  Followers = 'followers',
+  Public = 'public'
 }
 
 export interface UpdateUserProfileRequest {

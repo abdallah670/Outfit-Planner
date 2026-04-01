@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using OutfitPlanner.Application.DTOs.Social;
+using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.DTOs.Wardrobe;
 using OutfitPlanner.Application.Models.Identity;
 using OutfitPlanner.Persistence;

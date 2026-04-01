@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
 
@@ -22,7 +22,7 @@ public class ValidationPollRepository : GenericRepository<ValidationPoll>, IVali
     public async Task<IEnumerable<ValidationPoll>> GetByUserIdAsync(string userId)
     {
         return await _dbSet
-            .Where(p => p.CreatedBy == userId)
+            .Where(p => p.UserId == userId)
             .Include(p => p.Options)
             .ToListAsync();
     }
@@ -32,7 +32,19 @@ public class ValidationPollRepository : GenericRepository<ValidationPoll>, IVali
         return await _dbSet
             .Include(p => p.Options)
                 .ThenInclude(o => o.Votes)
-                    .ThenInclude(v => v.Reactions)
             .ToListAsync();
+    }
+
+    public async Task<ValidationPoll?> GetMostVotedActivePollAsync()
+    {
+        return await _dbSet
+            .Where(p => p.Status == PollStatus.Active && p.ExpiresAt > DateTimeOffset.UtcNow)
+            .Include(p => p.Options)
+                .ThenInclude(o => o.Outfit)
+            .Include(p => p.User)
+            .Include(p => p.Votes)
+            .OrderByDescending(p => p.Votes.Count)
+            .ThenByDescending(p => p.CreatedAt)
+            .FirstOrDefaultAsync();
     }
 }

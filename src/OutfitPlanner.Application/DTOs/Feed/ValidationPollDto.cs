@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using OutfitPlanner.Domain.Enums;
 
-namespace OutfitPlanner.Application.DTOs.Social;
+namespace OutfitPlanner.Application.DTOs.Feed;
 
 /// <summary>
 /// DTO for returning validation poll information

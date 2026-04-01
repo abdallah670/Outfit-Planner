@@ -8,8 +8,8 @@ namespace OutfitPlanner.Domain.Entities;
 /// </summary>
 public class PostComment : BaseEntity
 {
-    public Guid OutfitId { get; set; }
-    public Outfit Outfit { get; set; } = null!;
+    public Guid PostId { get; set; }
+    public FeedPost Post { get; set; } = null!;
     
     public string UserId { get; set; } = string.Empty;
     public User User { get; set; } = null!;

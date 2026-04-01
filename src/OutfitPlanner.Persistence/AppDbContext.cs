@@ -17,18 +17,12 @@ public class AppDbContext : IdentityDbContext<User>
     public DbSet<ValidationPoll> ValidationPolls { get; set; }
     public DbSet<PollOption> PollOptions { get; set; }
     public DbSet<Vote> Votes { get; set; }
-    public DbSet<VoteReaction> VoteReactions { get; set; }
-    public DbSet<VoteComment> VoteComments { get; set; }
-    public DbSet<VoteCommentLike> VoteCommentLikes { get; set; }
-    public DbSet<OutfitLike> OutfitLikes { get; set; }
-    public DbSet<OutfitComment> OutfitComments { get; set; }
     public DbSet<TrendingOutfit> TrendingOutfits { get; set; }
     public DbSet<WearEvent> WearEvents { get; set; }
     public DbSet<CalendarEvent> CalendarEvents { get; set; }
     public DbSet<UserStyleProfile> UserStyleProfiles { get; set; }
     public DbSet<UserPreferences> UserPreferences { get; set; }
     public DbSet<StyleRule> StyleRules { get; set; }
-    public DbSet<OutfitFeedback> OutfitFeedbacks { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<AppPreferences> AppPreferences { get; set; }
     public DbSet<NotificationSettings> NotificationSettings { get; set; }

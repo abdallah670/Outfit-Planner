@@ -24,7 +24,8 @@ public class SearchServiceTests : IDisposable
             .Options;
 
         _context = new AppDbContext(options);
-        _searchService = new SearchService(_context);
+        var cache = new Microsoft.Extensions.Caching.Memory.MemoryCache(new Microsoft.Extensions.Caching.Memory.MemoryCacheOptions());
+        _searchService = new SearchService(_context, cache);
 
         SeedTestData();
     }

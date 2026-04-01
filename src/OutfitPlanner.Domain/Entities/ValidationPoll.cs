@@ -41,8 +41,6 @@ public class Vote : BaseEntity
     public User Voter { get; set; } = null!;
     
     public int Rating { get; set; } // 1-5
-    public string? Comment { get; set; }
     public bool IsAnonymous { get; set; }
     
-    public ICollection<VoteReaction> Reactions { get; set; } = new List<VoteReaction>();
 }

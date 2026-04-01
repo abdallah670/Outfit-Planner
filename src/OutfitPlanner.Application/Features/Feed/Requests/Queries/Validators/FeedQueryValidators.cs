@@ -7,9 +7,9 @@ public class GetFeedQueryValidator : AbstractValidator<GetFeedQuery>
 {
     public GetFeedQueryValidator()
     {
-        RuleFor(x => x.Page)
-            .GreaterThan(0)
-            .WithMessage("Page must be greater than 0");
+        RuleFor(x => x.Cursor)
+            .NotEmpty()
+            .WithMessage("Cursor is required");
 
         RuleFor(x => x.PageSize)
             .GreaterThan(0)
@@ -45,9 +45,9 @@ public class GetPostCommentsQueryValidator : AbstractValidator<GetPostCommentsQu
             .NotEmpty()
             .WithMessage("PostId is required");
 
-        RuleFor(x => x.Page)
-            .GreaterThan(0)
-            .WithMessage("Page must be greater than 0");
+        RuleFor(x=>x.Cursor)
+            .NotEmpty()
+            .WithMessage("Cursor is required");
 
         RuleFor(x => x.PageSize)
             .GreaterThan(0)

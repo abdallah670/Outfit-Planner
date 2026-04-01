@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Domain.Entities;
@@ -41,5 +42,67 @@ public class PostCommentRepository : GenericRepository<PostComment>, IPostCommen
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+    }
+
+    public async Task<CursorPagination.CursorPagedResult<PostComment>> GetRootCommentsCursorAsync(Guid postId, string? cursor, int pageSize)
+    {
+        var query = _dbSet
+            .Include(c => c.User)
+            .Where(c => c.PostId == postId && c.ParentCommentId == null && !c.IsDeleted)
+            .AsQueryable();
+
+        // Apply cursor filter if provided
+        if (!string.IsNullOrEmpty(cursor))
+        {
+            var cursorData = CursorPagination.DecodeCursor(cursor);
+            if (cursorData != null)
+            {
+                query = query.Where(c => c.CreatedAt < cursorData.CreatedAt || 
+                                        (c.CreatedAt == cursorData.CreatedAt && c.Id.CompareTo(cursorData.Id) < 0));
+            }
+        }
+
+        // Order by CreatedAt descending (consistent with cursor)
+        var orderedQuery = query.OrderByDescending(c => c.CreatedAt).ThenByDescending(c => c.Id);
+
+        // Take one extra to check if there's more
+        var comments = await orderedQuery
+            .Take(pageSize + 1)
+            .ToListAsync();
+
+        // Check if there's more data
+        var hasMore = comments.Count > pageSize;
+        var items = hasMore ? comments.Take(pageSize).ToList() : comments;
+
+        // Generate next cursor
+        string? nextCursor = null;
+        if (hasMore && items.Any())
+        {
+            var lastItem = items.Last();
+            nextCursor = CursorPagination.CreateCursor(lastItem.CreatedAt, lastItem.Id);
+        }
+
+        return new CursorPagination.CursorPagedResult<PostComment>
+        {
+            Items = items,
+            NextCursor = nextCursor,
+            HasMore = hasMore,
+            PageSize = pageSize
+        };
+    }
+
+    public async Task<List<PostComment>> GetCommentsByPostIdAsync(Guid postId)
+    {
+        return await _dbSet
+            .Include(c => c.User)
+            .Where(c => c.PostId == postId && !c.IsDeleted)
+            .ToListAsync();
+    }
+
+    public async Task<int> GetCommentsCountByPostIdAsync(Guid postId)
+    {
+        return await _dbSet
+            .Where(c => c.PostId == postId && !c.IsDeleted)
+            .CountAsync();
     }
 }

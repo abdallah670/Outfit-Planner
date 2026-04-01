@@ -14,7 +14,7 @@ public class UnitOfWork : IUnitOfWork
     public IValidationPollRepository ValidationPolls { get; }
     public IWearEventRepository WearEvents { get; }
     public IUserStyleProfileRepository UserStyleProfiles { get; }
-    public IOutfitFeedbackRepository OutfitFeedbacks { get; }
+
     public IUserRepository Users { get; }
     public IStyleRuleRepository StyleRules { get; }
     public IClothingTagRepository ClothingTags { get; }
@@ -29,7 +29,8 @@ public class UnitOfWork : IUnitOfWork
     public IFeedPostRepository FeedPosts { get; }
     public IPostReactionRepository PostReactions { get; }
     public IPostCommentRepository PostComments { get; }
-    public IOutfitEngagementRepository OutfitEngagement { get; }
+    public IFollowRepository Follows { get; }
+    
 
     public UnitOfWork(
         AppDbContext context,
@@ -38,7 +39,6 @@ public class UnitOfWork : IUnitOfWork
         IValidationPollRepository validationPolls,
         IWearEventRepository wearEvents,
         IUserStyleProfileRepository userStyleProfiles,
-        IOutfitFeedbackRepository outfitFeedbacks,
         IUserRepository users,
         IStyleRuleRepository styleRules,
         IClothingTagRepository clothingTags,
@@ -52,8 +52,8 @@ public class UnitOfWork : IUnitOfWork
         INotificationSettingsRepository notificationSettings,
         IFeedPostRepository feedPosts,
         IPostReactionRepository postReactions,
-        IPostCommentRepository postComments,
-        IOutfitEngagementRepository outfitEngagement)
+        IPostCommentRepository postComments,IFollowRepository follows
+       )
     {
         _context = context;
         ClothingItems = clothingItems;
@@ -61,7 +61,7 @@ public class UnitOfWork : IUnitOfWork
         ValidationPolls = validationPolls;
         WearEvents = wearEvents;
         UserStyleProfiles = userStyleProfiles;
-        OutfitFeedbacks = outfitFeedbacks;
+
         Users = users;
         StyleRules = styleRules;
         ClothingTags = clothingTags;
@@ -76,7 +76,7 @@ public class UnitOfWork : IUnitOfWork
         FeedPosts = feedPosts;
         PostReactions = postReactions;
         PostComments = postComments;
-        OutfitEngagement = outfitEngagement;
+        Follows = follows;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

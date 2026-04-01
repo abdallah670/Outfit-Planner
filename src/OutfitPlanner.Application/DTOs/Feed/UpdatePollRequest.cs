@@ -1,4 +1,4 @@
-namespace OutfitPlanner.Application.DTOs.Social;
+namespace OutfitPlanner.Application.DTOs.Feed;
 
 /// <summary>
 /// Request to update a poll

@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.Exceptions;
@@ -48,7 +49,7 @@ public class CreateOutfitPostCommandHandler : IRequestHandler<CreateOutfitPostCo
 
         await _feedPostRepository.AddAsync(feedPost);
 
-        response.Id = feedPost.Id.ToString();
+        response.Id = feedPost.Id;
         response.Success = true;
         response.Message = "Outfit post created successfully";
 

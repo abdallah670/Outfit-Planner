@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Domain.Entities;
@@ -15,7 +16,13 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
         _context = context;
     }
 
-    public async Task<(List<FeedPost> Posts, int TotalCount)> GetFeedAsync(string? userId, int page, int pageSize, string sortBy, Visibility visibility)
+    public async Task<CursorPagination.CursorPagedResult<FeedPost>> GetFeedAsync(
+        string? userId, 
+        string? cursor, 
+        int pageSize, 
+        string sortBy, 
+        Visibility visibility,
+        PostType? postType)
     {
         var query = _dbSet
             .Include(p => p.User)
@@ -25,18 +32,49 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
             .Where(p => p.Visibility == visibility)
             .AsQueryable();
 
-        var totalCount = await query.CountAsync();
+        if (postType.HasValue)
+        {
+            query = query.Where(p => p.PostType == postType.Value);
+        }
 
-        var orderedQuery = sortBy.ToLower() == "popular"
-            ? query.OrderByDescending(p => p.LikeCount).ThenByDescending(p => p.CreatedAt)
-            : query.OrderByDescending(p => p.CreatedAt);
+        // Apply cursor filter if provided
+        if (!string.IsNullOrEmpty(cursor))
+        {
+            var cursorData = CursorPagination.DecodeCursor(cursor);
+            if (cursorData != null)
+            {
+                query = query.Where(p => p.CreatedAt < cursorData.CreatedAt || 
+                                        (p.CreatedAt == cursorData.CreatedAt && p.Id.CompareTo(cursorData.Id) < 0));
+            }
+        }
 
+        // Order by CreatedAt descending (consistent with cursor)
+        var orderedQuery = query.OrderByDescending(p => p.CreatedAt).ThenByDescending(p => p.Id);
+
+        // Take one extra to check if there's more
         var posts = await orderedQuery
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Take(pageSize + 1)
             .ToListAsync();
 
-        return (posts, totalCount);
+        // Check if there's more data
+        var hasMore = posts.Count > pageSize;
+        var items = hasMore ? posts.Take(pageSize).ToList() : posts;
+
+        // Generate next cursor
+        string? nextCursor = null;
+        if (hasMore && items.Any())
+        {
+            var lastItem = items.Last();
+            nextCursor = CursorPagination.CreateCursor(lastItem.CreatedAt, lastItem.Id);
+        }
+
+        return new CursorPagination.CursorPagedResult<FeedPost>
+        {
+            Items = items,
+            NextCursor = nextCursor,
+            HasMore = hasMore,
+            PageSize = pageSize
+        };
     }
 
     public async Task<FeedPost?> GetByIdWithDetailsAsync(Guid id)

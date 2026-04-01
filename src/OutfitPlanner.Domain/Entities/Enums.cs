@@ -50,8 +50,7 @@ public enum StylePreference
 public enum PrivacyLevel
 {
     Private,
-    Friends,
-    Community,
+    Follwers,
     Public
 }
 
@@ -109,4 +108,22 @@ public enum RecurrenceType
     Weekly,
     Monthly,
     Yearly
+}
+public enum PostType{
+    Poll,
+    Outfit
+}
+public enum Visibility{
+    Private,
+    Follwers,
+    Public  
+}
+public enum ReactionType{
+    Heart,
+    Like,
+    Love,
+    Haha,
+    Wow,
+    Sad,
+    Angry
 }

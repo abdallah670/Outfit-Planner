@@ -1,33 +1,27 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
-using OutfitPlanner.Application.Features.Social.Requests.Commands;
+using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using OutfitPlanner.Domain.Enums;
 
-namespace OutfitPlanner.Application.Features.Social.Handlers.Commands;
+namespace OutfitPlanner.Application.Features.Feed.Handlers.Commands;
 
 public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateTrendingOutfitsCommand, BaseCommandResponse>
 {
-    private readonly IOutfitRepository _outfitRepository;
+    private readonly IFeedPostRepository _feedPostRepository;
     private readonly ITrendingOutfitRepository _trendingOutfitRepository;
-    private readonly IValidationPollRepository _pollRepository;
     private readonly ILogger<CalculateTrendingOutfitsCommandHandler> _logger;
 
     public CalculateTrendingOutfitsCommandHandler(
-        IOutfitRepository outfitRepository,
+        IFeedPostRepository feedPostRepository,
         ITrendingOutfitRepository trendingOutfitRepository,
-        IValidationPollRepository pollRepository,
         ILogger<CalculateTrendingOutfitsCommandHandler> logger)
     {
-        _outfitRepository = outfitRepository;
+        _feedPostRepository = feedPostRepository;
         _trendingOutfitRepository = trendingOutfitRepository;
-        _pollRepository = pollRepository;
         _logger = logger;
     }
 
@@ -39,10 +33,8 @@ public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateT
         {
             var date = DateTime.UtcNow.Date;
             
-            // Get all outfits 
-            var outfits = await _outfitRepository.GetAllAsync();
-            // Use the new abstraction-friendly method
-            var polls = await _pollRepository.GetPollsForTrendingAsync();
+            // Get all feed posts (both outfit and poll posts)
+            var feedPosts = await _feedPostRepository.GetAllAsync();
 
             // Clear existing trending for today to avoid duplicates
             var existing = await _trendingOutfitRepository.GetByDateRangeAsync(date, date.AddDays(1));
@@ -51,69 +43,68 @@ public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateT
                 await _trendingOutfitRepository.RemoveRangeAsync(existing);
             }
 
-            var scoredOutfits = new List<TrendingOutfit>();
+            var scoredPosts = new List<TrendingOutfit>();
 
-            foreach (var outfit in outfits)
+            foreach (var feedPost in feedPosts)
             {
-                // Find the auto-generated poll for this outfit
-                // (In our system, every outfit has a poll where it's the primary option)
-                var poll = polls.FirstOrDefault(p => p.Options.Any(o => o.OutfitId == outfit.Id));
+                var score = CalculateTrendingScore(feedPost);
                 
-                decimal score = 1.0m;
-                int voteCount = 0;
-                int likeCount = 0;
-                int commentCount = 0;
-                Guid? pollId = null;
-
-                if (poll != null)
+                scoredPosts.Add(new TrendingOutfit
                 {
-                    pollId = poll.Id;
-                    var option = poll.Options.FirstOrDefault(o => o.OutfitId == outfit.Id);
-                    if (option != null)
-                    {
-                        voteCount = option.Votes.Count;
-                        likeCount = option.Votes.Sum(v => v.Reactions.Count);
-                        // We'll approximate comment count for now or handle via another include if needed
-                        // For this demo, let's say every rating >= 4 counts as extra engagement
-                        var highRatings = option.Votes.Count(v => v.Rating >= 4);
-                        
-                        score = (voteCount * 10) + (likeCount * 5) + (highRatings * 2) + 1.0m;
-                    }
-                }
-
-                scoredOutfits.Add(new TrendingOutfit
-                {
-                    OutfitId = outfit.Id,
-                    PollId = pollId,
+                    OutfitId = feedPost.OutfitId ?? Guid.Empty,
+                    PollId = feedPost.PollId,
                     TrendingScore = score,
-                    VoteCount = voteCount,
-                    LikeCount = likeCount,
-                    CommentCount = commentCount,
+                    VoteCount = feedPost.Reactions.Count,  // Reactions include likes and votes
+                    LikeCount = feedPost.Reactions.Count,
+                    CommentCount = feedPost.Comments.Count,
                     Date = date,
                     RankPosition = 0
                 });
             }
 
             // Rank and save
-            scoredOutfits = scoredOutfits.OrderByDescending(o => o.TrendingScore).ToList();
+            scoredPosts = scoredPosts.OrderByDescending(o => o.TrendingScore).ToList();
             
-            for (int i = 0; i < scoredOutfits.Count; i++)
+            for (int i = 0; i < scoredPosts.Count; i++)
             {
-                scoredOutfits[i].RankPosition = i + 1;
-                await _trendingOutfitRepository.AddAsync(scoredOutfits[i]);
+                scoredPosts[i].RankPosition = i + 1;
+                await _trendingOutfitRepository.AddAsync(scoredPosts[i]);
             }
 
             response.Success = true;
-            response.Message = "Trending outfits calculated successfully";
+            response.Message = "Trending posts calculated successfully";
+            
+            _logger.LogInformation("Calculated trending for {Count} posts", scoredPosts.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error calculating trending outfits");
+            _logger.LogError(ex, "Error calculating trending posts");
             response.Success = false;
-            response.Message = "Error calculating trending outfits";
+            response.Message = "Error calculating trending posts";
             response.Errors.Add(ex.Message);
         }
 
         return response;
+    }
+
+    private decimal CalculateTrendingScore(FeedPost feedPost)
+    {
+        // Unified engagement scoring for both outfit and poll posts
+        // Votes on polls create PostReactions, so they're counted in Reactions.Count
+        var reactionCount = feedPost.Reactions?.Count ?? 0;  // Likes or votes
+        var commentCount = feedPost.Comments?.Count ?? 0;
+        
+        // Scoring weights:
+        // - Reactions (likes/votes): 5 points each
+        // - Comments: 2 points each
+        decimal engagementScore = (reactionCount * 5) + (commentCount * 2);
+        
+        // Time decay factor (half-life of 24 hours)
+        // Newer posts get higher scores
+        var hoursSincePosted = (DateTime.UtcNow - feedPost.CreatedAt).TotalHours;
+        var timeDecayFactor = Math.Pow(0.5, hoursSincePosted / 24);
+        
+        // Final score with base boost
+        return (engagementScore * (decimal)timeDecayFactor) + 1.0m;
     }
 }

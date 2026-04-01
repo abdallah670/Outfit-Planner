@@ -1,12 +1,13 @@
 using AutoMapper;
 using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
-using OutfitPlanner.Application.DTOs.Social;
+using OutfitPlanner.Application.Contracts.Persistence;
+using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.Exceptions;
-using OutfitPlanner.Application.Features.Social.Requests.Queries;
+using OutfitPlanner.Application.Features.Feed.Requests.Queries;
 using Microsoft.Extensions.Logging;
 
-namespace OutfitPlanner.Application.Features.Social.Handlers.Queries;
+namespace OutfitPlanner.Application.Features.Feed.Handlers.Queries;
 
 /// <summary>
 /// Handler for GetPollByIdRequest
