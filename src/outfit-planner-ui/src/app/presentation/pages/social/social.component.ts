@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -13,6 +13,7 @@ import {
   selectAllPolls,
   selectSocialLoading,
   selectTrendingOutfits,
+  selectCommentsByVote,
 } from '../../../core/state/social/social.selectors';
 import {
   ValidationPoll,
@@ -21,7 +22,7 @@ import {
   PollOption,
 } from '../../../domain/entities/validation-poll.entity';
 import { SOCIAL_REPOSITORY } from '../../../domain/repositories/social.repository';
-import { TrendingOutfit, OutfitComment } from '../../../domain/entities/social-engagement.entity';
+import { TrendingOutfit, VoteComment, AddVoteCommentRequest } from '../../../domain/entities/social-engagement.entity';
 
 /**
  * Helper to map PollOption from ValidationPoll to local interface
@@ -71,6 +72,7 @@ function getTimeLeft(expiresAt: Date | string): string {
 })
 export class SocialComponent implements OnInit {
   private store = inject(Store);
+  private router = inject(Router);
   private snackBar = inject(MatSnackBar);
   private socialRepository = inject(SOCIAL_REPOSITORY);
 
@@ -79,7 +81,20 @@ export class SocialComponent implements OnInit {
   // Get polls, trending outfits, and loading state from NgRx store
   private allPollsSignal = toSignal(this.store.select(selectAllPolls), { initialValue: [] as ValidationPoll[] }) as () => ValidationPoll[];
   trendingOutfits: Signal<TrendingOutfit[]> = toSignal(this.store.select(selectTrendingOutfits), { initialValue: [] as TrendingOutfit[] });
+  
+  // Limited trending outfits (top 4 for the main social page)
+  limitedTrendingOutfits = computed(() => this.trendingOutfits().slice(0, 4));
+  
   loading = toSignal(this.store.select(selectSocialLoading), { initialValue: false });
+  
+  // Selection state for engagement
+  selectedOutfit = signal<TrendingOutfit | null>(null);
+  selectedOutfitComments = computed(() => {
+    const outfit = this.selectedOutfit();
+    if (!outfit) return [] as VoteComment[];
+    const commentsMap = toSignal(this.store.select(selectCommentsByVote), { initialValue: {} })();
+    return (commentsMap as any)[outfit.voteId] || [];
+  });
 
   // Computed: Featured Poll - first active poll from the store
   featuredPoll = computed(() => {
@@ -113,6 +128,20 @@ export class SocialComponent implements OnInit {
     }));
   });
 
+  // Computed: Dynamic link for the featured poll
+  currentPollLink = computed(() => {
+    const poll = this.featuredPoll();
+    if (!poll) return 'outfitplanner.com/poll/123call';
+    return `outfitplanner.com/poll/${poll.id}`;
+  });
+
+  // Computed: QR Code URL
+  qrCodeUrl = computed(() => {
+    const poll = this.featuredPoll();
+    const id = poll?.id || '123call';
+    return `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=outfitplanner.com/poll/${id}`;
+  });
+
   // Filter options
   filterChips = ['All', 'Date Night', 'Work', 'Casual', 'Sports', 'Formal'];
   activeFilter = signal('All');
@@ -141,6 +170,43 @@ export class SocialComponent implements OnInit {
    */
   setFilter(filter: string): void {
     this.activeFilter.set(filter);
+  }
+
+  /**
+   * Select an outfit from the trending feed to see engagement
+   */
+  viewOutfitDetails(outfit: TrendingOutfit) {
+    this.router.navigate(['/outfits', outfit.id]);
+  }
+
+  /**
+   * Select an outfit from the trending feed to see engagement
+   */
+  selectOutfit(outfit: TrendingOutfit): void {
+    this.selectedOutfit.set(outfit);
+    this.store.dispatch(SocialActions.loadVoteComments({ voteId: outfit.voteId }));
+  }
+
+  /**
+   * Quick reaction to an outfit (e.g. from the card)
+   */
+  react(outfit: TrendingOutfit, reactionType: string = 'Like'): void {
+    this.store.dispatch(SocialActions.reactToVote({ voteId: outfit.voteId, reactionType }));
+  }
+
+  /**
+   * Add a comment to the selected outfit
+   */
+  submitComment(content: string): void {
+    const outfit = this.selectedOutfit();
+    if (!outfit || !content.trim()) return;
+
+    const request: AddVoteCommentRequest = {
+      voteId: outfit.voteId,
+      content: content.trim()
+    };
+
+    this.store.dispatch(SocialActions.addVoteComment({ request }));
   }
 
   /**

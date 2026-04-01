@@ -18,3 +18,10 @@ public class CalendarEventDto
     public string Notes { get; set; } = string.Empty;
     public bool IsScheduled { get; set; }
 }
+
+public class TodayEventDto
+{
+    public string Title { get; set; } = string.Empty;
+    public string EventType { get; set; } = string.Empty;
+    public DateTimeOffset EventDate { get; set; }
+}

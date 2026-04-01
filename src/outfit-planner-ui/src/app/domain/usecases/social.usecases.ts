@@ -13,7 +13,8 @@ import {
 import {
   TrendingOutfit,
   OutfitEngagement,
-  OutfitComment,
+  VoteComment,
+  AddVoteCommentRequest,
 } from '../entities/social-engagement.entity';
 
 @Injectable({
@@ -60,30 +61,30 @@ export class SocialUseCases {
   }
 
   /**
-   * Like an outfit
+   * React to a vote
    */
-  likeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }> {
-    return this.socialRepository.likeOutfit(outfitId);
+  reactToVote(voteId: string, reactionType: string): Observable<void> {
+    return this.socialRepository.reactToVote(voteId, reactionType);
   }
 
   /**
-   * Unlike an outfit
+   * Add a comment to a vote
    */
-  unlikeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }> {
-    return this.socialRepository.unlikeOutfit(outfitId);
+  addVoteComment(request: AddVoteCommentRequest): Observable<VoteComment> {
+    return this.socialRepository.addVoteComment(request);
   }
 
   /**
-   * Add a comment
+   * Like a vote comment
    */
-  addComment(outfitId: string, content: string): Observable<OutfitComment> {
-    return this.socialRepository.commentOnOutfit(outfitId, content);
+  likeVoteComment(commentId: string): Observable<void> {
+    return this.socialRepository.likeVoteComment(commentId);
   }
 
   /**
-   * Get comments for an outfit
+   * Get comments for a vote
    */
-  getComments(outfitId: string, page = 1, pageSize = 20): Observable<{ items: OutfitComment[]; totalCount: number }> {
-    return this.socialRepository.getOutfitVotes(outfitId, page, pageSize);
+  getVoteComments(voteId: string, maxDepth?: number): Observable<VoteComment[]> {
+    return this.socialRepository.getVoteComments(voteId, maxDepth);
   }
 }

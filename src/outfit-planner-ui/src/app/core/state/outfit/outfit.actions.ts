@@ -2,6 +2,23 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { Outfit } from '../../../domain/entities/outfit.entity';
 import { OutfitSuggestionsRequest } from '../../../domain/repositories/outfit.repository';
 
+export interface TodaysPickContext {
+  weatherContext: {
+    condition: string;
+    temperature: number;
+    season: string;
+    city: string;
+  } | null;
+  todayEvent: {
+    title: string;
+    eventType: string;
+    eventDate: string;
+  } | null;
+  matchScore: number;
+  recommendationReason: string;
+  isBestEffort: boolean;
+}
+
 export const OutfitsActions = createActionGroup({
   source: 'outfits',
   events: {
@@ -29,8 +46,8 @@ export const OutfitsActions = createActionGroup({
     'Generate Suggestions': props<{ request: OutfitSuggestionsRequest }>(),
     'Generate Suggestions Success': props<{ outfits: Outfit[] }>(),
     'Generate Suggestions Failure': props<{ error: string }>(),
-    'Load Todays Outfit': emptyProps(),
-    'Load Todays Outfit Success': props<{ outfit: Outfit }>(),
-    'Load Todays Outfit Failure': props<{ error: string }>(),
+    'Load Todays Pick': props<{ latitude?: number; longitude?: number }>(),
+    'Load Todays Pick Success': props<{ outfit: Outfit; context: TodaysPickContext }>(),
+    'Load Todays Pick Failure': props<{ error: string }>(),
   },
 });

@@ -1051,6 +1051,73 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.ToTable("Votes");
                 });
 
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.VoteComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("VoteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("VoteId");
+
+                    b.ToTable("VoteComments");
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.VoteCommentLike", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("CommentId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("VoteCommentLikes");
+                });
+
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.VoteReaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1442,6 +1509,51 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Navigation("Voter");
                 });
 
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.VoteComment", b =>
+                {
+                    b.HasOne("OutfitPlanner.Domain.Entities.VoteComment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("OutfitPlanner.Domain.Entities.Vote", "Vote")
+                        .WithMany()
+                        .HasForeignKey("VoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("User");
+
+                    b.Navigation("Vote");
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.VoteCommentLike", b =>
+                {
+                    b.HasOne("OutfitPlanner.Domain.Entities.VoteComment", "Comment")
+                        .WithMany("Likes")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.VoteReaction", b =>
                 {
                     b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
@@ -1544,6 +1656,13 @@ namespace OutfitPlanner.Persistence.Migrations
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.Vote", b =>
                 {
                     b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.VoteComment", b =>
+                {
+                    b.Navigation("Likes");
+
+                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

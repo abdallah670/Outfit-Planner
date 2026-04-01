@@ -11,38 +11,52 @@ export interface TrendingOutfit {
   comments: number;
   occasion: string;
   trendingScore: number;
+  voteId: string;
   createdAt: Date;
 }
 
 /**
- * Represents engagement metrics for an outfit
+ * Represents a reaction to a vote or comment
  */
-export interface OutfitEngagement {
-  outfitId: string;
-  likeCount: number;
-  commentCount: number;
-  userHasLiked: boolean;
+export interface VoteReaction {
+  userId: string;
+  reactionType: 'Like' | 'Love' | 'Insightful' | string;
 }
 
 /**
- * Represents a comment on an outfit
+ * Represents a comment on a vote
  */
-export interface OutfitComment {
+export interface VoteComment {
   id: string;
-  outfitId: string;
+  voteId: string;
   userId: string;
   userName: string;
-  userAvatarUrl: string;
+  userAvatarUrl?: string;
   content: string;
   createdAt: Date;
   isDeleted: boolean;
-  replies?: OutfitComment[];
+  parentCommentId?: string;
+  replies?: VoteComment[];
+  likes?: string[]; // User IDs who liked the comment
 }
 
 /**
- * DTO for adding a comment
+ * DTO for adding a comment to a vote
  */
-export interface AddCommentRequest {
-  outfitId: string;
+export interface AddVoteCommentRequest {
+  voteId: string;
   content: string;
+  parentCommentId?: string;
+}
+
+/**
+ * Represents engagement metrics for an outfit (connected via its auto-vote)
+ */
+export interface OutfitEngagement {
+  outfitId: string;
+  voteCount: number;
+  commentCount: number;
+  reactionCount: number;
+  userHasVoted: boolean;
+  userReaction?: string;
 }

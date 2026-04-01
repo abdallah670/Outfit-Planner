@@ -9,8 +9,8 @@ import {
 import {
   TrendingOutfit,
   OutfitEngagement,
-  OutfitComment,
-  AddCommentRequest,
+  VoteComment,
+  AddVoteCommentRequest,
 } from '../entities/social-engagement.entity';
 import { UpdatePollRequest } from '../../data/datasources/social.datasource';
 
@@ -45,41 +45,27 @@ export interface SocialRepository {
    */
   getTrendingOutfits(): Observable<TrendingOutfit[]>;
 
-  // ============ Outfit Poll Methods ============
+  // ============ Vote Engagement Methods ============
 
   /**
-   * Like an outfit
-   */
-  likeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }>;
-
-  /**
-   * Unlike an outfit
-   */
-  unlikeOutfit(outfitId: string): Observable<{ outfitId: string; voteCount: number }>;
-
-  /**
-   * Comment on an outfit
-   */
-  commentOnOutfit(outfitId: string, content: string): Observable<OutfitComment>;
-
-  /**
-   * Get outfit engagement stats
-   */
-  getOutfitEngagement(outfitId: string): Observable<OutfitEngagement>;
-
-  /**
-   * Get votes/comments for an outfit
-   */
-  getOutfitVotes(
-    outfitId: string,
-    page?: number,
-    pageSize?: number,
-  ): Observable<{ items: OutfitComment[]; totalCount: number }>;
-
-  /**
-   * React to a vote/comment
+   * React to a vote
    */
   reactToVote(voteId: string, reactionType: string): Observable<void>;
+
+  /**
+   * Add a comment to a vote
+   */
+  addVoteComment(request: AddVoteCommentRequest): Observable<VoteComment>;
+
+  /**
+   * Like a vote comment
+   */
+  likeVoteComment(commentId: string): Observable<void>;
+
+  /**
+   * Get comments for a vote
+   */
+  getVoteComments(voteId: string, maxDepth?: number): Observable<VoteComment[]>;
 
   // ============ Poll Management Methods ============
 

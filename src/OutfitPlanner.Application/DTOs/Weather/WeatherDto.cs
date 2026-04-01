@@ -13,3 +13,10 @@ public class WeatherDto
     public double HighTemp { get; set; }
     public double LowTemp { get; set; }
 }
+public class WeatherContextDto
+{
+    public string Condition { get; set; } = string.Empty;
+    public double Temperature { get; set; }
+    public string Season { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+}

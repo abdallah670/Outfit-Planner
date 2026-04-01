@@ -56,7 +56,7 @@ public class TrendingOutfitDto
     public int VoteCount { get; set; }
     public int CommentCount { get; set; }
     public int Rank { get; set; }
-    public bool UserHasVoted { get; set; }
+    public Guid VoteId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }
 

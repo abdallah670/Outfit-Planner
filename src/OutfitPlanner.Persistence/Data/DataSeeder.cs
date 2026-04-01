@@ -77,11 +77,11 @@ public class DataSeeder
 
         var users = new List<User>
         {
-            new User { UserName = "user1@example.com", Email = "user1@example.com", Name = "User One" },
-            new User { UserName = "user2@example.com", Email = "user2@example.com", Name = "User Two" },
-            new User { UserName = "user3@example.com", Email = "user3@example.com", Name = "User Three" },
-            new User { UserName = "user4@example.com", Email = "user4@example.com", Name = "User Four" },
-            new User { UserName = "user5@example.com", Email = "user5@example.com", Name = "User Five" }
+            new User { UserName = "StyleMaven92", Email = "stylemaven92@example.com", Name = "Style Maven 92" },
+            new User { UserName = "Fashionista_A", Email = "alex@example.com", Name = "Alex Fashion" },
+            new User { UserName = "ChicExplorer", Email = "chic@example.com", Name = "Chic Explorer" },
+            new User { UserName = "TrendSetter", Email = "trend@example.com", Name = "Trend Setter" },
+            new User { UserName = "UrbanVibes", Email = "urban@example.com", Name = "Urban Vibes" }
         };
 
         var password = "Password123!";
@@ -316,10 +316,10 @@ public class DataSeeder
 
         var pollQuestions = new[]
         {
+            "Help me choose for the Weekend Brunch!",
             "Which outfit should I wear for a job interview?",
             "Best outfit for a casual Friday?",
             "What should I wear for a dinner date?",
-            "Outfit for a weekend brunch?",
             "What to wear for a virtual meeting?"
         };
 

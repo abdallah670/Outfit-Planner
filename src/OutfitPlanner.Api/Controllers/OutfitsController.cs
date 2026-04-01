@@ -202,26 +202,39 @@ public class OutfitsController : ControllerBase
     }
 
     /// <summary>
-    /// Gets a single outfit suggestion for today
+    /// Gets a smart outfit recommendation for today based on:
+    /// - User's current location/weather
+    /// - Today's calendar events
+    /// - User's style preferences (colors, style profile)
+    /// - Outfit wear history
     /// </summary>
+    /// <param name="lat">Latitude (optional, uses browser geolocation)</param>
+    /// <param name="lon">Longitude (optional, uses browser geolocation)</param>
     [HttpGet("today")]
-    [ProducesResponseType(typeof(OutfitDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TodaysPickResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<OutfitDto>> GetToday()
+    public async Task<ActionResult<TodaysPickResult>> GetToday(
+        [FromQuery] double? lat = null,
+        [FromQuery] double? lon = null)
     {
         var userId = GetUserId();
-        // Today suggestion - simplified for now, usually would fetch weather first
-        var query = new GenerateOutfitSuggestionsQuery 
-        { 
-            UserId = userId, 
-            OutfitSuggestionsDto = new OutfitSuggestionsDto { MaxSuggestions = 1 } 
-        };
-        var suggestions = await _mediator.Send(query);
         
-        if (suggestions == null || !suggestions.Any())
-            return NotFound("No suitable outfit found for today.");
+        _logger.LogInformation("Getting today's pick for user {UserId} with location: {Lat}, {Lon}", 
+            userId, lat, lon);
 
-        return Ok(suggestions.First());
+        var query = new GetTodaysPickQuery
+        {
+            UserId = userId,
+            Latitude = lat,
+            Longitude = lon
+        };
+        
+        var result = await _mediator.Send(query);
+        
+        if (result.Outfit == null)
+            return NotFound("No suitable outfit found for today. Add some outfits to your wardrobe!");
+
+        return Ok(result);
     }
 
     /// <summary>

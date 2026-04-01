@@ -1,28 +1,17 @@
-import { createSelector, createFeatureSelector } from '@ngrx/store';
-import { SocialState } from './social.reducer';
+import { createSelector } from '@ngrx/store';
+import { SocialState, socialFeature } from './social.reducer';
 import { ValidationPoll } from '../../../domain/entities/validation-poll.entity';
 
-export const selectSocialState = createFeatureSelector<SocialState>('social');
-
-export const selectAllPolls = createSelector(
+// Feature selector is already defined in socialFeature
+export const {
   selectSocialState,
-  (state: SocialState): ValidationPoll[] => state?.polls || [],
-);
-
-export const selectSelectedPoll = createSelector(
-  selectSocialState,
-  (state: SocialState): ValidationPoll | null => state?.selectedPoll || null,
-);
-
-export const selectSocialLoading = createSelector(
-  selectSocialState,
-  (state: SocialState): boolean => !!state?.loading,
-);
-
-export const selectSocialError = createSelector(
-  selectSocialState,
-  (state: SocialState): string | null => state?.error || null,
-);
+  selectPolls: selectAllPolls,
+  selectSelectedPoll,
+  selectTrendingOutfits,
+  selectCommentsByVote,
+  selectLoading: selectSocialLoading,
+  selectError: selectSocialError
+} = socialFeature;
 
 export const selectActivePolls = createSelector(
   selectAllPolls,
@@ -35,17 +24,6 @@ export const selectExpiredPolls = createSelector(
   (polls: ValidationPoll[]): ValidationPoll[] =>
     polls.filter((poll) => poll.status === 'expired'),
 );
-
-export const selectTrendingOutfits = createSelector(
-  selectSocialState,
-  (state: SocialState) => state?.trendingOutfits || [],
-);
-
-export const selectCommentsByOutfit = (outfitId: string) =>
-  createSelector(
-    selectSocialState,
-    (state: SocialState) => state?.commentsByOutfit[outfitId] || [],
-  );
 
 export const selectPollById = (pollId: string) =>
   createSelector(selectAllPolls, (polls: ValidationPoll[]): ValidationPoll | undefined =>

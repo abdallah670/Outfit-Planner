@@ -13,7 +13,8 @@ import {
 import {
   TrendingOutfit,
   OutfitEngagement,
-  OutfitComment,
+  VoteComment,
+  AddVoteCommentRequest,
 } from '../../domain/entities/social-engagement.entity';
 
 // DTOs matching the API response structure
@@ -52,6 +53,7 @@ interface TrendingOutfitDto {
   commentCount: number;
   trendingScore: number;
   rankPosition: number;
+  voteId: string;
   createdAt: string;
 }
 
@@ -102,86 +104,54 @@ export interface UpdatePollOptionRequest {
   providedIn: 'root',
 })
 export class SocialDataSource {
-  private readonly apiUrl = `${environment.baseUrl}/social`;
-  private readonly outfitPollApiUrl = `${environment.baseUrl}/outfit-polls`;
+  private readonly socialApiUrl = `${environment.baseUrl}/social`;
+  private readonly voteEngagementApiUrl = `${environment.baseUrl}/vote-engagement`;
+  private readonly trendingApiUrl = `${environment.baseUrl}/trending`;
 
   constructor(private http: HttpClient) {}
 
-  // ============ Outfit Poll (Like/Comment) Methods ============
+  // ============ Vote Engagement Methods ============
 
   /**
-   * Like an outfit (creates a vote)
+   * React to a vote (like, love, insightful)
    */
-  likeOutfit(outfitId: string): Observable<OutfitVoteResult> {
-    return this.http.post<OutfitVoteResult>(
-      `${this.outfitPollApiUrl}/outfits/${outfitId}/like`,
-      {},
-    );
-  }
-
-  /**
-   * Unlike an outfit (removes vote)
-   */
-  unlikeOutfit(outfitId: string): Observable<OutfitVoteResult> {
-    return this.http.delete<OutfitVoteResult>(
-      `${this.outfitPollApiUrl}/outfits/${outfitId}/like`,
-    );
-  }
-
-  /**
-   * Comment on an outfit
-   */
-  commentOnOutfit(outfitId: string, content: string): Observable<OutfitComment> {
-    return this.http
-      .post<OutfitCommentDto>(
-        `${this.outfitPollApiUrl}/outfits/${outfitId}/comment`,
-        { content },
-      )
-      .pipe(map((dto: OutfitCommentDto) => this.mapCommentDtoToEntity(dto)));
-  }
-
-  /**
-   * Get outfit engagement stats
-   */
-  getOutfitEngagement(outfitId: string): Observable<OutfitEngagement> {
-    return this.http.get<OutfitEngagementDto>(
-      `${this.outfitPollApiUrl}/outfits/${outfitId}/engagement`,
-    );
-  }
-
-  /**
-   * Get votes/comments for an outfit
-   */
-  getOutfitVotes(
-    outfitId: string,
-    page = 1,
-    pageSize = 20,
-  ): Observable<{ items: OutfitComment[]; totalCount: number }> {
-    return this.http
-      .get<{
-        items: OutfitCommentDto[];
-        totalCount: number;
-      }>(
-        `${this.outfitPollApiUrl}/outfits/${outfitId}/votes?page=${page}&pageSize=${pageSize}`,
-      )
-      .pipe(
-        map((result: { items: OutfitCommentDto[]; totalCount: number }) => ({
-          items: result.items.map((dto: OutfitCommentDto) => this.mapCommentDtoToEntity(dto)),
-          totalCount: result.totalCount,
-        })),
-      );
-  }
-
-  /**
-   * React to a vote/comment
-   */
-  reactToVote(
-    voteId: string,
-    reactionType: string,
-  ): Observable<void> {
+  reactToVote(voteId: string, reactionType: string): Observable<void> {
     return this.http.post<void>(
-      `${this.outfitPollApiUrl}/votes/${voteId}/react`,
-      { reactionType },
+      `${this.voteEngagementApiUrl}/votes/${voteId}/react`,
+      { reactionType }
+    );
+  }
+
+  /**
+   * Add a comment to a vote
+   */
+  addVoteComment(request: AddVoteCommentRequest): Observable<VoteComment> {
+    return this.http.post<any>(
+      `${this.voteEngagementApiUrl}/votes/${request.voteId}/comments`,
+      { content: request.content, parentCommentId: request.parentCommentId }
+    ).pipe(
+      map(response => this.mapVoteCommentDtoToEntity(response))
+    );
+  }
+
+  /**
+   * Like a vote comment
+   */
+  likeVoteComment(commentId: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.voteEngagementApiUrl}/comments/${commentId}/like`,
+      {}
+    );
+  }
+
+  /**
+   * Get comments for a vote
+   */
+  getVoteComments(voteId: string, maxDepth = 3): Observable<VoteComment[]> {
+    return this.http.get<any[]>(
+      `${this.voteEngagementApiUrl}/votes/${voteId}/comments?maxDepth=${maxDepth}`
+    ).pipe(
+      map((dtos: any[]) => dtos.map(dto => this.mapVoteCommentDtoToEntity(dto)))
     );
   }
 
@@ -192,7 +162,7 @@ export class SocialDataSource {
    */
   getPolls(): Observable<ValidationPoll[]> {
     return this.http
-      .get<ValidationPollDto[]>(`${this.apiUrl}/polls`)
+      .get<ValidationPollDto[]>(`${this.socialApiUrl}/polls`)
       .pipe(
         map((polls: ValidationPollDto[]) =>
           polls.map((p: ValidationPollDto) => this.mapPollDtoToEntity(p)),
@@ -205,7 +175,7 @@ export class SocialDataSource {
    */
   getPollById(id: string): Observable<ValidationPoll> {
     return this.http
-      .get<ValidationPollDto>(`${this.apiUrl}/polls/${id}`)
+      .get<ValidationPollDto>(`${this.socialApiUrl}/polls/${id}`)
       .pipe(map((poll: ValidationPollDto) => this.mapPollDtoToEntity(poll)));
   }
 
@@ -213,35 +183,35 @@ export class SocialDataSource {
    * Create a new poll
    */
   createPoll(dto: CreatePollRequest): Observable<CommandResponse> {
-    return this.http.post<CommandResponse>(`${this.apiUrl}/polls`, dto);
+    return this.http.post<CommandResponse>(`${this.socialApiUrl}/polls`, dto);
   }
 
   /**
    * Cast a vote on a poll
    */
   vote(pollId: string, dto: CastVoteRequest): Observable<CommandResponse> {
-    return this.http.post<CommandResponse>(`${this.apiUrl}/polls/${pollId}/vote`, dto);
+    return this.http.post<CommandResponse>(`${this.socialApiUrl}/polls/${pollId}/vote`, dto);
   }
 
   /**
    * Update a poll
    */
   updatePoll(pollId: string, request: UpdatePollRequest): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/polls/${pollId}`, request);
+    return this.http.put<void>(`${this.socialApiUrl}/polls/${pollId}`, request);
   }
 
   /**
    * Delete a poll
    */
   deletePoll(pollId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/polls/${pollId}`);
+    return this.http.delete<void>(`${this.socialApiUrl}/polls/${pollId}`);
   }
 
   /**
    * Close a poll
    */
   closePoll(pollId: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/polls/${pollId}/close`, {});
+    return this.http.post<void>(`${this.socialApiUrl}/polls/${pollId}/close`, {});
   }
 
   /**
@@ -249,7 +219,7 @@ export class SocialDataSource {
    */
   getTrendingOutfits(): Observable<TrendingOutfit[]> {
     return this.http
-      .get<TrendingOutfitDto[]>(`${this.apiUrl}/trending-outfits`)
+      .get<TrendingOutfitDto[]>(`${this.trendingApiUrl}/outfits`)
       .pipe(
         map((outfits: TrendingOutfitDto[]) =>
           outfits.map((o: TrendingOutfitDto) => this.mapTrendingOutfitDtoToEntity(o)),
@@ -319,23 +289,27 @@ export class SocialDataSource {
       comments: dto.commentCount,
       occasion: 'Casual', // Default or handle if added to DTO
       trendingScore: dto.trendingScore,
+      voteId: dto.voteId,
       createdAt: new Date(dto.createdAt),
     };
   }
 
   /**
-   * Map comment DTO to domain entity
+   * Map API DTO to vote comment entity
    */
-  private mapCommentDtoToEntity(dto: OutfitCommentDto): OutfitComment {
+  private mapVoteCommentDtoToEntity(dto: any): VoteComment {
     return {
       id: dto.id,
-      outfitId: dto.outfitId,
-      userId: dto.userId,
-      userName: dto.userName,
+      voteId: dto.voteId,
+      userId: dto.userId || '',
+      userName: dto.userName || 'Anonymous',
       userAvatarUrl: dto.userAvatarUrl,
       content: dto.content,
       createdAt: new Date(dto.createdAt),
-      isDeleted: dto.isDeleted
+      isDeleted: dto.isDeleted || false,
+      parentCommentId: dto.parentCommentId,
+      likes: dto.likes || [],
+      replies: dto.replies ? dto.replies.map((r: any) => this.mapVoteCommentDtoToEntity(r)) : []
     };
   }
 }
