@@ -64,6 +64,11 @@ export const selectTodaysPickError = createSelector(
   (state: OutfitState): string | null => state?.todaysOutfitError || null,
 );
 
+export const selectTodaysPickContext = createSelector(
+  selectOutfitState,
+  (state: OutfitState) => state?.todaysPickContext || null,
+);
+
 export const selectOutfitStats = createSelector(
   selectAllOutfits,
   (outfits: Outfit[]): OutfitStats => {

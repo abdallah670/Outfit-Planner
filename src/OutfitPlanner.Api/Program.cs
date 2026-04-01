@@ -10,6 +10,9 @@ using OutfitPlanner.Application;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.SqlServer;
+using OutfitPlanner.Infrastructure.Services;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -85,6 +88,26 @@ builder.Services.AddApplication(builder.Configuration);
 
 // Add Memory Cache for search results
 builder.Services.AddMemoryCache();
+
+// Add Hangfire for background job processing
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        DisableGlobalLocks = true
+    }));
+
+// Add Hangfire server
+builder.Services.AddHangfireServer();
+
+// Register Hangfire job
+builder.Services.AddTransient<TrendingCalculationHangfireJob>();
 
 // Identity.Application cookie scheme used automatically by AddIdentity for external login callbacks
 
@@ -179,6 +202,12 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Hangfire Dashboard - accessible at /hangfire
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    DashboardTitle = "Outfit Planner Jobs",
+    Authorization = new[] { new HangfireAuthorizationFilter() }
+});
 
 // Redirect to Swagger UI instead of Scalar for free documentation
 app.MapGet("/", () => Results.Redirect("/swagger"));
@@ -195,6 +224,26 @@ try
     {
         var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
         await seeder.SeedAsync();
+    }
+
+    // Schedule recurring Hangfire job for daily trending calculation
+    using (var scope = app.Services.CreateScope())
+    {
+        var job = scope.ServiceProvider.GetRequiredService<TrendingCalculationHangfireJob>();
+        var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+        
+        // Schedule job to run daily at midnight UTC
+        recurringJobManager.AddOrUpdate(
+            "daily-trending-calculation",
+            () => job.CalculateTrendingAsync(),
+            "0 0 * * *", // Cron: At 00:00 every day
+            new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Utc
+            }
+        );
+        
+        Log.Information("Hangfire recurring job 'daily-trending-calculation' scheduled to run daily at midnight UTC");
     }
     
     app.Run();

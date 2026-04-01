@@ -215,15 +215,16 @@ export class SocialDataSource {
   }
 
   /**
-   * Get trending outfits from the community
+   * Get trending outfits from the community with pagination
    */
-  getTrendingOutfits(): Observable<TrendingOutfit[]> {
+  getTrendingOutfits(page = 1, pageSize = 20): Observable<{ items: TrendingOutfit[]; totalCount: number }> {
     return this.http
-      .get<TrendingOutfitDto[]>(`${this.trendingApiUrl}/outfits`)
+      .get<any>(`${this.trendingApiUrl}/outfits?page=${page}&pageSize=${pageSize}`)
       .pipe(
-        map((outfits: TrendingOutfitDto[]) =>
-          outfits.map((o: TrendingOutfitDto) => this.mapTrendingOutfitDtoToEntity(o)),
-        ),
+        map((response: any) => ({
+          items: response.items.map((o: TrendingOutfitDto) => this.mapTrendingOutfitDtoToEntity(o)),
+          totalCount: response.totalCount,
+        })),
       );
   }
 

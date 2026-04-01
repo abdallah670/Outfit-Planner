@@ -3,7 +3,7 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Outfit } from '../../domain/entities/outfit.entity';
 import { Observable, map } from 'rxjs';
-import { OutfitSuggestionsRequest } from '../../domain/repositories/outfit.repository';
+import { OutfitSuggestionsRequest, TodaysPickResponse } from '../../domain/repositories/outfit.repository';
 
 @Injectable({
   providedIn: 'root',
@@ -48,10 +48,21 @@ export class OutfitDataSource {
       .pipe(map((outfits: Outfit[]) => outfits.map((o: Outfit) => this.fixOutfitUrls(o))));
   }
 
-  getTodaysOutfit(): Observable<Outfit> {
+  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse> {
+    let params: any = {};
+    if (latitude !== undefined && longitude !== undefined) {
+      params = { lat: latitude.toString(), lon: longitude.toString() };
+    }
     return this.http
-      .get<Outfit>(`${this.apiUrl}/today`)
-      .pipe(map((o: Outfit) => this.fixOutfitUrls(o)));
+      .get<TodaysPickResponse>(`${this.apiUrl}/today`, { params })
+      .pipe(
+        map((response: TodaysPickResponse) => {
+          if (response.outfit) {
+            response.outfit = this.fixOutfitUrls(response.outfit);
+          }
+          return response;
+        })
+      );
   }
 
   recordOutfitWear(id: string): Observable<Outfit> {

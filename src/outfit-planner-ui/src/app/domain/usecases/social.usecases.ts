@@ -54,10 +54,10 @@ export class SocialUseCases {
   }
 
   /**
-   * Get trending outfits
+   * Get trending outfits with pagination
    */
-  getTrendingOutfits(): Observable<TrendingOutfit[]> {
-    return this.socialRepository.getTrendingOutfits();
+  getTrendingOutfits(page = 1, pageSize = 20): Observable<{ items: TrendingOutfit[]; totalCount: number }> {
+    return this.socialRepository.getTrendingOutfits(page, pageSize);
   }
 
   /**

@@ -20,6 +20,10 @@ import {
   selectCurrentWeather,
   selectWeatherLoading,
 } from '../../../core/state/weather/weather.selectors';
+import { OutfitsActions } from '../../../core/state/outfit/outfit.actions';
+import { SocialActions } from '../../../core/state/social/social.actions';
+import { selectTrendingOutfits, selectSocialLoading } from '../../../core/state/social/social.selectors';
+import { TrendingOutfit } from '../../../domain/entities/social-engagement.entity';
 
 @Component({
   selector: 'app-home',
@@ -53,6 +57,14 @@ export class HomeComponent implements OnInit {
     initialValue: false,
   });
 
+  trendingOutfits: Signal<TrendingOutfit[]> = toSignal(this.store.select(selectTrendingOutfits), {
+    initialValue: [],
+  });
+
+  trendingLoading: Signal<boolean> = toSignal(this.store.select(selectSocialLoading), {
+    initialValue: false,
+  });
+
   categories = ['All Items', 'Tops', 'Bottoms', 'Shoes', 'Accessories'];
   selectedCategory = 'All Items';
 
@@ -60,6 +72,36 @@ export class HomeComponent implements OnInit {
     this.store.dispatch(WardrobeActions.loadClothingItems());
     // Load weather for Cairo (default for now)
     this.store.dispatch(WeatherActions.loadCurrentWeather({ city: 'Cairo' }));
+    
+    // Load today's pick with geolocation
+    this.loadTodaysPick();
+    
+    // Load trending outfits - only 3 for home page
+    this.store.dispatch(SocialActions.loadTrending({ page: 1, pageSize: 3 }));
+  }
+
+  private loadTodaysPick(): void {
+    // Try to get user's location for weather-based recommendations
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.store.dispatch(
+            OutfitsActions.loadTodaysPick({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            })
+          );
+        },
+        (error) => {
+          // Fallback to default location (Cairo) if geolocation fails
+          console.log('Geolocation denied or unavailable, using default location');
+          this.store.dispatch(OutfitsActions.loadTodaysPick({}));
+        }
+      );
+    } else {
+      // Geolocation not supported, use default
+      this.store.dispatch(OutfitsActions.loadTodaysPick({}));
+    }
   }
 
   selectCategory(category: string) {

@@ -39,6 +39,30 @@ public class TrendingOutfitRepository : GenericRepository<TrendingOutfit>, ITren
             .ToListAsync();
     }
 
+    public async Task<(IEnumerable<TrendingOutfit> Items, int TotalCount)> GetGlobalTrendingPagedAsync(int page, int pageSize)
+    {
+        var cutoffDate = DateTime.Today.AddDays(-7);
+        
+        // Get total count for pagination metadata
+        var totalCount = await _dbSet
+            .Where(t => t.Date >= cutoffDate)
+            .CountAsync();
+        
+        // Get paginated items
+        var items = await _dbSet
+            .Include(t => t.Outfit)
+                .ThenInclude(o => o.User)
+            .Include(t => t.Poll)
+                .ThenInclude(p => p.Options)
+            .Where(t => t.Date >= cutoffDate)
+            .OrderByDescending(t => t.TrendingScore)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        
+        return (items, totalCount);
+    }
+
     public async Task<IEnumerable<TrendingOutfit>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await _dbSet

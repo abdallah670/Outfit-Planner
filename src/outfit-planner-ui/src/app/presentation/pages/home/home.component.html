@@ -48,21 +48,41 @@
       <section class="trending-outfits-card closet-explorer">
         <div class="section-header">
           <h2 class="section-title">Trending Outfits</h2>
-          <button mat-button class="view-all-link">View All</button>
+          <button mat-button class="view-all-link" routerLink="/social">View All</button>
         </div>
-        <div class="items-display">
-          <div class="outfit-placeholder">
-            <!-- Simulated trending item from reference -->
-            <div
-              class="aspect-square bg-gradient-to-br from-pink-50 to-rose-100 rounded-xl mb-3 flex items-center justify-center"
-            >
-              <span style="font-size: 48px">👗</span>
-            </div>
-            <div class="flex justify-between items-center px-1">
-              <span style="font-size: 14px; font-weight: 500">Sarah</span>
-              <span style="font-size: 13px; color: #666">❤️ 234</span>
-            </div>
+        
+        <!-- Loading State -->
+        @if (trendingLoading()) {
+          <div class="loading-state" style="text-align: center; padding: 20px;">
+            <span>Loading trending...</span>
           </div>
+        }
+        
+        <!-- Trending Items -->
+        <div class="items-display">
+          @for (outfit of trendingOutfits(); track outfit.id) {
+            <div class="trending-item" [routerLink]="['/outfits', outfit.id]" style="cursor: pointer;">
+              <div
+                class="aspect-square bg-gradient-to-br from-pink-50 to-rose-100 rounded-xl mb-3 flex items-center justify-center overflow-hidden"
+              >
+                @if (outfit.imageUrl) {
+                  <img [src]="outfit.imageUrl" [alt]="outfit.userName" style="width: 100%; height: 100%; object-fit: cover;" />
+                } @else {
+                  <span style="font-size: 48px">👗</span>
+                }
+              </div>
+              <div class="flex justify-between items-center px-1">
+                <span style="font-size: 14px; font-weight: 500">{{ outfit.userName }}</span>
+                <span style="font-size: 13px; color: #666">❤️ {{ outfit.likes }}</span>
+              </div>
+            </div>
+          } @empty {
+            @if (!trendingLoading()) {
+              <div class="empty-state" style="text-align: center; padding: 20px; color: #666;">
+                <span>No trending outfits yet</span>
+              </div>
+            }
+          }
         </div>
       </section>
     </div>
