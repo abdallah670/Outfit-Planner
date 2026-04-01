@@ -32,6 +32,10 @@ public class AppDbContext : IdentityDbContext<User>
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<AppPreferences> AppPreferences { get; set; }
     public DbSet<NotificationSettings> NotificationSettings { get; set; }
+    public DbSet<FeedPost> FeedPosts { get; set; }
+    public DbSet<PostReaction> PostReactions { get; set; }
+    public DbSet<PostComment> PostComments { get; set; }
+    public DbSet<Follow> Follows { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -3,6 +3,7 @@ import {
   OutfitRepository,
   OUTFIT_REPOSITORY,
   OutfitSuggestionsRequest,
+  TodaysPickResponse,
 } from '../repositories/outfit.repository';
 import { Observable } from 'rxjs';
 import { Outfit } from '../entities/outfit.entity';
@@ -37,8 +38,8 @@ export class OutfitsUseCases {
     return this.outfitRepository.getOutfitsSuggestions(request);
   }
 
-  getTodaysOutfit(): Observable<Outfit> {
-    return this.outfitRepository.getTodaysOutfit();
+  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse> {
+    return this.outfitRepository.getTodaysPick(latitude, longitude);
   }
 
   recordOutfitWear(id: string): Observable<Outfit> {

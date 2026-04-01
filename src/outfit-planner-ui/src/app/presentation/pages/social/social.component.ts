@@ -148,7 +148,7 @@ export class SocialComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(SocialActions.loadPolls());
-    this.store.dispatch(SocialActions.loadTrending());
+    this.store.dispatch(SocialActions.loadTrending({ page: 1, pageSize: 20 }));
   }
 
   /**

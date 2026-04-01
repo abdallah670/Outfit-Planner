@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { OutfitsActions } from './outfit.actions';
-import { OutfitSuggestionsRequest } from '../../../domain/repositories/outfit.repository';
 
 import { catchError, map, mergeMap, of, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
@@ -263,16 +262,27 @@ export class OutfitEffects {
       ) as Observable<Action>,
   );
 
-  loadTodaysOutfit$ = createEffect(
+  loadTodaysPick$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(OutfitsActions.loadTodaysOutfit),
-        mergeMap(() =>
-          this.outfitsUseCases.getTodaysOutfit().pipe(
-            map((outfit: Outfit) => OutfitsActions.loadTodaysOutfitSuccess({ outfit })),
+        ofType(OutfitsActions.loadTodaysPick),
+        mergeMap((action: ReturnType<typeof OutfitsActions.loadTodaysPick>) =>
+          this.outfitsUseCases.getTodaysPick(action.latitude, action.longitude).pipe(
+            map((response: any) =>
+              OutfitsActions.loadTodaysPickSuccess({
+                outfit: response.outfit,
+                context: {
+                  weatherContext: response.weatherContext,
+                  todayEvent: response.todayEvent,
+                  matchScore: response.matchScore,
+                  recommendationReason: response.recommendationReason,
+                  isBestEffort: response.isBestEffort,
+                },
+              })
+            ),
             catchError((error) =>
               of(
-                OutfitsActions.loadTodaysOutfitFailure({
+                OutfitsActions.loadTodaysPickFailure({
                   error: error.message,
                 }),
               ),

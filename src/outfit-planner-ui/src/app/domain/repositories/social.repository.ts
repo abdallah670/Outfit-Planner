@@ -41,9 +41,9 @@ export interface SocialRepository {
   vote(pollId: string, dto: CastVoteRequest): Observable<CommandResponse>;
 
   /**
-   * Get trending outfits from the community
+   * Get trending outfits from the community with pagination
    */
-  getTrendingOutfits(): Observable<TrendingOutfit[]>;
+  getTrendingOutfits(page?: number, pageSize?: number): Observable<{ items: TrendingOutfit[]; totalCount: number }>;
 
   // ============ Vote Engagement Methods ============
 

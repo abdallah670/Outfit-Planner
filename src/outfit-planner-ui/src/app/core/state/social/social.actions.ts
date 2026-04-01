@@ -30,8 +30,8 @@ export const SocialActions = createActionGroup({
     'Vote Failure': props<{ error: string }>(),
 
     // Trending
-    'Load Trending': emptyProps(),
-    'Load Trending Success': props<{ outfits: any[] }>(),
+    'Load Trending': props<{ page?: number; pageSize?: number }>(),
+    'Load Trending Success': props<{ outfits: any[]; totalCount: number }>(),
     'Load Trending Failure': props<{ error: string }>(),
 
     // Engagement

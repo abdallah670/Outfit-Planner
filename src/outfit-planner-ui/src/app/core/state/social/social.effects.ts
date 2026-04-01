@@ -177,9 +177,11 @@ export class SocialEffects {
     () =>
       this.actions$.pipe(
         ofType(SocialActions.loadTrending),
-        mergeMap(() =>
-          this.socialUseCases.getTrendingOutfits().pipe(
-            map((outfits: TrendingOutfit[]) => SocialActions.loadTrendingSuccess({ outfits })),
+        mergeMap((action: ReturnType<typeof SocialActions.loadTrending>) =>
+          this.socialUseCases.getTrendingOutfits(action.page ?? 1, action.pageSize ?? 20).pipe(
+            map((response: { items: TrendingOutfit[]; totalCount: number }) =>
+              SocialActions.loadTrendingSuccess({ outfits: response.items, totalCount: response.totalCount })
+            ),
             catchError((error) =>
               of(
                 SocialActions.loadTrendingFailure({

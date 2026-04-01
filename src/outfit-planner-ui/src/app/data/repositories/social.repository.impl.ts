@@ -43,8 +43,8 @@ export class SocialRepositoryImpl implements SocialRepository {
     return this.socialDataSource.vote(pollId, dto);
   }
 
-  getTrendingOutfits(): Observable<TrendingOutfit[]> {
-    return this.socialDataSource.getTrendingOutfits();
+  getTrendingOutfits(page?: number, pageSize?: number): Observable<{ items: TrendingOutfit[]; totalCount: number }> {
+    return this.socialDataSource.getTrendingOutfits(page, pageSize);
   }
 
   // ============ Vote Engagement Methods ============

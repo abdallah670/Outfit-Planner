@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.DTOs.Social;
 using OutfitPlanner.Application.Features.Social.Requests.Commands;
 using OutfitPlanner.Application.Features.Social.Requests.Queries;
+using OutfitPlanner.Application.Responses;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -32,14 +33,21 @@ public class TrendingController : ControllerBase
     }
 
     /// <summary>
-    /// Get trending outfits
+    /// Get trending outfits with pagination
     /// </summary>
+    /// <param name="page">Page number (default: 1)</param>
+    /// <param name="pageSize">Items per page (default: 20)</param>
     [HttpGet("outfits")]
-    public async Task<ActionResult<List<TrendingOutfitDto>>> GetTrendingOutfits()
+    public async Task<ActionResult<PagedResult<TrendingOutfitDto>>> GetTrendingOutfits(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        // For now, we reuse the existing request but the handler can be extended 
-        // to use the DailyTrendingOutfits table we just created.
-        var result = await _mediator.Send(new GetTrendingOutfitsRequest());
+        var request = new GetTrendingOutfitsRequest
+        {
+            Page = page,
+            PageSize = pageSize
+        };
+        var result = await _mediator.Send(request);
         return Ok(result);
     }
 }

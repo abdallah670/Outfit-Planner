@@ -1,35 +1,101 @@
 <div class="daily-pick-widget">
-  <div class="header">
-    <h3 class="title">Daily Pick</h3>
-    <span class="match-badge">94% Match</span>
-  </div>
-  <p class="description">Perfect for a mild afternoon walk.</p>
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Finding your perfect outfit...</p>
+    </div>
+  }
 
-  <div class="items-list">
-    <div class="pick-item">
-      <div class="item-img-placeholder">👕</div>
-      <div class="item-info">
-        <span class="item-name">Beige Linen Shirt</span>
-        <span class="item-desc">Lightweight • Casual</span>
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="error-state">
+      <div class="error-icon">😕</div>
+      <p>{{ error() }}</p>
+      <button mat-button (click)="store.dispatch(OutfitsActions.loadTodaysPick({}))">
+        Try Again
+      </button>
+    </div>
+  }
+
+  <!-- Empty State - No Outfit -->
+  @if (!loading() && !error() && !outfit()) {
+    <div class="empty-state">
+      <div class="empty-icon">👕</div>
+      <p>No outfits found for today</p>
+      <span class="hint">Add some outfits to your wardrobe first</span>
+    </div>
+  }
+
+  <!-- Outfit Display -->
+  @if (!loading() && !error() && outfit()) {
+    <div class="outfit-content">
+      <div class="header">
+        <h3 class="title">{{ outfit()?.name }}</h3>
+        <span class="match-badge" [class.best-effort]="context()?.isBestEffort">
+          {{ getMatchPercentage() }}% Match
+        </span>
+      </div>
+
+      <p class="description">{{ getRecommendationReason() }}</p>
+
+      <!-- Weather Context -->
+      @if (context()?.weatherContext) {
+        <div class="weather-info">
+          <span class="weather-badge">
+            {{ context()?.weatherContext?.city }} •
+            {{ context()?.weatherContext?.temperature }}°C •
+            {{ context()?.weatherContext?.condition }}
+          </span>
+        </div>
+      }
+
+      <!-- Event Context -->
+      @if (context()?.todayEvent) {
+        <div class="event-info">
+          <span class="event-badge">
+            📅 {{ context()?.todayEvent?.title }}
+          </span>
+        </div>
+      }
+
+      <!-- Outfit Items -->
+      <div class="items-list">
+        @for (item of getPrimaryItems(); track item.id) {
+          <div class="pick-item">
+            <div class="item-img">
+              @if (item.clothingItemImageUrl) {
+                <img [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" />
+              } @else {
+                <div class="item-img-placeholder">
+                  {{ item.clothingItemType === 'Top' ? '👕' :
+                     item.clothingItemType === 'Bottom' ? '👖' :
+                     item.clothingItemType === 'Footwear' ? '👟' :
+                     item.clothingItemType === 'Outerwear' ? '🧥' : '👔' }}
+                </div>
+              }
+            </div>
+            <div class="item-info">
+              <span class="item-name">{{ item.clothingItemName }}</span>
+              <span class="item-desc">{{ item.clothingItemCategory }} • {{ item.role }}</span>
+            </div>
+          </div>
+        } @empty {
+          <div class="no-items">
+            <p>No items to display</p>
+          </div>
+        }
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button mat-flat-button class="wear-btn" (click)="onWearToday()">
+          Wear This Today
+        </button>
+        <button mat-button class="view-btn" (click)="onViewOutfit()">
+          View Details
+        </button>
       </div>
     </div>
-
-    <div class="pick-item">
-      <div class="item-img-placeholder">👖</div>
-      <div class="item-info">
-        <span class="item-name">Navy Chinos</span>
-        <span class="item-desc">Slim Fit • Cotton</span>
-      </div>
-    </div>
-
-    <div class="pick-item">
-      <div class="item-img-placeholder">👟</div>
-      <div class="item-info">
-        <span class="item-name">White Loafers</span>
-        <span class="item-desc">Leather • Comfortable</span>
-      </div>
-    </div>
-  </div>
-
-  <button mat-flat-button class="wear-btn">Wear This Today</button>
+  }
 </div>

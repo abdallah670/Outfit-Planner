@@ -3,6 +3,7 @@ import {
   OutfitRepository,
   OUTFIT_REPOSITORY,
   OutfitSuggestionsRequest,
+  TodaysPickResponse,
 } from '../../domain/repositories/outfit.repository';
 import { OutfitDataSource } from '../datasources/outfit.datasource';
 import { Observable } from 'rxjs';
@@ -38,8 +39,8 @@ export class OutfitRepositoryImpl implements OutfitRepository {
     return this.outfitDataSource.getOutfitsSuggestions(request);
   }
 
-  getTodaysOutfit(): Observable<Outfit> {
-    return this.outfitDataSource.getTodaysOutfit();
+  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse> {
+    return this.outfitDataSource.getTodaysPick(latitude, longitude);
   }
 
   recordOutfitWear(id: string): Observable<Outfit> {

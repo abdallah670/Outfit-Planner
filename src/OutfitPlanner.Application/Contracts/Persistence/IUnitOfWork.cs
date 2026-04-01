@@ -9,7 +9,7 @@ public interface IUnitOfWork : IDisposable
     IValidationPollRepository ValidationPolls { get; }
     IWearEventRepository WearEvents { get; }
     IUserStyleProfileRepository UserStyleProfiles { get; }
-    IOutfitFeedbackRepository OutfitFeedbacks { get; }
+    
     IUserRepository Users { get; }
     IStyleRuleRepository StyleRules { get; }
     IClothingTagRepository ClothingTags { get; }
@@ -21,7 +21,10 @@ public interface IUnitOfWork : IDisposable
     INotificationRepository Notifications { get; }
     IAppPreferencesRepository AppPreferences { get; }
     INotificationSettingsRepository NotificationSettings { get; }
-    IOutfitEngagementRepository OutfitEngagement { get; }
+    IFeedPostRepository FeedPosts { get; }
+    IPostReactionRepository PostReactions { get; }
+    IPostCommentRepository PostComments { get; }
+   
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 

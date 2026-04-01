@@ -26,6 +26,9 @@ public class UnitOfWork : IUnitOfWork
     public INotificationRepository Notifications { get; }
     public IAppPreferencesRepository AppPreferences { get; }
     public INotificationSettingsRepository NotificationSettings { get; }
+    public IFeedPostRepository FeedPosts { get; }
+    public IPostReactionRepository PostReactions { get; }
+    public IPostCommentRepository PostComments { get; }
     public IOutfitEngagementRepository OutfitEngagement { get; }
 
     public UnitOfWork(
@@ -47,6 +50,9 @@ public class UnitOfWork : IUnitOfWork
         INotificationRepository notifications,
         IAppPreferencesRepository appPreferences,
         INotificationSettingsRepository notificationSettings,
+        IFeedPostRepository feedPosts,
+        IPostReactionRepository postReactions,
+        IPostCommentRepository postComments,
         IOutfitEngagementRepository outfitEngagement)
     {
         _context = context;
@@ -67,6 +73,9 @@ public class UnitOfWork : IUnitOfWork
         Notifications = notifications;
         AppPreferences = appPreferences;
         NotificationSettings = notificationSettings;
+        FeedPosts = feedPosts;
+        PostReactions = postReactions;
+        PostComments = postComments;
         OutfitEngagement = outfitEngagement;
     }
 

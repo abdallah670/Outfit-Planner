@@ -86,6 +86,9 @@ public static class DependencyInjection
         services.AddScoped<IAppPreferencesRepository, AppPreferencesRepository>();
         services.AddScoped<INotificationSettingsRepository, NotificationSettingsRepository>();
         services.AddScoped<IOutfitEngagementRepository, OutfitEngagementRepository>();
+        services.AddScoped<IFeedPostRepository, FeedPostRepository>();
+        services.AddScoped<IPostReactionRepository, PostReactionRepository>();
+        services.AddScoped<IPostCommentRepository, PostCommentRepository>();
         services.AddScoped<DataSeeder>();
         return services;
     }
