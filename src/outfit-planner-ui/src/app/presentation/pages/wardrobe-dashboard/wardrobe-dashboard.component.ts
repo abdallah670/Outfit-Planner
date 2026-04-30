@@ -20,6 +20,8 @@ import {
 import { ClothingCardComponent } from '../../components/clothing-card/clothing-card.component';
 import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
 import { WardrobeState } from '../../../core/state/wardrobe/wardrobe.reducer';
+import { WardrobeService } from '../../../core/services/wardrobe.service';
+import { PagedResult } from '../../../domain/entities/response.entity';
 
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 
@@ -43,6 +45,7 @@ import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 export class WardrobeDashboardComponent implements OnInit {
   private store = inject(Store<{ wardrobe: WardrobeState }>);
   private snackBar = inject(MatSnackBar);
+  private wardrobeService = inject(WardrobeService);
 
   // Outfit builder state
   outfitBoardItems = signal<ClothingItem[]>([]);
@@ -67,28 +70,36 @@ export class WardrobeDashboardComponent implements OnInit {
     this.outfitBoardItems.update((items) => items.filter((i) => i.id !== id));
   }
 
-  // Store selectors
-  allItems: Signal<ClothingItem[]> = toSignal(this.store.select(selectAllItems), {
-    initialValue: [] as ClothingItem[],
-  });
-  loading: Signal<boolean> = toSignal(this.store.select(selectWardrobeLoading), {
-    initialValue: false,
-  });
+  // Pagination signals
+  page = signal(1);
+  pageSize = signal(20);
+  totalCount = signal(0);
+
+  // Backend loaded items
+  items = signal<ClothingItem[]>([]);
+  loading = signal(false);
+
+  // Store stats (still from store for now)
   stats: Signal<WardrobeStats> = toSignal(this.store.select(selectWardrobeStats), {
     initialValue: { totalItems: 0, totalCost: 0 } as WardrobeStats,
   });
 
-  // Computed stats for right sidebar
+  // Pagination computed
+  hasPreviousPage = computed(() => this.page() > 1);
+  hasNextPage = computed(() => this.page() * this.pageSize() < this.totalCount());
+  totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize()) || 1);
+
+  // Computed stats for right sidebar (using loaded items for now)
   mostWornCount = computed(() => {
-    const items = this.allItems();
+    const items = this.items();
     if (items.length === 0) return 0;
-    return Math.max(...items.map((i) => i.wearCount || 0));
+    return Math.max(...items.map((i: ClothingItem) => i.wearCount || 0));
   });
 
   costPerWear = computed(() => {
-    const items = this.allItems();
-    const totalWears = items.reduce((sum, i) => sum + (i.wearCount || 0), 0);
-    const totalCost = items.reduce((sum, i) => sum + (i.purchasePrice || 0), 0);
+    const items = this.items();
+    const totalWears = items.reduce((sum: number, i: ClothingItem) => sum + (i.wearCount || 0), 0);
+    const totalCost = items.reduce((sum: number, i: ClothingItem) => sum + (i.purchasePrice || 0), 0);
     return totalWears > 0 ? (totalCost / totalWears).toFixed(2) : '0.00';
   });
 
@@ -102,7 +113,6 @@ export class WardrobeDashboardComponent implements OnInit {
   // Filter options - matching backend enums
   categories = ['All', 'Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Shoes', 'Accessories'];
   colors = ['All', 'Black', 'White', 'Blue', 'Red', 'Green', 'Pink', 'Beige'];
-  seasons = ['All', 'Spring', 'Summer', 'Autumn', 'Winter'];
   occasions = [
     'All',
     'Casual',
@@ -130,94 +140,33 @@ export class WardrobeDashboardComponent implements OnInit {
   selectMode = false;
   selectedItems = new Set<string>();
 
-  // Computed filtered items
-  items = computed(() => {
-    let filtered = this.allItems().filter((item) => {
-      // Category filter with mapping for Footwear -> Shoes
-      const categoryMap: { [key: string]: string } = {
-        footwear: 'Shoes',
-        top: 'Tops',
-        tops: 'Tops',
-        bottom: 'Bottoms',
-        bottoms: 'Bottoms',
-        dress: 'Dresses',
-        dresses: 'Dresses',
-        outerwear: 'Outerwear',
-        shoes: 'Shoes',
-        accessory: 'Accessories',
-        accessories: 'Accessories',
-      };
-
-      const itemType = item.type?.toLowerCase() || '';
-      const mappedCategory = categoryMap[itemType] || itemType;
-      const activeCat = this.activeCategory();
-
-      const categoryMatch =
-        activeCat === 'All' ||
-        mappedCategory === activeCat ||
-        (activeCat === 'Shoes' && (itemType === 'footwear' || itemType === 'shoes'));
-
-      // Color filter - partial match
-      const activeColor = this.activeColor();
-      const colorMatch =
-        activeColor === 'All' ||
-        item.primaryColor?.toLowerCase().includes(activeColor.toLowerCase()) ||
-        item.primaryColor?.toLowerCase() === activeColor.toLowerCase();
-
-      // Occasion filter - match against item.category field
-      // Map UI occasion values to backend values
-      const occasionMap: { [key: string]: string } = {
-        athletic: 'Athletic',
-        sport: 'Athletic',
-        businesscasual: 'BusinessCasual',
-        casual: 'Casual',
-        work: 'Work',
-        formal: 'Formal',
-        social: 'Social',
-        date: 'Date',
-        travel: 'Travel',
-      };
-
-      const activeOccasion = this.activeOccasion();
-      const itemCategory = item.category?.toLowerCase() || '';
-      const mappedOccasion = occasionMap[activeOccasion.toLowerCase()] || activeOccasion;
-
-      const occasionMatch =
-        activeOccasion === 'All' ||
-        itemCategory === mappedOccasion.toLowerCase() ||
-        itemCategory.includes(activeOccasion.toLowerCase());
-
-      // Season filter - NOTE: ClothingItem doesn't have a season field in backend
-      // For now, we'll make this pass through (display all) but log a warning
-      // In production, you'd want to add season support to the backend
-      const seasonMatch = true; // Backend ClothingItem has no season field - filter disabled
-
-      return categoryMatch && colorMatch && occasionMatch && seasonMatch;
+  // Load items from backend with filters and pagination
+  private loadItems(): void {
+    this.loading.set(true);
+    this.wardrobeService.getFilteredItems({
+      category: this.activeCategory() !== 'All' ? this.activeCategory() : undefined,
+      color: this.activeColor() !== 'All' ? this.activeColor() : undefined,
+      occasion: this.activeOccasion() !== 'All' ? this.activeOccasion() : undefined,
+      search: this.searchQuery() || undefined
+    }, this.page(), this.pageSize()).subscribe({
+      next: (result: PagedResult<ClothingItem>) => {
+        this.items.set(result.items);
+        this.totalCount.set(result.totalCount);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+      }
     });
-
-    // Search filter
-    const searchValue = this.searchQuery();
-    if (searchValue.trim()) {
-      const q = searchValue.toLowerCase();
-      filtered = filtered.filter(
-        (item) =>
-          item.name.toLowerCase().includes(q) ||
-          item.type.toLowerCase().includes(q) ||
-          item.category.toLowerCase().includes(q) ||
-          item.brand?.toLowerCase().includes(q) ||
-          item.primaryColor.toLowerCase().includes(q),
-      );
-    }
-
-    return filtered;
-  });
+  }
 
   ngOnInit() {
-    this.store.dispatch(WardrobeActions.loadClothingItems());
+    this.loadItems();
   }
 
   onSearch() {
-    // Triggers re-computation via the computed signal since searchQuery changed
+    this.page.set(1);
+    this.loadItems();
   }
 
   onSearchChange(query: string) {
@@ -226,23 +175,49 @@ export class WardrobeDashboardComponent implements OnInit {
 
   setCategory(category: string) {
     this.activeCategory.set(category);
+    this.page.set(1);
+    this.loadItems();
   }
   setColor(color: string) {
     this.activeColor.set(color);
-  }
-  setSeason(season: string) {
-    this.activeSeason.set(season);
+    this.page.set(1);
+    this.loadItems();
   }
   setOccasion(occasion: string) {
     this.activeOccasion.set(occasion);
+    this.page.set(1);
+    this.loadItems();
   }
 
   clearFilters() {
     this.activeCategory.set('All');
     this.activeColor.set('All');
-    this.activeSeason.set('All');
     this.activeOccasion.set('All');
     this.searchQuery.set('');
+    this.page.set(1);
+    this.loadItems();
+  }
+
+  // Pagination methods
+  onPreviousPage() {
+    if (this.hasPreviousPage()) {
+      this.page.update(p => p - 1);
+      this.loadItems();
+    }
+  }
+
+  onNextPage() {
+    if (this.hasNextPage()) {
+      this.page.update(p => p + 1);
+      this.loadItems();
+    }
+  }
+
+  onPageSizeChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.pageSize.set(parseInt(select.value, 10));
+    this.page.set(1);
+    this.loadItems();
   }
 
   toggleSelectMode() {
@@ -309,15 +284,15 @@ export class WardrobeDashboardComponent implements OnInit {
   }
 
   getSelectedWearCount(): number {
-    const items = this.allItems();
+    const items = this.items();
     return items
-      .filter((i) => this.selectedItems.has(i.id))
-      .reduce((sum, i) => sum + (i.wearCount || 0), 0);
+      .filter((i: ClothingItem) => this.selectedItems.has(i.id))
+      .reduce((sum: number, i: ClothingItem) => sum + (i.wearCount || 0), 0);
   }
 
   getSelectedColor(): string | null {
-    const items = this.allItems();
-    const selected = items.find((i) => this.selectedItems.has(i.id));
+    const items = this.items();
+    const selected = items.find((i: ClothingItem) => this.selectedItems.has(i.id));
     return selected ? selected.primaryColor : null;
   }
 

@@ -23,6 +23,10 @@ export class UserRepositoryImpl implements UserRepository {
     return this.dataSource.getProfilePicture();
   }
 
+  getPublicProfile(userId: string): Observable<UserProfile> {
+    return this.dataSource.getPublicProfile(userId);
+  }
+
   updateProfile(request: UpdateUserProfileRequest): Observable<void> {
     return this.dataSource.updateProfile(request);
   }

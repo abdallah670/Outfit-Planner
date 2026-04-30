@@ -57,12 +57,48 @@
     </div>
   </header>
 
-  <div class="outfits-content" *ngIf="!(loading$ | async); else loader">
-    <div class="outfits-grid" *ngIf="filteredOutfits().length > 0; else emptyState">
+  <div class="outfits-content" *ngIf="!loading(); else loader">
+    <div class="outfits-grid" *ngIf="outfits().length > 0; else emptyState">
       <app-outfit-card
-        *ngFor="let outfit of filteredOutfits(); trackBy: trackByOutfitId"
+        *ngFor="let outfit of outfits(); trackBy: trackByOutfitId"
         [outfit]="outfit"
       ></app-outfit-card>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls" *ngIf="!loading() && outfits().length > 0">
+      <div class="items-per-page">
+        <label>Items per page:</label>
+        <select [value]="pageSize()" (change)="onPageSizeChange($event)">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+
+      <div class="page-navigation">
+        <button
+          class="page-btn"
+          [disabled]="!hasPreviousPage()"
+          (click)="onPreviousPage()"
+        >
+          <mat-icon>chevron_left</mat-icon> Previous
+        </button>
+
+        <span class="page-info">Page {{ page() }} of {{ totalPages() }}</span>
+
+        <button
+          class="page-btn"
+          [disabled]="!hasNextPage()"
+          (click)="onNextPage()"
+        >
+          Next <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <div class="results-info">
+        Showing {{ outfits().length }} of {{ totalCount() }} outfits
+      </div>
     </div>
 
     <ng-template #emptyState>

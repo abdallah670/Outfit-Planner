@@ -138,7 +138,7 @@ export class EditStyleProfileModalComponent implements OnDestroy {
         take(1)
       ).subscribe(() => {
         // Check if there was an error
-        this.store.select(selectUserError).pipe(take(1)).subscribe((error: string) => {
+        this.store.select(selectUserError).pipe(take(1)).subscribe((error: string | null) => {
           this.isLoading = false;
           if (error) {
             this.snackBar.open(`Update failed: ${error}`, 'Close', { duration: 5000 });

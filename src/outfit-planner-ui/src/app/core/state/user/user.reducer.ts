@@ -38,6 +38,13 @@ export const initialState: UserState = {
   connectedAccounts: [],
   connectedAccountsLoading: false,
 };
+export interface FollowState{
+  userId: string;
+  followers: number;
+  following: number;
+}
+export type FollowStateMap = Record<string, FollowState>;
+
 
 export const userReducer = createReducer(
   initialState,
@@ -288,6 +295,20 @@ export const userReducer = createReducer(
   on(UserActions.disconnectAccountFailure, (state, { error }) => ({
     ...state,
     connectedAccountsLoading: false,
+    error,
+  })),
+  //follow
+  on(UserActions.followUser, (state) => ({
+    ...state,
+    followingLoading: true,
+  })),
+  on(UserActions.followUserSuccess, (state) => ({
+    ...state,
+    followingLoading: false,
+  })),
+  on(UserActions.followUserFailure, (state, { error }) => ({
+    ...state,
+    followingLoading: false,
     error,
   })),
 );

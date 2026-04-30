@@ -20,7 +20,12 @@
             [alt]="$any(item).clothingItemName || 'Clothing item'"
             (error)="onImageError(i)"
           />
-          <span *ngIf="!$any(item).clothingItemImageUrl || imageError[i]" class="fallback-emoji">🧥</span>
+          <img
+            *ngIf="!$any(item).clothingItemImageUrl || imageError[i]"
+            src="assets/placeholder.jpg"
+            alt="Placeholder"
+            class="item-thumbnail"
+          />
         </div>
       </ng-container>
       <ng-template #noItems>

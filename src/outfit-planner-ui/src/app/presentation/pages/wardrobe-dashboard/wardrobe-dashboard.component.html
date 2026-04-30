@@ -68,23 +68,7 @@
             </div>
           </div>
 
-          <!-- Season Filter (collapsible) -->
-          <div class="filter-section">
-            <button class="filter-label" (click)="filtersOpen.seasons = !filtersOpen.seasons">
-              Seasons
-              <mat-icon class="chevron" [class.open]="filtersOpen.seasons">expand_more</mat-icon>
-            </button>
-            <div class="checkbox-grid" *ngIf="filtersOpen.seasons">
-              <label *ngFor="let season of seasons" class="checkbox-item">
-                <input
-                  type="checkbox"
-                  [checked]="activeSeason() === season"
-                  (change)="setSeason(season)"
-                />
-                <span>{{ season }}</span>
-              </label>
-            </div>
-          </div>
+       
 
           <!-- Occasion Filter (collapsible) -->
           <div class="filter-section">
@@ -200,6 +184,42 @@
             *ngIf="getSelectedColor()"
             [style.background-color]="getSelectedColor()"
           ></div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-controls" *ngIf="!loading() && items().length > 0">
+          <div class="items-per-page">
+            <label>Items per page:</label>
+            <select [value]="pageSize()" (change)="onPageSizeChange($event)">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+
+          <div class="page-navigation">
+            <button
+              class="page-btn"
+              [disabled]="!hasPreviousPage()"
+              (click)="onPreviousPage()"
+            >
+              <mat-icon>chevron_left</mat-icon> Previous
+            </button>
+
+            <span class="page-info">Page {{ page() }} of {{ totalPages() }}</span>
+
+            <button
+              class="page-btn"
+              [disabled]="!hasNextPage()"
+              (click)="onNextPage()"
+            >
+              Next <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+
+          <div class="results-info">
+            Showing {{ items().length }} of {{ totalCount() }} items
+          </div>
         </div>
       </main>
 

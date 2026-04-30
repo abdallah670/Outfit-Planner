@@ -1,3 +1,14 @@
+
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  name: string;
+  createdAt: Date;
+  lastLogin: Date;
+}
+
+
 export interface UserProfile {
   id: string;
   name: string;

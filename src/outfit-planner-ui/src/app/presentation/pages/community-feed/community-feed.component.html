@@ -40,61 +40,76 @@
     <p>Loading polls...</p>
   </div>
 
-  <!-- Polls Grid -->
-  <div class="polls-grid" *ngIf="!loading()">
+  <!-- Posts Grid -->
+  <div class="posts-grid" *ngIf="!loading()">
     <mat-card
-      class="poll-card"
-      *ngFor="let poll of filteredPolls()"
-      (click)="viewPollDetail(poll.id)">
+      class="post-card"
+      *ngFor="let post of filteredPosts()"
+      (click)="viewPostDetail(post)">
+      
       <mat-card-header>
-        <mat-card-title>{{ poll.question }}</mat-card-title>
+        <img mat-card-avatar [src]="post.userAvatarUrl || 'assets/images/default-avatar.png'" alt="User avatar">
+        <mat-card-title>{{ post.userName }}</mat-card-title>
         <mat-card-subtitle>
-          <span class="time-left">
-            <mat-icon>schedule</mat-icon>
-            {{ getTimeLeft(poll.expiresAt) }}
-          </span>
-          <span class="vote-count">
-            <mat-icon>how_to_vote</mat-icon>
-            {{ getTotalVotes(poll) }} votes
-          </span>
+          {{ post.createdAt | date:'mediumDate' }}
+          <span *ngIf="post.postType === 1" class="poll-tag">POLL</span>
         </mat-card-subtitle>
       </mat-card-header>
 
-      <mat-card-content>
-        <div class="options-preview">
-          <div
-            class="option-thumbnail"
-            *ngFor="let option of poll.options.slice(0, 3); let i = index">
-            <img [src]="getOptionThumbnail(option)" [alt]="'Option ' + (i + 1)" />
-            <span class="option-label">{{ ['A', 'B', 'C', 'D', 'E', 'F'][i] }}</span>
-          </div>
-          <div class="more-options" *ngIf="poll.options.length > 3">
-            +{{ poll.options.length - 3 }} more
+      <div class="post-content">
+        <p class="caption" *ngIf="post.caption">{{ post.caption }}</p>
+        
+        <!-- Outfit Preview (for both outfit posts and poll posts) -->
+        <div class="image-preview" *ngIf="post.outfit?.imageUrl">
+          <img [src]="post.outfit?.imageUrl" alt="Outfit preview">
+        </div>
+
+        <!-- Poll Specific Content -->
+        <div class="poll-content" *ngIf="post.postType === 1 && post.poll">
+          <p class="question">{{ post.poll.question }}</p>
+          <div class="poll-meta">
+            <span class="time-left" *ngIf="post.poll.status === 'active'">
+              <mat-icon>schedule</mat-icon>
+              {{ getTimeLeft(post.poll.expiresAt) }}
+            </span>
+            <span class="vote-count">
+              <mat-icon>how_to_vote</mat-icon>
+              {{ post.poll.totalVotes }} votes
+            </span>
           </div>
         </div>
-      </mat-card-content>
+      </div>
 
-      <mat-card-actions align="end">
-        <button mat-button color="primary">
-          <mat-icon>visibility</mat-icon>
-          View & Vote
+      <mat-card-actions class="post-actions">
+        <button mat-button (click)="toggleReaction(post, $event)" [color]="post.userReaction ? 'warn' : ''">
+          <mat-icon>{{ post.userReaction ? 'favorite' : 'favorite_border' }}</mat-icon>
+          {{ post.likeCount }}
+        </button>
+        <button mat-button>
+          <mat-icon>chat_bubble_outline</mat-icon>
+          {{ post.commentCount }}
+        </button>
+        <span class="spacer"></span>
+        <button mat-icon-button>
+          <mat-icon>share</mat-icon>
         </button>
       </mat-card-actions>
     </mat-card>
 
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="filteredPolls().length === 0">
-      <mat-icon>how_to_vote</mat-icon>
-      <h3>No polls found</h3>
-      <p>Be the first to create a poll!</p>
-      <button mat-raised-button color="primary" (click)="createPoll()">
-        <mat-icon>add</mat-icon>
-        Create Poll
-      </button>
+    <div class="empty-state" *ngIf="filteredPosts().length === 0">
+      <mat-icon>rss_feed</mat-icon>
+      <h3>Nothing in the feed yet</h3>
+      <p>Follow some users or create your own post!</p>
     </div>
-  </div>
+   </div>
 
-  <!-- FAB to Create Poll -->
+   <!-- Load More Button -->
+   <div class="load-more-container" *ngIf="hasMore()">
+     <button mat-button class="load-more-btn" (click)="loadMore()">Load More</button>
+   </div>
+
+   <!-- FAB to Create Poll -->
   <button
     mat-fab
     color="primary"

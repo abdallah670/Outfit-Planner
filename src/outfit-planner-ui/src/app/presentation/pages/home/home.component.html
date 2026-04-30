@@ -22,7 +22,7 @@
             <button
               *ngFor="let cat of categories"
               class="filter-tab"
-              [class.active]="cat === selectedCategory"
+              [class.active]="cat === selectedCategory()"
               (click)="selectCategory(cat)"
             >
               {{ cat }}
@@ -31,7 +31,7 @@
         </div>
 
         <div class="items-display">
-          @for (item of items().slice(0, 8); track item.id) {
+          @for (item of filteredItems().slice(0, 8); track item.id) {
             <app-clothing-card [item]="item"></app-clothing-card>
           } @empty {
             <div class="empty-state">
@@ -117,7 +117,7 @@
         >
           Wardrobe Health
         </h3>
-        <app-wardrobe-health></app-wardrobe-health>
+        <app-wardrobe-health [itemsInput]="items()"></app-wardrobe-health>
       </div>
     </aside>
   </main>

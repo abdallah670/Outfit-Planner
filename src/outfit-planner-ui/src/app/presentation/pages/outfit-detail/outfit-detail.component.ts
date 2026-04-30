@@ -8,7 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
-
+import { OutfitPostsActions } from '../../../core/state/outfit-posts/outfit-posts.actions';
 import { OutfitsActions } from '../../../core/state/outfit/outfit.actions';
 import {
   selectSelectedItem,
@@ -94,5 +94,13 @@ export class OutfitDetailComponent implements OnInit {
 
   onRecordWear(id: string) {
     this.store.dispatch(OutfitsActions.recordOutfitWear({ id }));
+  }
+
+  onShareToFeed(id: string): void {
+    this.store.dispatch(OutfitPostsActions.createOutfitPost({
+      outfitId: id,
+      caption: '',
+      visibility: 0 // Public = 0
+    }));
   }
 }

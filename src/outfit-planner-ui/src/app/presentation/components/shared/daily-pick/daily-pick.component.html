@@ -12,7 +12,7 @@
     <div class="error-state">
       <div class="error-icon">😕</div>
       <p>{{ error() }}</p>
-      <button mat-button (click)="store.dispatch(OutfitsActions.loadTodaysPick({}))">
+      <button mat-button (click)="store.dispatch(OutfitsActions.loadTodaysPick({})); $event.stopPropagation()">
         Try Again
       </button>
     </div>
@@ -39,16 +39,7 @@
 
       <p class="description">{{ getRecommendationReason() }}</p>
 
-      <!-- Weather Context -->
-      @if (context()?.weatherContext) {
-        <div class="weather-info">
-          <span class="weather-badge">
-            {{ context()?.weatherContext?.city }} •
-            {{ context()?.weatherContext?.temperature }}°C •
-            {{ context()?.weatherContext?.condition }}
-          </span>
-        </div>
-      }
+      
 
       <!-- Event Context -->
       @if (context()?.todayEvent) {
@@ -65,7 +56,8 @@
           <div class="pick-item">
             <div class="item-img">
               @if (item.clothingItemImageUrl) {
-                <img [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" />
+                <img *ngIf="item.clothingItemImageUrl" [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" />
+                <img *ngIf="!item.clothingItemImageUrl" src="assets/placeholder.jpg" alt="Placeholder" class="item-img-placeholder" />
               } @else {
                 <div class="item-img-placeholder">
                   {{ item.clothingItemType === 'Top' ? '👕' :

@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Http;
 using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
+
 using OutfitPlanner.Application.DTOs.Outfit;
-using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Exceptions;
 
@@ -50,6 +50,33 @@ public class OutfitsController : ControllerBase
         var userId = GetUserId();
         var outfits = await _mediator.Send(new GetOutfitsRequest { UserId = userId });
         return Ok(outfits);
+    }
+
+    /// <summary>
+    /// Gets filtered and paginated outfits
+    /// </summary>
+    [HttpGet("filtered")]
+    [ProducesResponseType(typeof(PagedResult<OutfitDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<OutfitDto>>> GetFiltered(
+        [FromQuery] string? occasion,
+        [FromQuery] string? season,
+        [FromQuery] string? search,
+        [FromQuery] string? sortBy,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        var userId = GetUserId();
+        var result = await _mediator.Send(new GetFilteredOutfitsRequest
+        {
+            UserId = userId,
+            Occasion = occasion,
+            Season = season,
+            SearchQuery = search,
+            SortBy = sortBy,
+            Page = page,
+            PageSize = pageSize
+        });
+        return Ok(result);
     }
 
     /// <summary>

@@ -8,7 +8,12 @@
       class="card-image"
       (error)="onImageError()"
     />
-    <span *ngIf="!item.imageUrl || imageError" class="card-emoji">{{ categoryEmoji }}</span>
+    <img
+      *ngIf="!item.imageUrl || imageError"
+      src="assets/placeholder.jpg"
+      alt="Placeholder"
+      class="card-image"
+    />
 
     <!-- Delete button (hover) -->
     <button class="delete-btn" (click)="onDelete($event)">×</button>

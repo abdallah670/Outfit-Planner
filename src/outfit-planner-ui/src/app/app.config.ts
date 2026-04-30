@@ -30,17 +30,26 @@ import { reducer as outfitReducer } from './core/state/outfit/outfit.reducer';
 import { OutfitEffects } from './core/state/outfit/outfit.effects';
 import { weatherRepositoryProvider } from './data/repositories/weather.repository.impl';
 import { outfitRepositoryProvider } from './data/repositories/outfit.repository.impl';
-import { socialRepositoryProvider } from './data/repositories/social.repository.impl';
+import { feedRepositoryProvider } from './data/repositories/feed.repository.impl';
+import { pollsRepositoryProvider } from './data/repositories/polls.repository.impl';
+import { trendingRepositoryProvider } from './data/repositories/trending.repository.impl';
+import { followRepositoryProvider } from './data/repositories/follow.repository.impl';
 import { wearEventRepositoryProvider } from './data/repositories/wear-event.repository.impl';
-import { socialFeature, reducer as socialReducer } from './core/state/social/social.reducer';
-import {
-  calendarFeature,
-  reducer as calendarReducer,
-} from './core/state/calendar/calendar.reducer';
-import { CalendarEffects } from './core/state/calendar/calendar.effects';
-import { SocialEffects } from './core/state/social/social.effects';
+import { feedFeature, reducer as feedReducer } from './core/state/feed/feed.reducer';
+import { FeedEffects } from './core/state/feed/feed.effects';
+import { pollsFeature, reducer as pollsReducer } from './core/state/polls/polls.reducer';
+import { PollsEffects } from './core/state/polls/polls.effects';
+import { trendingFeature, reducer as trendingReducer } from './core/state/trending/trending.reducer';
+import { TrendingEffects } from './core/state/trending/trending.effects';
+import { followFeature, reducer as followReducer } from './core/state/follow/follow.reducer';
+import { FollowEffects } from './core/state/follow/follow.effects';
+import { outfitPostsFeature, reducer as outfitPostsReducer } from './core/state/outfit-posts/outfit-posts.reducer';
+import { OutfitPostsEffects } from './core/state/outfit-posts/outfit-posts.effects';
+import { outfitPostsRepositoryProvider } from './data/repositories/outfit-posts.repository.impl';
 import { searchReducer } from './core/state/search/search.reducer';
 import * as searchEffects from './core/state/search/search.effects';
+import { calendarFeature } from './core/state/calendar/calendar.reducer';
+import { CalendarEffects } from './core/state/calendar/calendar.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -50,30 +59,42 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     importProvidersFrom(MatSnackBarModule),
     CookieService,
-    provideStore({
-      auth: authReducer,
-      wardrobe: wardrobeReducer,
-      weather: weatherReducer,
-      user: userReducer,
-      outfit: outfitReducer,
-      social: socialReducer,
-      calendar: calendarReducer,
-      search: searchReducer,
-    }),
-    provideEffects(
-      authEffects,
-      WardrobeEffects,
-      WeatherEffects,
-      userEffects,
-      OutfitEffects,
-      SocialEffects,
-      CalendarEffects,
-      searchEffects,
-    ),
-    weatherRepositoryProvider,
-    outfitRepositoryProvider,
-    socialRepositoryProvider,
-    wearEventRepositoryProvider,
+     provideStore({
+       auth: authReducer,
+       wardrobe: wardrobeReducer,
+       weather: weatherReducer,
+       user: userReducer,
+       outfit: outfitReducer,
+       feed: feedReducer,
+       polls: pollsReducer,
+       trending: trendingReducer,
+       follow: followReducer,
+       outfitPosts: outfitPostsReducer,
+       calendar: calendarFeature.reducer,
+       search: searchReducer,
+     }),
+     provideEffects(
+       authEffects,
+       WardrobeEffects,
+       WeatherEffects,
+       userEffects,
+       OutfitEffects,
+       FeedEffects,
+       PollsEffects,
+       TrendingEffects,
+       FollowEffects,
+       OutfitPostsEffects,
+       CalendarEffects,
+       searchEffects,
+     ),
+      weatherRepositoryProvider,
+      outfitRepositoryProvider,
+      feedRepositoryProvider,
+      pollsRepositoryProvider,
+      trendingRepositoryProvider,
+      followRepositoryProvider,
+      outfitPostsRepositoryProvider,
+      wearEventRepositoryProvider,
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
