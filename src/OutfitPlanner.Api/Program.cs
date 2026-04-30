@@ -1,4 +1,3 @@
-using Scalar.AspNetCore;
 using OutfitPlanner.Api.Middleware;
 using OutfitPlanner.Api.Converters;
 using OutfitPlanner.Infrastructure;
@@ -29,7 +28,6 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
         options.JsonSerializerOptions.Converters.Add(new NullableTimeSpanConverter());
     });
-builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new() { Title = "Outfit Planner API", Version = "v1" });
@@ -179,8 +177,6 @@ app.UseCors("AllowAll");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {

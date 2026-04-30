@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using OutfitPlanner.Application.Contracts.Infrastructure;
+
 using OutfitPlanner.Application.DTOs.Wardrobe;
 using OutfitPlanner.Application.Features.ClothingItems.Requests.Commands;
 using OutfitPlanner.Application.Features.ClothingItems.Requests.Queries;
@@ -44,6 +45,34 @@ public class WardrobeController : ControllerBase
         var userId = GetUserId();
         var items = await _mediator.Send(new GetClothingItemListRequest { UserId = userId });
         return Ok(items);
+    }
+
+    /// <summary>
+    /// Gets filtered and paginated clothing items
+    /// </summary>
+    [HttpGet("filtered")]
+    [ProducesResponseType(typeof(PagedResult<ClothingItemListDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<PagedResult<ClothingItemListDto>>> GetFiltered(
+        [FromQuery] string? category,
+        [FromQuery] string? color,
+        [FromQuery] string? occasion,
+        [FromQuery] string? search,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        var userId = GetUserId();
+        var result = await _mediator.Send(new GetFilteredClothingItemsRequest
+        {
+            UserId = userId,
+            Category = category,
+            Color = color,
+            Occasion = occasion,
+            SearchQuery = search,
+            Page = page,
+            PageSize = pageSize
+        });
+        return Ok(result);
     }
 
     /// <summary>
@@ -229,5 +258,18 @@ public class WardrobeController : ControllerBase
         var response = await _mediator.Send(command);
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Gets wardrobe health statistics
+    /// </summary>
+    [HttpGet("health")]
+    [ProducesResponseType(typeof(WardrobeHealthDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<WardrobeHealthDto>> GetHealth()
+    {
+        var userId = GetUserId();
+        var health = await _mediator.Send(new GetWardrobeHealthRequest { UserId = userId });
+        return Ok(health);
     }
 }

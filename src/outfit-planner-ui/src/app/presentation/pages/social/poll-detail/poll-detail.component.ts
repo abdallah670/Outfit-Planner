@@ -7,9 +7,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Store } from '@ngrx/store';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { SocialActions } from '../../../../core/state/social/social.actions';
-import { selectSelectedPoll, selectSocialLoading } from '../../../../core/state/social/social.selectors';
-import { ValidationPoll, CastVoteRequest, PollStatus } from '../../../../domain/entities/validation-poll.entity';
+import { PollsActions } from '../../../../core/state/polls/polls.actions';
+import { selectSelectedPoll, selectPollsLoading } from '../../../../core/state/polls/polls.selectors';
+import { Poll, PollOption, CastVoteRequest, PollStatus } from '../../../../domain/entities/poll.entity';
 
 @Component({
   selector: 'app-poll-detail',
@@ -192,16 +192,16 @@ export class PollDetailComponent implements OnInit {
   private store = inject(Store);
   private route = inject(ActivatedRoute);
 
-  poll = toSignal(this.store.select(selectSelectedPoll)) as () => ValidationPoll | null;
-  loading = toSignal(this.store.select(selectSocialLoading), { initialValue: false });
-  
+  poll = toSignal(this.store.select(selectSelectedPoll)) as () => Poll | null;
+  loading = toSignal(this.store.select(selectPollsLoading), { initialValue: false });
+
   PollStatus = PollStatus;
   hasVoted = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.store.dispatch(SocialActions.loadPollById({ id }));
+      this.store.dispatch(PollsActions.loadPollById({ id }));
     }
   }
 
@@ -215,20 +215,20 @@ export class PollDetailComponent implements OnInit {
       rating: 5,
       isAnonymous: false
     };
-    this.store.dispatch(SocialActions.vote({ pollId, request }));
+    this.store.dispatch(PollsActions.vote({ pollId, request }));
     this.hasVoted.set(true);
   }
 
-  getPercentage(poll: ValidationPoll, optionId: string): number {
+  getPercentage(poll: Poll, optionId: string): number {
     if (poll.totalVotes === 0) return 0;
-    const option = poll.options.find(o => o.id === optionId);
+    const option = poll.options.find((o: PollOption) => o.id === optionId);
     return option ? Math.round((option.voteCount / poll.totalVotes) * 100) : 0;
   }
 
-  isWinner(poll: ValidationPoll, optionId: string): boolean {
+  isWinner(poll: Poll, optionId: string): boolean {
     if (poll.totalVotes === 0) return false;
-    const maxVotes = Math.max(...poll.options.map(o => o.voteCount));
-    const optionSource = poll.options.find(o => o.id === optionId);
+    const maxVotes = Math.max(...poll.options.map((o: PollOption) => o.voteCount));
+    const optionSource = poll.options.find((o: PollOption) => o.id === optionId);
     return optionSource ? optionSource.voteCount === maxVotes : false;
   }
 }

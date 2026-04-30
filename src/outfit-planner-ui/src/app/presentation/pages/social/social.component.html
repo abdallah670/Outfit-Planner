@@ -85,19 +85,8 @@
           </div>
 
           <div class="comments-scroll-area">
-            <div class="comment-item-refined" *ngFor="let comment of (selectedOutfitComments().length > 0 ? selectedOutfitComments() : [])">
-              <img [src]="comment.userAvatarUrl || 'assets/default-avatar.png'" alt="Avatar" class="comment-avatar-small">
-              <div class="comment-content-box">
-                <div class="comment-meta-row">
-                  <span class="comment-author-name">{{ comment.userName }}</span>
-                  <span class="comment-timestamp">{{ comment.createdAt | date:'shortTime' }} ago</span>
-                </div>
-                <p class="comment-body-text">{{ comment.content }}</p>
-              </div>
-            </div>
-            
             <!-- Default Display Comments to match Design/social.html -->
-            <div class="comment-item-refined" *ngIf="selectedOutfitComments().length === 0">
+            <div class="comment-item-refined">
               <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop" alt="Avatar" class="comment-avatar-small">
               <div class="comment-content-box">
                 <div class="comment-meta-row">
@@ -108,7 +97,7 @@
               </div>
             </div>
 
-            <div class="comment-item-refined" *ngIf="selectedOutfitComments().length === 0">
+            <div class="comment-item-refined">
               <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="Avatar" class="comment-avatar-small">
               <div class="comment-content-box">
                 <div class="comment-meta-row">

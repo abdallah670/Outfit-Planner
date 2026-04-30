@@ -8,21 +8,23 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Store } from '@ngrx/store';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { SocialActions } from '../../../core/state/social/social.actions';
+import { PollsActions } from '../../../core/state/polls/polls.actions';
+import { TrendingActions } from '../../../core/state/trending/trending.actions';
 import {
-  selectAllPolls,
-  selectSocialLoading,
+  selectPolls,
+  selectPollsLoading,
+} from '../../../core/state/polls/polls.selectors';
+import {
   selectTrendingOutfits,
-  selectCommentsByVote,
-} from '../../../core/state/social/social.selectors';
+  selectTrendingLoading,
+} from '../../../core/state/trending/trending.selectors';
 import {
-  ValidationPoll,
+  Poll,
   CastVoteRequest,
   PollStatus,
   PollOption,
-} from '../../../domain/entities/validation-poll.entity';
-import { SOCIAL_REPOSITORY } from '../../../domain/repositories/social.repository';
-import { TrendingOutfit, VoteComment, AddVoteCommentRequest } from '../../../domain/entities/social-engagement.entity';
+} from '../../../domain/entities/poll.entity';
+import { TrendingOutfit } from '../../../domain/entities/outfit.entity';
 
 /**
  * Helper to map PollOption from ValidationPoll to local interface
@@ -74,27 +76,20 @@ export class SocialComponent implements OnInit {
   private store = inject(Store);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
-  private socialRepository = inject(SOCIAL_REPOSITORY);
 
   activeTab = signal(0);
 
   // Get polls, trending outfits, and loading state from NgRx store
-  private allPollsSignal = toSignal(this.store.select(selectAllPolls), { initialValue: [] as ValidationPoll[] }) as () => ValidationPoll[];
+  private allPollsSignal = toSignal(this.store.select(selectPolls), { initialValue: [] as Poll[] }) as () => Poll[];
   trendingOutfits: Signal<TrendingOutfit[]> = toSignal(this.store.select(selectTrendingOutfits), { initialValue: [] as TrendingOutfit[] });
   
   // Limited trending outfits (top 4 for the main social page)
   limitedTrendingOutfits = computed(() => this.trendingOutfits().slice(0, 4));
   
-  loading = toSignal(this.store.select(selectSocialLoading), { initialValue: false });
+  loading = computed(() => toSignal(this.store.select(selectPollsLoading))() || toSignal(this.store.select(selectTrendingLoading))());
   
-  // Selection state for engagement
+  // Selection state
   selectedOutfit = signal<TrendingOutfit | null>(null);
-  selectedOutfitComments = computed(() => {
-    const outfit = this.selectedOutfit();
-    if (!outfit) return [] as VoteComment[];
-    const commentsMap = toSignal(this.store.select(selectCommentsByVote), { initialValue: {} })();
-    return (commentsMap as any)[outfit.voteId] || [];
-  });
 
   // Computed: Featured Poll - first active poll from the store
   featuredPoll = computed(() => {
@@ -147,8 +142,8 @@ export class SocialComponent implements OnInit {
   activeFilter = signal('All');
 
   ngOnInit(): void {
-    this.store.dispatch(SocialActions.loadPolls());
-    this.store.dispatch(SocialActions.loadTrending({ page: 1, pageSize: 20 }));
+    this.store.dispatch(PollsActions.loadPolls());
+    this.store.dispatch(TrendingActions.loadTrending({ page: 1, pageSize: 20 }));
   }
 
   /**
@@ -162,7 +157,7 @@ export class SocialComponent implements OnInit {
       isAnonymous: false
     };
     
-    this.store.dispatch(SocialActions.vote({ pollId, request: voteRequest }));
+    this.store.dispatch(PollsActions.vote({ pollId, request: voteRequest }));
   }
 
   /**
@@ -173,40 +168,17 @@ export class SocialComponent implements OnInit {
   }
 
   /**
-   * Select an outfit from the trending feed to see engagement
+   * Select an outfit from the trending feed
    */
   viewOutfitDetails(outfit: TrendingOutfit) {
     this.router.navigate(['/outfits', outfit.id]);
   }
 
   /**
-   * Select an outfit from the trending feed to see engagement
+   * Select an outfit from the trending feed
    */
   selectOutfit(outfit: TrendingOutfit): void {
     this.selectedOutfit.set(outfit);
-    this.store.dispatch(SocialActions.loadVoteComments({ voteId: outfit.voteId }));
-  }
-
-  /**
-   * Quick reaction to an outfit (e.g. from the card)
-   */
-  react(outfit: TrendingOutfit, reactionType: string = 'Like'): void {
-    this.store.dispatch(SocialActions.reactToVote({ voteId: outfit.voteId, reactionType }));
-  }
-
-  /**
-   * Add a comment to the selected outfit
-   */
-  submitComment(content: string): void {
-    const outfit = this.selectedOutfit();
-    if (!outfit || !content.trim()) return;
-
-    const request: AddVoteCommentRequest = {
-      voteId: outfit.voteId,
-      content: content.trim()
-    };
-
-    this.store.dispatch(SocialActions.addVoteComment({ request }));
   }
 
   /**
@@ -217,7 +189,7 @@ export class SocialComponent implements OnInit {
     if (!poll || poll.totalVotes === 0) {
       return 0;
     }
-    const option = poll.options.find(o => o.id === optionId);
+    const option = poll.options.find((o: { id: string; votes: number }) => o.id === optionId);
     if (!option) {
       return 0;
     }

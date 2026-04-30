@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Outfit } from '../../domain/entities/outfit.entity';
 import { Observable, map } from 'rxjs';
 import { OutfitSuggestionsRequest, TodaysPickResponse } from '../../domain/repositories/outfit.repository';
+import { PagedResult } from '../../domain/entities/response.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -69,6 +70,30 @@ export class OutfitDataSource {
     return this.http
       .post<Outfit>(`${this.apiUrl}/${id}/wear`, {})
       .pipe(map((o: Outfit) => this.fixOutfitUrls(o)));
+  }
+
+  getFilteredOutfits(
+    filters: { occasion?: string; season?: string; search?: string; sortBy?: string },
+    page: number,
+    pageSize: number
+  ): Observable<PagedResult<Outfit>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+
+    if (filters.occasion) params = params.set('occasion', filters.occasion);
+    if (filters.season) params = params.set('season', filters.season);
+    if (filters.search) params = params.set('search', filters.search);
+    if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
+
+    return this.http
+      .get<PagedResult<Outfit>>(`${this.apiUrl}/filtered`, { params })
+      .pipe(
+        map((result: PagedResult<Outfit>) => ({
+          ...result,
+          items: result.items.map((o: Outfit) => this.fixOutfitUrls(o))
+        }))
+      );
   }
 
   private fixOutfitUrls(outfit: Outfit): Outfit {

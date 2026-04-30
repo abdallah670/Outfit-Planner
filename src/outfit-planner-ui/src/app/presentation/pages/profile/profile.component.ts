@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, take } from 'rxjs';
@@ -38,6 +38,8 @@ import {
   selectUserPreferences,
   selectStyleRules,
 } from '../../../core/state/user/user.selectors';
+import { FollowActions } from '../../../core/state/follow/follow.actions';
+import { selectIsFollowingUser } from '../../../core/state/follow/follow.selectors';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -61,6 +63,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class ProfileComponent implements OnInit {
   private readonly store = inject(Store);
+  private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
@@ -73,9 +76,35 @@ export class ProfileComponent implements OnInit {
   preferences$: Observable<UserPreferences | undefined>;
   styleRules$!: Observable<StyleRule[]>;
 
-  // Enums for templates
-  stylePreferences = Object.values(StylePreference);
-  privacyLevels = Object.values(PrivacyLevel);
+  // Follow state for viewing other users
+  viewingUserId: string | null = null;
+  isFollowing = signal(false);
+  isLoadingFollowStatus = signal(false);
+  otherUserDisplayName = signal<string>('User');
+  otherUserHandle = signal<string>('@user_handle');
+  otherUserBio = signal<string>('Minimalist fashion lover. Mixing neutral colors & timeless pieces. ☕✨');
+  otherUserAvatar = signal<string | undefined>(undefined);
+  
+  // Tab management
+  activeTab = signal<'outfits' | 'activity' | 'followers' | 'following'>('outfits');
+
+  // Stats
+  userStats = signal({
+    outfits: 38,
+    items: 142,
+    followers: '1.2k',
+    following: '450'
+  });
+
+  // Outfits Grid
+  publicOutfits = signal<any[]>([
+    { id: '1', title: 'Weekend Coffee Run', category: 'Casual', season: 'Spring', items: 3, likes: 245, imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500' },
+    { id: '2', title: 'Office Meeting Look', category: 'Business Casual', season: 'Fall', items: 4, likes: 182, imageUrl: 'https://images.unsplash.com/photo-1539109132381-31a057ad7c73?w=500' },
+    { id: '3', title: 'Dinner Date', category: 'Evening', season: 'Summer', items: 2, likes: 310, imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500' },
+    { id: '4', title: 'Sunday Errands', category: 'Sporty', season: 'Spring', items: 3, likes: 124, imageUrl: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500' },
+    { id: '5', title: 'Gallery Opening', category: 'Formal', season: 'Winter', items: 4, likes: 456, imageUrl: 'https://images.unsplash.com/photo-1550614000-4895a10e1bfd?w=500' },
+    { id: '6', title: 'Airport Look', category: 'Travel', season: 'Fall', items: 5, likes: 289, imageUrl: 'https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=500' }
+  ]);
 
   constructor() {
     this.profile$ = this.store.select(selectUserProfile);
@@ -86,9 +115,30 @@ export class ProfileComponent implements OnInit {
     this.styleRules$ = this.store.select(selectStyleRules);
   }
 
-  ngOnInit() {
-    this.store.dispatch(UserActions.loadProfile());
-    this.store.dispatch(UserActions.loadStyleRules());
+   ngOnInit() {
+    // Check if viewing another user's profile via route param
+    const userId = this.route.snapshot.paramMap.get('userId');
+    if (userId) {
+      this.viewingUserId = userId;
+      // Try to get display info from route state (passed from other pages)
+      const state = this.route.snapshot.data as any;
+      if (state?.userName) {
+        this.otherUserDisplayName.set(state.userName);
+      }
+      if (state?.userAvatar) {
+        this.otherUserAvatar.set(state.userAvatar);
+      }
+      // Check follow status for this user
+      this.store.dispatch(FollowActions.checkFollowStatus({ userId }));
+      // Subscribe to isFollowing status
+      this.store.select(selectIsFollowingUser(userId)).subscribe(status => {
+        this.isFollowing.set(status);
+      });
+    } else {
+      // Own profile
+      this.store.dispatch(UserActions.loadProfile());
+      this.store.dispatch(UserActions.loadStyleRules());
+    }
   }
 
   getMemberSince(createdAt: string | undefined): string {
@@ -402,43 +452,67 @@ export class ProfileComponent implements OnInit {
     this.store.dispatch(UserActions.clearError());
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        this.snackBar.open('Please select an image file', 'Close', {
-          duration: 3000,
-        });
-        return;
-      }
+   onFileSelected(event: Event): void {
+     const input = event.target as HTMLInputElement;
+     if (input.files && input.files.length > 0) {
+       const file = input.files[0];
+       
+       // Validate file type
+       if (!file.type.startsWith('image/')) {
+         this.snackBar.open('Please select an image file', 'Close', {
+           duration: 3000,
+         });
+         return;
+       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        this.snackBar.open('Image size must be less than 5MB', 'Close', {
-          duration: 3000,
-        });
-        return;
-      }
+       // Validate file size (max 5MB)
+       if (file.size > 5 * 1024 * 1024) {
+         this.snackBar.open('Image size must be less than 5MB', 'Close', {
+           duration: 3000,
+         });
+         return;
+       }
 
-      // Upload the file
-      this.userDataSource.uploadProfilePicture(file).subscribe({
-        next: (imageUrl: string) => {
-          this.snackBar.open('Profile picture updated successfully', 'Close', {
-            duration: 3000,
-          });
-          // Reload profile to get updated image URL
-          this.store.dispatch(UserActions.loadProfile());
-        },
-        error: (error: Error) => {
-          console.error('Upload error:', error);
-          this.snackBar.open('Failed to upload profile picture', 'Close', {
-            duration: 3000,
-          });
-        },
-      });
-    }
-  }
+       // Upload the file
+       this.userDataSource.uploadProfilePicture(file).subscribe({
+         next: (imageUrl: string) => {
+           this.snackBar.open('Profile picture updated successfully', 'Close', {
+             duration: 3000,
+           });
+           // Reload profile to get updated image URL
+           this.store.dispatch(UserActions.loadProfile());
+         },
+         error: (error: Error) => {
+           console.error('Upload error:', error);
+           this.snackBar.open('Failed to upload profile picture', 'Close', {
+             duration: 3000,
+           });
+         },
+       });
+     }
+   }
+
+   // ============ Follow System ============
+   isViewingOtherUser(): boolean {
+     return this.viewingUserId !== null;
+   }
+
+   onFollowToggle(): void {
+     if (!this.viewingUserId) return;
+      if (this.isFollowing()) {
+        this.store.dispatch(FollowActions.unfollowUser({ userId: this.viewingUserId }));
+        this.isFollowing.set(false);
+      } else {
+        this.store.dispatch(FollowActions.followUser({ userId: this.viewingUserId }));
+        this.isFollowing.set(true);
+      }
+   }
+
+   setTab(tab: 'outfits' | 'activity' | 'followers' | 'following'): void {
+     this.activeTab.set(tab);
+   }
+
+   onBack(): void {
+     window.history.back();
+   }
 }

@@ -5,29 +5,33 @@
       <span>Back to Dashboard</span>
     </div>
 
-    <div class="header-actions">
-      <button mat-flat-button class="action-btn edit-btn" (click)="onEdit($any(outfit).id)">
-        <mat-icon>edit</mat-icon>
-        Edit Outfit
-      </button>
-      <button
-        mat-icon-button
-        class="action-btn wear-btn"
-        (click)="onRecordWear($any(outfit).id)"
-        title="Record Wear"
-      >
-        <mat-icon>checkroom</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        color="warn"
-        class="action-btn delete-btn"
-        (click)="onDelete($any(outfit).id)"
-        title="Delete Outfit"
-      >
-        <mat-icon>delete</mat-icon>
-      </button>
-    </div>
+     <div class="header-actions">
+       <button mat-flat-button class="action-btn edit-btn" (click)="onEdit($any(outfit).id)">
+         <mat-icon>edit</mat-icon>
+         Edit Outfit
+       </button>
+       <button mat-flat-button class="action-btn share-btn" (click)="onShareToFeed($any(outfit).id)">
+         <mat-icon>share</mat-icon>
+         Share to Feed
+       </button>
+       <button
+         mat-icon-button
+         class="action-btn wear-btn"
+         (click)="onRecordWear($any(outfit).id)"
+         title="Record Wear"
+       >
+         <mat-icon>checkroom</mat-icon>
+       </button>
+       <button
+         mat-icon-button
+         color="warn"
+         class="action-btn delete-btn"
+         (click)="onDelete($any(outfit).id)"
+         title="Delete Outfit"
+       >
+         <mat-icon>delete</mat-icon>
+       </button>
+     </div>
   </header>
 
   <main class="detail-content">

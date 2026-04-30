@@ -96,3 +96,22 @@ export interface ClothingItem {
   userId?: string;
   createdAt?: Date;
 }
+
+
+
+/**
+ * Represents a trending outfit for the social feed
+ */
+export interface TrendingOutfit {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  imageUrl: string;
+  likes: number;
+  comments: number;
+  occasion: string;
+  trendingScore: number;
+  voteId: string;
+  createdAt: Date;
+}

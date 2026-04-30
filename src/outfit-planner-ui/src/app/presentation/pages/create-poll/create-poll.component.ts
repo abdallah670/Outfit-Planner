@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -12,11 +12,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Store } from '@ngrx/store';
-import { SocialActions } from '../../../core/state/social/social.actions';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { environment } from '../../../../environments/environment';
+import { PollsActions } from '../../../core/state/polls/polls.actions';
+import { POLLS_REPOSITORY, PollsRepository } from '../../../domain/repositories/polls.repository';
 
 interface PollOptionForm {
   description: string;
@@ -57,13 +54,11 @@ export class CreatePollComponent implements OnInit {
   // Store uploaded image URLs for each option
   uploadedImages = signal<Map<number, string>>(new Map());
 
-  private readonly apiUrl = `${environment.baseUrl}`;
-
   constructor(
     private fb: FormBuilder,
     private store: Store,
     private router: Router,
-    private http: HttpClient,
+    @Inject(POLLS_REPOSITORY) private pollsRepository: PollsRepository,
   ) {}
 
   ngOnInit(): void {
@@ -84,7 +79,7 @@ export class CreatePollComponent implements OnInit {
 
   private getDefaultExpiryDate(): Date {
     const date = new Date();
-    date.setDate(date.getDate() + 7); // Default to 7 days from now
+    date.setDate(date.getDate() + 7);
     return date;
   }
 
@@ -139,7 +134,7 @@ export class CreatePollComponent implements OnInit {
       })),
     };
 
-    this.store.dispatch(SocialActions.createPoll({ request }));
+    this.store.dispatch(PollsActions.createPoll({ request }));
   }
 
   onCancel(): void {
@@ -147,7 +142,7 @@ export class CreatePollComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup | FormArray): void {
-    Object.values(formGroup.controls).forEach((control) => {
+    Object.values(formGroup.controls).forEach((control: AbstractControl) => {
       control.markAsTouched();
       if (control instanceof FormGroup || control instanceof FormArray) {
         this.markFormGroupTouched(control);
@@ -156,7 +151,7 @@ export class CreatePollComponent implements OnInit {
   }
 
   getOptionLetter(index: number): string {
-    return String.fromCharCode(65 + index); // A, B, C, D, E, F
+    return String.fromCharCode(65 + index);
   }
 
   /**
@@ -170,54 +165,43 @@ export class CreatePollComponent implements OnInit {
 
     const file = input.files[0];
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       console.error('Please select an image file');
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       console.error('File size must be less than 5MB');
       return;
     }
 
-    // Set uploading state
     const currentUploading = this.uploadingOptions();
     currentUploading.add(optionIndex);
     this.uploadingOptions.set(new Set(currentUploading));
 
-    // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
-      // Update the preview
       const currentImages = this.uploadedImages();
-      currentImages.set(optionIndex, e.target?.result as string);
+      currentImages.set(optionIndex, (e.target as FileReader).result as string);
       this.uploadedImages.set(new Map(currentImages));
     };
     reader.readAsDataURL(file);
 
-    // Upload to server
-    this.uploadImage(file).subscribe({
+    this.pollsRepository.uploadPollImage(file).subscribe({
       next: (imageUrl: string) => {
-        // Store the uploaded image URL
         const currentImages = this.uploadedImages();
         currentImages.set(optionIndex, imageUrl);
         this.uploadedImages.set(new Map(currentImages));
 
-        // Clear uploading state
         const currentUploading = this.uploadingOptions();
         currentUploading.delete(optionIndex);
         this.uploadingOptions.set(new Set(currentUploading));
 
-        // Update form with outfitId (using image URL as reference)
         const options = this.pollForm.get('options') as FormArray;
         const optionGroup = options.at(optionIndex) as FormGroup;
         optionGroup.patchValue({ outfitId: imageUrl });
       },
-      error: (err:any) => {
-        console.error('Failed to upload image:', err);
-        // Clear uploading state
+      error: () => {
         const currentUploading = this.uploadingOptions();
         currentUploading.delete(optionIndex);
         this.uploadingOptions.set(new Set(currentUploading));
@@ -226,32 +210,14 @@ export class CreatePollComponent implements OnInit {
   }
 
   /**
-   * Upload image to server
-   */
-  private uploadImage(file: File): Observable<string> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    // Call the actual upload endpoint
-    return this.http.post<{ url: string }>(
-      `${this.apiUrl}/poll-image-upload/upload`,
-      formData
-    ).pipe(
-      map((response: { url: string }) => response.url)
-    );
-  }
-
-  /**
    * Select an existing outfit for this poll option
    */
   onSelectOutfit(optionIndex: number): void {
-    // TODO: Open a dialog to select from user's outfits
-    // For now, navigate to outfits page to get outfit ID
-    this.router.navigate(['/outfits'], { 
-      queryParams: { 
-        selectForPoll: true, 
-        optionIndex: optionIndex 
-      }
+    this.router.navigate(['/outfits'], {
+      queryParams: {
+        selectForPoll: true,
+        optionIndex: optionIndex,
+      },
     });
   }
 
@@ -277,7 +243,6 @@ export class CreatePollComponent implements OnInit {
     currentImages.delete(optionIndex);
     this.uploadedImages.set(new Map(currentImages));
 
-    // Clear outfitId in form
     const options = this.pollForm.get('options') as FormArray;
     const optionGroup = options.at(optionIndex) as FormGroup;
     optionGroup.patchValue({ outfitId: null });

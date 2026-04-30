@@ -1,0 +1,851 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Poll Detail - Desktop</title>
+      <style id="theme-styles">
+        :root {
+          --background: #fdf2f8;
+          --foreground: #1f2937;
+          --card: #ffffff;
+          --card-foreground: #1f2937;
+          --primary: #db2777;
+          --primary-foreground: #ffffff;
+          --secondary: #fce7f3;
+          --secondary-foreground: #be185d;
+          --muted: #f3f4f6;
+          --muted-foreground: #6b7280;
+          --accent: #fbcfe8;
+          --accent-foreground: #831843;
+          --destructive: #ef4444;
+          --destructive-foreground: #ffffff;
+          --border: #e5e7eb;
+          --input: #ffffff;
+          --ring: #db2777;
+          --radius-sm: 4px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
+          --font-family-body:
+            system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            sans-serif;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        .export-wrapper {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family-body);
+          background-color: var(--background);
+          color: var(--foreground);
+          min-height: 100vh;
+          -webkit-font-smoothing: antialiased;
+        }
+      </style>
+      <style id="layout-styles">
+        .desktop-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 40px 32px 80px 32px;
+        }
+
+        /* Header */
+        .page-header {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 32px;
+        }
+
+        .back-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: var(--radius-md);
+          background: var(--card);
+          border: 1px solid var(--border);
+          color: var(--foreground);
+          cursor: pointer;
+        }
+
+        .page-title {
+          font-size: 24px;
+          font-weight: 700;
+          margin: 0;
+          color: var(--foreground);
+        }
+
+        /* Main Layout */
+        .main-layout {
+          display: grid;
+          grid-template-columns: 1fr 400px;
+          gap: 32px;
+          align-items: start;
+        }
+
+        /* Left Column: Poll Details */
+        .poll-section {
+          background: var(--card);
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border);
+          padding: 32px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .poll-author {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 24px;
+        }
+
+        .author-avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .author-info {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .author-name {
+          font-weight: 700;
+          font-size: 16px;
+          color: var(--foreground);
+        }
+
+        .poll-time {
+          font-size: 13px;
+          color: var(--muted-foreground);
+        }
+
+        .poll-question {
+          font-size: 24px;
+          font-weight: 700;
+          line-height: 1.4;
+          margin: 0 0 24px 0;
+          color: var(--foreground);
+        }
+
+        /* Poll Options Grid */
+        .poll-options {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+          margin-bottom: 32px;
+        }
+
+        .poll-option-card {
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          background: var(--card);
+          position: relative;
+        }
+
+        .poll-option-card.winner {
+          border-color: var(--primary);
+          box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        .option-image-wrapper {
+          position: relative;
+          width: 100%;
+          padding-top: 100%; /* 1:1 Aspect Ratio */
+        }
+
+        .option-image {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .option-content {
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+
+        .option-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 12px;
+          min-height: 40px;
+        }
+
+        .option-title {
+          font-weight: 600;
+          font-size: 15px;
+          color: var(--foreground);
+          line-height: 1.3;
+        }
+
+        .option-percent {
+          font-weight: 700;
+          font-size: 16px;
+          color: var(--primary);
+          background: var(--secondary);
+          padding: 2px 8px;
+          border-radius: var(--radius-sm);
+        }
+
+        .option-bar-bg {
+          width: 100%;
+          height: 8px;
+          background: var(--muted);
+          border-radius: 4px;
+          overflow: hidden;
+          margin-bottom: 16px;
+        }
+
+        .option-bar-fill {
+          height: 100%;
+          background: var(--primary);
+          border-radius: 4px;
+        }
+
+        .vote-btn {
+          margin-top: auto;
+          width: 100%;
+          height: 40px;
+          border-radius: var(--radius-sm);
+          border: 1px solid var(--border);
+          background: var(--card);
+          color: var(--foreground);
+          font-weight: 600;
+          font-size: 14px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .vote-btn.voted {
+          background: var(--secondary);
+          color: var(--secondary-foreground);
+          border-color: var(--secondary-foreground);
+        }
+
+        .vote-btn:not(.voted):active {
+          background: var(--muted);
+        }
+
+        /* Poll Results Summary */
+        .poll-summary {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          padding-top: 24px;
+          border-top: 1px solid var(--border);
+        }
+
+        .summary-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: var(--muted-foreground);
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .summary-item.active {
+          color: var(--primary);
+          background: var(--secondary);
+          padding: 6px 12px;
+          border-radius: var(--radius-sm);
+        }
+
+        /* Right Column: Comments */
+        .comments-section {
+          background: var(--card);
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border);
+          padding: 24px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          max-height: calc(100vh - 120px);
+        }
+
+        .comments-header {
+          font-size: 18px;
+          font-weight: 700;
+          margin: 0 0 20px 0;
+          color: var(--foreground);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        /* Comment Input */
+        .comment-input-area {
+          display: flex;
+          gap: 12px;
+          margin-bottom: 24px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .current-user-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          flex-shrink: 0;
+        }
+
+        .input-wrapper {
+          flex: 1;
+          position: relative;
+        }
+
+        .comment-input {
+          width: 100%;
+          min-height: 80px;
+          padding: 12px 16px;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          background: var(--input);
+          color: var(--foreground);
+          font-size: 14px;
+          font-family: inherit;
+          resize: none;
+        }
+
+        .comment-input::placeholder {
+          color: var(--muted-foreground);
+        }
+
+        .post-btn {
+          position: absolute;
+          bottom: 12px;
+          right: 12px;
+          background: var(--primary);
+          color: var(--primary-foreground);
+          border: none;
+          border-radius: var(--radius-sm);
+          padding: 6px 16px;
+          font-weight: 600;
+          font-size: 13px;
+          cursor: pointer;
+        }
+
+        /* Comments List */
+        .comments-list {
+          flex: 1;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          padding-right: 8px;
+        }
+
+        /* Custom Scrollbar */
+        .comments-list::-webkit-scrollbar {
+          width: 6px;
+        }
+        .comments-list::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .comments-list::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 10px;
+        }
+
+        .comment-item {
+          display: flex;
+          gap: 12px;
+        }
+
+        .comment-item.reply {
+          margin-left: 52px;
+          margin-top: -8px;
+        }
+
+        .comment-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          object-fit: cover;
+          flex-shrink: 0;
+        }
+
+        .comment-content {
+          flex: 1;
+        }
+
+        .comment-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 4px;
+        }
+
+        .comment-author {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--foreground);
+        }
+
+        .comment-time-ago {
+          font-size: 12px;
+          color: var(--muted-foreground);
+        }
+
+        .comment-text {
+          font-size: 14px;
+          line-height: 1.5;
+          color: var(--foreground);
+          margin: 0 0 8px 0;
+        }
+
+        .comment-actions {
+          display: flex;
+          gap: 16px;
+        }
+
+        .comment-action-btn {
+          background: transparent;
+          border: none;
+          padding: 0;
+          color: var(--muted-foreground);
+          font-size: 12px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+        }
+
+        .comment-action-btn.liked {
+          color: var(--primary);
+        }
+      </style>
+      <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    </head>
+    <body>
+      <div class="desktop-container">
+        <!-- Header -->
+        <header class="page-header">
+          <button class="back-btn" data-media-type="banani-button">
+            <iconify-icon
+              icon="lucide:arrow-left"
+              style="font-size: 20px"
+            ></iconify-icon>
+          </button>
+          <h1 class="page-title">Poll Details</h1>
+        </header>
+
+        <div class="main-layout">
+          <!-- Left Column: Poll -->
+          <div class="poll-section">
+            <div class="poll-author">
+              <img
+                src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F25-35%2FHispanic%2F2"
+                alt="Maria Garcia"
+                class="author-avatar"
+              />
+              <div class="author-info">
+                <span class="author-name">Maria Garcia</span>
+                <span class="poll-time"
+                  >Posted 4 hours ago • Outfit Advice</span
+                >
+              </div>
+            </div>
+
+            <h2 class="poll-question">
+              Help! I have a garden wedding to attend this weekend and I can't
+              decide on which shoes to pair with my floral dress. 👠👗
+            </h2>
+
+            <div class="poll-options">
+              <!-- Option 1 (Winner/Voted) -->
+              <div class="poll-option-card winner">
+                <div class="option-image-wrapper">
+                  <img
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/b051d94b-85a0-4fe0-b44b-338271780d64.jpg"
+                    alt="Nude Strappy Heels"
+                    class="option-image"
+                    data-aspect-ratio="1:1"
+                    data-query="elegant nude strappy heels shoes"
+                  />
+                </div>
+                <div class="option-content">
+                  <div class="option-header">
+                    <span class="option-title">Nude Strappy Heels</span>
+                    <span class="option-percent">68%</span>
+                  </div>
+                  <div class="option-bar-bg">
+                    <div class="option-bar-fill" style="width: 68%"></div>
+                  </div>
+                  <button
+                    class="vote-btn voted"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:check-circle-2"
+                      style="font-size: 18px"
+                    ></iconify-icon>
+                    You Voted
+                  </button>
+                </div>
+              </div>
+
+              <!-- Option 2 -->
+              <div class="poll-option-card">
+                <div class="option-image-wrapper">
+                  <img
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/2f2e0900-d9c1-4715-be00-5fe82ab5031c.jpg"
+                    alt="White Block Heels"
+                    class="option-image"
+                    data-aspect-ratio="1:1"
+                    data-query="white block heels shoes elegant"
+                  />
+                </div>
+                <div class="option-content">
+                  <div class="option-header">
+                    <span class="option-title">White Block Heels</span>
+                    <span class="option-percent">22%</span>
+                  </div>
+                  <div class="option-bar-bg">
+                    <div
+                      class="option-bar-fill"
+                      style="width: 22%; background: var(--muted-foreground)"
+                    ></div>
+                  </div>
+                  <button class="vote-btn" data-media-type="banani-button">
+                    Vote
+                  </button>
+                </div>
+              </div>
+
+              <!-- Option 3 -->
+              <div class="poll-option-card">
+                <div class="option-image-wrapper">
+                  <img
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/e0b4b1dd-af0a-40bd-8930-dd6e30508844.jpg"
+                    alt="Flat Sandals"
+                    class="option-image"
+                    data-aspect-ratio="1:1"
+                    data-query="elegant flat sandals for women"
+                  />
+                </div>
+                <div class="option-content">
+                  <div class="option-header">
+                    <span class="option-title">Flat Sandals</span>
+                    <span class="option-percent">10%</span>
+                  </div>
+                  <div class="option-bar-bg">
+                    <div
+                      class="option-bar-fill"
+                      style="width: 10%; background: var(--muted-foreground)"
+                    ></div>
+                  </div>
+                  <button class="vote-btn" data-media-type="banani-button">
+                    Vote
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="poll-summary">
+              <div class="summary-item">
+                <iconify-icon
+                  icon="lucide:bar-chart-2"
+                  style="font-size: 18px"
+                ></iconify-icon>
+                342 Total Votes
+              </div>
+              <div class="summary-item active">
+                <iconify-icon
+                  icon="lucide:clock"
+                  style="font-size: 18px"
+                ></iconify-icon>
+                1 day 14 hours left
+              </div>
+              <div style="flex: 1"></div>
+              <button
+                class="back-btn"
+                style="
+                  width: auto;
+                  padding: 0 16px;
+                  height: 36px;
+                  font-size: 14px;
+                  font-weight: 500;
+                "
+                data-media-type="banani-button"
+              >
+                <iconify-icon
+                  icon="lucide:share-2"
+                  style="font-size: 16px; margin-right: 6px"
+                ></iconify-icon>
+                Share Poll
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Comments -->
+          <div class="comments-section">
+            <h3 class="comments-header">
+              Comments
+              <span
+                style="
+                  color: var(--muted-foreground);
+                  font-weight: 500;
+                  font-size: 15px;
+                "
+                >(15)</span
+              >
+            </h3>
+
+            <div class="comment-input-area">
+              <img
+                src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F18-25%2FEuropean%2F1"
+                alt="Your Avatar"
+                class="current-user-avatar"
+              />
+              <div class="input-wrapper">
+                <textarea
+                  class="comment-input"
+                  placeholder="Add a comment..."
+                ></textarea>
+                <button class="post-btn" data-media-type="banani-button">
+                  Post
+                </button>
+              </div>
+            </div>
+
+            <div class="comments-list">
+              <!-- Comment 1 -->
+              <div class="comment-item">
+                <img
+                  src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F35-50%2FNorth%20American%2F2"
+                  alt="User"
+                  class="comment-avatar"
+                />
+                <div class="comment-content">
+                  <div class="comment-meta">
+                    <span class="comment-author">Emma Watson</span>
+                    <span class="comment-time-ago">2h ago</span>
+                  </div>
+                  <p class="comment-text">
+                    The nude heels will definitely elongate your legs and they
+                    go with literally any floral pattern! 🌸 Also great for
+                    grass if they aren't stilettos.
+                  </p>
+                  <div class="comment-actions">
+                    <button
+                      class="comment-action-btn liked"
+                      data-media-type="banani-button"
+                    >
+                      <iconify-icon
+                        icon="lucide:heart"
+                        style="font-size: 14px"
+                      ></iconify-icon>
+                      12
+                    </button>
+                    <button
+                      class="comment-action-btn"
+                      data-media-type="banani-button"
+                    >
+                      Reply
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reply to Comment 1 -->
+              <div class="comment-item reply">
+                <img
+                  src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F25-35%2FHispanic%2F2"
+                  alt="Maria Garcia"
+                  class="comment-avatar"
+                />
+                <div class="comment-content">
+                  <div class="comment-meta">
+                    <span class="comment-author">Maria Garcia</span>
+                    <span
+                      style="
+                        background: var(--accent);
+                        color: var(--accent-foreground);
+                        font-size: 10px;
+                        padding: 2px 6px;
+                        border-radius: 4px;
+                        font-weight: 600;
+                      "
+                      >Author</span
+                    >
+                    <span class="comment-time-ago">1h ago</span>
+                  </div>
+                  <p class="comment-text">
+                    That's exactly what I was thinking! They are block heels so
+                    perfectly safe for the garden grass. 😊
+                  </p>
+                  <div class="comment-actions">
+                    <button
+                      class="comment-action-btn"
+                      data-media-type="banani-button"
+                    >
+                      <iconify-icon
+                        icon="lucide:heart"
+                        style="font-size: 14px"
+                      ></iconify-icon>
+                      3
+                    </button>
+                    <button
+                      class="comment-action-btn"
+                      data-media-type="banani-button"
+                    >
+                      Reply
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comment 2 -->
+              <div class="comment-item">
+                <img
+                  src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F18-25%2FAfrican%2F2"
+                  alt="User"
+                  class="comment-avatar"
+                />
+                <div class="comment-content">
+                  <div class="comment-meta">
+                    <span class="comment-author">Chloe Adams</span>
+                    <span class="comment-time-ago">3h ago</span>
+                  </div>
+                  <p class="comment-text">
+                    I voted for the white block heels. White adds such a fresh
+                    pop for spring/summer garden weddings!
+                  </p>
+                  <div class="comment-actions">
+                    <button
+                      class="comment-action-btn"
+                      data-media-type="banani-button"
+                    >
+                      <iconify-icon
+                        icon="lucide:heart"
+                        style="font-size: 14px"
+                      ></iconify-icon>
+                      5
+                    </button>
+                    <button
+                      class="comment-action-btn"
+                      data-media-type="banani-button"
+                    >
+                      Reply
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comment 3 -->
+              <div class="comment-item">
+                <img
+                  src="https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F25-35%2FEuropean%2F3"
+                  alt="User"
+                  class="comment-avatar"
+                />
+                <div class="comment-content">
+                  <div class="comment-meta">
+                    <span class="comment-author">James Wilson</span>
+                    <span class="comment-time-ago">4h ago</span>
+                  </div>
+                  <p class="comment-text">
+                    Comfort first! Go with the flats so you can dance all night
+                    without your feet hurting.
+                  </p>
+                  <div class="comment-actions">
+                    <button
+                      class="comment-action-btn"
+                      data-media-type="banani-button"
+                    >
+                      <iconify-icon
+                        icon="lucide:heart"
+                        style="font-size: 14px"
+                      ></iconify-icon>
+                      2
+                    </button>
+                    <button
+                      class="comment-action-btn"
+                      data-media-type="banani-button"
+                    >
+                      Reply
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+  <style>
+    :root {
+      --background: #fff9fb;
+      --foreground: #1f2937;
+      --border: #00000014;
+      --input: #ffffff;
+      --primary: #ff6fa8;
+      --primary-foreground: #ffffff;
+      --secondary: #fff0f6;
+      --secondary-foreground: #7b2a4a;
+      --muted: #f3f4f6;
+      --muted-foreground: #9ca3af;
+      --success: #10b981;
+      --success-foreground: #ffffff;
+      --accent: #ffd6e8;
+      --accent-foreground: #7b2a4a;
+      --destructive: #ef4444;
+      --destructive-foreground: #ffffff;
+      --warning: #f59e0b;
+      --warning-foreground: #1f2937;
+      --card: #ffffff;
+      --card-foreground: #111827;
+      --sidebar: #fff4f7;
+      --sidebar-foreground: #5b2d3a;
+      --sidebar-primary: #ffdfeb;
+      --sidebar-primary-foreground: #7b2a4a;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --font-family-body: Inter;
+    }
+  </style>
+</div>

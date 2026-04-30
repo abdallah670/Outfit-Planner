@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ClothingItem } from '../../domain/entities/clothing-item.entity';
+import { PagedResult } from '../../domain/entities/response.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -80,6 +81,30 @@ export class WardrobeService {
     return this.http
       .post<ClothingItem>(`${this.apiUrl}/${id}/wear/quick`, {})
       .pipe(map((item: ClothingItem) => this.fixItemUrls(item)));
+  }
+
+  getFilteredItems(
+    filters: { category?: string; color?: string; occasion?: string; search?: string },
+    page: number,
+    pageSize: number
+  ): Observable<PagedResult<ClothingItem>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+
+    if (filters.category) params = params.set('category', filters.category);
+    if (filters.color) params = params.set('color', filters.color);
+    if (filters.occasion) params = params.set('occasion', filters.occasion);
+    if (filters.search) params = params.set('search', filters.search);
+
+    return this.http
+      .get<PagedResult<ClothingItem>>(`${this.apiUrl}/filtered`, { params })
+      .pipe(
+        map((result: PagedResult<ClothingItem>) => ({
+          ...result,
+          items: result.items.map((item) => this.fixItemUrls(item))
+        }))
+      );
   }
 
   private fixItemUrls(item: ClothingItem): ClothingItem {

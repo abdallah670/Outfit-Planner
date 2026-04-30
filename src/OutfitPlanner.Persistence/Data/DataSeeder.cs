@@ -77,6 +77,7 @@ public class DataSeeder
 
         var users = new List<User>
         {
+            new User { UserName = "admin", Email = "admin@example.com", Name = "Admin" },
             new User { UserName = "StyleMaven92", Email = "stylemaven92@example.com", Name = "Style Maven 92" },
             new User { UserName = "Fashionista_A", Email = "alex@example.com", Name = "Alex Fashion" },
             new User { UserName = "ChicExplorer", Email = "chic@example.com", Name = "Chic Explorer" },

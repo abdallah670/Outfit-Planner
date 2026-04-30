@@ -9,27 +9,28 @@
 
   <main class="main-content">
     <div class="trending-grid" *ngIf="trendingOutfits().length > 0">
-      <div class="trending-card"
-           *ngFor="let outfit of trendingOutfits()"
-           (click)="viewDetails(outfit)">
-        <div class="outfit-images">
-          <img [src]="outfit.imageUrl" alt="Outfit Option 1">
-          <img [src]="outfit.imageUrl" alt="Outfit Option 2">
-        </div>
-        <div class="outfit-meta">
-          <div class="user-row">
-            <img [src]="outfit.userAvatar || 'assets/default-avatar.png'" alt="User" class="user-avatar">
-            <span class="username">{{ outfit.userName }}</span>
+       <div class="trending-card"
+            *ngFor="let outfit of trendingOutfits()"
+            (click)="viewDetails(outfit)">
+         <div class="outfit-image-container" *ngIf="outfit.imageUrl; else noImage">
+           <img [src]="outfit.imageUrl" alt="Trending outfit" class="trending-image">
+         </div>
+         <ng-template #noImage>
+           <div class="outfit-placeholder">
+             <mat-icon>image</mat-icon>
+           </div>
+         </ng-template>
+          <div class="outfit-info">
+            <p class="outfit-occasion" *ngIf="outfit.occasion">{{ outfit.occasion }}</p>
+            <div class="stats">
+              <mat-icon>favorite</mat-icon>
+              <span>{{ outfit.likes > 1000 ? (outfit.likes / 1000).toFixed(1) + 'k' : outfit.likes }} likes</span>
+              <mat-icon>chat_bubble</mat-icon>
+              <span>{{ outfit.comments }} comments</span>
+            </div>
           </div>
-          <div class="engagement-row">
-            <button mat-icon-button (click)="react(outfit, 'Like')">
-              <mat-icon [class.active]="true" class="heart-icon">favorite</mat-icon>
-            </button>
-            <span class="likes-count">{{ outfit.likes > 1000 ? (outfit.likes / 1000).toFixed(1) + 'k' : outfit.likes }} likes</span>
-          </div>
         </div>
-      </div>
-    </div>
+     </div>
 
     <div *ngIf="trendingOutfits().length === 0 && !loading()" class="empty-state">
       <mat-icon>explore</mat-icon>

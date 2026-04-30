@@ -14,3 +14,18 @@ C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\O
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\refint\OutfitPlanner.Application.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.pdb
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\ref\OutfitPlanner.Application.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\bin\Debug\net9.0\OutfitPlanner.Application.deps.json
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\bin\Debug\net9.0\OutfitPlanner.Application.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\bin\Debug\net9.0\OutfitPlanner.Application.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\bin\Debug\net9.0\OutfitPlanner.Domain.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\bin\Debug\net9.0\OutfitPlanner.Domain.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.csproj.AssemblyReference.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.GeneratedMSBuildEditorConfig.editorconfig
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.AssemblyInfoInputs.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.AssemblyInfo.cs
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.csproj.CoreCompileInputs.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPl.CF1D23D5.Up2Date
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\refint\OutfitPlanner.Application.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\OutfitPlanner.Application.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Application\obj\Debug\net9.0\ref\OutfitPlanner.Application.dll

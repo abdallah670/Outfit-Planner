@@ -1,15 +1,137 @@
-### Wardrobe Management Page
+# Outfit Planner Page Implementation Plans
 
+## 1. Wardrobe Management Page
+
+### Page Structure
 ```
-Design a wardrobe management interface with:
-- Large grid/list toggle for clothing items
-- Filter sidebar with categories, colors, seasons, occasions
-- Bulk selection mode for organizing items
-- Drag-and-drop zones for creating outfits
-- Statistics cards showing wardrobe analytics (total items, most worn, cost per wear)
-- Search bar with AI-powered suggestions
-- Color palette: off-white background, soft pink accents, sage green secondary
-- Modern minimalist design with rounded corners and subtle shadows
+- Header with title and statistics summary
+- Main content area with:
+  * Grid/List toggle button
+  * Filter sidebar (categories, colors, seasons, occasions)
+  * Clothing items grid with drag-and-drop capability
+  * Bulk selection mode
+- Statistics cards showing:
+  * Health percentage
+  * Total items count
+  * Most worn item
+  * Cost per wear analysis
+```
+
+### Component Architecture
+```typescript
+// Core Components
+- WardrobeDashboardPage (main container)
+- WardrobeHeader (stats summary)
+- WardrobeFilters (sidebar)
+- ClothingGrid (responsive grid)
+- ClothingCard (individual item)
+- StatsCard (analytics display)
+- BulkActionToolbar (when items selected)
+```
+
+### State Management
+- NgRx feature for wardrobe state
+- Filter state management
+- Drag-and-drop state
+- Bulk selection state
+
+### Backend Integration
+- Connect to `WardrobeController` endpoints:
+  - GET `/api/wardrobe` - get all items
+  - GET `/api/wardrobe/health` - get statistics
+  - POST `/api/wardrobe/{id}/wear` - record wear event
+
+## 2. Outfit Builder Page
+
+### Page Structure
+```
+- Left sidebar: Clothing items catalog
+- Center: Outfit canvas (drop zone)
+- Right sidebar: Saved outfits
+- Bottom: Action buttons (save, share, wear)
+```
+
+### Drag-and-Drop Implementation
+```typescript
+// Services
+- DragDropService (Angular CDK)
+- OutfitBuilderService (state management)
+
+// Events
+- onClothingItemDragStart
+- onOutfitDrop
+- onOutfitItemRemove
+- onOutfitSave
+```
+
+### Features
+- Real-time outfit preview
+- Outfit validation (completeness, weather appropriateness)
+- Outfit templates
+- Outfit history
+
+## 3. Social Validation (Feed) Page
+
+### Page Structure
+```
+- Header: "Community Feed"
+- Filter tabs: All, Following, Trending
+- Posts grid with:
+  * User avatar and name
+  * Outfit images
+  * Like/comment/share buttons
+  * Timestamp
+```
+
+### Feed Features
+- Infinite scroll pagination
+- Real-time updates
+- Post creation modal
+- Comment system
+- Like/reaction system
+
+### Backend Integration
+- Connect to `FeedController` endpoints:
+  - GET `/api/feed` - get feed posts
+  - POST `/api/feed` - create post
+  - POST `/api/feed/{id}/like` - add reaction
+  - POST `/api/feed/{id}/comments` - add comment
+
+## 4. Profile Page
+
+### Page Structure
+```
+- User profile header (avatar, name, stats)
+- Tabbed content:
+  * My Wardrobe (stats overview)
+  * My Outfits (gallery)
+  * My Activity (recent wears, interactions)
+```
+
+### Features
+- Profile editing
+- Wardrobe statistics visualization
+- Outfit gallery
+- Activity timeline
+
+## 5. Search Page
+
+### Page Structure
+```
+- Search bar with AI suggestions
+- Filter chips (category, color, season)
+- Results grid with:
+  * Clothing items
+  * Outfits
+  * Users
+```
+
+### Search Features
+- AI-powered suggestions
+- Advanced filters
+- Search history
+- Saved searches
+
 ## Design System Reference
 
 ### Colors
@@ -69,6 +191,8 @@ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
 /* Strong shadow for modals */
 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+```
+
 ## Component Library Reference
 
 ### Clothing Item Card
@@ -122,8 +246,6 @@ A card for social validation polls with:
 - Dimensions: Full width, 400px height
 ```
 
----
-
 ## Icon Set Reference
 
 Use Heroicons or Phosphor Icons for consistency:
@@ -148,7 +270,29 @@ Use Heroicons or Phosphor Icons for consistency:
 | Wardrobe | archive-box |
 | Outfit | sparkles |
 
----
+## Implementation Priorities
 
-*Document Version: 1.0*
-*Last Updated: February 2026*
+1. **Phase 1**: Wardrobe Management Page
+   - Basic UI with grid/list toggle
+   - Filter sidebar
+   - Clothing cards display
+   - Basic statistics
+
+2. **Phase 2**: Enhanced Wardrobe Features
+   - Drag-and-drop outfit creation
+   - Bulk selection actions
+   - Advanced analytics
+   - AI search suggestions
+
+3. **Phase 3**: Social Integration
+   - Feed page implementation
+   - Post creation and interaction
+   - Poll system integration
+
+4. **Phase 4**: Profile & Search
+   - Profile page with stats
+   - Global search functionality
+   - Advanced filtering
+
+*Document Version: 2.0*
+*Last Updated: April 2026*

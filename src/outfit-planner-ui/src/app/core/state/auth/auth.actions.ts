@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { User } from '../../../domain/entities/user.entity';
+import { User } from '../../../domain/entities/user-profile.entity';
 import {
   AuthRequest,
   AuthResponse,

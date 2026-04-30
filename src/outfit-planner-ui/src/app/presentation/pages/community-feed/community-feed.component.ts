@@ -6,15 +6,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { Store } from '@ngrx/store';
-import { SocialActions } from '../../../core/state/social/social.actions';
+import { FeedActions } from '../../../core/state/feed/feed.actions';
 import {
-  selectAllPolls,
-  selectSocialLoading,
-} from '../../../core/state/social/social.selectors';
-import { ValidationPoll, PollStatus } from '../../../domain/entities/validation-poll.entity';
+  selectPosts,
+  selectNextCursor,
+  selectHasMore,
+  selectFeedLoading,
+} from '../../../core/state/feed/feed.selectors';
+import { FeedPost, PostType } from '../../../domain/entities/feed.entity';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-type FilterType = 'all' | 'active' | 'closed' | 'my-polls';
+type FilterType = 'all' | 'outfits' | 'polls';
 
 @Component({
   selector: 'app-community-feed',
@@ -36,55 +38,59 @@ export class CommunityFeedComponent implements OnInit {
 
   activeFilter = signal<FilterType>('all');
 
-  // Get polls from store as signals
-  private allPollsSignal = toSignal(this.store.select(selectAllPolls), { initialValue: [] as ValidationPoll[] }) as () => ValidationPoll[];
-  loading = toSignal(this.store.select(selectSocialLoading), { initialValue: false });
+  private allPostsSignal = toSignal(this.store.select(selectPosts), { initialValue: [] as FeedPost[] }) as () => FeedPost[];
+  loading = toSignal(this.store.select(selectFeedLoading), { initialValue: false });
+  nextCursor = toSignal(this.store.select(selectNextCursor), { initialValue: null as string | null });
+  hasMore = toSignal(this.store.select(selectHasMore), { initialValue: false });
 
-  // Transform polls based on filter using computed
-  filteredPolls = computed((): ValidationPoll[] => {
-    const polls = this.allPollsSignal();
+  filteredPosts = computed((): FeedPost[] => {
+    const posts = this.allPostsSignal();
     const filter = this.activeFilter();
     switch (filter) {
-      case 'active':
-        return polls.filter((p: ValidationPoll) => p.status === PollStatus.Active);
-      case 'closed':
-        return polls.filter(
-          (p: ValidationPoll) => p.status === PollStatus.Closed || p.status === PollStatus.Expired,
-        );
-      case 'my-polls':
-        // In a real app, filter by current user ID
-        return polls;
+      case 'outfits':
+        return posts.filter((p: FeedPost) => p.postType === PostType.OutfitPost);
+      case 'polls':
+        return posts.filter((p: FeedPost) => p.postType === PostType.PollPost);
       default:
-        return polls;
+        return posts;
     }
   });
 
   filters: { value: FilterType; label: string }[] = [
     { value: 'all', label: 'All' },
-    { value: 'active', label: 'Active' },
-    { value: 'closed', label: 'Closed' },
-    { value: 'my-polls', label: 'My Polls' },
+    { value: 'outfits', label: 'Outfits' },
+    { value: 'polls', label: 'Polls' },
   ];
 
   ngOnInit(): void {
-    this.store.dispatch(SocialActions.loadPolls());
+    this.store.dispatch(FeedActions.loadPosts({ pageSize: 20 }));
   }
 
   setFilter(filter: FilterType): void {
     this.activeFilter.set(filter);
+    const postType = filter === 'outfits' ? 'OutfitPost' : filter === 'polls' ? 'PollPost' : undefined;
+    this.store.dispatch(FeedActions.loadPosts({ postType, pageSize: 20, cursor: undefined }));
   }
 
   createPoll(): void {
     this.router.navigate(['/social/create']);
   }
 
-  viewPollDetail(pollId: string): void {
-    this.router.navigate(['/social/polls', pollId]);
+  viewPostDetail(post: FeedPost): void {
+    if (post.postType === PostType.PollPost && post.pollId) {
+      this.router.navigate(['/social/polls', post.pollId]);
+    } else if (post.outfitId) {
+      this.router.navigate(['/outfits', post.outfitId]);
+    } else {
+      this.router.navigate(['/social/feed']); // fallback
+    }
   }
 
-  getTimeLeft(expiresAt: Date): string {
+  getTimeLeft(expiresAt: Date | undefined): string {
+    if (!expiresAt) return '';
     const now = new Date();
-    const diff = expiresAt.getTime() - now.getTime();
+    const expires = new Date(expiresAt);
+    const diff = expires.getTime() - now.getTime();
 
     if (diff <= 0) return 'Expired';
 
@@ -98,19 +104,18 @@ export class CommunityFeedComponent implements OnInit {
     return `${hours}h ${minutes}m left`;
   }
 
-  getTotalVotes(poll: ValidationPoll): number {
-    return poll.totalVotes;
+  toggleReaction(post: FeedPost, event: Event): void {
+    event.stopPropagation();
+    if (post.userReaction) {
+      this.store.dispatch(FeedActions.removeReaction({ postId: post.id }));
+    } else {
+      this.store.dispatch(FeedActions.addReaction({ postId: post.id }));
+    }
   }
 
-  getOptionThumbnail(option: PollOption): string {
-    return (
-      option.outfitThumbnail ||
-      'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=200&h=200&fit=crop'
-    );
+  loadMore(): void {
+    if (this.hasMore() && this.nextCursor()) {
+      this.store.dispatch(FeedActions.loadPosts({ cursor: this.nextCursor() ?? undefined, pageSize: 20 }));
+    }
   }
-}
-
-// Interface for poll option
-interface PollOption {
-  outfitThumbnail?: string;
 }

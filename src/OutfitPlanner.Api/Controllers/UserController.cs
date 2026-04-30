@@ -25,7 +25,13 @@ public class UserController : ControllerBase
         _mediator = mediator;
         _logger = logger;
     }
-
+     #region Profile 
+     /// <summary>
+     /// Get other profile
+     /// </summary>
+     [HttpGet("UserProfile")]
+     
+     
     /// <summary>
     /// Get current user profile
     /// </summary>
@@ -154,6 +160,7 @@ public class UserController : ControllerBase
             return StatusCode(500, new { message = "Failed to upload profile picture" });
         }
     }
+    #endregion
 
     /// <summary>
     /// Change user password

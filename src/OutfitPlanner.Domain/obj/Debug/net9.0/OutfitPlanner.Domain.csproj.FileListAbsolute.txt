@@ -11,3 +11,15 @@ c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\Outfit
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\refint\OutfitPlanner.Domain.dll
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.pdb
 c:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\ref\OutfitPlanner.Domain.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\bin\Debug\net9.0\OutfitPlanner.Domain.deps.json
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\bin\Debug\net9.0\OutfitPlanner.Domain.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\bin\Debug\net9.0\OutfitPlanner.Domain.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.csproj.AssemblyReference.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.GeneratedMSBuildEditorConfig.editorconfig
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.AssemblyInfoInputs.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.AssemblyInfo.cs
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.csproj.CoreCompileInputs.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\refint\OutfitPlanner.Domain.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\OutfitPlanner.Domain.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Domain\obj\Debug\net9.0\ref\OutfitPlanner.Domain.dll
