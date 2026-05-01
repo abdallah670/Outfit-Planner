@@ -44,6 +44,7 @@ import { TrendingOutfit } from '../../../domain/entities/outfit.entity';
 })
 export class HomeComponent implements OnInit {
   private store = inject(Store);
+  failedImages = new Set<string>();
 
   items: Signal<ClothingItem[]> = toSignal(this.store.select(selectAllItems), {
     initialValue: [] as ClothingItem[],
@@ -159,5 +160,9 @@ export class HomeComponent implements OnInit {
 
   selectCategory(category: string) {
     this.selectedCategory.set(category);
+  }
+
+  onImageError(outfitId: string): void {
+    this.failedImages.add(outfitId);
   }
 }

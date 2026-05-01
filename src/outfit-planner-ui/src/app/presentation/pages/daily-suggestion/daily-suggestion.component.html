@@ -11,38 +11,70 @@
         </div>
         <span>Daily Pick</span>
       </div>
-      <div class="date-display">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
-        <span>Today</span>
+      <!-- Date Navigation -->
+      <div class="date-nav">
+        <button class="date-nav-btn" (click)="goToPrevDay()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <div class="date-nav-center" (click)="goToToday()" style="cursor:pointer">
+          <span class="date-nav-label">{{ getDayLabel() }}</span>
+          <span class="date-nav-date">{{ getFormattedDate() }}</span>
+        </div>
+        <button class="date-nav-btn" (click)="goToNextDay()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
       </div>
     </header>
 
-    <h1 class="page-date-title">{{ today | date: 'EEEE, MMMM d, yyyy' }}</h1>
+    <h1 class="page-date-title">{{ getFormattedDate() }}</h1>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading()">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Finding the perfect outfit for {{ getDayLabel().toLowerCase() }}...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" *ngIf="error() && !loading()">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-button (click)="loadDateData(selectedDate())">Try Again</button>
+    </div>
 
     <!-- Hero Grid -->
-    <div class="hero-grid">
-      <!-- Left: Today's Pick Card -->
+    <div class="hero-grid" *ngIf="!loading() && !error() && outfit()">
+      <!-- Left: Pick Card -->
       <div class="outfit-card">
         <div class="outfit-image-container">
           <img
-            src="https://storage.googleapis.com/banani-generated-images/generated-images/4e3307e4-59bf-4d31-8dd1-514fe7c342f4.jpg"
+            [src]="currentOutfit()?.imageUrl || 'assets/placeholder.jpg'"
             class="outfit-image"
-            alt="Weekend Casual Outfit"
+            [alt]="currentOutfit()?.name || 'Outfit'"
           />
-          <div class="pick-badge">Today's Pick</div>
+          <div class="pick-badge">{{ getDayLabel() }}'s Pick</div>
         </div>
         <div class="outfit-details">
-          <h2 class="outfit-name">{{ currentOutfit()?.name || 'Weekend Casual' }}</h2>
-          <div class="match-score">
+          <h2 class="outfit-name">{{ currentOutfit()?.name || 'Suggested Outfit' }}</h2>
+          <div class="match-score" [class.best-effort]="context()?.isBestEffort">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
-            {{ currentOutfit()?.matchPercentage || 94 }}% match for today
+            {{ getMatchPercentage() }}% match
           </div>
 
-          <button class="primary-btn" (click)="wearToday()">
+          <!-- Outfit Items -->
+          <div class="outfit-items" *ngIf="getPrimaryItems().length > 0">
+            <div class="item-chip" *ngFor="let item of getPrimaryItems()">
+              <img *ngIf="item.clothingItemImageUrl" [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" />
+              <span>{{ item.clothingItemName }}</span>
+            </div>
+          </div>
+
+          <button class="primary-btn" (click)="wearToday()" *ngIf="isToday()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 6L9 17l-5-5"/>
             </svg>
@@ -75,7 +107,7 @@
 
         <!-- Events Card -->
         <div class="info-card">
-          <div class="events-title">📅 Today's Events</div>
+          <div class="events-title">📅 {{ getDayLabel() }}'s Events</div>
           <div class="events-list">
             <div class="event-item" *ngFor="let event of todayEvents()">
               <div class="event-time">{{ event.time }}</div>
@@ -92,25 +124,7 @@
               <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
               </svg>
-              <span>Weather-appropriate for {{ weather()?.temp || 22 }}°C {{ weather()?.condition?.toLowerCase() || 'partly cloudy' }}</span>
-            </div>
-            <div class="reason-item">
-              <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              <span>Professional enough for meeting</span>
-            </div>
-            <div class="reason-item">
-              <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              <span>Comfortable for evening dinner</span>
-            </div>
-            <div class="reason-item">
-              <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              <span>Matches your "casual" style preference</span>
+              <span>{{ getRecommendationReason() }}</span>
             </div>
           </div>
         </div>
@@ -132,7 +146,7 @@
       <div class="cards-scroller">
         <!-- Alternative 1 -->
         <div class="alt-card" *ngFor="let alt of alternatives()" (click)="selectAlternative(alt)">
-          <img [src]="alt.imageUrl" class="alt-image" [alt]="alt.name" />
+          <img [src]="alt.imageUrl || 'assets/placeholder.jpg'" class="alt-image" [alt]="alt.name" />
           <div class="alt-info">
             <div class="alt-title">{{ alt.name }}</div>
             <div class="alt-meta">{{ alt.description }}</div>
@@ -149,7 +163,7 @@
     </div>
 
     <!-- Tomorrow Banner -->
-    <div class="tomorrow-banner">
+    <div class="tomorrow-banner" *ngIf="isToday()">
       <div class="tomorrow-info">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
           <path d="M20 16.58A5 5 0 0018 7h-1.26A8 8 0 104 15.25"/>
@@ -157,10 +171,24 @@
         </svg>
         <div>
           <div class="tomorrow-title">Tomorrow's Preview</div>
-          <div class="tomorrow-sub">Rain expected • 16°C</div>
+          <div class="tomorrow-sub">See what to wear tomorrow</div>
         </div>
       </div>
       <button class="tomorrow-btn" (click)="previewTomorrow()">Preview Suggestion</button>
+    </div>
+
+    <!-- Back to Today Banner -->
+    <div class="tomorrow-banner" *ngIf="!isToday()">
+      <div class="tomorrow-info">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <div>
+          <div class="tomorrow-title">Viewing {{ getDayLabel() }}</div>
+          <div class="tomorrow-sub">Go back to today's suggestion</div>
+        </div>
+      </div>
+      <button class="tomorrow-btn" (click)="goToToday()">Back to Today</button>
     </div>
   </div>
 </div>

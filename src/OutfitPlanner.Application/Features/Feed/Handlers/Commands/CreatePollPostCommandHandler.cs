@@ -16,6 +16,7 @@ public class CreatePollPostCommandHandler : IRequestHandler<CreatePollPostComman
     private readonly ILogger<CreatePollPostCommandHandler> _logger;
 
     public CreatePollPostCommandHandler(
+        Contracts.Persistence.IValidationPollRepository validationPolls,
         IUnitOfWork unitOfWork,
         IOutfitRepository outfitRepository,
         ILogger<CreatePollPostCommandHandler> logger)

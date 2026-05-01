@@ -34,21 +34,12 @@
           <h1 class="profile-name">{{ $any(profile).name }}</h1>
           <p class="profile-email">{{ $any(profile).email }}</p>
           <p class="profile-username">@{{ $any(profile).username }}</p>
+          <p class="profile-bio">{{ $any(profile).bio }}</p>
           <p class="profile-date">Member since {{ getMemberSince($any(profile).createdAt) }}</p>
         </div>
        </div>
-       <!-- Show Edit button for own profile, Follow/Unfollow for other users -->
-       <ng-container *ngIf="!isViewingOtherUser(); else otherUserActions">
-         <button class="edit-profile-btn" (click)="openEditProfileModal()">Edit<br />Profile</button>
-       </ng-container>
-       <ng-template #otherUserActions>
-         <button class="follow-btn" 
-                 [class.following]="isFollowing()" 
-                 (click)="onFollowToggle()"
-                 [disabled]="isLoadingFollowStatus">
-           {{ isFollowing() ? 'Following' : 'Follow' }}
-         </button>
-       </ng-template>
+       <!-- Edit button for own profile -->
+       <button class="edit-profile-btn" (click)="openEditProfileModal()">Edit<br />Profile</button>
      </div>
 
     <!-- Wardrobe Stats -->

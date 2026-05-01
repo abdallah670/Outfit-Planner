@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { UserState } from './user.reducer';
+import { PublicUserProfile } from '../../../domain/entities/public-user-profile.entity';
 
 export const selectUserState = createFeatureSelector<UserState>('user');
 

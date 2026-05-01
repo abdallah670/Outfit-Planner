@@ -36,6 +36,7 @@ export class EditProfileModalComponent {
   ) {
     this.profileForm = this.fb.group({
       name: [data.profile.name, [Validators.required, Validators.maxLength(100)]],
+      bio:[data.profile.bio]
     });
   }
 
@@ -46,6 +47,7 @@ export class EditProfileModalComponent {
       
       const request = {
         name: this.profileForm.get('name')?.value,
+        bio:this.profileForm.get('bio')?.value
       };
 
       // Dispatch the update profile action

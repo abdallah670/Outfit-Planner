@@ -84,7 +84,7 @@
               <a [routerLink]="['/outfits', outfit.id]" class="outfit-card">
                 <div class="outfit-images">
                   <img
-                    [src]="outfit.imageUrl || '/outfit_placeholder.png'"
+                    [src]="outfit.imageUrl || 'assets/placeholder.jpg'"
                     class="outfit-main-img"
                     [alt]="outfit.name"
                   />
@@ -121,7 +121,7 @@
             @for (item of wardrobeItems(); track item.id) {
               <a [routerLink]="['/wardrobe', item.id]" class="item-card">
                 <img
-                  [src]="item.imageUrl || '/clothing-placeholder.png'"
+                  [src]="item.imageUrl || 'assets/placeholder.jpg'"
                   class="item-image"
                   [alt]="item.name"
                 />

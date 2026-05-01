@@ -88,6 +88,123 @@ $radius-xl: 12px;
   color: $color-muted-foreground;
 }
 
+// Date Navigation
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid $color-border;
+  background: $color-card;
+  color: $color-foreground;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-secondary;
+    border-color: $color-primary;
+    color: $color-primary;
+  }
+}
+
+.date-nav-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 16px;
+  border-radius: $radius-lg;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba($color-primary, 0.05);
+  }
+}
+
+.date-nav-label {
+  font-weight: 700;
+  font-size: 16px;
+  color: $color-primary;
+}
+
+.date-nav-date {
+  font-size: 12px;
+  color: $color-muted-foreground;
+  font-weight: 500;
+}
+
+// Loading & Error States
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  color: $color-muted-foreground;
+
+  p {
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+  color: $color-destructive;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    font-size: 16px;
+    margin: 0;
+    color: $color-foreground;
+  }
+}
+
+// Outfit Items Chips
+.outfit-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+
+  .item-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 4px;
+    background: $color-secondary;
+    border-radius: 20px;
+    font-size: 12px;
+    color: $color-secondary-foreground;
+
+    img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+}
+
 // ============================================
 // Page Date Title
 // ============================================

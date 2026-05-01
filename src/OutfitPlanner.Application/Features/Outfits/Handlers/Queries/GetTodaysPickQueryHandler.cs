@@ -91,8 +91,9 @@ public class GetTodaysPickQueryHandler
         {
             _logger.LogInformation("Generating today's pick for user {UserId}", request.UserId);
 
+            var targetDate = request.Date?.Date ?? DateTimeOffset.Now.Date;
             var weatherContext = await GetWeatherContextAsync(request.Latitude, request.Longitude, cancellationToken);
-            var todayEvent = await GetTodayEventAsync(request.UserId, cancellationToken);
+            var todayEvent = await GetTodayEventAsync(request.UserId, targetDate, cancellationToken);
             var styleProfile = await GetUserStyleProfileAsync(request.UserId, cancellationToken);
 
             var outfit = await FindBestOutfitAsync(
@@ -182,12 +183,11 @@ public class GetTodaysPickQueryHandler
         }
     }
 
-    private async Task<TodayEventDto?> GetTodayEventAsync(string userId, CancellationToken cancellationToken)
+    private async Task<TodayEventDto?> GetTodayEventAsync(string userId, DateTimeOffset targetDate, CancellationToken cancellationToken)
     {
         try
         {
-            var today = DateTimeOffset.Now.Date;
-            var events = await _unitOfWork.CalendarEvents.GetByUserIdAndDateAsync(userId, today);
+            var events = await _unitOfWork.CalendarEvents.GetByUserIdAndDateAsync(userId, targetDate.Date);
 
             var firstEvent = events
                 .OrderBy(e => e.StartTime)

@@ -11,6 +11,7 @@ interface TrendingOutfitDto {
   imageUrl?: string;
   userId: string;
   userName: string;
+  userAvatar?: string;
   voteCount: number;
   commentCount: number;
   trendingScore: number;
@@ -21,7 +22,7 @@ interface TrendingOutfitDto {
   providedIn: 'root',
 })
 export class TrendingDataSource {
-  private readonly apiUrl = `${environment.baseUrl}/api/trending/outfits`;
+  private readonly apiUrl = `${environment.baseUrl}/trending/outfits`;
 
   constructor(private http: HttpClient) {}
 
@@ -41,7 +42,7 @@ export class TrendingDataSource {
       id: dto.id,
       userId: dto.userId,
       userName: dto.userName,
-      userAvatar: '', // Not provided by backend trending endpoint currently
+      userAvatar: dto.userAvatar || 'assets/default-avatar.png',
       imageUrl: dto.imageUrl || 'assets/placeholder.png',
       likes: dto.voteCount,
       comments: dto.commentCount,

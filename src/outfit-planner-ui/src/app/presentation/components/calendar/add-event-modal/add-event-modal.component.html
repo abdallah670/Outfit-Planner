@@ -73,8 +73,8 @@
           [class.selected]="isOutfitSelected(outfit.id)"
           (click)="selectOutfit(outfit.id)"
         >
-          <img 
-            [src]="outfit.imageUrl || '/outfit_placeholder.png'" 
+          <img
+            [src]="outfit.imageUrl || 'assets/placeholder.jpg'"
             class="outfit-thumb"
             [alt]="outfit.name"
           />

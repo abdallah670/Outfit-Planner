@@ -49,10 +49,13 @@ export class OutfitDataSource {
       .pipe(map((outfits: Outfit[]) => outfits.map((o: Outfit) => this.fixOutfitUrls(o))));
   }
 
-  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse> {
+  getTodaysPick(latitude?: number, longitude?: number, date?: string): Observable<TodaysPickResponse> {
     let params: any = {};
     if (latitude !== undefined && longitude !== undefined) {
       params = { lat: latitude.toString(), lon: longitude.toString() };
+    }
+    if (date) {
+      params = { ...params, date };
     }
     return this.http
       .get<TodaysPickResponse>(`${this.apiUrl}/today`, { params })

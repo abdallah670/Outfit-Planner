@@ -11,6 +11,7 @@ public class TrendingOutfitDto
     public string? ImageUrl { get; set; }
     public string UserId { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
+    public string? UserAvatar { get; set; }
     public int VoteCount { get; set; }
     public int CommentCount { get; set; }
     public double TrendingScore { get; set; }

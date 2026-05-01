@@ -61,19 +61,29 @@
         <!-- Trending Items -->
         <div class="items-display">
           @for (outfit of trendingOutfits(); track outfit.id) {
-            <div class="trending-item" [routerLink]="['/outfits', outfit.id]" style="cursor: pointer;">
-              <div
-                class="aspect-square bg-gradient-to-br from-pink-50 to-rose-100 rounded-xl mb-3 flex items-center justify-center overflow-hidden"
-              >
-                @if (outfit.imageUrl) {
-                  <img [src]="outfit.imageUrl" [alt]="outfit.userName" style="width: 100%; height: 100%; object-fit: cover;" />
+            <div class="trending-item" [routerLink]="['/outfits', outfit.id]">
+              <div class="trending-image-wrapper">
+                @if (outfit.imageUrl && !failedImages.has(outfit.id)) {
+                  <img [src]="outfit.imageUrl" [alt]="outfit.userName" (error)="onImageError(outfit.id)" />
                 } @else {
-                  <span style="font-size: 48px">👗</span>
+                  <img src="assets/placeholder.jpg" alt="Placeholder" />
                 }
               </div>
-              <div class="flex justify-between items-center px-1">
-                <span style="font-size: 14px; font-weight: 500">{{ outfit.userName }}</span>
-                <span style="font-size: 13px; color: #666">❤️ {{ outfit.likes }}</span>
+              <div class="trending-info">
+                <div class="user-row">
+                  <div class="user-info">
+                    @if (outfit.userAvatar && !failedImages.has('avatar-' + outfit.id)) {
+                      <img [src]="outfit.userAvatar" [alt]="outfit.userName" class="user-avatar" (error)="onImageError('avatar-' + outfit.id)" />
+                    } @else {
+                      <img src="assets/default-avatar.png" [alt]="outfit.userName" class="user-avatar" />
+                    }
+                    <span class="user-name">{{ outfit.userName }}</span>
+                  </div>
+                  <div class="likes-count">
+                    <mat-icon>favorite</mat-icon>
+                    {{ outfit.likes }}
+                  </div>
+                </div>
               </div>
             </div>
           } @empty {

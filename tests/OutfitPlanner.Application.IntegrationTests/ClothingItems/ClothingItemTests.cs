@@ -16,6 +16,7 @@ using OutfitPlanner.Domain.Enums;
 using OutfitPlanner.Persistence;
 using OutfitPlanner.Persistence.Repositories;
 using OutfitPlanner.Application.Profiles;
+using OutfitPlanner.Application.Contracts.Persistence;
 
 namespace OutfitPlanner.Application.IntegrationTests.ClothingItems;
 
@@ -50,7 +51,6 @@ public class ClothingItemTests : IDisposable
         services.AddScoped<IValidationPollRepository, ValidationPollRepository>();
         services.AddScoped<IWearEventRepository, WearEventRepository>();
         services.AddScoped<IUserStyleProfileRepository, UserStyleProfileRepository>();
-        services.AddScoped<IOutfitFeedbackRepository, OutfitFeedbackRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IStyleRuleRepository, StyleRuleRepository>();
         services.AddScoped<IClothingTagRepository, ClothingTagRepository>();

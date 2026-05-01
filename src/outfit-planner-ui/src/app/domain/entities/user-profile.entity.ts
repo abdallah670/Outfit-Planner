@@ -15,6 +15,7 @@ export interface UserProfile {
   email: string;
   username: string;
   profilePictureUrl?: string;
+  bio?: string;
   createdAt: string;
   lastLogin?: string;
 

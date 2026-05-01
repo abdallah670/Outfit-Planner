@@ -32,10 +32,10 @@
       <div class="card image-card">
         <div class="image-wrapper">
           <img
-            [src]="clothingItem.imageUrl || 'assets/placeholder-clothing.png'"
+            [src]="clothingItem.imageUrl || 'assets/placeholder.jpg'"
             [alt]="clothingItem.name"
             class="main-image"
-            (error)="imageError = true; $any($event.target).src = 'assets/placeholder-clothing.png'"
+            (error)="imageError = true; $any($event.target).src = 'assets/placeholder.jpg'"
           />
           <div class="color-dot" [style.backgroundColor]="clothingItem.primaryColor"></div>
         </div>

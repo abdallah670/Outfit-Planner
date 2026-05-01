@@ -243,18 +243,20 @@ public class OutfitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TodaysPickResult>> GetToday(
         [FromQuery] double? lat = null,
-        [FromQuery] double? lon = null)
+        [FromQuery] double? lon = null,
+        [FromQuery] DateTime? date = null)
     {
         var userId = GetUserId();
         
-        _logger.LogInformation("Getting today's pick for user {UserId} with location: {Lat}, {Lon}", 
-            userId, lat, lon);
+        _logger.LogInformation("Getting today's pick for user {UserId} with location: {Lat}, {Lon}, date: {Date}", 
+            userId, lat, lon, date);
 
         var query = new GetTodaysPickQuery
         {
             UserId = userId,
             Latitude = lat,
-            Longitude = lon
+            Longitude = lon,
+            Date = date.HasValue ? new DateTimeOffset(date.Value.Date) : null
         };
         
         var result = await _mediator.Send(query);

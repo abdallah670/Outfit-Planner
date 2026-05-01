@@ -12,14 +12,12 @@
        <div class="trending-card"
             *ngFor="let outfit of trendingOutfits()"
             (click)="viewDetails(outfit)">
-         <div class="outfit-image-container" *ngIf="outfit.imageUrl; else noImage">
-           <img [src]="outfit.imageUrl" alt="Trending outfit" class="trending-image">
+         <div class="outfit-image-container">
+           <img *ngIf="outfit.imageUrl; else noImage" [src]="outfit.imageUrl" alt="Trending outfit" class="trending-image">
+           <ng-template #noImage>
+             <img src="assets/placeholder.jpg" alt="No outfit image" class="trending-image">
+           </ng-template>
          </div>
-         <ng-template #noImage>
-           <div class="outfit-placeholder">
-             <mat-icon>image</mat-icon>
-           </div>
-         </ng-template>
           <div class="outfit-info">
             <p class="outfit-occasion" *ngIf="outfit.occasion">{{ outfit.occasion }}</p>
             <div class="stats">

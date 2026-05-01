@@ -33,13 +33,13 @@ export class SocialComponent implements OnInit {
   // Signals for trending pagination
   private trendingPage = signal(1);
 
-  // Selectors as signals
+  // Selectors as signals - public for template access
   private recentPollSignal = toSignal(this.store.select(selectRecentPoll), { initialValue: null as Poll | null });
   private recentCommentsSignal = toSignal(this.store.select(selectRecentPollComments), { initialValue: [] as any[] });
   private commentsCursorSignal = toSignal(this.store.select(selectCommentsCursor), { initialValue: null as string | null });
-  private hasMoreCommentsSignal = toSignal(this.store.select(selectHasMoreComments), { initialValue: false });
-  private commentsLoadingSignal = toSignal(this.store.select(selectCommentsLoading), { initialValue: false });
-  private trendingOutfitsSignal = toSignal(this.store.select(selectTrendingOutfits), { initialValue: [] as TrendingOutfit[] });
+  readonly hasMoreCommentsSignal = toSignal(this.store.select(selectHasMoreComments), { initialValue: false });
+  readonly commentsLoadingSignal = toSignal(this.store.select(selectCommentsLoading), { initialValue: false });
+  readonly trendingOutfitsSignal = toSignal(this.store.select(selectTrendingOutfits), { initialValue: [] as TrendingOutfit[] });
   private trendingTotalCount = toSignal(this.store.select(selectTrendingTotalCount), { initialValue: 0 });
   private trendingLoadingSignal = toSignal(this.store.select(selectTrendingLoading), { initialValue: false });
   private pollsLoadingSignal = toSignal(this.store.select(selectPollsLoading), { initialValue: false });

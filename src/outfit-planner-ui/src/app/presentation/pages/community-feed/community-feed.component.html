@@ -48,7 +48,7 @@
       (click)="viewPostDetail(post)">
       
       <mat-card-header>
-        <img mat-card-avatar [src]="post.userAvatarUrl || 'assets/images/default-avatar.png'" alt="User avatar">
+        <img mat-card-avatar [src]="post.userAvatarUrl || 'assets/default-avatar.png'" alt="User avatar">
         <mat-card-title>{{ post.userName }}</mat-card-title>
         <mat-card-subtitle>
           {{ post.createdAt | date:'mediumDate' }}
@@ -60,8 +60,11 @@
         <p class="caption" *ngIf="post.caption">{{ post.caption }}</p>
         
         <!-- Outfit Preview (for both outfit posts and poll posts) -->
-        <div class="image-preview" *ngIf="post.outfit?.imageUrl">
-          <img [src]="post.outfit?.imageUrl" alt="Outfit preview">
+        <div class="image-preview">
+          <img *ngIf="post.outfit?.imageUrl; else outfitPlaceholder" [src]="post.outfit?.imageUrl" alt="Outfit preview">
+          <ng-template #outfitPlaceholder>
+            <img src="assets/placeholder.jpg" alt="No outfit image">
+          </ng-template>
         </div>
 
         <!-- Poll Specific Content -->
