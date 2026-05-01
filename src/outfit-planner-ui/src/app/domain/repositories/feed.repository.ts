@@ -14,7 +14,12 @@ export interface FeedRepository {
     sortBy?: string,
     postType?: string
   ): Observable<CursorPagedResult<FeedPost>>;
-
+ getUserFeed(
+    userId: string,
+    cursor?: string,
+    pageSize?: number,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>>;
   getPostById(id: string): Observable<FeedPost>;
 
   deletePost(id: string): Observable<void>;

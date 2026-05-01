@@ -106,3 +106,13 @@ export const selectConnectedAccountsLoading = createSelector(
   selectUserState,
   (state) => state.connectedAccountsLoading
 );
+
+export const selectSelectedPublicProfile = createSelector(
+  selectUserState,
+  (state) => state.selectedPublicProfile
+);
+
+export const selectPublicProfileLoading = createSelector(
+  selectUserState,
+  (state) => state.publicProfileLoading
+);

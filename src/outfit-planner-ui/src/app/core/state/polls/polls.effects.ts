@@ -127,4 +127,32 @@ export class PollsEffects {
       ),
     { dispatch: false },
   );
+
+  loadRecentPoll$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.loadRecentPoll),
+        mergeMap((action) =>
+          this.pollsUseCases.getRecentPollWithComments(undefined, action.commentsPageSize).pipe(
+            map(({ poll, comments, commentsCursor, hasMoreComments }) => 
+              PollsActions.loadRecentPollSuccess({ poll, comments, commentsCursor, hasMoreComments })),
+            catchError((error) => of(PollsActions.loadRecentPollFailure({ error: error.message })))
+          )
+        )
+      )
+  );
+
+  loadMorePollComments$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.loadMorePollComments),
+        mergeMap((action) =>
+          this.pollsUseCases.getRecentPollWithComments(action.cursor, action.pageSize).pipe(
+            map(({ comments, commentsCursor, hasMoreComments }) => 
+              PollsActions.loadMorePollCommentsSuccess({ comments, commentsCursor, hasMoreComments })),
+            catchError((error) => of(PollsActions.loadMorePollCommentsFailure({ error: error.message })))
+          )
+        )
+      )
+  );
 }

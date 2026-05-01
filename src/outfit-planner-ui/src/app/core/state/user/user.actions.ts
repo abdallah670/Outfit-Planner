@@ -102,10 +102,10 @@ export const UserActions = createActionGroup({
     'Delete Account Success': emptyProps(),
     'Delete Account Failure': props<{ error: string }>(),
 
-    //Laod other user profile
-    'Load  User Profile': props<{ userId: string }>(),
-    'Load  User Profile Success': props<{ user: UserProfile }>(),
-    'Load  User Profile Failure': props<{ error: string }>(),
+    //Load other user profile
+    'Load User Profile': props<{ userId: string }>(),
+    'Load User Profile Success': props<{ user: UserProfile }>(),
+    'Load User Profile Failure': props<{ error: string }>(),
     //load follwer , follwers ,follow stats, follow and unfollow
     'Load Followers': props<{ userId: string }>(),
     'Load Followers Success': props<{ followers: Follower[] }>(),

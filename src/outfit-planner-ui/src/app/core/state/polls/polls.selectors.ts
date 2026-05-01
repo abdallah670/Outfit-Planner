@@ -5,6 +5,11 @@ export const {
   selectPollsState,
   selectPolls,
   selectSelectedPoll,
+  selectRecentPoll,
+  selectRecentPollComments,
+  selectCommentsCursor,
+  selectHasMoreComments,
+  selectCommentsLoading,
   selectLoading: selectPollsLoading,
   selectError: selectPollsError,
 } = pollsFeature;

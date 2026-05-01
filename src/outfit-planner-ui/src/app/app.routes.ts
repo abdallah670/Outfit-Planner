@@ -43,6 +43,7 @@ export const routes: Routes = [
   { path: 'social/feed', component: CommunityFeedComponent, canActivate: [authGuard] },
   { path: 'social/create', component: CreatePollComponent, canActivate: [authGuard] },
   { path: 'social/trending', component: TrendingOutfitsComponent, canActivate: [authGuard] },
+  { path: 'social/profile/:userId', loadComponent: () => import('./presentation/pages/public-profile/public-profile.component').then(m => m.SocialProfileComponent), canActivate: [authGuard] },
   { path: 'social/polls/:id', component: PollDetailComponent, canActivate: [authGuard] },
   { path: 'search', component: GlobalSearchComponent, canActivate: [authGuard] },
   { path: 'notifications', component: NotificationsCenterComponent },

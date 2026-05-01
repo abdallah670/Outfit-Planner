@@ -20,6 +20,8 @@ export interface UserState {
   settingsLoading: boolean;
   connectedAccounts: ConnectedAccount[];
   connectedAccountsLoading: boolean;
+  selectedPublicProfile: UserProfile | null;
+  publicProfileLoading: boolean;
 }
 
 export const initialState: UserState = {
@@ -37,6 +39,8 @@ export const initialState: UserState = {
   settingsLoading: false,
   connectedAccounts: [],
   connectedAccountsLoading: false,
+  selectedPublicProfile: null,
+  publicProfileLoading: false,
 };
 export interface FollowState{
   userId: string;
@@ -297,18 +301,21 @@ export const userReducer = createReducer(
     connectedAccountsLoading: false,
     error,
   })),
-  //follow
-  on(UserActions.followUser, (state) => ({
+  // Load User Profile (Social)
+  on(UserActions.loadUserProfile, (state) => ({
     ...state,
-    followingLoading: true,
+    publicProfileLoading: true,
+    error: null,
   })),
-  on(UserActions.followUserSuccess, (state) => ({
+  on(UserActions.loadUserProfileSuccess, (state, { user }) => ({
     ...state,
-    followingLoading: false,
+    selectedPublicProfile: user,
+    publicProfileLoading: false,
+    error: null,
   })),
-  on(UserActions.followUserFailure, (state, { error }) => ({
+  on(UserActions.loadUserProfileFailure, (state, { error }) => ({
     ...state,
-    followingLoading: false,
+    publicProfileLoading: false,
     error,
   })),
 );

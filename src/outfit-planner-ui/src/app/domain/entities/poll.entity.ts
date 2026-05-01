@@ -78,3 +78,41 @@ export enum PollStatus {
   Closed = 'closed',
 }
 
+export interface RecentPollWithCommentsDto {
+  poll: Poll;
+  comments: any[]; 
+}
+
+/**
+ * Helper to map PollOption from ValidationPoll to local interface
+ */
+export function mapPollOptionToDisplayOption(option: PollOption): { id: string; imageUrl: string; label: string; votes: number } {
+  return {
+    id: option.id,
+    imageUrl: option.outfitThumbnail || '',
+    label: option.description,
+    votes: option.voteCount,
+  };
+}
+
+/**
+ * Calculate time remaining string from expiresAt Date
+ */
+export function getTimeLeft(expiresAt: Date | string): string {
+  if (!expiresAt) return '';
+  const expiry = new Date(expiresAt);
+  const now = new Date();
+  const diff = expiry.getTime() - now.getTime();
+
+  if (diff <= 0) return 'Expired';
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (hours > 24) {
+    const days = Math.floor(hours / 24);
+    return `${days}d left`;
+  }
+  return hours > 0 ? `${hours}h ${minutes}m left` : `${minutes}m left`;
+}
+

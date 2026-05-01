@@ -12,14 +12,14 @@ namespace OutfitPlanner.Infrastructure.Services;
 public class OutfitImageProcessingService : IOutfitImageProcessingService
 {
     private readonly OutfitLayoutConfig _config;
-    private readonly IBackgroundRemovalService? _backgroundRemovalService;
+   
     private const int AlphaThreshold = 10; // Pixels with alpha <= 10 are considered transparent
 
     public OutfitImageProcessingService(
        
         OutfitLayoutConfig? config = null)
     {
-        _backgroundRemovalService = backgroundRemovalService;
+       
         _config = config ?? new OutfitLayoutConfig();
         
     

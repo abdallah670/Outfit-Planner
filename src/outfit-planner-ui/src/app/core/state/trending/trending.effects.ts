@@ -18,7 +18,7 @@ export class TrendingEffects {
         mergeMap((action: ReturnType<typeof TrendingActions.loadTrending>) =>
           this.trendingUseCases.getTrendingOutfits(action.page, action.pageSize).pipe(
             map((response: { items: TrendingOutfit[]; totalCount: number }) =>
-              TrendingActions.loadTrendingSuccess({ outfits: response.items, totalCount: response.totalCount })
+              TrendingActions.loadTrendingSuccess({ outfits: response.items, totalCount: response.totalCount, append: !!(action.page && action.page > 1) })
             ),
             catchError((error) =>
               of(

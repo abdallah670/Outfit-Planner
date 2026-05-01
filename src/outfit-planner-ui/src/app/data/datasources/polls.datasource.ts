@@ -98,6 +98,22 @@ export class PollsDataSource {
       .pipe(map(res => res.url));
   }
 
+  getRecentPollWithComments(cursor?: string, pageSize: number = 20): Observable<{ poll: Poll; comments: any[] }> {
+    let url = `${this.apiUrl}/recent-poll?commentsPageSize=${pageSize}`;
+    if (cursor) {
+      url += `&commentsCursor=${cursor}`;
+    }
+    
+    return this.http.get<any>(url).pipe(
+      map(res => ({
+        poll: this.mapPollDtoToEntity(res.poll),
+        comments: res.comments?.items || [],
+        commentsCursor: res.comments?.nextCursor,
+        hasMoreComments: res.comments?.hasMore ?? false
+      }))
+    );
+  }
+
   private mapPollDtoToEntity(dto: PollDto): Poll {
     return {
       id: dto.id,

@@ -57,6 +57,31 @@ public class UserController : ControllerBase
         }
     }
 
+   
+    /// <summary>
+    /// Get public profile information for any user (non-sensitive)
+    /// </summary>
+    [HttpGet("users/{userId}/profile")]
+    [AllowAnonymous]
+    public async Task<ActionResult<PublicUserProfileDto?>> GetPublicProfile(string userId)
+    {
+        try
+        {
+            var query = new GetPublicUserProfileQuery { UserId = userId };
+            var profile = await _mediator.Send(query);
+
+            if (profile == null)
+                return NotFound(new { message = "User not found" });
+
+            return Ok(profile);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving public profile for user {UserId}", userId);
+            return StatusCode(500, new { message = "Failed to retrieve profile" });
+        }
+    }
+
     /// <summary>
     /// Update user profile
     /// </summary>

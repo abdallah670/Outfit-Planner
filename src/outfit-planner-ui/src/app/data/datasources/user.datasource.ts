@@ -8,6 +8,7 @@ import {
   ChangePasswordRequest,
   UpdateEmailRequest,
 } from '../../domain/entities/user-profile.entity';
+import { PublicUserProfile } from '../../domain/entities/public-user-profile.entity';
 import { environment } from '../../../environments/environment';
 
 interface UploadResponse {
@@ -55,7 +56,6 @@ export class UserDataSource {
 
     return this.http.post<UploadResponse>(`${this.apiUrl}/profile-picture`, formData).pipe(
       map((response: UploadResponse) => {
-        // Extract the image URL from the message (format: "success|url")
         const parts = response.message.split('|');
         const rawUrl = parts.length > 1 ? parts[1] : '';
         return this.getAbsoluteUrl(rawUrl) || '';
@@ -101,9 +101,11 @@ export class UserDataSource {
     return this.http.get<any>(`${this.apiUrl}/users/${userId}/following`, { params });
   }
 
-  getPublicProfile(userId: string): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.apiUrl}/users/${userId}/profile`).pipe(
-      map((profile: UserProfile) => {
+  // ============ Public Profile (for viewing other users) ============
+
+  getPublicUserProfile(userId: string): Observable<PublicUserProfile> {
+    return this.http.get<PublicUserProfile>(`${this.apiUrl}/users/${userId}/profile`).pipe(
+      map((profile: PublicUserProfile) => {
         if (profile.profilePictureUrl) {
           profile.profilePictureUrl = this.getAbsoluteUrl(profile.profilePictureUrl);
         }

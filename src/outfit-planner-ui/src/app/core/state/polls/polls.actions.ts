@@ -27,5 +27,12 @@ export const PollsActions = createActionGroup({
     'Delete Poll': props<{ pollId: string }>(),
     'Delete Poll Success': props<{ pollId: string }>(),
     'Delete Poll Failure': props<{ error: string }>(),
+
+    'Load Recent Poll': props<{ cursor?: string; pageSize?: number; commentsPageSize?: number }>(),
+    'Load Recent Poll Success': props<{ poll: Poll; comments: any[]; commentsCursor?: string | null; hasMoreComments?: boolean }>(),
+    'Load Recent Poll Failure': props<{ error: string }>(),
+    'Load More Poll Comments': props<{ cursor?: string; pageSize?: number }>(),
+    'Load More Poll Comments Success': props<{ comments: any[]; commentsCursor?: string | null; hasMoreComments?: boolean }>(),
+    'Load More Poll Comments Failure': props<{ error: string }>(),
   },
 });

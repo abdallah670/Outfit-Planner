@@ -7,6 +7,7 @@ import {
   ChangePasswordRequest,
   UpdateEmailRequest,
 } from '../../domain/entities/user-profile.entity';
+import { PublicUserProfile } from '../../domain/entities/public-user-profile.entity';
 import { UserDataSource } from '../datasources/user.datasource';
 
 @Injectable({
@@ -23,8 +24,8 @@ export class UserRepositoryImpl implements UserRepository {
     return this.dataSource.getProfilePicture();
   }
 
-  getPublicProfile(userId: string): Observable<UserProfile> {
-    return this.dataSource.getPublicProfile(userId);
+  getPublicProfile(userId: string): Observable<PublicUserProfile> {
+    return this.dataSource.getPublicUserProfile(userId);
   }
 
   updateProfile(request: UpdateUserProfileRequest): Observable<void> {

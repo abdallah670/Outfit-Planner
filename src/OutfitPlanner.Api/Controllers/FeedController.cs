@@ -3,11 +3,11 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.DTOs.Feed;
-
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Features.Feed.Requests.Queries;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Enums;
+using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application.Common;
 
 namespace OutfitPlanner.Api.Controllers;
@@ -39,10 +39,9 @@ public class FeedController : ControllerBase
         [FromQuery] string? sortBy = "recent",
         [FromQuery] string? postType = null)
     {
-        var userId = GetUserId();
         var query = new GetFeedQuery 
         { 
-            UserId = userId, 
+            UserId = null, 
             Cursor = cursor, 
             PageSize = pageSize,
             SortBy = sortBy ?? "recent",
@@ -53,6 +52,38 @@ public class FeedController : ControllerBase
         var posts = await _mediator.Send(query);
         return Ok(posts);
     }
+
+    /// <summary>
+    /// Get posts created by a specific user (for public profile activity)
+    /// </summary>
+    [HttpGet("user/{userId}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<CursorPagination.CursorPagedResult<FeedPostDto>>> GetUserFeed(
+        string userId,
+        [FromQuery] string? cursor = null,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? postType = null)
+    {
+        try
+        {
+            var query = new GetUserFeedQuery
+            {
+                UserId = userId,
+                Cursor = cursor,
+                PageSize = pageSize,
+                PostType = postType
+            };
+            
+            var posts = await _mediator.Send(query);
+            return Ok(posts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving feed for user {UserId}", userId);
+            return StatusCode(500, new { message = "Failed to retrieve user feed" });
+        }
+    }
+
     /// <summary>
     /// Get a specific post by ID
     /// </summary>
