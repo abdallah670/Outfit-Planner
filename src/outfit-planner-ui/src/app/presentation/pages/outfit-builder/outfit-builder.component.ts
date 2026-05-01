@@ -237,6 +237,27 @@ export class OutfitBuilderComponent implements OnInit, OnDestroy {
         }
       });
     }
+
+    // Check for items from query params (from wardrobe selection)
+    const itemsParam = this.route.snapshot.queryParamMap.get('items');
+    if (itemsParam && !id) {
+      const itemIds = itemsParam.split(',');
+      // Wait for wardrobe items to load, then auto-add selected items
+      this.wardrobeItems$.pipe(
+        filter((items: ClothingItem[]) => items.length > 0),
+        take(1),
+      ).subscribe((wardrobeItems: ClothingItem[]) => {
+        itemIds.forEach((id) => {
+          const item = wardrobeItems.find((i) => i.id === id);
+          if (item) {
+            this.addItem(item);
+          }
+        });
+        if (itemIds.length > 0) {
+          this.snackBar.open(`Added ${itemIds.length} item${itemIds.length > 1 ? 's' : ''} from wardrobe`, 'OK', { duration: 3000 });
+        }
+      });
+    }
   }
 
   private populateEditMode(outfit: any, wardrobeItems: ClothingItem[]) {

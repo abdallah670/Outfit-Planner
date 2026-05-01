@@ -54,11 +54,11 @@
     <div class="outfit-section" *ngIf="evt.hasOutfit">
       <h3 class="section-title">Associated Outfit</h3>
       <div class="outfit-card">
-        <div class="outfit-image" *ngIf="evt.outfitImageUrl">
-          <img [src]="evt.outfitImageUrl" [alt]="evt.outfitName">
-        </div>
-        <div class="outfit-image placeholder" *ngIf="!evt.outfitImageUrl">
-          <mat-icon>checkroom</mat-icon>
+        <div class="outfit-image">
+          <img *ngIf="evt.outfitImageUrl; else outfitPlaceholder" [src]="evt.outfitImageUrl" [alt]="evt.outfitName">
+          <ng-template #outfitPlaceholder>
+            <img src="assets/placeholder.jpg" alt="No outfit image">
+          </ng-template>
         </div>
         <div class="outfit-info">
           <span class="outfit-name">{{ evt.outfitName || 'Unnamed Outfit' }}</span>

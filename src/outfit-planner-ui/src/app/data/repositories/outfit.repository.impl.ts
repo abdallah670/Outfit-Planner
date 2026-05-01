@@ -40,8 +40,8 @@ export class OutfitRepositoryImpl implements OutfitRepository {
     return this.outfitDataSource.getOutfitsSuggestions(request);
   }
 
-  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse> {
-    return this.outfitDataSource.getTodaysPick(latitude, longitude);
+  getTodaysPick(latitude?: number, longitude?: number, date?: string): Observable<TodaysPickResponse> {
+    return this.outfitDataSource.getTodaysPick(latitude, longitude, date);
   }
 
   recordOutfitWear(id: string): Observable<Outfit> {

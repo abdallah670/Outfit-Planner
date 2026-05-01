@@ -46,7 +46,7 @@ export const OutfitsActions = createActionGroup({
     'Generate Suggestions': props<{ request: OutfitSuggestionsRequest }>(),
     'Generate Suggestions Success': props<{ outfits: Outfit[] }>(),
     'Generate Suggestions Failure': props<{ error: string }>(),
-    'Load Todays Pick': props<{ latitude?: number; longitude?: number }>(),
+    'Load Todays Pick': props<{ latitude?: number; longitude?: number; date?: string }>(),
     'Load Todays Pick Success': props<{ outfit: Outfit; context: TodaysPickContext }>(),
     'Load Todays Pick Failure': props<{ error: string }>(),
   },

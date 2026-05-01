@@ -12,6 +12,7 @@ import { AppPreferences, UpdateAppPreferencesRequest } from '../../services/app-
 import { NotificationSettings, UpdateNotificationSettingsRequest } from '../../services/notification-settings.service';
 import { ConnectedAccount } from '../../services/connected-accounts.service';
 import { Follower, Following, FollowStats, IsFollowing } from '../../../domain/entities/follow.entity';
+import { PublicUserProfile } from '../../../domain/entities/public-user-profile.entity';
 
 export const UserActions = createActionGroup({
   source: 'User',
@@ -104,23 +105,8 @@ export const UserActions = createActionGroup({
 
     //Load other user profile
     'Load User Profile': props<{ userId: string }>(),
-    'Load User Profile Success': props<{ user: UserProfile }>(),
+    'Load User Profile Success': props<{ user: PublicUserProfile }>(),
     'Load User Profile Failure': props<{ error: string }>(),
-    //load follwer , follwers ,follow stats, follow and unfollow
-    'Load Followers': props<{ userId: string }>(),
-    'Load Followers Success': props<{ followers: Follower[] }>(),
-    'Load Followers Failure': props<{ error: string }>(),
-    'Load Followings': props<{ userId: string }>(),
-    'Load Followings Success': props<{ followings: Following[] }>(),
-    'Load Followings Failure': props<{ error: string }>(),
-    'Load Follow Stats': props<{ userId: string }>(),
-    'Load Follow Stats Success': props<{ followStats: FollowStats }>(),
-    'Load Follow Stats Failure': props<{ error: string }>(),
-    'Follow User': props<{ userId: string }>(),
-    'Follow User Success': props<{ isFollowing: boolean }>(),
-    'Follow User Failure': props<{ error: string }>(),
-    'Unfollow User': props<{ userId: string }>(),
-    'Unfollow User Success': props<{ isFollowing: boolean }>(),
-    'Unfollow User Failure': props<{ error: string }>(),
+    
   },
 });

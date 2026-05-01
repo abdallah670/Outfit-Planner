@@ -43,7 +43,7 @@ import { Poll, PollOption, CastVoteRequest, PollStatus } from '../../../../domai
           <div class="options-grid">
             <div class="option-item" *ngFor="let option of p.options; let i = index">
               <div class="option-image">
-                <img [src]="option.outfitThumbnail || 'assets/default-outfit.png'" alt="Option Image">
+                <img [src]="option.outfitThumbnail || 'assets/placeholder.jpg'" alt="Option Image">
                 <span class="option-letter">{{ getLetter(i) }}</span>
               </div>
               <div class="option-info">

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { UserRepository } from '../repositories/user.repository';
+import { Inject, Injectable } from '@angular/core';
+import { USER_REPOSITORY_TOKEN, UserRepository } from '../repositories/user.repository';
 import { Observable } from 'rxjs';
 import { PublicUserProfile } from '../entities/public-user-profile.entity';
 import { ChangePasswordRequest, UpdateEmailRequest, UpdateUserProfileRequest, UserProfile } from '../entities/user-profile.entity';
@@ -10,7 +10,7 @@ import { ChangePasswordRequest, UpdateEmailRequest, UpdateUserProfileRequest, Us
 })
 export class UserUseCases {
   constructor(
-    private userRepository: UserRepository,
+   @Inject(USER_REPOSITORY_TOKEN) private readonly userRepository: UserRepository,
   ) {}
 
   //Get Profile

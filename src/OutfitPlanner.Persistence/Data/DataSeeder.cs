@@ -53,9 +53,13 @@ public class DataSeeder
             await SeedClothingItemsAsync();
             await SeedOutfitsAsync();
             await SeedPollsAsync();
+            await SeedFeedPostsAsync();      // New: creates feed posts from outfits & polls
+            await SeedFollowsAsync();        // New: create user follow relationships
             await SeedTrendingOutfitsAsync();
             await SeedNotificationsAsync();
             await SeedStyleProfilesAsync();
+            await SeedCalendarEventsAsync();      // New: calendar events
+            await SeedWearEventsAsync();          // New: wear history
 
             _logger.LogInformation("Database seeding completed successfully!");
         }
@@ -134,8 +138,8 @@ public class DataSeeder
                     Id = Guid.NewGuid(),
                     UserId = user.Id,
                     Name = $"{category} {random.Next(1, 10)}",
-                    Category = category,
-                    Type = ClothingType.Top, // Default type based on category
+                    Category = GetRandomCategory(random),  // e.g. "Casual", "Formal", "Sport"
+                    Type = ClothingType.Top, // Default type based on category (will be overridden)
                     PrimaryColor = GetRandomColor(random),
                     Brand = $"Brand {random.Next(1, 5)}",
                     Size = GetRandomSize(random),
@@ -384,6 +388,247 @@ public class DataSeeder
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Seeded {Count} validation polls", polls.Count);
+    }
+
+    /// <summary>
+    /// Seeds feed posts (outfit shares and poll posts) with reactions and comments
+    /// </summary>
+    private async Task SeedFeedPostsAsync()
+    {
+        // Check if feed posts already exist
+        if (await _context.FeedPosts.AnyAsync())
+        {
+            _logger.LogInformation("Feed posts already exist, skipping feed posts seeding.");
+            return;
+        }
+
+        var users = await _userManager.Users.Take(3).ToListAsync();
+        if (users.Count == 0) return;
+
+        var outfits = await _context.Outfits
+            .Include(o => o.Items)
+                .ThenInclude(oi => oi.ClothingItem)
+            .Take(8)
+            .ToListAsync();
+        var polls = await _context.ValidationPolls
+            .Include(p => p.Options)
+            .Take(4)
+            .ToListAsync();
+
+        if (outfits.Count == 0 && polls.Count == 0) return;
+
+        var feedPosts = new List<FeedPost>();
+        var comments = new List<PostComment>();
+        var reactions = new List<PostReaction>();
+        var random = new Random(42);
+
+        var outfitCaptions = new[]
+        {
+            "Love this combo for a casual day out!",
+            "Finally put together my perfect autumn look",
+            "Office vibes today – feeling sharp!",
+            "Weekend brunch ready",
+            "This outfit made me feel confident all day",
+            "Tried something new with the layering",
+            "My go-to for a long day at work",
+            "Date night success!"
+        };
+
+        var pollCaptions = new[]
+        {
+            "Need your help deciding!",
+            "Which one should I pick?",
+            "Vote for your favorite!",
+            "Honest opinions please!"
+        };
+
+        // === Seed outfit posts ===
+        for (int i = 0; i < outfits.Count; i++)
+        {
+            var outfit = outfits[i];
+            var user = users[i % users.Count];
+
+            var post = new FeedPost
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                PostType = PostType.Outfit,
+                OutfitId = outfit.Id,
+                Caption = outfitCaptions[i % outfitCaptions.Length],
+                Visibility = Visibility.Public,
+                LikeCount = random.Next(5, 50),
+                CommentCount = random.Next(0, 10),
+                CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 14))
+            };
+            feedPosts.Add(post);
+
+            // Add reactions from random users
+            var reactorUsers = users.OrderBy(x => random.Next()).Take(random.Next(1, users.Count)).ToList();
+            foreach (var reactor in reactorUsers)
+            {
+                var reactionType = (ReactionType)random.Next(1, 8); // Heart=1..7 (Angry)
+                reactions.Add(new PostReaction
+                {
+                    Id = Guid.NewGuid(),
+                    PostId = post.Id,
+                    UserId = reactor.Id,
+                    ReactionType = reactionType,
+                    CreatedAt = post.CreatedAt.AddMinutes(random.Next(5, 120))
+                });
+            }
+
+            // Add some comments
+            var commentCount = random.Next(0, 4);
+            var commenters = users.OrderBy(x => random.Next()).Take(commentCount).ToList();
+            for (int c = 0; c < commentCount; c++)
+            {
+                var commenter = commenters[c];
+                var comment = new PostComment
+                {
+                    Id = Guid.NewGuid(),
+                    PostId = post.Id,
+                    UserId = commenter.Id,
+                    Content = GetRandomComment(random),
+                    CreatedAt = post.CreatedAt.AddMinutes(random.Next(10, 300))
+                };
+                comments.Add(comment);
+            }
+        }
+
+        // === Seed poll posts ===
+        for (int i = 0; i < polls.Count; i++)
+        {
+            var poll = polls[i];
+            var user = users[i % users.Count];
+
+            var post = new FeedPost
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                PostType = PostType.Poll,
+                PollId = poll.Id,
+                Caption = pollCaptions[i % pollCaptions.Length],
+                Visibility = Visibility.Public,
+                LikeCount = random.Next(3, 30),
+                CommentCount = random.Next(1, 8),
+                CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 10))
+            };
+            feedPosts.Add(post);
+
+            // Add reactions to the poll post
+            var reactorUsers = users.OrderBy(x => random.Next()).Take(random.Next(1, users.Count)).ToList();
+            foreach (var reactor in reactorUsers)
+            {
+                var reactionType = random.Next(2) == 0 ? ReactionType.Heart : ReactionType.Like;
+                reactions.Add(new PostReaction
+                {
+                    Id = Guid.NewGuid(),
+                    PostId = post.Id,
+                    UserId = reactor.Id,
+                    ReactionType = reactionType,
+                    CreatedAt = post.CreatedAt.AddMinutes(random.Next(5, 180))
+                });
+            }
+
+            // Add comments asking for votes
+            var commentCount = random.Next(1, 3);
+            for (int c = 0; c < commentCount; c++)
+            {
+                var commenter = users[random.Next(users.Count)];
+                comments.Add(new PostComment
+                {
+                    Id = Guid.NewGuid(),
+                    PostId = post.Id,
+                    UserId = commenter.Id,
+                    Content = "Which one do you think looks better?",
+                    CreatedAt = post.CreatedAt.AddMinutes(random.Next(15, 200))
+                });
+            }
+        }
+
+        await _context.FeedPosts.AddRangeAsync(feedPosts);
+        await _context.PostComments.AddRangeAsync(comments);
+        await _context.PostReactions.AddRangeAsync(reactions);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} feed posts, {CommentCount} comments, {ReactionCount} reactions",
+            feedPosts.Count, comments.Count, reactions.Count);
+    }
+
+    /// <summary>
+    /// Seeds follow relationships between users
+    /// </summary>
+    private async Task SeedFollowsAsync()
+    {
+        // Check if follows already exist
+        if (await _context.Follows.AnyAsync())
+        {
+            _logger.LogInformation("Follows already exist, skipping follows seeding.");
+            return;
+        }
+
+        var users = await _userManager.Users.Take(5).ToListAsync();
+        if (users.Count < 2) return;
+
+        var follows = new List<Follow>();
+        var random = new Random(42);
+
+        // Create a web of follow relationships
+        // User 0 (admin) is followed by several others
+        for (int i = 1; i < users.Count; i++)
+        {
+            follows.Add(new Follow
+            {
+                Id = Guid.NewGuid(),
+                FollowerId = users[i].Id,
+                FollowingId = users[0].Id,
+                CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 30))
+            });
+        }
+
+        // Users follow each other in some patterns
+        for (int i = 1; i < users.Count; i++)
+        {
+            for (int j = i + 1; j < users.Count && j < i + 2; j++)
+            {
+                follows.Add(new Follow
+                {
+                    Id = Guid.NewGuid(),
+                    FollowerId = users[i].Id,
+                    FollowingId = users[j].Id,
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 20))
+                });
+                follows.Add(new Follow
+                {
+                    Id = Guid.NewGuid(),
+                    FollowerId = users[j].Id,
+                    FollowingId = users[i].Id,
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 20))
+                });
+            }
+        }
+
+        // Add a few more random follows
+        for (int i = 0; i < 5; i++)
+        {
+            var follower = users[random.Next(users.Count)];
+            var following = users[random.Next(users.Count)];
+            if (follower.Id != following.Id)
+            {
+                follows.Add(new Follow
+                {
+                    Id = Guid.NewGuid(),
+                    FollowerId = follower.Id,
+                    FollowingId = following.Id,
+                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 15))
+                });
+            }
+        }
+
+        await _context.Follows.AddRangeAsync(follows);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} follow relationships", follows.Count);
     }
 
     private async Task SeedTrendingOutfitsAsync()
@@ -658,6 +903,160 @@ public class DataSeeder
         _logger.LogInformation("Seeded {Count} style profiles with custom rules", styleProfiles.Count);
     }
 
+    /// <summary>
+    /// Seeds calendar events (scheduled outfits/events) for users
+    /// </summary>
+    private async Task SeedCalendarEventsAsync()
+    {
+        var users = await _userManager.Users.Take(3).ToListAsync();
+        if (users.Count == 0) return;
+
+        // Check if calendar events already exist
+        if (await _context.CalendarEvents.AnyAsync())
+        {
+            _logger.LogInformation("Calendar events already exist, skipping calendar events seeding.");
+            return;
+        }
+
+        var outfits = await _context.Outfits.Take(12).ToListAsync();
+        if (outfits.Count == 0) return;
+
+        var calendarEvents = new List<CalendarEvent>();
+        var random = new Random(42);
+
+        var eventTitles = new[]
+        {
+            "Work Meeting", "Gym Session", "Weekend Brunch", "Dinner Date",
+            "Family Gathering", "Office Day", "Coffee with Friends", "Yoga Class",
+            "Business Lunch", "Night Out", "Shopping Trip", "Travel Day"
+        };
+
+        for (int i = 0; i < 30; i++)
+        {
+            var user = users[i % users.Count];
+            var outfit = outfits[i % outfits.Count];
+            var date = DateTime.UtcNow.AddDays(random.Next(-30, 30)); // Past and future events
+
+             var calendarEvent = new CalendarEvent
+             {
+                 Id = Guid.NewGuid(),
+                 UserId = user.Id,
+                 WearEventId = outfit.Id,
+                 Title = eventTitles[random.Next(eventTitles.Length)],
+                 Description = GetRandomCalendarDescription(random),
+                 Location = GetRandomLocation(random),
+                 EventDate = date,
+                 StartTime = TimeSpan.FromHours(random.Next(8, 12)),     // Morning/afternoon start
+                 EndTime = TimeSpan.FromHours(random.Next(14, 20)),      // Afternoon/evening end
+                 EventType = (CalendarEventType)random.Next(1, 11), // 1-10 for the 10 enum values
+                 IsRecurring = false,
+                 RecurrencePattern = null
+             };
+            calendarEvents.Add(calendarEvent);
+        }
+
+        await _context.CalendarEvents.AddRangeAsync(calendarEvents);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} calendar events", calendarEvents.Count);
+    }
+
+    /// <summary>
+    /// Seeds wear events (history of when items were worn)
+    /// </summary>
+    private async Task SeedWearEventsAsync()
+    {
+        var users = await _userManager.Users.Take(3).ToListAsync();
+        if (users.Count == 0) return;
+
+        // Check if wear events already exist
+        if (await _context.WearEvents.AnyAsync())
+        {
+            _logger.LogInformation("Wear events already exist, skipping wear events seeding.");
+            return;
+        }
+
+        var clothingItems = await _context.ClothingItems.Take(30).ToListAsync();
+        if (clothingItems.Count == 0) return;
+
+        var wearEvents = new List<WearEvent>();
+        var random = new Random(42);
+
+        for (int i = 0; i < 100; i++)
+        {
+            var item = clothingItems[random.Next(clothingItems.Count)];
+            var user = users[random.Next(users.Count)];
+            var date = DateTime.UtcNow.AddDays(-random.Next(1, 90)); // Past 90 days
+
+            var weatherCondition = GetRandomWeatherCondition(random);
+            var temperature = random.Next(-5, 35); // Celsius range
+
+             var wearEvent = new WearEvent
+             {
+                 Id = Guid.NewGuid(),
+                 UserId = user.Id,
+                 ClothingItemId = item.Id,
+                 WornAt = date.AddHours(random.Next(8, 22)),
+                 DurationMinutes = random.Next(60, 480), // 1-8 hours
+                 WeatherCondition = weatherCondition,
+                 Rating = random.Next(3, 6), // 3-5 stars
+                 Notes = GetRandomWearFeedback(random)
+             };
+
+            wearEvents.Add(wearEvent);
+        }
+
+        await _context.WearEvents.AddRangeAsync(wearEvents);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} wear events", wearEvents.Count);
+    }
+
+    private static string GetRandomCalendarDescription(Random random)
+    {
+        var descriptions = new[]
+        {
+            "Team standup at 10am",
+            "Casual Friday - dress down",
+            "Don't forget the presentation",
+            "Lunch with client",
+            "Bring laptop for demo",
+            "Formal attire required",
+            "Remote work day"
+        };
+        return descriptions[random.Next(descriptions.Length)];
+    }
+
+    private static string GetRandomLocation(Random random)
+    {
+        var locations = new[]
+        {
+            "Office", "Home", "Gym", "Restaurant", "Coffee Shop", "Mall",
+            "Park", "Airport", "Hotel", "Beach", "Mountain", "Friends House"
+        };
+        return locations[random.Next(locations.Length)];
+    }
+
+    private static string GetRandomWeatherCondition(Random random)
+    {
+        var conditions = new[] { "Sunny", "Cloudy", "Rainy", "Windy", "Clear", "Overcast" };
+        return conditions[random.Next(conditions.Length)];
+    }
+
+    private static string GetRandomWearFeedback(Random random)
+    {
+        var feedback = new[]
+        {
+            "Felt great all day!",
+            "A bit too warm",
+            "Perfect for the occasion",
+            "Got lots of compliments",
+            "Not very comfortable",
+            "Exactly what I needed"
+        };
+        return feedback[random.Next(feedback.Length)];
+    }
+
     private static string GetRuleName(int index)
     {
         return index switch
@@ -724,13 +1123,50 @@ public class DataSeeder
 
     private static string GetRandomColor(Random random)
     {
-        var colors = new[] { "Red", "Blue", "Green", "Black", "White", "Yellow", "Purple", "Pink", "Orange", "Gray" };
+        // Return hex color codes to match the UI color picker format
+        var colors = new[] {
+            "#ef4444", // Red
+            "#3b82f6", // Blue
+            "#22c55e", // Green
+            "#1f2937", // Black
+            "#ffffff", // White
+            "#fbbf24", // Yellow
+            "#8b5cf6", // Purple
+            "#ec4899", // Pink
+            "#fb923c", // Orange
+            "#9ca3af"  // Gray
+        };
         return colors[random.Next(colors.Length)];
+    }
+
+    private static string GetRandomCategory(Random random)
+    {
+        // These are the occasion/style categories shown in the UI
+        var categories = new[] { "Casual", "Formal", "Sport", "Business", "Work", "Social", "Date", "Travel" };
+        return categories[random.Next(categories.Length)];
     }
 
     private static string GetRandomSize(Random random)
     {
         var sizes = new[] { "XS", "S", "M", "L", "XL", "XXL" };
         return sizes[random.Next(sizes.Length)];
+    }
+
+    private static string GetRandomComment(Random random)
+    {
+        var comments = new[]
+        {
+            "Love this outfit! 😍",
+            "Great style! Where did you get that?",
+            "This looks so comfortable!",
+            "Perfect color combo!",
+            "I need this in my wardrobe",
+            "So chic! 💕",
+            "The fit is everything!",
+            "This is such a vibe",
+            "Love the details on this",
+            "Taking notes for my next shopping trip"
+        };
+        return comments[random.Next(comments.Length)];
     }
 }

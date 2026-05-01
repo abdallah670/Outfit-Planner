@@ -228,6 +228,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.ImageUrl, opt => opt.MapFrom(s => s.Outfit.ImageUrl))
             .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Outfit.UserId))
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
+            .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.Outfit.User.ProfilePictureUrl))
             .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.VoteCount))
             .ForMember(d => d.CommentCount, opt => opt.MapFrom(s => s.CommentCount))
             .ForMember(d => d.TrendingScore, opt => opt.MapFrom(s => s.TrendingScore))

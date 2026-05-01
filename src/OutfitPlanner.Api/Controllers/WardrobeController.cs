@@ -56,7 +56,12 @@ public class WardrobeController : ControllerBase
     public async Task<ActionResult<PagedResult<ClothingItemListDto>>> GetFiltered(
         [FromQuery] string? category,
         [FromQuery] string? color,
-        [FromQuery] string? occasion,
+        [FromQuery] string? condition,
+        [FromQuery] string? fabric,
+        [FromQuery] string? type,
+        [FromQuery] string? size,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice,
         [FromQuery] string? search,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
@@ -67,7 +72,12 @@ public class WardrobeController : ControllerBase
             UserId = userId,
             Category = category,
             Color = color,
-            Occasion = occasion,
+            Condition = condition,
+            Fabric = fabric,
+            Type = type,
+            Size = size,
+            MinPrice = minPrice,
+            MaxPrice = maxPrice,
             SearchQuery = search,
             Page = page,
             PageSize = pageSize

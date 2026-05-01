@@ -447,4 +447,5 @@ export class ProfileComponent implements OnInit {
    onBack(): void {
      window.history.back();
    }
+
 }

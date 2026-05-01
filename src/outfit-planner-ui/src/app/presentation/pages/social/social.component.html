@@ -24,7 +24,7 @@
                  *ngFor="let outfit of trendingOutfitsSignal()" 
                  (click)="router.navigate(['/outfits', outfit.id])">
               <div class="outfit-images">
-                <img [src]="outfit.imageUrl || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300'" alt="Outfit Image">
+                <img [src]="outfit.imageUrl || 'assets/placeholder.jpg'" alt="Outfit Image">
               </div>
               <div class="outfit-meta">
                 <img [src]="outfit.userAvatar || 'assets/default-avatar.png'" 

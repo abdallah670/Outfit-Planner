@@ -55,16 +55,10 @@
         @for (item of getPrimaryItems(); track item.id) {
           <div class="pick-item">
             <div class="item-img">
-              @if (item.clothingItemImageUrl) {
-                <img *ngIf="item.clothingItemImageUrl" [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" />
-                <img *ngIf="!item.clothingItemImageUrl" src="assets/placeholder.jpg" alt="Placeholder" class="item-img-placeholder" />
+              @if (item.clothingItemImageUrl && !failedImages.has(item.id)) {
+                <img [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" (error)="onImageError(item.id)" />
               } @else {
-                <div class="item-img-placeholder">
-                  {{ item.clothingItemType === 'Top' ? '👕' :
-                     item.clothingItemType === 'Bottom' ? '👖' :
-                     item.clothingItemType === 'Footwear' ? '👟' :
-                     item.clothingItemType === 'Outerwear' ? '🧥' : '👔' }}
-                </div>
+                <img src="assets/placeholder.jpg" alt="Placeholder" class="item-img-placeholder" />
               }
             </div>
             <div class="item-info">
@@ -84,7 +78,7 @@
         <button mat-flat-button class="wear-btn" (click)="onWearToday()">
           Wear This Today
         </button>
-        <button mat-button class="view-btn" (click)="onViewOutfit()">
+        <button mat-button class="view-details-btn" (click)="onViewOutfit()">
           View Details
         </button>
       </div>

@@ -25,6 +25,7 @@ export class DailyPickComponent implements OnInit {
   store = inject(Store);
   OutfitsActions = OutfitsActions;
   private router = inject(Router);
+  failedImages = new Set<string>();
 
   outfit: Signal<Outfit | null> = toSignal(this.store.select(selectTodaysOutfit), {
     initialValue: null,
@@ -65,10 +66,8 @@ export class DailyPickComponent implements OnInit {
   }
 
   onViewOutfit(): void {
-    const outfit = this.outfit();
-    if (outfit) {
-      this.router.navigate(['/outfits', outfit.id]);
-    }
+    // Navigate to today's suggestion page which shows full details
+    this.router.navigate(['/outfits/today']);
   }
 
   getMatchPercentage(): string {
@@ -87,5 +86,9 @@ export class DailyPickComponent implements OnInit {
     return outfit.items
       .filter(item => item.role === 'primary' || item.isEssential)
       .slice(0, 3);
+  }
+
+  onImageError(itemId: string): void {
+    this.failedImages.add(itemId);
   }
 }

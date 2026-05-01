@@ -448,7 +448,7 @@ export class CalendarComponent implements OnInit {
    */
   handleImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
-    img.src = '/outfit_placeholder.png';
+    img.src = 'assets/placeholder.jpg';
   }
 
   setView(view: 'month' | 'week'): void {

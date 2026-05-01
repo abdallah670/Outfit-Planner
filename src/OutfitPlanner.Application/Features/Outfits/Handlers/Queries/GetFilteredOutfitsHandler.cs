@@ -33,6 +33,16 @@ public class GetFilteredOutfitsHandler : IRequestHandler<GetFilteredOutfitsReque
                 query = query.Where(o => o.Occasion == occasion);
             }
         }
+
+        // Apply season filter
+        if (!string.IsNullOrWhiteSpace(request.Season))
+        {
+            if (Enum.TryParse<Season>(request.Season, true, out var season))
+            {
+                query = query.Where(o => o.Season == season);
+            }
+        }
+
         // Apply search query
         if (!string.IsNullOrWhiteSpace(request.SearchQuery))
         {

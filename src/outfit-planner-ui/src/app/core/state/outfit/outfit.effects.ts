@@ -267,7 +267,7 @@ export class OutfitEffects {
       this.actions$.pipe(
         ofType(OutfitsActions.loadTodaysPick),
         mergeMap((action: ReturnType<typeof OutfitsActions.loadTodaysPick>) =>
-          this.outfitsUseCases.getTodaysPick(action.latitude, action.longitude).pipe(
+          this.outfitsUseCases.getTodaysPick(action.latitude, action.longitude, action.date).pipe(
             map((response: any) =>
               OutfitsActions.loadTodaysPickSuccess({
                 outfit: response.outfit,

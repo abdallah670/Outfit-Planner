@@ -11,7 +11,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         // Identity User configuration if needed, usually defaults are fine.
         // Configure relationships
         builder.HasOne(u => u.StyleProfile)
-            .WithOne() // UserStyleProfile has UserId, but navigation back to User? In UserStyleProfile we commented out User nav prop. 
+            .WithOne()
             .HasForeignKey<UserStyleProfile>(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -28,7 +28,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasMany(u => u.Outfits)
             .WithOne(o => o.User)
             .HasForeignKey(o => o.UserId)
-            .OnDelete(DeleteBehavior.Cascade); // Deleting user deletes outfits
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(u => u.Polls)
             .WithOne(p => p.User)
@@ -38,16 +38,31 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasMany(u => u.WearEvents)
             .WithOne(e => e.User)
             .HasForeignKey(e => e.UserId)
-            .OnDelete(DeleteBehavior.NoAction); // Prevent cycles or cascading issues if needed, or Cascade? 
-            // If User is deleted, WearEvents should probably be deleted too: Cascade.
-            // But sometimes EF Core complains about multiple cascade paths. 
-            // ClothingItem -> WearEvent (Cascade)
-            // Outfit -> WearEvent (Cascade ?)
-            // User -> WearEvent (Cascade)
-            // This creates multiple cascade paths. Let's start with Cascade and see if migration fails, or restrict one.
-            // Restricting User->WearEvent seems safer if Item/Outfit deletion already handles it?
-            // Actually, if User is deleted, EVERYTHING is deleted. That's fine.
-            // But if Item is deleted, specific wear events go.
-            // Let's create configurations for those specifically.
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.FeedPosts)
+            .WithOne(p => p.User)
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.Comments)
+            .WithOne(c => c.User)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.Reactions)
+            .WithOne(r => r.User)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.Followers)
+            .WithOne(f => f.Following)
+            .HasForeignKey(f => f.FollowingId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.Following)
+            .WithOne(f => f.Follower)
+            .HasForeignKey(f => f.FollowerId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

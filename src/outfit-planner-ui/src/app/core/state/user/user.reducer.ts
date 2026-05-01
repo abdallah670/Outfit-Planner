@@ -1,6 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { UserActions } from './user.actions';
 import { UserProfile, StyleRule } from '../../../domain/entities/user-profile.entity';
+import { PublicUserProfile } from '../../../domain/entities/public-user-profile.entity';
 import { AppPreferences } from '../../services/app-preferences.service';
 import { NotificationSettings } from '../../services/notification-settings.service';
 import { ConnectedAccount } from '../../services/connected-accounts.service';
@@ -20,7 +21,7 @@ export interface UserState {
   settingsLoading: boolean;
   connectedAccounts: ConnectedAccount[];
   connectedAccountsLoading: boolean;
-  selectedPublicProfile: UserProfile | null;
+  selectedPublicProfile: PublicUserProfile | null;
   publicProfileLoading: boolean;
 }
 
@@ -42,12 +43,7 @@ export const initialState: UserState = {
   selectedPublicProfile: null,
   publicProfileLoading: false,
 };
-export interface FollowState{
-  userId: string;
-  followers: number;
-  following: number;
-}
-export type FollowStateMap = Record<string, FollowState>;
+
 
 
 export const userReducer = createReducer(
@@ -301,7 +297,8 @@ export const userReducer = createReducer(
     connectedAccountsLoading: false,
     error,
   })),
-  // Load User Profile (Social)
+
+  // Public Profile (Social)
   on(UserActions.loadUserProfile, (state) => ({
     ...state,
     publicProfileLoading: true,
@@ -319,3 +316,4 @@ export const userReducer = createReducer(
     error,
   })),
 );
+

@@ -45,6 +45,6 @@ export class OutfitDetailModalComponent {
 
   handleImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
-    img.src = '/outfit_placeholder.png';
+    img.src = 'assets/placeholder.jpg';
   }
 }

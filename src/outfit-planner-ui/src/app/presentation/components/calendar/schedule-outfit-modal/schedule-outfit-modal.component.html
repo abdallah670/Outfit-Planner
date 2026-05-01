@@ -41,8 +41,8 @@
         [class.selected]="isOutfitSelected(outfit.id)"
         (click)="selectOutfit(outfit.id)">
         <div class="outfit-image">
-          <img 
-            [src]="outfit.imageUrl || '/outfit_placeholder.png'" 
+          <img
+            [src]="outfit.imageUrl || 'assets/placeholder.jpg'"
             [alt]="outfit.name"
             loading="lazy">
           <div class="selection-indicator" *ngIf="isOutfitSelected(outfit.id)">
@@ -175,8 +175,8 @@
             class="clothing-item"
             [class.selected]="isItemSelected(item.id)"
             (click)="toggleClothingItem(item)">
-            <img 
-              [src]="item.imageUrl || '/clothing-placeholder.png'" 
+            <img
+              [src]="item.imageUrl || 'assets/placeholder.jpg'"
               [alt]="item.name"
               loading="lazy">
             <div class="item-overlay" *ngIf="isItemSelected(item.id)">

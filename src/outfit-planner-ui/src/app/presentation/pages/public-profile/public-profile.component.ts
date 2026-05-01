@@ -240,4 +240,9 @@ export class PublicProfileComponent implements OnInit {
     if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
     return num.toString();
   }
+
+  toggleReaction(post: any): void {
+    // TODO: Implement reaction toggle functionality
+    console.log('Toggle reaction for post:', post);
+  }
 }

@@ -1,13 +1,16 @@
 <mat-card class="outfit-card" [routerLink]="['/outfits', outfit.id]">
   <div class="outfit-visual">
     <!-- Combined Image View -->
-    <div *ngIf="showCombinedView && combinedImageUrl" class="combined-view">
-      <img [src]="combinedImageUrl" [alt]="outfit.name" />
+    <div *ngIf="showCombinedView" class="combined-view">
+      <img *ngIf="combinedImageUrl; else noCombinedImage" [src]="combinedImageUrl" [alt]="outfit.name" />
+      <ng-template #noCombinedImage>
+        <img src="assets/placeholder.jpg" alt="No outfit image" class="placeholder-image" />
+      </ng-template>
     </div>
     
     <!-- Separate Items Grid View -->
     <div
-      *ngIf="!showCombinedView || !combinedImageUrl"
+      *ngIf="!showCombinedView"
       class="items-grid"
       [class.single]="outfit.items.length === 1"
       [class.multiple]="outfit.items.length > 1"

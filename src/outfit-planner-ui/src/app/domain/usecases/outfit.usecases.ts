@@ -39,8 +39,8 @@ export class OutfitsUseCases {
     return this.outfitRepository.getOutfitsSuggestions(request);
   }
 
-  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse> {
-    return this.outfitRepository.getTodaysPick(latitude, longitude);
+  getTodaysPick(latitude?: number, longitude?: number, date?: string): Observable<TodaysPickResponse> {
+    return this.outfitRepository.getTodaysPick(latitude, longitude, date);
   }
 
   recordOutfitWear(id: string): Observable<Outfit> {
