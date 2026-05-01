@@ -12,4 +12,5 @@ public class GetFilteredOutfitsRequest : IRequest<PagedResult<OutfitDto>>
     public string? SortBy { get; set; } // "recent", "mostWorn", "name"
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 20;
+    public string? Season { get; set; }
 }

@@ -25,4 +25,6 @@ export interface PollsRepository {
   closePoll(pollId: string): Observable<void>;
 
   uploadPollImage(file: File): Observable<string>;
+  
+  getRecentPollWithComments(cursor?: string, pageSize?: number): Observable<{ poll: Poll; comments: any[]; commentsCursor?: string | null; hasMoreComments?: boolean }>;
 }

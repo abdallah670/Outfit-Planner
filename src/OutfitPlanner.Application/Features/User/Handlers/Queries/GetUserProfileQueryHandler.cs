@@ -55,6 +55,7 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, U
             Id = user.Id,
             Name = user.Name,
             Email = user.Email ?? string.Empty,
+            UserName = user.UserName ?? string.Empty,
             ProfilePictureUrl = user.ProfilePictureUrl,
             CreatedAt = user.CreatedAt,
             LastLogin = user.LastLogin,

@@ -1,10 +1,11 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
-using OutfitPlanner.Application.DTOs.Common;
+using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
 using OutfitPlanner.Domain.Enums;
+using OutfitPlanner.Domain.Entities;
 
 namespace OutfitPlanner.Application.Features.Outfits.Handlers.Queries;
 
@@ -77,7 +78,7 @@ public class GetFilteredOutfitsHandler : IRequestHandler<GetFilteredOutfitsReque
                     ClothingItemId = oi.ClothingItemId,
                     ClothingItemName = oi.ClothingItem != null ? oi.ClothingItem.Name : "",
                     ClothingItemImageUrl = oi.ClothingItem != null ? oi.ClothingItem.ImageUrl : "",
-                    ClothingItemType = oi.ClothingItem != null ? oi.ClothingItem.Type.ToString() : "",
+                    ClothingItemType = oi.ClothingItem != null ? oi.ClothingItem.Type :ClothingType.Top,
                     ClothingItemCategory = oi.ClothingItem != null ? oi.ClothingItem.Category : "",
                     Role = oi.Role.ToString(),
                     LayeringOrder = oi.LayeringOrder,

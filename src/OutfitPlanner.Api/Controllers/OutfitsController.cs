@@ -10,6 +10,7 @@ using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Exceptions;
+using OutfitPlanner.Application.Responses;
 
 namespace OutfitPlanner.Api.Controllers;
 

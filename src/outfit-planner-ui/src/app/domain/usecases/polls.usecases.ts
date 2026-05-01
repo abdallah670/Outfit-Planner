@@ -47,4 +47,8 @@ export class PollsUseCases {
   uploadPollImage(file: File): Observable<string> {
     return this.pollsRepository.uploadPollImage(file);
   }
+
+  getRecentPollWithComments(cursor?: string, pageSize?: number): Observable<{ poll: Poll; comments: any[]; commentsCursor?: string | null; hasMoreComments?: boolean }> {
+    return this.pollsRepository.getRecentPollWithComments(cursor, pageSize);
+  }
 }

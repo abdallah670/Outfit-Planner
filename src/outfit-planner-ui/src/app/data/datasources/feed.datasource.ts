@@ -42,7 +42,24 @@ export class FeedDataSource {
       }))
     );
   }
+getUserFeed(
+    userId: string,
+    cursor?: string,
+    pageSize: number = 20,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>> {
+    let params = new HttpParams().set('pageSize', pageSize.toString());
+    if (cursor) params = params.set('cursor', cursor);
+    if (postType) params = params.set('postType', postType);
 
+    return this.http.get<CursorPagedResult<any>>(`${this.apiUrl}/user/${userId}`, { params }).pipe(
+      map(response => ({
+        ...response,
+        nextCursor: response.nextCursor || null,
+        items: response.items.map((post: any) => this.mapFeedPost(post))
+      }))
+    );
+  }
   getPostById(id: string): Observable<FeedPost> {
     return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
       map(post => this.mapFeedPost(post))

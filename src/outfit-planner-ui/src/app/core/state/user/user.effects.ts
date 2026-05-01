@@ -457,3 +457,24 @@ export const deleteAccount$ = createEffect(
   },
   { functional: true },
 );
+
+export const loadUserProfile$ = createEffect(
+  (actions$ = inject(Actions), userRepository = inject(UserRepositoryImpl)) => {
+    return actions$.pipe(
+      ofType(UserActions.loadUserProfile),
+      exhaustMap(({ userId }) =>
+        userRepository.getPublicProfile(userId).pipe(
+          map((user: UserProfile) => UserActions.loadUserProfileSuccess({ user })),
+          catchError((error) =>
+            of(
+              UserActions.loadUserProfileFailure({
+                error: error?.message || 'Failed to load user profile',
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);

@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
-using OutfitPlanner.Application.DTOs.Common;
+using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Application.DTOs.Wardrobe;
 using OutfitPlanner.Application.Features.ClothingItems.Requests.Queries;
 using OutfitPlanner.Domain.Enums;

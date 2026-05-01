@@ -46,6 +46,10 @@ export class PollsRepositoryImpl implements PollsRepository {
   uploadPollImage(file: File): Observable<string> {
     return this.pollsDataSource.uploadPollImage(file);
   }
+
+  getRecentPollWithComments(cursor?: string, pageSize?: number): Observable<{ poll: Poll; comments: any[] }> {
+    return this.pollsDataSource.getRecentPollWithComments(cursor, pageSize);
+  }
 }
 
 export const pollsRepositoryProvider = {

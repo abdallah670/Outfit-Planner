@@ -1703,6 +1703,8 @@
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
           "MediatR": "14.0.0",
           "Microsoft.AspNetCore.Http.Features": "5.0.17",
+          "Microsoft.EntityFrameworkCore": "10.0.5",
+          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.5",
           "Microsoft.IdentityModel.Tokens": "8.14.0",
           "OutfitPlanner.Domain": "1.0.0",
           "SixLabors.ImageSharp": "3.1.6",

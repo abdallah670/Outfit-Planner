@@ -22,6 +22,16 @@ export class FeedUseCases {
   ): Observable<CursorPagedResult<FeedPost>> {
     return this.feedRepository.getFeedPosts(cursor, pageSize, visibility, sortBy, postType);
   }
+   // Get user's activity feed (posts)
+  getUserFeed(
+    userId: string,
+    cursor?: string,
+    pageSize?: number,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>> {
+    return this.feedRepository.getUserFeed(userId, cursor, pageSize, postType);
+  }
+
 
   getPostById(id: string): Observable<FeedPost> {
     return this.feedRepository.getPostById(id);
