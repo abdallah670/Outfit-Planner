@@ -3,151 +3,261 @@
     <!-- Header -->
     <header class="header">
       <h1 class="page-title">Social Validation</h1>
+      <div class="social-hub-dashboard">
+        <div class="hub-stat">
+          <mat-icon>dashboard</mat-icon>
+          <span>My Polls: {{ userPollsCount() }}</span>
+        </div>
+        <button mat-button class="create-poll-btn" (click)="router.navigate(['/social/create'])">
+          <mat-icon>add</mat-icon>
+          Create Poll
+        </button>
+      </div>
     </header>
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Left Sidebar - Community Feed -->
-      <aside class="community-feed">
-        <div class="section-header">
-          <h2>Community Feed</h2>
-        </div>
-        
-        <div class="feed-content">
-          <div class="feed-header-row">
-            <h3 class="feed-subtitle">Trending Outfits</h3>
-            <a routerLink="/social/trending" class="see-all-link">See All</a>
-          </div>
-          
-          <div class="outfit-grid">
-            <div class="outfit-card" 
-                 *ngFor="let outfit of trendingOutfitsSignal()" 
-                 (click)="router.navigate(['/outfits', outfit.id])">
-              <div class="outfit-images">
-                <img [src]="outfit.imageUrl || 'assets/placeholder.jpg'" alt="Outfit Image">
+      <!-- Tabs for content filtering -->
+      <mat-tab-group (selectedIndexChange)="activeTab.set($event.index)" [(selectedIndex)]="activeTab()">
+        <mat-tab label="Community Feed">
+          <ng-template mat-tab-content>
+            <!-- Left Sidebar - Community Feed -->
+            <aside class="community-feed">
+              <div class="section-header">
+                <h2>Community Feed</h2>
               </div>
-              <div class="outfit-meta">
-                <img [src]="outfit.userAvatar || 'assets/default-avatar.png'" 
-                     alt="User" 
-                     class="user-avatar"
-                     (click)="viewUserProfile(outfit.userId, $event)">
-                <span class="likes">
-                  <mat-icon class="heart-icon">favorite</mat-icon>
-                  {{ outfit.likes > 1000 ? (outfit.likes / 1000).toFixed(1) + 'k' : outfit.likes }} likes
-                </span>
-              </div>
-            </div>
-            <div *ngIf="trendingOutfitsSignal().length === 0 && !loading()" class="no-outfits">
-              <mat-icon>explore</mat-icon>
-              <p>No trending outfits yet. Be the first to create one!</p>
-            </div>
-            <div *ngIf="loading()" class="feed-loading">
-              <p>Loading trending outfits...</p>
-            </div>
-            <div *ngIf="trendingHasMore()" class="load-more-container">
-              <button mat-button (click)="loadMoreTrending()" [disabled]="trendingLoadingMore()">
-                {{ trendingLoadingMore() ? 'Loading...' : 'Load More' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Center - Active Polls -->
-      <section class="active-polls">
-        <h2 class="section-title">Active Polls</h2>
-        
-        <div class="poll-card" *ngIf="featuredPoll()">
-          <div class="poll-header">
-            <div class="poll-title-section">
-              <h3>{{ featuredPoll()!.question }}</h3>
-              <p class="poll-subtitle">Countdown timer: {{ featuredPoll()!.createdAt }}</p>
-            </div>
-            <div class="countdown">
-              <span class="countdown-time">{{ featuredPoll()!.timeLeft }}</span>
-              <span class="countdown-label">LEFT</span>
-            </div>
-          </div>
-          
-          <div class="poll-options">
-            <div class="poll-option-card" *ngFor="let option of featuredPoll()!.displayOptions; let i = index">
-              <div class="option-image-container">
-                <span class="option-letter-tag">{{ ['A', 'B', 'C', 'D'][i] }}</span>
-                <img [src]="option.imageUrl" [alt]="'Option ' + ['A', 'B', 'C'][i]">
-              </div>
-              <button class="vote-pink-btn" (click)="vote(featuredPoll()!.id, option.id)">
-                VOTE
-              </button>
-              <p class="vote-count-text">{{ ['A', 'B', 'C', 'D'][i] }}: {{ option.votes }} votes</p>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Community Feedback -->
-        <div class="feedback-section">
-          <div class="feedback-header">
-            <h3>Community Feedback</h3>
-            <div class="notif-badge danger" *ngIf="featuredPollComments().length > 0">
-              <mat-icon class="comment-icon">chat_bubble</mat-icon>
-              <span>{{ featuredPollComments().length }} new comments</span>
-            </div>
-          </div>
-
-          <div class="comments-scroll-area">
-            <div class="comment-item-refined" *ngFor="let comment of featuredPollComments()">
-              <img [src]="comment.userAvatarUrl || 'assets/default-avatar.png'" alt="Avatar" class="comment-avatar-small">
-              <div class="comment-content-box">
-                <div class="comment-meta-row">
-                  <span class="comment-author-name">{{ comment.userName }}</span>
-                  <span class="comment-timestamp">{{ comment.createdAt | date:'short' }}</span>
+              
+              <div class="feed-content">
+                <div class="feed-header-row">
+                  <h3 class="feed-subtitle">Recent Activity</h3>
                 </div>
-                <p class="comment-body-text">{{ comment.content }}</p>
+                
+                <!-- Feed Tab Filters -->
+                <div class="feed-filter-tabs">
+                  <button 
+                    *ngFor="let filter of filters"
+                    mat-button
+                    [class.active]="activeFilter() === filter.value"
+                    (click)="setFilter(filter.value)"
+                  >
+                    {{ filter.label }}
+                  </button>
+                </div>
+                
+                <!-- Feed Content -->
+                <div class="feed-items" *ngIf="!feedLoadingSignal()">
+                  <div class="feed-item" *ngFor="let post of filteredPosts()">
+                    <div class="feed-item-header">
+                      <img 
+                        [src]="post.userAvatarUrl || 'assets/default-avatar.png'" 
+                        alt="User" 
+                        class="user-avatar-small"
+                        (click)="viewUserProfile(post.userId, $event)"
+                      >
+                      <span class="post-author">{{ post.userName }}</span>
+                      <span class="post-time">{{ post.createdAt | date:'short' }}</span>
+                    </div>
+                    
+                    <!-- Poll Post -->
+                    <div *ngIf="post.postType === 'PollPost'" class="poll-post-content">
+                      <app-poll-card
+                        [poll]="post.poll"
+                        [showResults]="false"
+                        [userVoteOptionId]="null"
+                        (vote)="onVoteOnPoll(post.poll.id, $event)"
+                        (viewDetails)="onViewPollDetail(post.poll.id)"
+                      >
+                      </app-poll-card>
+                    </div>
+                    
+                    <!-- Outfit Post -->
+                    <div *ngIf="post.postType === 'OutfitPost'" class="outfit-post-content">
+                      <div class="outfit-images">
+                        <img 
+                          [src]="post.imageUrl || 'assets/placeholder.jpg'" 
+                          alt="Outfit Image"
+                          (click)="viewPostDetail(post)"
+                        >
+                      </div>
+                      <div class="outfit-meta">
+                        <img 
+                          [src]="post.userAvatarUrl || 'assets/default-avatar.png'" 
+                          alt="User" 
+                          class="user-avatar"
+                          (click)="viewUserProfile(post.userId, $event)"
+                        >
+                        <span class="likes">
+                          <mat-icon class="heart-icon">favorite</mat-icon>
+                          {{ post.likes > 1000 ? (post.likes / 1000).toFixed(1) + 'k' : post.likes }} likes
+                        </span>
+                      </div>
+                      <div class="outfit-caption" *ngIf="post.caption">
+                        <p>{{ post.caption }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div *ngIf="filteredPosts().length === 0 && !feedLoadingSignal()" class="no-posts">
+                    <mat-icon>explore</mat-icon>
+                    <p>No posts yet. Be the first to create one!</p>
+                  </div>
+                  
+                  <div *ngIf="feedLoadingSignal()" class="feed-loading">
+                    <p>Loading feed...</p>
+                  </div>
+                  
+                  <div *ngIf="hasMoreSignal()" class="load-more-container">
+                    <button mat-button (click)="loadMoreFeed()" [disabled]="feedLoadingSignal()">
+                      {{ feedLoadingSignal() ? 'Loading...' : 'Load More' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </aside>
+            
+            <!-- Center - Active Polls (Featured Poll) -->
+            <section class="active-polls">
+              <h2 class="section-title">Featured Poll</h2>
+              
+              <div class="poll-card" *ngIf="featuredPoll()">
+                <div class="poll-header">
+                  <div class="poll-title-section">
+                    <h3>{{ featuredPoll()!.question }}</h3>
+                    <p class="poll-subtitle">{{ featuredPoll()!.formattedTime }}</p>
+                  </div>
+                  <div class="countdown">
+                    <span class="countdown-time">{{ featuredPoll()!.timeLeft }}</span>
+                    <span class="countdown-label">LEFT</span>
+                  </div>
+                </div>
+                
+                <div class="poll-options">
+                  <div class="poll-option-card" *ngFor="let option of featuredPoll()!.displayOptions; let i = index">
+                    <div class="option-image-container">
+                      <span class="option-letter-tag">{{ ['A', 'B', 'C', 'D'][i] }}</span>
+                      <img [src]="option.imageUrl" [alt]="'Option ' + ['A', 'B', 'C'][i]">
+                    </div>
+                    <button class="vote-pink-btn" (click)="vote(featuredPoll()!.id, option.id)">
+                      VOTE
+                    </button>
+                    <p class="vote-count-text">{{ ['A', 'B', 'C', 'D'][i] }}: {{ option.votes }} votes</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Community Feedback -->
+              <div class="feedback-section">
+                <div class="feedback-header">
+                  <h3>Community Feedback</h3>
+                  <div class="notif-badge danger" *ngIf="featuredPollComments().length > 0">
+                    <mat-icon class="comment-icon">chat_bubble</mat-icon>
+                    <span>{{ featuredPollComments().length }} new comments</span>
+                  </div>
+                </div>
+                
+                <div class="comments-scroll-area">
+                  <div class="comment-item-refined" *ngFor="let comment of featuredPollComments()">
+                    <img [src]="comment.userAvatarUrl || 'assets/default-avatar.png'" alt="Avatar" class="comment-avatar-small">
+                    <div class="comment-content-box">
+                      <div class="comment-meta-row">
+                        <span class="comment-author-name">{{ comment.userName }}</span>
+                        <span class="comment-timestamp">{{ comment.createdAt | date:'short' }}</span>
+                      </div>
+                      <p class="comment-body-text">{{ comment.content }}</p>
+                    </div>
+                  </div>
+                  <div *ngIf="featuredPollComments().length === 0" class="no-comments">
+                    <p>No comments yet. Be the first to share your thoughts!</p>
+                  </div>
+                  <div *ngIf="hasMoreCommentsSignal()" class="load-more-comments">
+                    <button mat-button (click)="loadMorePollComments()" [disabled]="commentsLoadingSignal()">
+                      {{ commentsLoadingSignal() ? 'Loading...' : 'Load More Comments' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            
+            <!-- Right Sidebar - Results & Share -->
+            <aside class="results-share">
+              <h2 class="section-title">Results & Share</h2>
+              
+              <div class="results-card" *ngIf="featuredPoll()">
+                <h3>Live Results</h3>
+                
+                <div class="result-bars">
+                  <div class="result-bar-item" *ngFor="let option of featuredPoll()!.displayOptions; let i = index">
+                    <div class="bar-fill" [style.width.%]="getVotePercentage(featuredPoll(), option.id)"></div>
+                    <span class="bar-percentage">{{ ['A', 'B', 'C', 'D'][i] }}: {{ getVotePercentage(featuredPoll(), option.id) }}%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="share-card">
+                <h3>Share Poll</h3>
+                <p class="share-subtitle">Unique link to share:</p>
+                <div class="link-display">
+                  <span>{{ currentPollLink() }}</span>
+                </div>
+                
+                <button class="copy-link-btn" (click)="copyLink()">
+                  Copy Link
+                </button>
+                
+                <div class="qr-section">
+                  <img class="qr-image" [src]="qrCodeUrl()" alt="QR Code">
+                  <p class="qr-text">Scan to Vote!</p>
+                </div>
+              </div>
+            </aside>
+          </ng-template>
+        </mat-tab>
+        
+        <mat-tab label="Trending">
+          <ng-template mat-tab-content>
+            <!-- Trending Content (existing implementation) -->
+            <div class="trending-content">
+              <div class="section-header">
+                <h2>Trending Outfits</h2>
+                <a routerLink="/social/trending" class="see-all-link">See All</a>
+              </div>
+              
+              <div class="trending-grid">
+                <div class="trending-card" 
+                     *ngFor="let outfit of trendingOutfitsSignal()" 
+                     (click)="router.navigate(['/outfits', outfit.id])">
+                  <div class="trending-images">
+                    <img [src]="outfit.imageUrl || 'assets/placeholder.jpg'" alt="Outfit Image">
+                  </div>
+                  <div class="trending-meta">
+                    <img [src]="outfit.userAvatar || 'assets/default-avatar.png'" 
+                         alt="User" 
+                         class="user-avatar"
+                         (click)="viewUserProfile(outfit.userId, $event)">
+                    <span class="likes">
+                      <mat-icon class="heart-icon">favorite</mat-icon>
+                      {{ outfit.likes > 1000 ? (outfit.likes / 1000).toFixed(1) + 'k' : outfit.likes }} likes
+                    </span>
+                  </div>
+                </div>
+                
+                <div *ngIf="trendingOutfitsSignal().length === 0 && !loading()" class="no-trending">
+                  <mat-icon>explore</mat-icon>
+                  <p>No trending outfits yet. Be the first to create one!</p>
+                </div>
+                <div *ngIf="loading()" class="trending-loading">
+                  <p>Loading trending outfits...</p>
+                </div>
+                <div *ngIf="trendingHasMore()" class="load-more-container">
+                  <button mat-button (click)="loadMoreTrending()" [disabled]="trendingLoadingMore()">
+                    {{ trendingLoadingMore() ? 'Loading...' : 'Load More' }}
+                  </button>
+                </div>
               </div>
             </div>
-            <div *ngIf="featuredPollComments().length === 0" class="no-comments">
-              <p>No comments yet. Be the first to share your thoughts!</p>
-            </div>
-            <div *ngIf="hasMoreCommentsSignal()" class="load-more-comments">
-              <button mat-button (click)="loadMorePollComments()" [disabled]="commentsLoadingSignal()">
-                {{ commentsLoadingSignal() ? 'Loading...' : 'Load More Comments' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Right Sidebar - Results & Share -->
-      <aside class="results-share">
-        <h2 class="section-title">Results & Share</h2>
-        
-        <div class="results-card" *ngIf="featuredPoll()">
-          <h3>Live Results</h3>
-          
-          <div class="result-bars">
-            <div class="result-bar-item" *ngFor="let option of featuredPoll()!.displayOptions; let i = index">
-              <div class="bar-fill" [style.width.%]="getVotePercentage(featuredPoll(), option.id)"></div>
-              <span class="bar-percentage">{{ ['A', 'B', 'C', 'D'][i] }}: {{ getVotePercentage(featuredPoll(), option.id) }}%</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="share-card">
-          <h3>Share Poll</h3>
-          <p class="share-subtitle">Unique link to share:</p>
-          <div class="link-display">
-            <span>{{ currentPollLink() }}</span>
-          </div>
-          
-          <button class="copy-link-btn" (click)="copyLink()">
-            Copy Link
-          </button>
-          
-          <div class="qr-section">
-            <img class="qr-image" [src]="qrCodeUrl()" alt="QR Code">
-            <p class="qr-text">Scan to Vote!</p>
-          </div>
-        </div>
-      </aside>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
     </main>
   </div>
 </div>
