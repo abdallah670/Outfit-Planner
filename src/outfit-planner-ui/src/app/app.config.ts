@@ -35,6 +35,7 @@ import { pollsRepositoryProvider } from './data/repositories/polls.repository.im
 import { trendingRepositoryProvider } from './data/repositories/trending.repository.impl';
 import { followRepositoryProvider } from './data/repositories/follow.repository.impl';
 import { wearEventRepositoryProvider } from './data/repositories/wear-event.repository.impl';
+import { userRepositoryProvider } from './data/repositories/user.repository.impl';
 import { feedFeature, reducer as feedReducer } from './core/state/feed/feed.reducer';
 import { FeedEffects } from './core/state/feed/feed.effects';
 import { pollsFeature, reducer as pollsReducer } from './core/state/polls/polls.reducer';
@@ -95,6 +96,7 @@ export const appConfig: ApplicationConfig = {
       followRepositoryProvider,
       outfitPostsRepositoryProvider,
       wearEventRepositoryProvider,
+     userRepositoryProvider,
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

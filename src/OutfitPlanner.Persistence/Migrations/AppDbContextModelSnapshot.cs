@@ -1283,9 +1283,9 @@ namespace OutfitPlanner.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("FeedPosts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Outfit");
@@ -1298,15 +1298,15 @@ namespace OutfitPlanner.Persistence.Migrations
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.Follow", b =>
                 {
                     b.HasOne("OutfitPlanner.Domain.Entities.User", "Follower")
-                        .WithMany()
+                        .WithMany("Following")
                         .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("OutfitPlanner.Domain.Entities.User", "Following")
-                        .WithMany()
+                        .WithMany("Followers")
                         .HasForeignKey("FollowingId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Follower");
@@ -1376,9 +1376,9 @@ namespace OutfitPlanner.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ParentComment");
@@ -1397,9 +1397,9 @@ namespace OutfitPlanner.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("OutfitPlanner.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Reactions")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Post");
@@ -1550,11 +1550,21 @@ namespace OutfitPlanner.Persistence.Migrations
                 {
                     b.Navigation("ClothingItems");
 
+                    b.Navigation("Comments");
+
+                    b.Navigation("FeedPosts");
+
+                    b.Navigation("Followers");
+
+                    b.Navigation("Following");
+
                     b.Navigation("Outfits");
 
                     b.Navigation("Polls");
 
                     b.Navigation("Preferences");
+
+                    b.Navigation("Reactions");
 
                     b.Navigation("StyleProfile");
 

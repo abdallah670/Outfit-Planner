@@ -66,13 +66,7 @@
             {{ getMatchPercentage() }}% match
           </div>
 
-          <!-- Outfit Items -->
-          <div class="outfit-items" *ngIf="getPrimaryItems().length > 0">
-            <div class="item-chip" *ngFor="let item of getPrimaryItems()">
-              <img *ngIf="item.clothingItemImageUrl" [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" />
-              <span>{{ item.clothingItemName }}</span>
-            </div>
-          </div>
+        
 
           <button class="primary-btn" (click)="wearToday()" *ngIf="isToday()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -125,6 +119,25 @@
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
               </svg>
               <span>{{ getRecommendationReason() }}</span>
+            </div>
+          </div>
+          
+          <!-- Outfit Items Breakdown -->
+          <div class="outfit-breakdown" *ngIf="getPrimaryItems().length > 0">
+            <div class="breakdown-title">Item breakdown:</div>
+            <div class="items-container">
+              <div class="item-reason" *ngFor="let item of getPrimaryItems()">
+                <div class="item-info">
+                 
+                  <img
+                      [src]="item.clothingItemImageUrl?.trim() || 'assets/placeholder.jpg'"
+                      [alt]="item.clothingItemName"
+                      class="item-image"
+                      (error)="$event.target.src = 'assets/placeholder.jpg'"
+                    />
+                  <div class="item-name">{{ item.clothingItemName }}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { Poll, CreatePollRequest, CastVoteRequest } from '../../../domain/entities/poll.entity';
+import { Poll, CreatePollRequest, UpdatePollRequest, CastVoteRequest } from '../../../domain/entities/poll.entity';
 
 export const PollsActions = createActionGroup({
   source: 'polls',
@@ -12,9 +12,17 @@ export const PollsActions = createActionGroup({
     'Load Poll By Id Success': props<{ poll: Poll }>(),
     'Load Poll By Id Failure': props<{ error: string }>(),
 
+    'Load User Polls': emptyProps(),
+    'Load User Polls Success': props<{ polls: Poll[] }>(),
+    'Load User Polls Failure': props<{ error: string }>(),
+
     'Create Poll': props<{ request: CreatePollRequest }>(),
     'Create Poll Success': props<{ pollId: string }>(),
     'Create Poll Failure': props<{ error: string }>(),
+
+    'Update Poll': props<{ pollId: string; request: UpdatePollRequest }>(),
+    'Update Poll Success': props<{ poll: Poll }>(),
+    'Update Poll Failure': props<{ error: string }>(),
 
     'Vote': props<{ pollId: string; request: CastVoteRequest }>(),
     'Vote Success': props<{ pollId: string }>(),

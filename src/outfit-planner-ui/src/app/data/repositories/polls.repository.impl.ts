@@ -5,6 +5,7 @@ import { PollsDataSource } from '../../data/datasources/polls.datasource';
 import {
   Poll,
   CreatePollRequest,
+  UpdatePollRequest,
   CastVoteRequest,
 } from '../../domain/entities/poll.entity';
 import { CommandResponse } from '../../domain/entities/response.entity';
@@ -19,6 +20,10 @@ export class PollsRepositoryImpl implements PollsRepository {
     return this.pollsDataSource.getPolls();
   }
 
+  getUserPolls(): Observable<Poll[]> {
+    return this.pollsDataSource.getUserPolls();
+  }
+
   getPollById(id: string): Observable<Poll> {
     return this.pollsDataSource.getPollById(id);
   }
@@ -31,7 +36,7 @@ export class PollsRepositoryImpl implements PollsRepository {
     return this.pollsDataSource.vote(pollId, dto);
   }
 
-  updatePoll(pollId: string, request: any): Observable<void> {
+  updatePoll(pollId: string, request: UpdatePollRequest): Observable<Poll> {
     return this.pollsDataSource.updatePoll(pollId, request);
   }
 

@@ -99,8 +99,8 @@
                 </div>
                 
                 <!-- More Indicator -->
-                <div class="event-dot" *ngIf="day.outfits.length > 1">
-                  • +{{ day.outfits.length - 1 }} more
+                <div class="event-dot" *ngIf="day.events.length > 1">
+                  • +{{ day.events.length - 1 }} more
                 </div>
 
                 <!-- First Event Title -->
@@ -186,11 +186,7 @@
               <h2 class="selected-date-large" *ngIf="selectedDate()">{{ selectedDate() | date: 'MMMM d' }}</h2>
               <div class="selected-day-name" *ngIf="selectedDate()">{{ selectedDate() | date: 'EEEE' }}</div>
             </div>
-            <button class="btn-outline" aria-label="More options">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
-              </svg>
-            </button>
+           
           </div>
           
           <!-- Weather Widget -->
@@ -211,8 +207,9 @@
               <span>EVENTS</span>
               <button 
                 class="btn-add-event" 
-                (click)="openAddEventModal()"
-                matTooltip="Add new event"
+                (click)="!isPastDate() && openAddEventModal()"
+                [disabled]="isPastDate()"
+                [matTooltip]="isPastDate() ? 'Cannot add events to past dates' : 'Add new event'"
                 aria-label="Add new event"
               >
                 <mat-icon>add</mat-icon>
@@ -257,7 +254,14 @@
         <div class="detail-card">
           <div class="detail-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
             <span class="event-label">SCHEDULED OUTFIT</span>
-            <span style="color: #ff6fa8; cursor: pointer; font-size: 12px;" (click)="openScheduleOutfitModal()">Change</span>
+            <span 
+              style="color: #ff6fa8; cursor: pointer; font-size: 12px;" 
+              [style.opacity]="isPastDate() ? '0.5' : '1'"
+              [style.cursor]="isPastDate() ? 'not-allowed' : 'pointer'"
+              (click)="!isPastDate() && openScheduleOutfitModal()"
+              [matTooltip]="isPastDate() ? 'Cannot schedule outfits for past dates' : 'Change outfit'">
+              Change
+            </span>
           </div>
           
           <div class="outfit-preview-card" *ngIf="selectedDayOutfits().length > 0; else noOutfit">
@@ -311,7 +315,11 @@
           <ng-template #noOutfit>
             <div class="empty-slot">
               <p>No outfit scheduled</p>
-              <button class="action-btn btn-primary" (click)="openScheduleOutfitModal()">
+              <button 
+                class="action-btn btn-primary" 
+                (click)="!isPastDate() && openScheduleOutfitModal()"
+                [disabled]="isPastDate()"
+                [matTooltip]="isPastDate() ? 'Cannot schedule outfits for past dates' : 'Schedule an outfit for this day'">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
                   <path d="M12 5v14M5 12h14"/>
                 </svg>

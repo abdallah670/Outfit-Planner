@@ -42,62 +42,58 @@
 
   <!-- Posts Grid -->
   <div class="posts-grid" *ngIf="!loading()">
-    <mat-card
-      class="post-card"
-      *ngFor="let post of filteredPosts()"
-      (click)="viewPostDetail(post)">
-      
-      <mat-card-header>
-        <img mat-card-avatar [src]="post.userAvatarUrl || 'assets/default-avatar.png'" alt="User avatar">
-        <mat-card-title>{{ post.userName }}</mat-card-title>
-        <mat-card-subtitle>
-          {{ post.createdAt | date:'mediumDate' }}
-          <span *ngIf="post.postType === 1" class="poll-tag">POLL</span>
-        </mat-card-subtitle>
-      </mat-card-header>
+    <!-- Poll Posts -->
+    <ng-container *ngFor="let post of filteredPosts()">
+      <app-poll-card
+        *ngIf="post.postType === 1 && post.poll"
+        [poll]="post.poll"
+        [userVoteOptionId]="post.userVoteOptionId || null"
+        (vote)="onVoteOnPoll(post.poll.id, $event)"
+        (viewDetails)="onViewPollDetail($event)">
+      </app-poll-card>
 
-      <div class="post-content">
-        <p class="caption" *ngIf="post.caption">{{ post.caption }}</p>
+      <!-- Regular Posts -->
+      <mat-card
+        *ngIf="post.postType !== 1"
+        class="post-card"
+        (click)="viewPostDetail(post)">
         
-        <!-- Outfit Preview (for both outfit posts and poll posts) -->
-        <div class="image-preview">
-          <img *ngIf="post.outfit?.imageUrl; else outfitPlaceholder" [src]="post.outfit?.imageUrl" alt="Outfit preview">
-          <ng-template #outfitPlaceholder>
-            <img src="assets/placeholder.jpg" alt="No outfit image">
-          </ng-template>
-        </div>
+        <mat-card-header>
+          <img mat-card-avatar [src]="post.userAvatarUrl || 'assets/default-avatar.png'" alt="User avatar">
+          <mat-card-title>{{ post.userName }}</mat-card-title>
+          <mat-card-subtitle>
+            {{ post.createdAt | date:'mediumDate' }}
+          </mat-card-subtitle>
+        </mat-card-header>
 
-        <!-- Poll Specific Content -->
-        <div class="poll-content" *ngIf="post.postType === 1 && post.poll">
-          <p class="question">{{ post.poll.question }}</p>
-          <div class="poll-meta">
-            <span class="time-left" *ngIf="post.poll.status === 'active'">
-              <mat-icon>schedule</mat-icon>
-              {{ getTimeLeft(post.poll.expiresAt) }}
-            </span>
-            <span class="vote-count">
-              <mat-icon>how_to_vote</mat-icon>
-              {{ post.poll.totalVotes }} votes
-            </span>
+        <div class="post-content">
+          <p class="caption" *ngIf="post.caption">{{ post.caption }}</p>
+          
+          <!-- Outfit Preview -->
+          <div class="image-preview">
+            <img *ngIf="post.outfit?.imageUrl; else outfitPlaceholder" [src]="post.outfit?.imageUrl" alt="Outfit preview">
+            <ng-template #outfitPlaceholder>
+              <img src="assets/placeholder.jpg" alt="No outfit image">
+            </ng-template>
           </div>
         </div>
-      </div>
 
-      <mat-card-actions class="post-actions">
-        <button mat-button (click)="toggleReaction(post, $event)" [color]="post.userReaction ? 'warn' : ''">
-          <mat-icon>{{ post.userReaction ? 'favorite' : 'favorite_border' }}</mat-icon>
-          {{ post.likeCount }}
-        </button>
-        <button mat-button>
-          <mat-icon>chat_bubble_outline</mat-icon>
-          {{ post.commentCount }}
-        </button>
-        <span class="spacer"></span>
-        <button mat-icon-button>
-          <mat-icon>share</mat-icon>
-        </button>
-      </mat-card-actions>
-    </mat-card>
+        <mat-card-actions class="post-actions">
+          <button mat-button (click)="toggleReaction(post, $event)" [color]="post.userReaction ? 'warn' : ''">
+            <mat-icon>{{ post.userReaction ? 'favorite' : 'favorite_border' }}</mat-icon>
+            {{ post.likeCount }}
+          </button>
+          <button mat-button>
+            <mat-icon>chat_bubble_outline</mat-icon>
+            {{ post.commentCount }}
+          </button>
+          <span class="spacer"></span>
+          <button mat-icon-button>
+            <mat-icon>share</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </ng-container>
 
     <!-- Empty State -->
     <div class="empty-state" *ngIf="filteredPosts().length === 0">

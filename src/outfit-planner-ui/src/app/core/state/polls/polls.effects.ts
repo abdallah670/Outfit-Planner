@@ -53,6 +53,133 @@ export class PollsEffects {
       ),
   );
 
+  loadUserPolls$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.loadUserPolls),
+        mergeMap(() =>
+          this.pollsUseCases.getMyPolls().pipe(
+            map((polls: Poll[]) => PollsActions.loadUserPollsSuccess({ polls })),
+            catchError((error) =>
+              of(
+                PollsActions.loadUserPollsFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ),
+  );
+
+  updatePoll$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.updatePoll),
+        mergeMap((action: ReturnType<typeof PollsActions.updatePoll>) =>
+          this.pollsUseCases.updatePoll(action.pollId, action.request).pipe(
+            map((poll: Poll) => PollsActions.updatePollSuccess({ poll })),
+            catchError((error) =>
+              of(
+                PollsActions.updatePollFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ),
+  );
+
+  updatePollSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.updatePollSuccess),
+        tap(() => {
+          Swal.fire({
+            title: 'Success!',
+            text: 'Your poll has been updated.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  deletePoll$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.deletePoll),
+        mergeMap((action: ReturnType<typeof PollsActions.deletePoll>) =>
+          this.pollsUseCases.deletePoll(action.pollId).pipe(
+            map(() => PollsActions.deletePollSuccess({ pollId: action.pollId })),
+            catchError((error) =>
+              of(
+                PollsActions.deletePollFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ),
+  );
+
+  deletePollSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.deletePollSuccess),
+        tap(() => {
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'Your poll has been deleted.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  closePoll$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.closePoll),
+        mergeMap((action: ReturnType<typeof PollsActions.closePoll>) =>
+          this.pollsUseCases.closePoll(action.pollId).pipe(
+            map(() => PollsActions.closePollSuccess({ pollId: action.pollId })),
+            catchError((error) =>
+              of(
+                PollsActions.closePollFailure({
+                  error: error.message,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ),
+  );
+
+  closePollSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PollsActions.closePollSuccess),
+        tap(() => {
+          Swal.fire({
+            title: 'Closed!',
+            text: 'Your poll has been closed to new votes.',
+            icon: 'info',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }),
+      ),
+    { dispatch: false },
+  );
+
   createPoll$ = createEffect(
     () =>
       this.actions$.pipe(

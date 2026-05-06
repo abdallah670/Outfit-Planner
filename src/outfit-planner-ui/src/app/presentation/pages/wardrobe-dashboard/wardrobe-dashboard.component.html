@@ -45,23 +45,38 @@
              </div>
            </div>
 
-           <!-- Color Filter (collapsible) -->
-           <div class="filter-section">
-             <button class="filter-label" (click)="filtersOpen.colors = !filtersOpen.colors">
-               Colors
-               <mat-icon class="chevron" [class.open]="filtersOpen.colors">expand_more</mat-icon>
-             </button>
-             <div class="color-circles" *ngIf="filtersOpen.colors">
-               <button
-                 *ngFor="let color of colors"
-                 [class.active]="activeColor() === color"
-                 (click)="setColor(color)"
-                 class="color-circle"
-                 [ngClass]="'color-' + color.toLowerCase()"
-                 [title]="color"
-               ></button>
-             </div>
-           </div>
+            <!-- Color Filter (collapsible) -->
+            <div class="filter-section">
+              <button class="filter-label" (click)="filtersOpen.colors = !filtersOpen.colors">
+                Colors
+                <mat-icon class="chevron" [class.open]="filtersOpen.colors">expand_more</mat-icon>
+              </button>
+              <div class="color-filter-content" *ngIf="filtersOpen.colors">
+                <!-- Color Picker Input -->
+                <div class="color-picker-wrapper">
+                  <label>Pick a color:</label>
+                  <input
+                    type="color"
+                    [(ngModel)]="selectedHexColor"
+                    (change)="onColorPickerChange($event)"
+                    class="color-picker-input"
+                  >
+                  <span class="color-label">{{ selectedHexColor }}</span>
+                </div>
+                
+                <!-- Preset Color Circles -->
+                <div class="color-circles">
+                  <button
+                    *ngFor="let color of colors"
+                    [class.active]="activeColor() === color"
+                    (click)="setColor(color)"
+                    class="color-circle"
+                    [ngClass]="'color-' + color.toLowerCase()"
+                    [title]="color"
+                  ></button>
+                </div>
+              </div>
+            </div>
 
            <!-- Condition Filter (collapsible) -->
            <div class="filter-section">

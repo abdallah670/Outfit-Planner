@@ -1,0 +1,106 @@
+<div class="my-polls-page">
+  <div class="page-header">
+    <h1>My Polls</h1>
+    <button mat-raised-button color="primary" routerLink="/social/create">
+      <mat-icon>add</mat-icon>
+      Create New Poll
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading$ | async" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading your polls...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="(userPolls$ | async)?.length === 0 && !(loading$ | async)" class="empty-state">
+    <mat-icon class="empty-icon">poll</mat-icon>
+    <h2>No Polls Yet</h2>
+    <p>You haven't created any polls. Start by creating your first poll!</p>
+    <button mat-raised-button color="primary" routerLink="/social/create">
+      Create Your First Poll
+    </button>
+  </div>
+
+  <!-- Polls List -->
+  <div *ngIf="(userPolls$ | async)?.length! > 0" class="polls-grid">
+    <mat-card *ngFor="let poll of userPolls$ | async; trackBy: trackByPollId" class="poll-card">
+      <mat-card-header>
+        <mat-card-title>{{ poll.question }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip [color]="getStatusColor(poll.status)" selected>
+            {{ getStatusLabel(poll.status) }}
+          </mat-chip>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p class="poll-context" *ngIf="poll.context">{{ poll.context }}</p>
+        
+        <div class="poll-stats">
+          <div class="stat">
+            <mat-icon>how_to_vote</mat-icon>
+            <span>{{ poll.totalVotes }} votes</span>
+          </div>
+          <div class="stat">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ poll.options.length }} options</span>
+          </div>
+          <div class="stat" *ngIf="poll.expiresAt">
+            <mat-icon>event</mat-icon>
+            <span>Expires: {{ poll.expiresAt | date:'mediumDate' }}</span>
+          </div>
+        </div>
+
+        <div class="poll-options-preview">
+          <div *ngFor="let option of poll.options.slice(0, 3)" class="option-preview">
+            <span class="option-text">{{ option.description }}</span>
+            <span class="option-votes">{{ option.voteCount }} votes</span>
+          </div>
+          <div *ngIf="poll.options.length > 3" class="more-options">
+            +{{ poll.options.length - 3 }} more options
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button 
+          mat-button 
+          [routerLink]="['/social/polls', poll.id]"
+          matTooltip="View Details">
+          <mat-icon>visibility</mat-icon>
+          View
+        </button>
+        
+        <button 
+          *ngIf="canEdit(poll)"
+          mat-button 
+          [routerLink]="['/social/polls', poll.id, 'edit']"
+          matTooltip="Edit Poll">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+
+        <button 
+          *ngIf="canClose(poll)"
+          mat-button 
+          color="accent"
+          (click)="onClosePoll(poll.id)"
+          matTooltip="Close Poll">
+          <mat-icon>lock</mat-icon>
+          Close
+        </button>
+
+        <button 
+          mat-button 
+          color="warn"
+          (click)="onDeletePoll(poll.id)"
+          matTooltip="Delete Poll">
+          <mat-icon>delete</mat-icon>
+          Delete
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

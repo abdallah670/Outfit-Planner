@@ -615,13 +615,20 @@ public class DataSeeder
             var following = users[random.Next(users.Count)];
             if (follower.Id != following.Id)
             {
-                follows.Add(new Follow
+                // Check if this follow relationship already exists
+                var existingFollow = follows.FirstOrDefault(f => 
+                    f.FollowerId == follower.Id && f.FollowingId == following.Id);
+                
+                if (existingFollow == null)
                 {
-                    Id = Guid.NewGuid(),
-                    FollowerId = follower.Id,
-                    FollowingId = following.Id,
-                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 15))
-                });
+                    follows.Add(new Follow
+                    {
+                        Id = Guid.NewGuid(),
+                        FollowerId = follower.Id,
+                        FollowingId = following.Id,
+                        CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 15))
+                    });
+                }
             }
         }
 
@@ -941,7 +948,6 @@ public class DataSeeder
              {
                  Id = Guid.NewGuid(),
                  UserId = user.Id,
-                 WearEventId = outfit.Id,
                  Title = eventTitles[random.Next(eventTitles.Length)],
                  Description = GetRandomCalendarDescription(random),
                  Location = GetRandomLocation(random),

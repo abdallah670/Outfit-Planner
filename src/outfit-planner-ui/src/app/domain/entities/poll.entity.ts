@@ -51,12 +51,22 @@ export interface CreatePollRequest {
 }
 
 /**
+ * DTO for updating an existing poll
+ */
+export interface UpdatePollRequest {
+  question?: string;
+  context?: string;
+  expiresAt?: string;
+  options?: CreatePollOptionRequest[];
+}
+
+/**
  * DTO for creating a poll option
  */
 export interface CreatePollOptionRequest {
   outfitId?: string;
   description: string;
-  displayOrder: number;
+  displayOrder?: number;
 }
 
 /**

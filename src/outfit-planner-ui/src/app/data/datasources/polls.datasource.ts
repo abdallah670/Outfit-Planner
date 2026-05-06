@@ -43,7 +43,7 @@ export interface UpdatePollRequest {
 export interface UpdatePollOptionRequest {
   id?: string;
   description?: string;
-  displayOrder: number;
+  displayOrder?: number;
   outfitId?: string;
 }
 
@@ -65,6 +65,16 @@ export class PollsDataSource {
       );
   }
 
+  getUserPolls(): Observable<Poll[]> {
+    return this.http
+      .get<PollDto[]>(`${this.apiUrl}/my`)
+      .pipe(
+        map((polls: PollDto[]) =>
+          polls.map((p: PollDto) => this.mapPollDtoToEntity(p)),
+        ),
+      );
+  }
+
   getPollById(id: string): Observable<Poll> {
     return this.http
       .get<PollDto>(`${this.apiUrl}/${id}`)
@@ -79,8 +89,9 @@ export class PollsDataSource {
     return this.http.post<CommandResponse>(`${this.apiUrl}/${pollId}/vote`, dto);
   }
 
-  updatePoll(pollId: string, request: UpdatePollRequest): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${pollId}`, request);
+  updatePoll(pollId: string, request: UpdatePollRequest): Observable<Poll> {
+    return this.http.put<PollDto>(`${this.apiUrl}/${pollId}`, request)
+      .pipe(map((poll: PollDto) => this.mapPollDtoToEntity(poll)));
   }
 
   deletePoll(pollId: string): Observable<void> {

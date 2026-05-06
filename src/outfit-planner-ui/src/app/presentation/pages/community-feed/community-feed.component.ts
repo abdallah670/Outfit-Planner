@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { Store } from '@ngrx/store';
 import { FeedActions } from '../../../core/state/feed/feed.actions';
+import { PollsActions } from '../../../core/state/polls/polls.actions';
 import {
   selectPosts,
   selectNextCursor,
@@ -14,6 +15,8 @@ import {
   selectFeedLoading,
 } from '../../../core/state/feed/feed.selectors';
 import { FeedPost, PostType } from '../../../domain/entities/feed.entity';
+import { CastVoteRequest } from '../../../domain/entities/poll.entity';
+import { PollCardComponent } from '../../components/poll-card/poll-card.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 type FilterType = 'all' | 'outfits' | 'polls';
@@ -28,6 +31,7 @@ type FilterType = 'all' | 'outfits' | 'polls';
     MatButtonModule,
     MatChipsModule,
     MatCardModule,
+    PollCardComponent,
   ],
   templateUrl: './community-feed.component.html',
   styleUrl: './community-feed.component.scss',
@@ -111,6 +115,19 @@ export class CommunityFeedComponent implements OnInit {
     } else {
       this.store.dispatch(FeedActions.addReaction({ postId: post.id }));
     }
+  }
+
+  onVoteOnPoll(pollId: string, optionId: string): void {
+    const request: CastVoteRequest = {
+      optionId: optionId,
+      rating: 1,
+      isAnonymous: false,
+    };
+    this.store.dispatch(PollsActions.vote({ pollId, request }));
+  }
+
+  onViewPollDetail(pollId: string): void {
+    this.router.navigate(['/social/polls', pollId]);
   }
 
   loadMore(): void {
