@@ -8,6 +8,7 @@ import {
 import { OutfitDataSource } from '../datasources/outfit.datasource';
 import { Observable } from 'rxjs';
 import { Outfit } from '../../domain/entities/outfit.entity';
+import { PagedResult } from '../../domain/entities/response.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -39,12 +40,20 @@ export class OutfitRepositoryImpl implements OutfitRepository {
     return this.outfitDataSource.getOutfitsSuggestions(request);
   }
 
-  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse> {
-    return this.outfitDataSource.getTodaysPick(latitude, longitude);
+  getTodaysPick(latitude?: number, longitude?: number, date?: string): Observable<TodaysPickResponse> {
+    return this.outfitDataSource.getTodaysPick(latitude, longitude, date);
   }
 
   recordOutfitWear(id: string): Observable<Outfit> {
     return this.outfitDataSource.recordOutfitWear(id);
+  }
+
+  getFilteredOutfits(
+    filters: { occasion?: string; season?: string; search?: string; sortBy?: string },
+    page: number,
+    pageSize: number
+  ): Observable<PagedResult<Outfit>> {
+    return this.outfitDataSource.getFilteredOutfits(filters, page, pageSize);
   }
 }
 

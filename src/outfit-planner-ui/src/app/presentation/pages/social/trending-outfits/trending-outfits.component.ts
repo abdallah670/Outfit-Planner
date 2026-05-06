@@ -5,9 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { SocialActions } from '../../../../core/state/social/social.actions';
-import { selectTrendingOutfits, selectSocialLoading } from '../../../../core/state/social/social.selectors';
-import { TrendingOutfit } from '../../../../domain/entities/social-engagement.entity';
+import { TrendingActions } from '../../../../core/state/trending/trending.actions';
+import { selectTrendingOutfits, selectTrendingLoading } from '../../../../core/state/trending/trending.selectors';
+import { TrendingOutfit } from '../../../../domain/entities/outfit.entity';
 
 @Component({
   selector: 'app-trending-outfits',
@@ -24,14 +24,15 @@ export class TrendingOutfitsComponent implements OnInit {
     this.store.select(selectTrendingOutfits), 
     { initialValue: [] as TrendingOutfit[] }
   );
-  loading = toSignal(this.store.select(selectSocialLoading), { initialValue: false });
+  loading = toSignal(this.store.select(selectTrendingLoading), { initialValue: false });
 
   ngOnInit(): void {
-    this.store.dispatch(SocialActions.loadTrending({ page: 1, pageSize: 20 }));
+    this.store.dispatch(TrendingActions.loadTrending({ page: 1, pageSize: 20 }));
   }
 
   react(outfit: TrendingOutfit, reactionType: string = 'Like'): void {
-    this.store.dispatch(SocialActions.reactToVote({ voteId: outfit.voteId, reactionType }));
+    // TODO: Implement reaction using FeedActions once TrendingOutfits are mapped to FeedPosts
+    console.log('Reaction not yet implemented in new architecture', { outfitId: outfit.id, reactionType });
   }
 
   viewDetails(outfit: TrendingOutfit): void {

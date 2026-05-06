@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ClothingItem } from '../../domain/entities/clothing-item.entity';
+import { PagedResult } from '../../domain/entities/response.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -80,6 +81,45 @@ export class WardrobeService {
     return this.http
       .post<ClothingItem>(`${this.apiUrl}/${id}/wear/quick`, {})
       .pipe(map((item: ClothingItem) => this.fixItemUrls(item)));
+  }
+
+  getFilteredItems(
+    filters: { 
+      category?: string;         // e.g. "Casual", "Formal", "Sport"
+      color?: string;            // color name: "Blue", "Red", "Black", etc.
+      condition?: string;        // "good", "excellent", "fair", "poor"
+      fabric?: string;           // "Cotton", "Polyester", etc.
+      type?: string;             // Clothing type: "Top", "Bottom", "Dress", etc.
+      size?: string;             // "M", "L", "XL", etc.
+      minPrice?: number | null; 
+      maxPrice?: number | null; 
+      search?: string 
+    },
+    page: number,
+    pageSize: number
+  ): Observable<PagedResult<ClothingItem>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+
+    if (filters.category) params = params.set('category', filters.category);
+    if (filters.color) params = params.set('color', filters.color);
+    if (filters.condition) params = params.set('condition', filters.condition);
+    if (filters.fabric) params = params.set('fabric', filters.fabric);
+    if (filters.type) params = params.set('type', filters.type);
+    if (filters.size) params = params.set('size', filters.size);
+    if (filters.minPrice !== null && filters.minPrice !== undefined) params = params.set('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice !== null && filters.maxPrice !== undefined) params = params.set('maxPrice', filters.maxPrice.toString());
+    if (filters.search) params = params.set('search', filters.search);
+
+    return this.http
+      .get<PagedResult<ClothingItem>>(`${this.apiUrl}/filtered`, { params })
+      .pipe(
+        map((result: PagedResult<ClothingItem>) => ({
+          ...result,
+          items: result.items.map((item) => this.fixItemUrls(item))
+        }))
+      );
   }
 
   private fixItemUrls(item: ClothingItem): ClothingItem {

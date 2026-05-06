@@ -36,6 +36,10 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
         {
             query = query.Where(p => p.PostType == postType.Value);
         }
+        if (!string.IsNullOrEmpty(userId))
+        {
+            query = query.Where(p => p.UserId == userId);
+        }
 
         // Apply cursor filter if provided
         if (!string.IsNullOrEmpty(cursor))

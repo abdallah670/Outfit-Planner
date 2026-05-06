@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
@@ -8,6 +8,7 @@ import {
   ChangePasswordRequest,
   UpdateEmailRequest,
 } from '../../domain/entities/user-profile.entity';
+import { PublicUserProfile } from '../../domain/entities/public-user-profile.entity';
 import { environment } from '../../../environments/environment';
 
 interface UploadResponse {
@@ -55,7 +56,6 @@ export class UserDataSource {
 
     return this.http.post<UploadResponse>(`${this.apiUrl}/profile-picture`, formData).pipe(
       map((response: UploadResponse) => {
-        // Extract the image URL from the message (format: "success|url")
         const parts = response.message.split('|');
         const rawUrl = parts.length > 1 ? parts[1] : '';
         return this.getAbsoluteUrl(rawUrl) || '';
@@ -69,5 +69,48 @@ export class UserDataSource {
 
   updateEmail(request: UpdateEmailRequest): Observable<{ success: boolean; message: string }> {
     return this.http.put<{ success: boolean; message: string }>(`${this.apiUrl}/email`, request);
+  }
+
+  // ============ Follow Methods ============
+
+  followUser(userId: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/users/${userId}/follow`, {});
+  }
+
+  unfollowUser(userId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/users/${userId}/follow`);
+  }
+
+  isFollowing(userId: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/users/${userId}/is-following`);
+  }
+
+  getFollowers(userId: string, cursor?: string, pageSize: number = 20): Observable<any> {
+    let params = new HttpParams().set('pageSize', pageSize.toString());
+    if (cursor) {
+      params = params.set('cursor', cursor);
+    }
+    return this.http.get<any>(`${this.apiUrl}/users/${userId}/followers`, { params });
+  }
+
+  getFollowing(userId: string, cursor?: string, pageSize: number = 20): Observable<any> {
+    let params = new HttpParams().set('pageSize', pageSize.toString());
+    if (cursor) {
+      params = params.set('cursor', cursor);
+    }
+    return this.http.get<any>(`${this.apiUrl}/users/${userId}/following`, { params });
+  }
+
+  // ============ Public Profile (for viewing other users) ============
+
+  getPublicUserProfile(userId: string): Observable<PublicUserProfile> {
+    return this.http.get<PublicUserProfile>(`${this.apiUrl}/users/${userId}/profile`).pipe(
+      map((profile: PublicUserProfile) => {
+        if (profile.profilePictureUrl) {
+          profile.profilePictureUrl = this.getAbsoluteUrl(profile.profilePictureUrl);
+        }
+        return profile;
+      }),
+    );
   }
 }

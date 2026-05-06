@@ -1,6 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Outfit } from '../entities/outfit.entity';
+import { PagedResult } from '../entities/response.entity';
 
 export const OUTFIT_REPOSITORY = new InjectionToken<OutfitRepository>('OutfitRepository');
 
@@ -36,6 +37,11 @@ export interface OutfitRepository {
   updateOutfit(id: string, outfit: Partial<Outfit>): Observable<Outfit>;
   deleteOutfit(id: string): Observable<boolean>;
   getOutfitsSuggestions(request: OutfitSuggestionsRequest): Observable<Outfit[]>;
-  getTodaysPick(latitude?: number, longitude?: number): Observable<TodaysPickResponse>;
+  getTodaysPick(latitude?: number, longitude?: number, date?: string): Observable<TodaysPickResponse>;
   recordOutfitWear(id: string): Observable<Outfit>;
+  getFilteredOutfits(
+    filters: { occasion?: string; season?: string; search?: string; sortBy?: string },
+    page: number,
+    pageSize: number
+  ): Observable<PagedResult<Outfit>>;
 }

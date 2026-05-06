@@ -25,7 +25,13 @@ public class UserController : ControllerBase
         _mediator = mediator;
         _logger = logger;
     }
-
+     #region Profile 
+     /// <summary>
+     /// Get other profile
+     /// </summary>
+     [HttpGet("UserProfile")]
+     
+     
     /// <summary>
     /// Get current user profile
     /// </summary>
@@ -47,6 +53,31 @@ public class UserController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving user profile");
+            return StatusCode(500, new { message = "Failed to retrieve profile" });
+        }
+    }
+
+   
+    /// <summary>
+    /// Get public profile information for any user (non-sensitive)
+    /// </summary>
+    [HttpGet("users/{userId}/profile")]
+    [AllowAnonymous]
+    public async Task<ActionResult<PublicUserProfileDto?>> GetPublicProfile(string userId)
+    {
+        try
+        {
+            var query = new GetPublicUserProfileQuery { UserId = userId };
+            var profile = await _mediator.Send(query);
+
+            if (profile == null)
+                return NotFound(new { message = "User not found" });
+
+            return Ok(profile);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving public profile for user {UserId}", userId);
             return StatusCode(500, new { message = "Failed to retrieve profile" });
         }
     }
@@ -154,6 +185,7 @@ public class UserController : ControllerBase
             return StatusCode(500, new { message = "Failed to upload profile picture" });
         }
     }
+    #endregion
 
     /// <summary>
     /// Change user password

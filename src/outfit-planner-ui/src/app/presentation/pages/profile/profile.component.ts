@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, take } from 'rxjs';
@@ -39,6 +39,7 @@ import {
   selectStyleRules,
 } from '../../../core/state/user/user.selectors';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserUseCases } from '../../../domain/usecases/user.usecases';
 
 @Component({
   selector: 'app-profile',
@@ -61,10 +62,11 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class ProfileComponent implements OnInit {
   private readonly store = inject(Store);
+  private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly userDataSource = inject(UserDataSource);
+  private readonly userUseCases = inject(UserUseCases);
 
   profile$!: Observable<UserProfile | null>;
   loading$: Observable<boolean>;
@@ -73,9 +75,6 @@ export class ProfileComponent implements OnInit {
   preferences$: Observable<UserPreferences | undefined>;
   styleRules$!: Observable<StyleRule[]>;
 
-  // Enums for templates
-  stylePreferences = Object.values(StylePreference);
-  privacyLevels = Object.values(PrivacyLevel);
 
   constructor() {
     this.profile$ = this.store.select(selectUserProfile);
@@ -86,9 +85,10 @@ export class ProfileComponent implements OnInit {
     this.styleRules$ = this.store.select(selectStyleRules);
   }
 
-  ngOnInit() {
-    this.store.dispatch(UserActions.loadProfile());
-    this.store.dispatch(UserActions.loadStyleRules());
+   ngOnInit() {
+      // Own profile
+      this.store.dispatch(UserActions.loadProfile());
+      this.store.dispatch(UserActions.loadStyleRules());
   }
 
   getMemberSince(createdAt: string | undefined): string {
@@ -402,43 +402,50 @@ export class ProfileComponent implements OnInit {
     this.store.dispatch(UserActions.clearError());
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        this.snackBar.open('Please select an image file', 'Close', {
-          duration: 3000,
-        });
-        return;
-      }
+   onFileSelected(event: Event): void {
+     const input = event.target as HTMLInputElement;
+     if (input.files && input.files.length > 0) {
+       const file = input.files[0];
+       
+       // Validate file type
+       if (!file.type.startsWith('image/')) {
+         this.snackBar.open('Please select an image file', 'Close', {
+           duration: 3000,
+         });
+         return;
+       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        this.snackBar.open('Image size must be less than 5MB', 'Close', {
-          duration: 3000,
-        });
-        return;
-      }
+       // Validate file size (max 5MB)
+       if (file.size > 5 * 1024 * 1024) {
+         this.snackBar.open('Image size must be less than 5MB', 'Close', {
+           duration: 3000,
+         });
+         return;
+       }
 
-      // Upload the file
-      this.userDataSource.uploadProfilePicture(file).subscribe({
-        next: (imageUrl: string) => {
-          this.snackBar.open('Profile picture updated successfully', 'Close', {
-            duration: 3000,
-          });
-          // Reload profile to get updated image URL
-          this.store.dispatch(UserActions.loadProfile());
-        },
-        error: (error: Error) => {
-          console.error('Upload error:', error);
-          this.snackBar.open('Failed to upload profile picture', 'Close', {
-            duration: 3000,
-          });
-        },
-      });
-    }
-  }
+       // Upload the file
+       this.userUseCases.uploadProfilePicture(file).subscribe({
+         next: (imageUrl: string) => {
+           this.snackBar.open('Profile picture updated successfully', 'Close', {
+             duration: 3000,
+           });
+           // Reload profile to get updated image URL
+           this.store.dispatch(UserActions.loadProfile());
+         },
+         error: (error: Error) => {
+           console.error('Upload error:', error);
+           this.snackBar.open('Failed to upload profile picture', 'Close', {
+             duration: 3000,
+           });
+         },
+       });
+     }
+   }
+
+ 
+
+   onBack(): void {
+     window.history.back();
+   }
+
 }

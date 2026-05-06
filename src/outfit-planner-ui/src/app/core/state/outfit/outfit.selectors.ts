@@ -78,3 +78,8 @@ export const selectOutfitStats = createSelector(
     };
   },
 );
+
+export const selectSuggestions = createSelector(
+  selectOutfitState,
+  (state: OutfitState): Outfit[] => state?.suggestions || [],
+);

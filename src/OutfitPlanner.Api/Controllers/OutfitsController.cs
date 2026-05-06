@@ -3,13 +3,16 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
+using OutfitPlanner.Application.Features.Users.Requests.Queries;
+
 using OutfitPlanner.Application.DTOs.Outfit;
-using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Exceptions;
+using OutfitPlanner.Application.Responses;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -23,19 +26,22 @@ public class OutfitsController : ControllerBase
     private readonly IImageCombinationService _imageService;
     private readonly IOutfitImageCacheService _imageCacheService;
     private readonly IWebHostEnvironment _environment;
+    private readonly UserManager<OutfitPlanner.Domain.Entities.User> _userManager;
 
     public OutfitsController(
         IMediator mediator, 
         ILogger<OutfitsController> logger,
         IImageCombinationService imageService,
         IOutfitImageCacheService imageCacheService,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        UserManager<OutfitPlanner.Domain.Entities.User> userManager)
     {
         _mediator = mediator;
         _logger = logger;
         _imageService = imageService;
         _imageCacheService = imageCacheService;
         _environment = environment;
+        _userManager = userManager;
     }
 
     private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -50,6 +56,33 @@ public class OutfitsController : ControllerBase
         var userId = GetUserId();
         var outfits = await _mediator.Send(new GetOutfitsRequest { UserId = userId });
         return Ok(outfits);
+    }
+
+    /// <summary>
+    /// Gets filtered and paginated outfits
+    /// </summary>
+    [HttpGet("filtered")]
+    [ProducesResponseType(typeof(PagedResult<OutfitDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<OutfitDto>>> GetFiltered(
+        [FromQuery] string? occasion,
+        [FromQuery] string? season,
+        [FromQuery] string? search,
+        [FromQuery] string? sortBy,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        var userId = GetUserId();
+        var result = await _mediator.Send(new GetFilteredOutfitsRequest
+        {
+            UserId = userId,
+            Occasion = occasion,
+            Season = season,
+            SearchQuery = search,
+            SortBy = sortBy,
+            Page = page,
+            PageSize = pageSize
+        });
+        return Ok(result);
     }
 
     /// <summary>
@@ -211,29 +244,44 @@ public class OutfitsController : ControllerBase
     /// <param name="lat">Latitude (optional, uses browser geolocation)</param>
     /// <param name="lon">Longitude (optional, uses browser geolocation)</param>
     [HttpGet("today")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(TodaysPickResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TodaysPickResult>> GetToday(
         [FromQuery] double? lat = null,
-        [FromQuery] double? lon = null)
+        [FromQuery] double? lon = null,
+        [FromQuery] DateTime? date = null)
     {
         var userId = GetUserId();
         
-        _logger.LogInformation("Getting today's pick for user {UserId} with location: {Lat}, {Lon}", 
-            userId, lat, lon);
+        // For anonymous access, use the admin user (first user created in DataSeeder)
+        if (string.IsNullOrEmpty(userId))
+        {
+            // Get the admin user that's created during seeding
+            var adminUser = await _userManager.FindByNameAsync("admin");
+            if (adminUser != null)
+            {
+                userId = adminUser.Id;
+            }
+            else
+            {
+                return NotFound("Admin user not found. Please run database seeding first.");
+            }
+        }
+        
+        _logger.LogInformation("Getting today's pick for user {UserId} with location: {Lat}, {Lon}, date: {Date}", 
+            userId, lat, lon, date);
 
         var query = new GetTodaysPickQuery
         {
             UserId = userId,
             Latitude = lat,
-            Longitude = lon
+            Longitude = lon,
+            Date = date.HasValue ? new DateTimeOffset(date.Value.Date) : null
         };
         
         var result = await _mediator.Send(query);
         
-        if (result.Outfit == null)
-            return NotFound("No suitable outfit found for today. Add some outfits to your wardrobe!");
-
         return Ok(result);
     }
 
@@ -241,6 +289,7 @@ public class OutfitsController : ControllerBase
     /// Generates outfit suggestions based on criteria
     /// </summary>
     [HttpPost("generate")]
+    [HttpPost("suggestions")]
     [ProducesResponseType(typeof(List<OutfitDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<OutfitDto>>> GenerateSuggestions([FromBody] OutfitSuggestionsDto dto)
     {

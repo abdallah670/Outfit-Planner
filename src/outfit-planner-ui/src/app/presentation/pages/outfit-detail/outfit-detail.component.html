@@ -5,29 +5,33 @@
       <span>Back to Dashboard</span>
     </div>
 
-    <div class="header-actions">
-      <button mat-flat-button class="action-btn edit-btn" (click)="onEdit($any(outfit).id)">
-        <mat-icon>edit</mat-icon>
-        Edit Outfit
-      </button>
-      <button
-        mat-icon-button
-        class="action-btn wear-btn"
-        (click)="onRecordWear($any(outfit).id)"
-        title="Record Wear"
-      >
-        <mat-icon>checkroom</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        color="warn"
-        class="action-btn delete-btn"
-        (click)="onDelete($any(outfit).id)"
-        title="Delete Outfit"
-      >
-        <mat-icon>delete</mat-icon>
-      </button>
-    </div>
+     <div class="header-actions">
+       <button mat-flat-button class="action-btn edit-btn" (click)="onEdit($any(outfit).id)">
+         <mat-icon>edit</mat-icon>
+         Edit Outfit
+       </button>
+       <button mat-flat-button class="action-btn share-btn" (click)="onShareToFeed($any(outfit).id)">
+         <mat-icon>share</mat-icon>
+         Share to Feed
+       </button>
+       <button
+         mat-icon-button
+         class="action-btn wear-btn"
+         (click)="onRecordWear($any(outfit).id)"
+         title="Record Wear"
+       >
+         <mat-icon>checkroom</mat-icon>
+       </button>
+       <button
+         mat-icon-button
+         color="warn"
+         class="action-btn delete-btn"
+         (click)="onDelete($any(outfit).id)"
+         title="Delete Outfit"
+       >
+         <mat-icon>delete</mat-icon>
+       </button>
+     </div>
   </header>
 
   <main class="detail-content">
@@ -66,24 +70,26 @@
         <div *ngFor="let item of $any(outfit).items" class="premium-item-card">
           <div class="item-visual">
             <img
-              *ngIf="$any(item).clothingItemImageUrl"
+              *ngIf="$any(item).clothingItemImageUrl; else itemPlaceholder"
               [src]="$any(item).clothingItemImageUrl"
               [alt]="$any(item).clothingItemName"
             />
+            <ng-template #itemPlaceholder>
+              <img src="assets/placeholder.jpg" alt="No image" class="placeholder-img" />
+            </ng-template>
             <div class="item-overlay">
-              <span class="role-badge" [class]="'role-' + $any(item).role">{{
-                $any(item).role
-              }}</span>
+              <span class="role-badge" [class]="'role-' + $any(item).role">{{ $any(item).role }}</span>
             </div>
-            <mat-icon *ngIf="!$any(item).clothingItemImageUrl">image_not_supported</mat-icon>
           </div>
           <div class="item-details">
             <span class="item-category">{{ $any(item).clothingItemCategory }}</span>
             <h3>{{ $any(item).clothingItemName || 'Nameless Item' }}</h3>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+ 
+ 
 
       <ng-template #emptyItems>
         <div class="empty-items-state">

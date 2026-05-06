@@ -1,7 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { UserState } from './user.reducer';
+import { UserProfileState, UserState } from './user.reducer';
 
 export const selectUserState = createFeatureSelector<UserState>('user');
+export const selectUserProfileState = createFeatureSelector<UserProfileState>('userProfile');
 
 export const selectUserProfile = createSelector(
   selectUserState,
@@ -105,4 +106,14 @@ export const selectConnectedAccounts = createSelector(
 export const selectConnectedAccountsLoading = createSelector(
   selectUserState,
   (state) => state.connectedAccountsLoading
+);
+
+export const selectSelectedPublicProfile = createSelector(
+  selectUserProfileState,
+  (state) => state.user
+);
+
+export const selectPublicProfileLoading = createSelector(
+  selectUserProfileState,
+  (state) => state.loading
 );

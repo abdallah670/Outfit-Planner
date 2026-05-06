@@ -18,3 +18,22 @@ C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\refint\OutfitPlanner.Infrastructure.dll
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.pdb
 C:\Meno\Projects\Outfit Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\ref\OutfitPlanner.Infrastructure.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Infrastructure.deps.json
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Infrastructure.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Infrastructure.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Application.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Domain.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Persistence.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Domain.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Persistence.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\bin\Debug\net9.0\OutfitPlanner.Application.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.csproj.AssemblyReference.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.AssemblyInfoInputs.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.AssemblyInfo.cs
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.csproj.CoreCompileInputs.cache
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPl.0C1D22ED.Up2Date
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\refint\OutfitPlanner.Infrastructure.dll
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\OutfitPlanner.Infrastructure.pdb
+F:\Meno\Outfit-Planner\src\OutfitPlanner.Infrastructure\obj\Debug\net9.0\ref\OutfitPlanner.Infrastructure.dll

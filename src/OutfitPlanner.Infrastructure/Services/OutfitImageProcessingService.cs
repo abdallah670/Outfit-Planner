@@ -12,19 +12,17 @@ namespace OutfitPlanner.Infrastructure.Services;
 public class OutfitImageProcessingService : IOutfitImageProcessingService
 {
     private readonly OutfitLayoutConfig _config;
-    private readonly IBackgroundRemovalService? _backgroundRemovalService;
-    private readonly LocalBackgroundRemovalService? _localBackgroundRemovalService; // LOCAL - no API calls!
+   
     private const int AlphaThreshold = 10; // Pixels with alpha <= 10 are considered transparent
 
     public OutfitImageProcessingService(
-        IBackgroundRemovalService? backgroundRemovalService = null,
+       
         OutfitLayoutConfig? config = null)
     {
-        _backgroundRemovalService = backgroundRemovalService;
+       
         _config = config ?? new OutfitLayoutConfig();
         
-        // Use LOCAL background removal for fast performance (no API calls!)
-        _localBackgroundRemovalService = new LocalBackgroundRemovalService();
+    
     }
 
     /// <inheritdoc />
@@ -143,25 +141,7 @@ public class OutfitImageProcessingService : IOutfitImageProcessingService
     {
         // Step 0: Use LOCAL background removal (fast, no API calls!)
         Stream processedStream = imageStream;
-        if (_localBackgroundRemovalService != null)
-        {
-            // Use local background removal - much faster than API!
-            var bgRemovedBytes = await _localBackgroundRemovalService.RemoveBackgroundAsync(
-                imageStream, 
-                $"clothing-{clothingType}.jpg",
-                cancellationToken);
-            processedStream = new MemoryStream(bgRemovedBytes);
-        }
-        /* DISABLED - Using LOCAL background removal instead of API
-        else if (_backgroundRemovalService?.IsConfigured == true)
-        {
-            var bgRemovedBytes = await _backgroundRemovalService.RemoveBackgroundAsync(
-                imageStream, 
-                $"clothing-{clothingType}.jpg",
-                cancellationToken);
-            processedStream = new MemoryStream(bgRemovedBytes);
-        }
-        */
+       
 
         // Load the image
         using var originalImage = await Image.LoadAsync<Rgba32>(processedStream, cancellationToken);
@@ -201,31 +181,9 @@ public class OutfitImageProcessingService : IOutfitImageProcessingService
             // Reset stream position
             item.ImageStream.Position = 0;
 
-            // Step 0: Use LOCAL background removal (fast, no API calls!)
+           
             Stream processedStream = item.ImageStream;
-            if (_localBackgroundRemovalService != null)
-            {
-                // Reset stream
-                item.ImageStream.Position = 0;
-                
-                // Use local background removal - much faster than API!
-                var bgRemovedBytes = await _localBackgroundRemovalService.RemoveBackgroundAsync(
-                    item.ImageStream,
-                    $"clothing-{item.Type}.jpg",
-                    cancellationToken);
-                processedStream = new MemoryStream(bgRemovedBytes);
-            }
-            /* DISABLED - Using LOCAL background removal instead of API
-            else if (_backgroundRemovalService?.IsConfigured == true)
-            {
-                item.ImageStream.Position = 0;
-                var bgRemovedBytes = await _backgroundRemovalService.RemoveBackgroundAsync(
-                    item.ImageStream,
-                    $"clothing-{item.Type}.jpg",
-                    cancellationToken);
-                processedStream = new MemoryStream(bgRemovedBytes);
-            }
-            */
+          
 
             // Load the image ONCE (not twice like before)
             using var originalImage = await Image.LoadAsync<Rgba32>(processedStream, cancellationToken);

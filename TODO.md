@@ -1,1 +1,0 @@
-review the Today's Pick in home page and it endpiont in backend it is fully implmented front and back also in backend it get any outfit there is no standard to get it like current weather of user the colors he likes anyhting

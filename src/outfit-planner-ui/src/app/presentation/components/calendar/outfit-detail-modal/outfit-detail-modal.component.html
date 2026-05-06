@@ -3,8 +3,11 @@
 <mat-dialog-content>
   <div class="outfit-detail">
     <!-- Outfit Image -->
-    <div class="outfit-image" *ngIf="data.event.outfitImageUrl">
-      <img [src]="data.event.outfitImageUrl" [alt]="data.event.outfitName" (error)="handleImageError($event)">
+    <div class="outfit-image">
+      <img *ngIf="data.event.outfitImageUrl; else outfitPlaceholder" [src]="data.event.outfitImageUrl" [alt]="data.event.outfitName" (error)="handleImageError($event)">
+      <ng-template #outfitPlaceholder>
+        <img src="assets/placeholder.jpg" alt="No outfit image" class="placeholder-img">
+      </ng-template>
     </div>
     
     <!-- Outfit Info -->

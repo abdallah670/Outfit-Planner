@@ -22,20 +22,17 @@ import { Outfit } from '../../../../domain/entities/outfit.entity';
   styleUrls: ['./daily-pick.component.scss'],
 })
 export class DailyPickComponent implements OnInit {
-  private store = inject(Store);
+  store = inject(Store);
+  OutfitsActions = OutfitsActions;
   private router = inject(Router);
+  failedImages = new Set<string>();
 
   outfit: Signal<Outfit | null> = toSignal(this.store.select(selectTodaysOutfit), {
     initialValue: null,
   });
 
   context: Signal<{
-    weatherContext: {
-      condition: string;
-      temperature: number;
-      season: string;
-      city: string;
-    } | null;
+   
     todayEvent: {
       title: string;
       eventType: string;
@@ -58,21 +55,19 @@ export class DailyPickComponent implements OnInit {
 
   ngOnInit(): void {
     // Load today's pick - location will be handled by the effect/default
-    this.store.dispatch(OutfitsActions.loadTodaysPick({}));
+    this.store.dispatch(this.OutfitsActions.loadTodaysPick({}));
   }
 
   onWearToday(): void {
     const outfit = this.outfit();
     if (outfit) {
-      this.store.dispatch(OutfitsActions.recordOutfitWear({ id: outfit.id }));
+      this.store.dispatch(this.OutfitsActions.recordOutfitWear({ id: outfit.id }));
     }
   }
 
   onViewOutfit(): void {
-    const outfit = this.outfit();
-    if (outfit) {
-      this.router.navigate(['/outfits', outfit.id]);
-    }
+    // Navigate to today's suggestion page which shows full details
+    this.router.navigate(['/outfits/today']);
   }
 
   getMatchPercentage(): string {
@@ -91,5 +86,9 @@ export class DailyPickComponent implements OnInit {
     return outfit.items
       .filter(item => item.role === 'primary' || item.isEssential)
       .slice(0, 3);
+  }
+
+  onImageError(itemId: string): void {
+    this.failedImages.add(itemId);
   }
 }

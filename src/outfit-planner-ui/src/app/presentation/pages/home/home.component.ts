@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Signal } from '@angular/core';
+import { Component, inject, OnInit, Signal, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -21,9 +21,9 @@ import {
   selectWeatherLoading,
 } from '../../../core/state/weather/weather.selectors';
 import { OutfitsActions } from '../../../core/state/outfit/outfit.actions';
-import { SocialActions } from '../../../core/state/social/social.actions';
-import { selectTrendingOutfits, selectSocialLoading } from '../../../core/state/social/social.selectors';
-import { TrendingOutfit } from '../../../domain/entities/social-engagement.entity';
+import { TrendingActions } from '../../../core/state/trending/trending.actions';
+import { selectTrendingOutfits, selectTrendingLoading } from '../../../core/state/trending/trending.selectors';
+import { TrendingOutfit } from '../../../domain/entities/outfit.entity';
 
 @Component({
   selector: 'app-home',
@@ -44,6 +44,7 @@ import { TrendingOutfit } from '../../../domain/entities/social-engagement.entit
 })
 export class HomeComponent implements OnInit {
   private store = inject(Store);
+  failedImages = new Set<string>();
 
   items: Signal<ClothingItem[]> = toSignal(this.store.select(selectAllItems), {
     initialValue: [] as ClothingItem[],
@@ -61,23 +62,76 @@ export class HomeComponent implements OnInit {
     initialValue: [],
   });
 
-  trendingLoading: Signal<boolean> = toSignal(this.store.select(selectSocialLoading), {
+  trendingLoading: Signal<boolean> = toSignal(this.store.select(selectTrendingLoading), {
     initialValue: false,
   });
 
   categories = ['All Items', 'Tops', 'Bottoms', 'Shoes', 'Accessories'];
-  selectedCategory = 'All Items';
+  selectedCategory = signal('All Items');
+
+  // Computed filtered items based on selected category
+  filteredItems = computed(() => {
+    const items = this.items();
+    const category = this.selectedCategory();
+
+    if (category === 'All Items') {
+      return items;
+    }
+
+    // Category mapping from backend type to display name
+    const categoryMap: { [key: string]: string } = {
+      footwear: 'Shoes',
+      top: 'Tops',
+      tops: 'Tops',
+      bottom: 'Bottoms',
+      bottoms: 'Bottoms',
+      dress: 'Dresses',
+      dresses: 'Dresses',
+      outerwear: 'Outerwear',
+      shoes: 'Shoes',
+      accessory: 'Accessories',
+      accessories: 'Accessories',
+    };
+
+    return items.filter((item) => {
+      const itemType = item.type?.toLowerCase() || '';
+      const mappedCategory = categoryMap[itemType] || itemType;
+      return mappedCategory === category || (category === 'Shoes' && itemType === 'footwear');
+    });
+  });
 
   ngOnInit() {
     this.store.dispatch(WardrobeActions.loadClothingItems());
-    // Load weather for Cairo (default for now)
-    this.store.dispatch(WeatherActions.loadCurrentWeather({ city: 'Cairo' }));
+    
+    // Load weather with geolocation
+    this.loadWeather();
     
     // Load today's pick with geolocation
     this.loadTodaysPick();
     
     // Load trending outfits - only 3 for home page
-    this.store.dispatch(SocialActions.loadTrending({ page: 1, pageSize: 3 }));
+    this.store.dispatch(TrendingActions.loadTrending({ page: 1, pageSize: 3 }));
+  }
+
+  private loadWeather(): void {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.store.dispatch(
+            WeatherActions.loadCurrentWeather({
+              lat: position.coords.latitude,
+              lon: position.coords.longitude,
+            })
+          );
+        },
+        (error) => {
+          console.log('Geolocation denied or unavailable, using default location');
+          this.store.dispatch(WeatherActions.loadCurrentWeather({ city: 'Cairo' }));
+        }
+      );
+    } else {
+      this.store.dispatch(WeatherActions.loadCurrentWeather({ city: 'Cairo' }));
+    }
   }
 
   private loadTodaysPick(): void {
@@ -105,7 +159,10 @@ export class HomeComponent implements OnInit {
   }
 
   selectCategory(category: string) {
-    this.selectedCategory = category;
-    // Note: Filtering logic using a selector or signal would go here
+    this.selectedCategory.set(category);
+  }
+
+  onImageError(outfitId: string): void {
+    this.failedImages.add(outfitId);
   }
 }

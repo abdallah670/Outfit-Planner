@@ -38,6 +38,12 @@ export const initialState: UserState = {
   connectedAccounts: [],
   connectedAccountsLoading: false,
 };
+export interface UserProfileState {
+  user: UserProfile | null;
+  loading: boolean;
+  error: string | null;
+}
+
 
 export const userReducer = createReducer(
   initialState,
@@ -288,6 +294,20 @@ export const userReducer = createReducer(
   on(UserActions.disconnectAccountFailure, (state, { error }) => ({
     ...state,
     connectedAccountsLoading: false,
+    error,
+  })),
+  on(UserActions.loadUserProfile, (state) => ({
+    ...state,
+    loading: true,
+  })),
+  on(UserActions.loadUserProfileSuccess, (state, { user }) => ({
+    ...state,
+    user,
+    loading: false,
+  })),
+  on(UserActions.loadUserProfileFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
     error,
   })),
 );

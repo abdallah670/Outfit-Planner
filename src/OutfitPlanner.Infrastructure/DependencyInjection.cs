@@ -19,17 +19,13 @@ public static class DependencyInjection
             .Get<ImageStorageSettings>() ?? new ImageStorageSettings();
         services.AddSingleton(storageSettings);
 
-        // Background Removal Settings
-        services.Configure<BackgroundRemovalSettings>(
-            configuration.GetSection(BackgroundRemovalSettings.SectionName));
-        
         // Outfit Image Cache Settings
         services.Configure<OutfitImageCacheSettings>(
             configuration.GetSection(OutfitImageCacheSettings.SectionName));
 
         // Register image processing services
         services.AddScoped<IImageProcessingService, ImageProcessingService>();
-        services.AddScoped<IBackgroundRemovalService, RemoveBgBackgroundRemovalService>();
+     
         services.AddScoped<IOutfitImageCacheService, OutfitImageCacheService>();
 
         // Register storage service

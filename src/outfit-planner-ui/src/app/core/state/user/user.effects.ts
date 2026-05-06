@@ -10,6 +10,7 @@ import { NotificationSettingsService, NotificationSettings } from '../../service
 import { ConnectedAccountsService, ConnectedAccount, ConnectAccountResponse } from '../../services/connected-accounts.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { PublicUserProfile } from '../../../domain/entities/public-user-profile.entity';
 
 export const loadProfile$ = createEffect(
   (actions$ = inject(Actions), userRepository = inject(UserRepositoryImpl)) => {
@@ -449,6 +450,27 @@ export const deleteAccount$ = createEffect(
           catchError((error) =>
             of(
               UserActions.deleteAccountFailure({ error: error?.message || 'Failed to delete account' }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const loadUserProfile$ = createEffect(
+  (actions$ = inject(Actions), userRepository = inject(UserRepositoryImpl)) => {
+    return actions$.pipe(
+      ofType(UserActions.loadUserProfile),
+      exhaustMap(({ userId }) =>
+        userRepository.getPublicProfile(userId).pipe(
+          map((user: PublicUserProfile) => UserActions.loadUserProfileSuccess({ user })),
+          catchError((error) =>
+            of(
+              UserActions.loadUserProfileFailure({
+                error: error?.message || 'Failed to load user profile',
+              }),
             ),
           ),
         ),

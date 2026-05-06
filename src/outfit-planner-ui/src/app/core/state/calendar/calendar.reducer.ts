@@ -218,6 +218,7 @@ export const calendarFeature = createFeature({
 
 export const {
   selectEvents,
+  reducer,
   selectStats,
   selectCurrentYear,
   selectCurrentMonth,
@@ -225,5 +226,3 @@ export const {
   selectError,
 } = calendarFeature;
 
-// Export reducer for store registration
-export const reducer = calendarFeature.reducer;

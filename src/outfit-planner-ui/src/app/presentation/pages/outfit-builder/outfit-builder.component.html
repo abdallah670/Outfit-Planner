@@ -120,7 +120,7 @@
               cdkDrag
               [cdkDragData]="item"
             >
-              <img [src]="$any(item).imageUrl || 'assets/default-item.png'" [alt]="item.name" />
+              <img [src]="$any(item).imageUrl || 'assets/placeholder.jpg'" [alt]="item.name" />
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@
             (click)="addItem(item)"
           >
             <div class="suggestion-visual">
-              <img [src]="$any(item).imageUrl || 'assets/default-item.png'" alt="suggestion" />
+              <img [src]="$any(item).imageUrl || 'assets/placeholder.jpg'" alt="suggestion" />
             </div>
             <div class="suggestion-info">
               <span class="s-name">{{ $any(item).name }}</span>
@@ -219,8 +219,8 @@
               <div class="stat-value large">{{ stats.mostWorn }}</div>
               <div class="stat-sub">wears</div>
             </div>
-            <div class="most-worn-img" *ngIf="stats.mostWornItem?.imageUrl">
-              <img [src]="$any(stats.mostWornItem).imageUrl" [alt]="stats.mostWornItem?.name" />
+            <div class="most-worn-img">
+              <img [src]="$any(stats.mostWornItem).imageUrl || 'assets/placeholder.jpg'" [alt]="stats.mostWornItem?.name || 'Most worn item'" />
             </div>
           </div>
         </div>

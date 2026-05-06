@@ -11,6 +11,7 @@ import {
 import { AppPreferences, UpdateAppPreferencesRequest } from '../../services/app-preferences.service';
 import { NotificationSettings, UpdateNotificationSettingsRequest } from '../../services/notification-settings.service';
 import { ConnectedAccount } from '../../services/connected-accounts.service';
+import { Follower, Following, FollowStats, IsFollowing } from '../../../domain/entities/follow.entity';
 
 export const UserActions = createActionGroup({
   source: 'User',
@@ -100,5 +101,11 @@ export const UserActions = createActionGroup({
     'Delete Account': emptyProps(),
     'Delete Account Success': emptyProps(),
     'Delete Account Failure': props<{ error: string }>(),
+
+    //Laod other user profile
+    'Load  User Profile': props<{ userId: string }>(),
+    'Load  User Profile Success': props<{ user: UserProfile }>(),
+    'Load  User Profile Failure': props<{ error: string }>(),
+
   },
 });

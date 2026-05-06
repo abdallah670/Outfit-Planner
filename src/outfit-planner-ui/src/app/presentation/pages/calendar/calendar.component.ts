@@ -448,7 +448,7 @@ export class CalendarComponent implements OnInit {
    */
   handleImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
-    img.src = '/outfit_placeholder.png';
+    img.src = 'assets/placeholder.jpg';
   }
 
   setView(view: 'month' | 'week'): void {
@@ -471,6 +471,17 @@ export class CalendarComponent implements OnInit {
 
   isSameDate(date1: Date, date2: Date): boolean {
     return date1.toDateString() === date2.toDateString();
+  }
+
+  /**
+   * Check if the selected date is in the past
+   */
+  isPastDate(): boolean {
+    const selected = this.selectedDate();
+    if (!selected) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return selected < today;
   }
 
   // Helper method for template
@@ -509,9 +520,10 @@ export class CalendarComponent implements OnInit {
       if (result?.success) {
         console.log('Event added successfully:', result);
         // Refresh the calendar events
-        const year = this.year();
-        const month = this.month();
+        const year = this.currentYear();
+        const month = this.currentDate().getMonth() + 1;
         this.store.dispatch(CalendarActions.loadCalendarEvents({ year, month }));
+        this.store.dispatch(CalendarActions.loadScheduledOutfits({ year, month }));
       }
     });
   }
@@ -538,10 +550,11 @@ export class CalendarComponent implements OnInit {
       if (result?.success) {
         console.log('Outfit scheduled successfully:', result);
         // Refresh the calendar data
-        const year = this.year();
-        const month = this.month();
+        const year = this.currentYear();
+        const month = this.currentDate().getMonth() + 1;
         this.store.dispatch(CalendarActions.loadScheduledOutfits({ year, month }));
         this.store.dispatch(CalendarActions.loadMonthlyStats({ year, month }));
+        this.store.dispatch(CalendarActions.loadCalendarEvents({ year, month }));
       }
     });
   }
