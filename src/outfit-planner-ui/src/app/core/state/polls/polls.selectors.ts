@@ -18,3 +18,8 @@ export const {
 
 export const selectPollById = (pollId: string) =>
   createSelector(selectPolls, (polls) => polls.find(p => p.id === pollId));
+
+export const selectUserPollsCount = createSelector(
+  selectUserPolls,
+  (polls) => polls.length
+);

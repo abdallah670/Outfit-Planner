@@ -6,20 +6,24 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
 import { Store } from '@ngrx/store';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { PollsActions } from '../../../core/state/polls/polls.actions';
 import { TrendingActions } from '../../../core/state/trending/trending.actions';
+import { FeedActions } from '../../../core/state/feed/feed.actions';
 import { selectPollsLoading, selectRecentPoll, selectRecentPollComments, selectCommentsCursor, selectHasMoreComments, selectCommentsLoading } from '../../../core/state/polls/polls.selectors';
 import { selectTrendingOutfits, selectTrendingLoading, selectTrendingTotalCount } from '../../../core/state/trending/trending.selectors';
+import { selectPosts, selectHasMore, selectNextCursor, selectFeedLoading } from '../../../core/state/feed/feed.selectors';
 import { Poll, CastVoteRequest, getTimeLeft, mapPollOptionToDisplayOption } from '../../../domain/entities/poll.entity';
 import { TrendingOutfit } from '../../../domain/entities/outfit.entity';
+import { FeedPost, PostType } from '../../../domain/entities/feed.entity';
 
 @Component({
   selector: 'app-social',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule, MatChipsModule, MatSnackBarModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule, MatChipsModule, MatSnackBarModule, MatCardModule],
   templateUrl: './social.component.html',
   styleUrl: './social.component.scss'
 })
@@ -43,8 +47,12 @@ export class SocialComponent implements OnInit {
   private trendingTotalCount = toSignal(this.store.select(selectTrendingTotalCount), { initialValue: 0 });
   private trendingLoadingSignal = toSignal(this.store.select(selectTrendingLoading), { initialValue: false });
   private pollsLoadingSignal = toSignal(this.store.select(selectPollsLoading), { initialValue: false });
+  private postsSignal = toSignal(this.store.select(selectPosts), { initialValue: [] as FeedPost[] });
+  readonly hasMoreSignal = toSignal(this.store.select(selectHasMore), { initialValue: false });
+  readonly nextCursorSignal = toSignal(this.store.select(selectNextCursor), { initialValue: null as string | null });
+  readonly feedLoadingSignal = toSignal(this.store.select(selectFeedLoading), { initialValue: false });
 
-  loading = computed(() => this.pollsLoadingSignal() || this.trendingLoadingSignal());
+  loading = computed(() => this.pollsLoadingSignal() || this.trendingLoadingSignal() || this.feedLoadingSignal());
 
   // Trending pagination computed values
   trendingHasMore = computed(() => this.trendingOutfitsSignal().length < this.trendingTotalCount());
@@ -66,9 +74,14 @@ export class SocialComponent implements OnInit {
   // Get comments for the featured poll
   featuredPollComments = computed(() => this.recentCommentsSignal());
 
+  // User polls count for social hub
+  private userPollsSignal = toSignal(this.store.select(selectUserPolls), { initialValue: [] as Poll[] });
+  userPollsCount = computed(() => this.userPollsSignal().length);
+
   ngOnInit(): void {
     this.store.dispatch(PollsActions.loadRecentPoll({ commentsPageSize: 20 }));
     this.store.dispatch(TrendingActions.loadTrending({ page: 1, pageSize: 20 }));
+    this.store.dispatch(FeedActions.loadPosts({ pageSize: 20 }));
   }
 
   vote(pollId: string, optionId: string): void {
@@ -92,6 +105,12 @@ export class SocialComponent implements OnInit {
     if (this.hasMoreCommentsSignal() && !this.commentsLoadingSignal()) {
       const cursor = this.commentsCursorSignal();
       this.store.dispatch(PollsActions.loadMorePollComments({ cursor: cursor ?? undefined, pageSize: 20 }));
+    }
+  }
+
+  loadMoreFeed(): void {
+    if (this.hasMoreSignal() && !this.feedLoadingSignal()) {
+      this.store.dispatch(FeedActions.loadPosts({ cursor: this.nextCursorSignal() ?? undefined, pageSize: 20 }));
     }
   }
 
