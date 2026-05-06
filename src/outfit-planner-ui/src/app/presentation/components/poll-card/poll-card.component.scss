@@ -1,0 +1,154 @@
+.poll-card {
+  margin-bottom: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.poll-header-content {
+  width: 100%;
+}
+
+.poll-question {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+mat-card-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.time-remaining {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.poll-context {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.voting-section {
+  .vote-prompt {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+
+    .option-item {
+      padding: 8px 0;
+    }
+  }
+
+  .vote-btn {
+    width: 100%;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.results-section {
+  .total-votes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #666;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .result-item {
+    &.user-voted {
+      .option-description {
+        font-weight: 500;
+        color: #3f51b5;
+      }
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+
+      .option-description {
+        font-size: 14px;
+        color: #333;
+      }
+
+      .vote-count {
+        font-size: 12px;
+        color: #666;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .user-vote-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 8px 12px;
+    background: #e8eaf6;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #3f51b5;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+mat-card-actions {
+  padding: 8px 16px 16px;
+
+  button {
+    mat-icon {
+      margin-right: 4px;
+      font-size: 18px;
+    }
+  }
+}

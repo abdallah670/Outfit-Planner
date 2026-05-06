@@ -13,6 +13,10 @@ export const OutfitPostsActions = createActionGroup({
     'Get Outfit Post Success': props<{ post: FeedPost }>(),
     'Get Outfit Post Failure': props<{ error: string }>(),
 
+    'Load User Outfit Posts': emptyProps(),
+    'Load User Outfit Posts Success': props<{ posts: FeedPost[] }>(),
+    'Load User Outfit Posts Failure': props<{ error: string }>(),
+
     'Update Outfit Post': props<{ id: string; caption?: string; visibility: number }>(),
     'Update Outfit Post Success': props<{ response: CommandResponse }>(),
     'Update Outfit Post Failure': props<{ error: string }>(),

@@ -595,6 +595,66 @@ $radius-xl: 12px;
   }
 }
 
+// ============================================
+// Outfit Breakdown Section
+// ============================================
+.outfit-breakdown {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.breakdown-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.items-container {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.item-reason {
+  display: flex;
+  justify-content: center;
+  min-width: 120px;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.item-thumb,
+.item-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+}
+
+.placeholder-img {
+  background-color: #f3f4f6;
+}
+
+.item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+  max-width: 120px;
+  word-wrap: break-word;
+}
+
 @media (max-width: 768px) {
   .daily-suggestion-page {
     padding: 16px;

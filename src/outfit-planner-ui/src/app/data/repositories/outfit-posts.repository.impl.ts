@@ -26,6 +26,10 @@ export class OutfitPostsRepositoryImpl implements OutfitPostsRepository {
   deleteOutfitPost(id: string): Observable<void> {
     return this.dataSource.deleteOutfitPost(id);
   }
+
+  getUserOutfitPosts(): Observable<FeedPost[]> {
+    return this.dataSource.getUserOutfitPosts();
+  }
 }
 
 export const outfitPostsRepositoryProvider = {

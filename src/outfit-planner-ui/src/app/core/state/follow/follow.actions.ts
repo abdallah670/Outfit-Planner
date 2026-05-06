@@ -1,4 +1,4 @@
-import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { createActionGroup, props } from '@ngrx/store';
 import { Follower, Following, FollowStats } from '../../../domain/entities/follow.entity';
 import { CursorPagedResult } from '../../../domain/entities/response.entity';
 

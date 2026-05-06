@@ -1,0 +1,142 @@
+<div class="my-outfit-posts-page">
+  <div class="page-header">
+    <h1>My Outfit Posts</h1>
+    <button mat-raised-button color="primary" routerLink="/social/create-post">
+      <mat-icon>add</mat-icon>
+      Create New Post
+    </button>
+  </div>
+
+  <!-- Filters and Sort -->
+  <div class="controls-section">
+    <div class="filter-group">
+      <mat-chip-set>
+        <mat-chip 
+          [selected]="activeFilter() === 'all'" 
+          (click)="activeFilter.set('all')"
+          color="primary">
+          All
+        </mat-chip>
+        <mat-chip 
+          [selected]="activeFilter() === 'public'" 
+          (click)="activeFilter.set('public')"
+          color="primary">
+          Public
+        </mat-chip>
+        <mat-chip 
+          [selected]="activeFilter() === 'friends'" 
+          (click)="activeFilter.set('friends')"
+          color="primary">
+          Friends Only
+        </mat-chip>
+        <mat-chip 
+          [selected]="activeFilter() === 'private'" 
+          (click)="activeFilter.set('private')"
+          color="primary">
+          Private
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+    
+    <div class="sort-group">
+      <mat-chip-set>
+        <mat-chip 
+          [selected]="activeSort() === 'newest'" 
+          (click)="activeSort.set('newest')"
+          color="accent">
+          Newest
+        </mat-chip>
+        <mat-chip 
+          [selected]="activeSort() === 'most-liked'" 
+          (click)="activeSort.set('most-liked')"
+          color="accent">
+          Most Liked
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading$ | async" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading your posts...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredPosts().length === 0 && !(loading$ | async)" class="empty-state">
+    <mat-icon class="empty-icon">style</mat-icon>
+    <h2>No Outfit Posts Yet</h2>
+    <p>You haven't shared any outfits yet. Start by creating your first post!</p>
+    <button mat-raised-button color="primary" routerLink="/social/create-post">
+      Create Your First Post
+    </button>
+  </div>
+
+  <!-- Posts Grid -->
+  <div *ngIf="filteredPosts().length! > 0" class="posts-grid">
+    <mat-card 
+      *ngFor="let post of filteredPosts(); trackBy: trackByPostId" 
+      class="post-card">
+      
+      <mat-card-header>
+        <img mat-card-avatar [src]="post.userAvatarUrl || 'assets/default-avatar.png'" alt="User avatar">
+        <mat-card-title>{{ post.userName }}</mat-card-title>
+        <mat-card-subtitle>
+          <div class="post-meta">
+            <span>{{ post.createdAt | date:'mediumDate' }}</span>
+            <mat-chip 
+              [color]="getVisibilityColor(post.visibility)" 
+              selected 
+              size="small">
+              {{ getVisibilityLabel(post.visibility) }}
+            </mat-chip>
+          </div>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content class="post-content">
+        <p class="caption" *ngIf="post.caption">{{ post.caption }}</p>
+        
+        <!-- Outfit Preview -->
+        <div class="image-preview">
+          <img *ngIf="post.outfit?.imageUrl; else outfitPlaceholder" [src]="post.outfit?.imageUrl" alt="Outfit preview">
+          <ng-template #outfitPlaceholder>
+            <img src="assets/placeholder.jpg" alt="No outfit image">
+          </ng-template>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions class="post-actions">
+        <div class="action-buttons">
+          <button mat-button>
+            <mat-icon>visibility</mat-icon>
+            View Details
+          </button>
+          <button mat-button>
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+        </div>
+        
+        <div class="engagement-stats">
+          <button mat-icon-button>
+            <mat-icon>favorite_border</mat-icon>
+            {{ post.likeCount }}
+          </button>
+          <button mat-icon-button>
+            <mat-icon>chat_bubble_outline</mat-icon>
+            {{ post.commentCount }}
+          </button>
+        </div>
+
+        <button 
+          mat-icon-button 
+          color="warn"
+          (click)="onDeletePost(post.id)"
+          matTooltip="Delete post">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

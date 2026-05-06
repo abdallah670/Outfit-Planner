@@ -167,7 +167,7 @@ export class DailySuggestionComponent implements OnInit {
     this.loadDateData(this.selectedDate());
   }
 
-  loadDateData(date: Date): void {
+  public loadDateData(date: Date): void {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const dateStr = date.toISOString().split('T')[0];
@@ -371,6 +371,56 @@ export class DailySuggestionComponent implements OnInit {
     return outfit.items
       .filter(item => item.role === 'primary' || item.isEssential)
       .slice(0, 4);
+  }
+
+  hasValidImage(item: OutfitItem): boolean {
+    return !!item.clothingItemImageUrl && item.clothingItemImageUrl.trim().length > 0;
+  }
+
+  getItemReason(item: OutfitItem): string {
+    const weather = this.weather();
+    const context = this.context();
+    
+    // Generate reasons based on item type, weather, and occasion
+    const reasons = [];
+    
+    // Weather-based reasons
+    if (weather && weather.condition) {
+      if (weather.condition.toLowerCase().includes('cold') || weather.temp < 15) {
+        if (item.clothingItemName?.toLowerCase().includes('jacket') || 
+            item.clothingItemName?.toLowerCase().includes('coat') ||
+            item.clothingItemName?.toLowerCase().includes('sweater')) {
+          reasons.push('Perfect for cold weather');
+        }
+      } else if (weather.condition.toLowerCase().includes('hot') || weather.temp > 25) {
+        if (item.clothingItemName?.toLowerCase().includes('t-shirt') || 
+            item.clothingItemName?.toLowerCase().includes('short') ||
+            item.clothingItemName?.toLowerCase().includes('light')) {
+          reasons.push('Great for hot weather');
+        }
+      }
+    }
+    
+    // Role-based reasons
+    if (item.role === 'primary') {
+      reasons.push('Essential piece for this look');
+    }
+    
+    if (item.isEssential) {
+      reasons.push('Wardrobe staple');
+    }
+    
+    // Category-based reasons
+    if (item.clothingItemName?.toLowerCase().includes('jeans')) {
+      reasons.push('Versatile and comfortable');
+    } else if (item.clothingItemName?.toLowerCase().includes('dress')) {
+      reasons.push('Elegant and stylish');
+    } else if (item.clothingItemName?.toLowerCase().includes('shirt')) {
+      reasons.push('Classic and professional');
+    }
+    
+    // Default reason if none matched
+    return reasons.length > 0 ? reasons.join(' • ') : 'Great choice for today';
   }
 
   previewTomorrow(): void {

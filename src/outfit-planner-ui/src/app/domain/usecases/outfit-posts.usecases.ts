@@ -27,4 +27,8 @@ export class OutfitPostsUseCases {
   deleteOutfitPost(id: string): Observable<void> {
     return this.repository.deleteOutfitPost(id);
   }
+
+  getUserOutfitPosts(): Observable<FeedPost[]> {
+    return this.repository.getUserOutfitPosts();
+  }
 }

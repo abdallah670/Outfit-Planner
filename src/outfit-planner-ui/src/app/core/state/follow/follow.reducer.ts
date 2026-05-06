@@ -3,8 +3,8 @@ import { FollowActions } from './follow.actions';
 import { Follower, Following, FollowStats } from '../../../domain/entities/follow.entity';
 
 export interface FollowState {
-  followers: Record<string, Follower[]>; // Map of userId to their followers
-  following: Record<string, Following[]>; // Map of userId to people they follow
+  followers: Record<string, Follower[]>;
+  following: Record<string, Following[]>;
   followStats: Record<string, FollowStats>;
   loading: boolean;
   error: string | null;

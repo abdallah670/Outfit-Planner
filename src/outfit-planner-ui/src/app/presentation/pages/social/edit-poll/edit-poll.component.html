@@ -1,0 +1,94 @@
+<div class="edit-poll-page">
+  <div class="page-header">
+    <h1>Edit Poll</h1>
+    <p>Update your poll details and options</p>
+  </div>
+
+  <mat-card class="edit-poll-card" *ngIf="!loading$">
+    <form [formGroup]="pollForm" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <!-- Question -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Poll Question</mat-label>
+          <input matInput formControlName="question" placeholder="Ask your question...">
+          <mat-error *ngIf="pollForm.get('question')?.hasError('required')">
+            Question is required
+          </mat-error>
+          <mat-error *ngIf="pollForm.get('question')?.hasError('minlength')">
+            Question must be at least 5 characters
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Context -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Context (Optional)</mat-label>
+          <textarea matInput formControlName="context" rows="3" placeholder="Add more details about your poll..."></textarea>
+        </mat-form-field>
+
+        <!-- Expiration Date -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Expiration Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="expiresAt">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="pollForm.get('expiresAt')?.hasError('required')">
+            Expiration date is required
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Options -->
+        <div class="options-section">
+          <h3>Poll Options</h3>
+          <div formArrayName="options">
+            <div *ngFor="let option of optionsArray.controls; let i = index" class="option-row">
+              <mat-form-field appearance="outline" class="option-field">
+                <mat-label>Option {{ i + 1 }}</mat-label>
+                <input matInput [formControlName]="i" placeholder="Enter option text...">
+                <mat-error *ngIf="option.get('description')?.hasError('required')">
+                  Option text is required
+                </mat-error>
+              </mat-form-field>
+              <button 
+                mat-icon-button 
+                color="warn" 
+                type="button"
+                (click)="removeOption(i)"
+                [disabled]="optionsArray.length <= 2"
+                matTooltip="Remove option">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          
+          <button 
+            mat-stroked-button 
+            type="button" 
+            (click)="addOption()"
+            class="add-option-btn">
+            <mat-icon>add</mat-icon>
+            Add Option
+          </button>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button type="button" (click)="onCancel()">
+          Cancel
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          [disabled]="pollForm.invalid || pollForm.pristine">
+          Save Changes
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="loading$ | async" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading poll...</p>
+  </div>
+</div>

@@ -4,6 +4,7 @@ import { Poll } from '../../../domain/entities/poll.entity';
 
 export interface PollsState {
   polls: Poll[];
+  userPolls: Poll[];
   selectedPoll: Poll | null;
   recentPoll: Poll | null;
   recentPollComments: any[];
@@ -11,11 +12,13 @@ export interface PollsState {
   hasMoreComments: boolean;
   commentsLoading: boolean;
   loading: boolean;
+  userPollsLoading: boolean;
   error: string | null;
 }
 
 export const initialState: PollsState = {
   polls: [],
+  userPolls: [],
   selectedPoll: null,
   recentPoll: null,
   recentPollComments: [],
@@ -23,6 +26,7 @@ export const initialState: PollsState = {
   hasMoreComments: false,
   commentsLoading: false,
   loading: false,
+  userPollsLoading: false,
   error: null,
 };
 
@@ -44,6 +48,27 @@ export const pollsFeature = createFeature({
       ...state,
       loading: false,
       error,
+    })),
+    on(PollsActions.loadUserPolls, (state) => ({
+      ...state,
+      userPollsLoading: true,
+      error: null,
+    })),
+    on(PollsActions.loadUserPollsSuccess, (state, { polls }) => ({
+      ...state,
+      userPolls: polls,
+      userPollsLoading: false,
+    })),
+    on(PollsActions.loadUserPollsFailure, (state, { error }) => ({
+      ...state,
+      userPollsLoading: false,
+      error,
+    })),
+    on(PollsActions.updatePollSuccess, (state, { poll }) => ({
+      ...state,
+      polls: state.polls.map(p => p.id === poll.id ? poll : p),
+      userPolls: state.userPolls.map(p => p.id === poll.id ? poll : p),
+      selectedPoll: state.selectedPoll?.id === poll.id ? poll : state.selectedPoll,
     })),
     on(PollsActions.loadPollByIdSuccess, (state, { poll }) => ({
       ...state,
@@ -107,4 +132,6 @@ export const {
   selectCommentsLoading,
   selectLoading,
   selectError,
+  selectUserPolls: selectUserPollsState,
+  selectUserPollsLoading,
 } = pollsFeature;

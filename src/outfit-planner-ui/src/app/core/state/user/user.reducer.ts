@@ -1,7 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { UserActions } from './user.actions';
 import { UserProfile, StyleRule } from '../../../domain/entities/user-profile.entity';
-import { PublicUserProfile } from '../../../domain/entities/public-user-profile.entity';
 import { AppPreferences } from '../../services/app-preferences.service';
 import { NotificationSettings } from '../../services/notification-settings.service';
 import { ConnectedAccount } from '../../services/connected-accounts.service';
@@ -21,8 +20,6 @@ export interface UserState {
   settingsLoading: boolean;
   connectedAccounts: ConnectedAccount[];
   connectedAccountsLoading: boolean;
-  selectedPublicProfile: PublicUserProfile | null;
-  publicProfileLoading: boolean;
 }
 
 export const initialState: UserState = {
@@ -40,10 +37,12 @@ export const initialState: UserState = {
   settingsLoading: false,
   connectedAccounts: [],
   connectedAccountsLoading: false,
-  selectedPublicProfile: null,
-  publicProfileLoading: false,
 };
-
+export interface UserProfileState {
+  user: UserProfile | null;
+  loading: boolean;
+  error: string | null;
+}
 
 
 export const userReducer = createReducer(
@@ -297,23 +296,18 @@ export const userReducer = createReducer(
     connectedAccountsLoading: false,
     error,
   })),
-
-  // Public Profile (Social)
   on(UserActions.loadUserProfile, (state) => ({
     ...state,
-    publicProfileLoading: true,
-    error: null,
+    loading: true,
   })),
   on(UserActions.loadUserProfileSuccess, (state, { user }) => ({
     ...state,
-    selectedPublicProfile: user,
-    publicProfileLoading: false,
-    error: null,
+    user,
+    loading: false,
   })),
   on(UserActions.loadUserProfileFailure, (state, { error }) => ({
     ...state,
-    publicProfileLoading: false,
+    loading: false,
     error,
   })),
 );
-

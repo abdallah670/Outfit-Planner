@@ -38,4 +38,8 @@ export class OutfitPostsDataSource {
   deleteOutfitPost(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  getUserOutfitPosts(): Observable<FeedPost[]> {
+    return this.http.get<FeedPost[]>(`${this.apiUrl}/my`);
+  }
 }

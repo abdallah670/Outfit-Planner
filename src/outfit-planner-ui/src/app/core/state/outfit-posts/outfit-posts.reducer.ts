@@ -1,13 +1,18 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { OutfitPostsActions } from './outfit-posts.actions';
+import { FeedPost } from '../../../domain/entities/feed.entity';
 
 export interface OutfitPostsState {
+  userPosts: FeedPost[];
   loading: boolean;
+  userPostsLoading: boolean;
   error: string | null;
 }
 
 export const initialState: OutfitPostsState = {
+  userPosts: [],
   loading: false,
+  userPostsLoading: false,
   error: null,
 };
 
@@ -45,6 +50,23 @@ export const outfitPostsFeature = createFeature({
     on(OutfitPostsActions.getOutfitPostFailure, (state, { error }) => ({
       ...state,
       loading: false,
+      error,
+    })),
+
+    // Load User Outfit Posts
+    on(OutfitPostsActions.loadUserOutfitPosts, (state) => ({
+      ...state,
+      userPostsLoading: true,
+      error: null,
+    })),
+    on(OutfitPostsActions.loadUserOutfitPostsSuccess, (state, { posts }) => ({
+      ...state,
+      userPosts: posts,
+      userPostsLoading: false,
+    })),
+    on(OutfitPostsActions.loadUserOutfitPostsFailure, (state, { error }) => ({
+      ...state,
+      userPostsLoading: false,
       error,
     })),
 
@@ -86,6 +108,8 @@ export const {
   name,
   reducer,
   selectOutfitPostsState,
+  selectUserPosts,
   selectLoading,
+  selectUserPostsLoading,
   selectError,
 } = outfitPostsFeature;

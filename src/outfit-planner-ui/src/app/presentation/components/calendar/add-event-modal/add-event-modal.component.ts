@@ -11,6 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Store } from '@ngrx/store';
+import Swal from 'sweetalert2';
 import { CalendarActions } from '../../../../core/state/calendar/calendar.actions';
 import { Outfit } from '../../../../domain/entities/outfit.entity';
 import {
@@ -153,6 +154,16 @@ export class AddEventModalComponent implements OnInit {
     };
 
     this.store.dispatch(CalendarActions.createCalendarEvent({ event: request }));
+
+    // Show success alert
+    Swal.fire({
+      icon: 'success',
+      title: 'Event Added!',
+      text: `"${request.title}" has been added to your calendar.`,
+      timer: 2000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
 
     this.dialogRef.close({ success: true, event: request });
   }

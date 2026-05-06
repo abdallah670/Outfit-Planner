@@ -8,6 +8,7 @@ export const OUTFIT_POSTS_REPOSITORY = new InjectionToken<OutfitPostsRepository>
 export interface OutfitPostsRepository {
   createOutfitPost(dto: any): Observable<CommandResponse>;
   getOutfitPost(id: string): Observable<FeedPost>;
+  getUserOutfitPosts(): Observable<FeedPost[]>;
   updateOutfitPost(id: string, dto: any): Observable<CommandResponse>;
   deleteOutfitPost(id: string): Observable<void>;
 }

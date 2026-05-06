@@ -35,8 +35,8 @@
               "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj": {
                 "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Application\\OutfitPlanner.Application.csproj"
               },
-              "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
-                "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj"
+              "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
+                "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj"
               }
             }
           }
@@ -1263,14 +1263,14 @@
         }
       }
     },
-    "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
+    "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+        "projectUniqueName": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
         "projectName": "OutfitPlanner.Infrastructure",
-        "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+        "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-        "outputPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\obj\\",
+        "outputPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

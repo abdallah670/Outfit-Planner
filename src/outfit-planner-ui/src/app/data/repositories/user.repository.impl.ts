@@ -44,3 +44,8 @@ export class UserRepositoryImpl implements UserRepository {
     return this.dataSource.updateEmail(request);
   }
 }
+
+export const userRepositoryProvider = {
+  provide: 'UserRepository',
+  useClass: UserRepositoryImpl,
+};

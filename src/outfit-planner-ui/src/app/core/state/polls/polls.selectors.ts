@@ -4,6 +4,7 @@ import { pollsFeature } from './polls.reducer';
 export const {
   selectPollsState,
   selectPolls,
+  selectUserPolls,
   selectSelectedPoll,
   selectRecentPoll,
   selectRecentPollComments,
@@ -11,6 +12,7 @@ export const {
   selectHasMoreComments,
   selectCommentsLoading,
   selectLoading: selectPollsLoading,
+  selectUserPollsLoading,
   selectError: selectPollsError,
 } = pollsFeature;
 

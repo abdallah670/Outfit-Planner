@@ -106,4 +106,51 @@ public class WeatherController : ControllerBase
         var result = await _mediator.Send(query);
         return Ok(result);
     }
+
+    /// <summary>
+    /// Get weather forecast for a specific date
+    /// </summary>
+    /// <param name="date">Date in format YYYY-MM-DD</param>
+    /// <param name="city">City name (optional, defaults to Cairo)</param>
+    /// <param name="lat">Latitude (optional)</param>
+    /// <param name="lon">Longitude (optional)</param>
+    [HttpGet("forecast/by-date")]
+    [ProducesResponseType(typeof(WeatherForecastDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<WeatherForecastDto>> GetWeatherByDate(
+        [FromQuery] string date,
+        [FromQuery] string? city = null,
+        [FromQuery] double? lat = null,
+        [FromQuery] double? lon = null)
+    {
+        _logger.LogInformation("Getting weather forecast for date: {Date}, City: {City}", 
+            date, city ?? "default");
+
+        // Parse the date
+        if (!DateTime.TryParse(date, out var targetDate))
+        {
+            return BadRequest("Invalid date format. Use YYYY-MM-DD.");
+        }
+
+        // Get forecast for the date range
+        var query = new GetWeatherForecastQuery
+        {
+            City = city ?? "Cairo",
+            Latitude = lat,
+            Longitude = lon,
+            Days = 16 // Get enough days to cover the target date
+        };
+
+        var forecasts = await _mediator.Send(query);
+        
+        // Find the forecast for the specific date
+        var targetForecast = forecasts?.FirstOrDefault(f => f.Date == DateOnly.FromDateTime(targetDate));
+        
+        if (targetForecast == null)
+        {
+            return NotFound($"Weather forecast not available for date: {date}");
+        }
+
+        return Ok(targetForecast);
+    }
 }

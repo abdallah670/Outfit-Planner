@@ -4,6 +4,7 @@ import { POLLS_REPOSITORY, PollsRepository } from '../repositories/polls.reposit
 import {
   Poll,
   CreatePollRequest,
+  UpdatePollRequest,
   CastVoteRequest,
 } from '../entities/poll.entity';
 import { CommandResponse } from '../entities/response.entity';
@@ -20,6 +21,10 @@ export class PollsUseCases {
     return this.pollsRepository.getPolls();
   }
 
+  getMyPolls(): Observable<Poll[]> {
+    return this.pollsRepository.getUserPolls();
+  }
+
   getPollById(id: string): Observable<Poll> {
     return this.pollsRepository.getPollById(id);
   }
@@ -32,7 +37,7 @@ export class PollsUseCases {
     return this.pollsRepository.vote(pollId, dto);
   }
 
-  updatePoll(pollId: string, request: any): Observable<void> {
+  updatePoll(pollId: string, request: UpdatePollRequest): Observable<Poll> {
     return this.pollsRepository.updatePoll(pollId, request);
   }
 
