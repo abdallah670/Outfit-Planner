@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable, tap, catchError, of } from 'rxjs';
@@ -8,6 +8,10 @@ import {
   AuthResponse,
   RegistrationRequest,
   RegistrationResponse,
+  VerifyEmailRequest,
+  ResendVerificationRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
 } from '../../data/models/auth.model';
 
 @Injectable({
@@ -22,6 +26,12 @@ export class AuthService{
   // Signals for reactive state
   currentUser = signal<any>(null);
   isAuthenticated = signal<boolean>(false);
+  userRoles = signal<string[]>([]);
+
+  // Computed role checks
+  isAdmin = computed(() => this.userRoles().includes('Admin'));
+  isPlanner = computed(() => this.userRoles().includes('Planner'));
+  hasRole = (role: string) => computed(() => this.userRoles().includes(role));
 
   constructor() {
     this.checkAuthStatus();
@@ -35,16 +45,37 @@ export class AuthService{
 
   register(request: RegistrationRequest): Observable<RegistrationResponse> {
     return this.http.post<RegistrationResponse>(`${this.apiUrl}/register`, request).pipe(
-      tap((response: RegistrationResponse) =>
-        this.handleAuthentication({
-          id: response.userId,
-          userName: response.userName,
-          email: response.email,
-          token: response.token,
-          refreshToken: response.refreshToken,
-        }),
-      ),
+      tap((response: RegistrationResponse) => {
+        // Only authenticate if email verification is not required
+        if (!response.requiresEmailVerification && response.token) {
+          this.handleAuthentication({
+            id: response.userId,
+            userName: response.userName,
+            email: response.email,
+            token: response.token,
+            refreshToken: response.refreshToken || '',
+          });
+        }
+      }),
     );
+  }
+
+  // Email verification methods
+  verifyEmail(request: VerifyEmailRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-email`, request);
+  }
+
+  resendVerificationEmail(request: ResendVerificationRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/resend-verification`, request);
+  }
+
+  // Password reset methods
+  forgotPassword(request: ForgotPasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, request);
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, request);
   }
 
   logout(): void {
@@ -52,6 +83,7 @@ export class AuthService{
     this.cookieService.delete('refreshToken', '/');
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
+    this.userRoles.set([]);
   }
 
   refreshToken(): Observable<AuthResponse> {
@@ -82,13 +114,33 @@ export class AuthService{
     console.log('[AuthService] Token stored in cookies:', response.token.substring(0, 20) + '...');
     console.log('[AuthService] Refresh token stored:', response.refreshToken ? 'Yes' : 'No');
 
+    // Parse roles from JWT token
+    const roles = this.parseRolesFromToken(response.token);
+    this.userRoles.set(roles);
+    console.log('[AuthService] User roles:', roles);
+
     this.currentUser.set({
       id: response.id,
       userName: response.userName,
       email: response.email,
+      roles: roles,
     });
     this.isAuthenticated.set(true);
     console.log('[AuthService] isAuthenticated set to:', this.isAuthenticated());
+  }
+
+  private parseRolesFromToken(token: string): string[] {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      // ASP.NET Identity uses this claim type for roles
+      const roleClaim = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      if (Array.isArray(roleClaim)) {
+        return roleClaim;
+      }
+      return roleClaim ? [roleClaim] : [];
+    } catch {
+      return [];
+    }
   }
 
   // Handle OAuth social login callback
@@ -100,7 +152,9 @@ export class AuthService{
     const token = this.cookieService.get('token');
     if (token) {
       this.isAuthenticated.set(true);
-      // Optional: Logic to fetch user profile using the token
+      // Parse roles from existing token
+      const roles = this.parseRolesFromToken(token);
+      this.userRoles.set(roles);
     }
   }
 }

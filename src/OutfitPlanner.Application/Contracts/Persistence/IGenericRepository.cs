@@ -17,6 +17,12 @@ public interface IGenericRepository<T> where T : class
     Task RemoveRangeAsync(IEnumerable<T> entities);
     Task UpdateAsync(T entity);
     Task<int> CountAsync();
+    Task<int> SumAsync(Expression<Func<T, bool>> selector);
+    Task<decimal> AverageAsync(Expression<Func<T, bool>> selector);
+    Task<decimal> SumAsync(Expression<Func<T, decimal>> selector);
+    Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+    Task<int> CountAsync(Expression<Func<T, decimal>> selector);
+    Task<int> CountAsync(Expression<Func<T, bool>> predicate);
     Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
     Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize);
     IQueryable<T> Get(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,

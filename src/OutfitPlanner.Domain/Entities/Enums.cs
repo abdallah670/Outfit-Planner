@@ -127,3 +127,9 @@ public enum ReactionType{
     Sad,
     Angry
 }
+
+public enum UserRole
+{
+    Admin,
+    Planner
+}

@@ -51,6 +51,9 @@ import { searchReducer } from './core/state/search/search.reducer';
 import * as searchEffects from './core/state/search/search.effects';
 import { calendarFeature } from './core/state/calendar/calendar.reducer';
 import { CalendarEffects } from './core/state/calendar/calendar.effects';
+import { adminReducer } from './core/state/admin/admin.reducer';
+import { AdminEffects } from './core/state/admin/admin.effects';
+import { adminRepositoryProvider } from './data/repositories/admin.repository.impl';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -71,6 +74,7 @@ export const appConfig: ApplicationConfig = {
        trending: trendingReducer,
        follow: followReducer,
        outfitPosts: outfitPostsReducer,
+       admin: adminReducer,
        calendar: calendarFeature.reducer,
        search: searchReducer,
      }),
@@ -87,6 +91,7 @@ export const appConfig: ApplicationConfig = {
        OutfitPostsEffects,
        CalendarEffects,
        searchEffects,
+       AdminEffects,
      ),
       weatherRepositoryProvider,
       outfitRepositoryProvider,
@@ -97,6 +102,7 @@ export const appConfig: ApplicationConfig = {
       outfitPostsRepositoryProvider,
       wearEventRepositoryProvider,
      userRepositoryProvider,
+     adminRepositoryProvider,
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

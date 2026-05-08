@@ -15,15 +15,18 @@ public class DataSeeder
 {
     private readonly AppDbContext _context;
     private readonly UserManager<User> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ILogger<DataSeeder> _logger;
 
     public DataSeeder(
         AppDbContext context,
         UserManager<User> userManager,
+        RoleManager<IdentityRole> roleManager,
         ILogger<DataSeeder> logger)
     {
         _context = context;
         _userManager = userManager;
+        _roleManager = roleManager;
         _logger = logger;
     }
 

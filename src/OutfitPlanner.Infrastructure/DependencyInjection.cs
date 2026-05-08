@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.Contracts.Infrastructure;
+using OutfitPlanner.Application.Models;
 using OutfitPlanner.Infrastructure.Configuration;
 using OutfitPlanner.Infrastructure.Services;
 using OutfitPlanner.Persistence;
@@ -55,7 +56,13 @@ public static class DependencyInjection
         services.AddScoped<ISearchService, SearchService>();
 
         // Register Trending Calculation Service
-        
+
+        // Register Email Settings and Service
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+        services.AddScoped<IEmailService, EmailService>();
+
+        // Register Account Unlock Background Job
+        services.AddScoped<AccountUnlockBackgroundJob>();
 
         return services;
     }

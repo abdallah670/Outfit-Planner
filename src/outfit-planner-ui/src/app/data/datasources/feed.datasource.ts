@@ -11,7 +11,7 @@ import { CommandResponse,CursorPagedResult } from '../../domain/entities/respons
   providedIn: 'root',
 })
 export class FeedDataSource {
-  private readonly apiUrl = `${environment.baseUrl}/api/feed`;
+  private readonly apiUrl = `${environment.baseUrl}/feed`;
 
   constructor(private http: HttpClient) {}
 

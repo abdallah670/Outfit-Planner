@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OutfitPlanner.Application.Contracts.Identity;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Models.Identity;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application.Constants;
@@ -19,13 +20,15 @@ public class JwtService : IJWTService
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly JwtSettings _jwtSettings;
+    private readonly IEmailService _emailService;
     private readonly ILogger<JwtService> _logger;
 
-    public JwtService(UserManager<User> userManager, SignInManager<User> signInManager, IOptions<JwtSettings> jwtSettings, ILogger<JwtService> logger)
+    public JwtService(UserManager<User> userManager, SignInManager<User> signInManager, IOptions<JwtSettings> jwtSettings, IEmailService emailService, ILogger<JwtService> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _jwtSettings = jwtSettings.Value;
+        _emailService = emailService;
         _logger = logger;
     }
 
@@ -77,7 +80,12 @@ public class JwtService : IJWTService
             throw new Exception($"Credentials for '{request.Email}' are not valid.");
         }
 
-        var result = await _signInManager.PasswordSignInAsync(user.UserName!, request.Password, false, lockoutOnFailure: false);
+        var result = await _signInManager.PasswordSignInAsync(user.UserName!, request.Password, false, lockoutOnFailure: true);
+        
+        if (result.IsLockedOut)
+        {
+            throw new Exception("Account is locked due to multiple failed login attempts. Please try again later.");
+        }
         
         if (!result.Succeeded)
         {
@@ -118,7 +126,7 @@ public class JwtService : IJWTService
                 Email = request.Email,
                 Name = $"{request.FirstName} {request.LastName}",
                 UserName = request.UserName,
-                EmailConfirmed = true
+                EmailConfirmed = false
             };
 
             var existingEmail = await _userManager.FindByEmailAsync(request.Email);
@@ -146,21 +154,23 @@ public class JwtService : IJWTService
                 await _userManager.AddToRoleAsync(user, "Admin");
             }
 
-            // Generate tokens for Auto-Login
-            var jwtToken = await GenerateToken(user);
-            user.RefreshToken = GenerateRefreshToken();
-            user.RefreshTokenExpiration = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenDurationInDays);
+            // Generate email verification token
+            var verificationToken = GenerateSecureToken();
+            user.EmailVerificationToken = verificationToken;
+            user.EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24);
             await _userManager.UpdateAsync(user);
 
-            _logger.LogInformation("Successfully registered and auto-logged in user {Email}", user.Email);
+            // Send verification email
+            await _emailService.SendVerificationEmailAsync(user.Email!, user.UserName!, verificationToken);
+
+            _logger.LogInformation("Successfully registered user {Email}. Verification email sent.", user.Email);
 
             return new RegistrationResponse 
             { 
                 UserId = user.Id,
-                Token = jwtToken,
-                RefreshToken = user.RefreshToken,
                 Email = user.Email!,
-                UserName = user.UserName!
+                UserName = user.UserName!,
+                RequiresEmailVerification = true
             };
         }
         catch (Exception ex)
@@ -396,5 +406,134 @@ public class JwtService : IJWTService
         }
 
         _logger.LogInformation("Successfully linked {Provider} account to user {UserId}", provider, userId);
+    }
+
+    // Email Verification Methods
+    public async Task VerifyEmailAsync(string email, string token)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        if (user.EmailConfirmed)
+        {
+            throw new Exception("Email is already verified.");
+        }
+
+        if (user.EmailVerificationToken != token)
+        {
+            throw new Exception("Invalid verification token.");
+        }
+
+        if (user.EmailVerificationTokenExpiry < DateTime.UtcNow)
+        {
+            throw new Exception("Verification token has expired. Please request a new one.");
+        }
+
+        user.EmailConfirmed = true;
+        user.EmailVerificationToken = null;
+        user.EmailVerificationTokenExpiry = null;
+        
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            throw new Exception("Failed to verify email.");
+        }
+
+        _logger.LogInformation("Email verified successfully for user {Email}", email);
+    }
+
+    public async Task ResendVerificationEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        if (user.EmailConfirmed)
+        {
+            throw new Exception("Email is already verified.");
+        }
+
+        // Generate new verification token
+        var verificationToken = GenerateSecureToken();
+        user.EmailVerificationToken = verificationToken;
+        user.EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24);
+        await _userManager.UpdateAsync(user);
+
+        // Send verification email
+        await _emailService.SendVerificationEmailAsync(user.Email!, user.UserName!, verificationToken);
+
+        _logger.LogInformation("Verification email resent to {Email}", email);
+    }
+
+    // Password Reset Methods
+    public async Task ForgotPasswordAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            // Don't reveal if user exists
+            _logger.LogWarning("Password reset requested for non-existent email: {Email}", email);
+            return;
+        }
+
+        // Generate reset token
+        var resetToken = GenerateSecureToken();
+        user.PasswordResetToken = resetToken;
+        user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1);
+        await _userManager.UpdateAsync(user);
+
+        // Send reset email
+        await _emailService.SendPasswordResetEmailAsync(user.Email!, user.UserName!, resetToken);
+
+        _logger.LogInformation("Password reset email sent to {Email}", email);
+    }
+
+    public async Task ResetPasswordAsync(string email, string token, string newPassword)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            throw new Exception("Invalid request.");
+        }
+
+        if (user.PasswordResetToken != token)
+        {
+            throw new Exception("Invalid reset token.");
+        }
+
+        if (user.PasswordResetTokenExpiry < DateTime.UtcNow)
+        {
+            throw new Exception("Reset token has expired. Please request a new one.");
+        }
+
+        // Reset password
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
+        
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new Exception($"Failed to reset password: {errors}");
+        }
+
+        // Clear reset token
+        user.PasswordResetToken = null;
+        user.PasswordResetTokenExpiry = null;
+        await _userManager.UpdateAsync(user);
+
+        _logger.LogInformation("Password reset successfully for user {Email}", email);
+    }
+
+    private string GenerateSecureToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber).Replace("+", "-").Replace("/", "_").Replace("=", "");
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Identity;
 using OutfitPlanner.Application.Contracts.Persistence;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Models.Identity;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Persistence.Data;
@@ -32,7 +33,23 @@ public static class DependencyInjection
         // Add Identity only if it hasn't been registered yet to avoid duplicate authentication schemes
         if (!services.Any(sd => sd.ServiceType == typeof(UserManager<User>)))
         {
-            services.AddIdentity<User, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+                
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                
+                // User settings
+                options.User.RequireUniqueEmail = true;
+            })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
         }

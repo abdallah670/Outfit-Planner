@@ -30,7 +30,10 @@ public class UnitOfWork : IUnitOfWork
     public IPostReactionRepository PostReactions { get; }
     public IPostCommentRepository PostComments { get; }
     public IFollowRepository Follows { get; }
-    
+    public IAuditLogRepository AuditLogs { get; }
+    public ISystemSettingRepository SystemSettings { get; }
+    public IContentReportRepository ContentReports { get; }
+   
 
     public UnitOfWork(
         AppDbContext context,
@@ -52,7 +55,11 @@ public class UnitOfWork : IUnitOfWork
         INotificationSettingsRepository notificationSettings,
         IFeedPostRepository feedPosts,
         IPostReactionRepository postReactions,
-        IPostCommentRepository postComments,IFollowRepository follows
+        IPostCommentRepository postComments,
+        IFollowRepository follows,
+        IAuditLogRepository auditLogs,
+        ISystemSettingRepository systemSettings,
+        IContentReportRepository contentReports
        )
     {
         _context = context;
@@ -77,6 +84,9 @@ public class UnitOfWork : IUnitOfWork
         PostReactions = postReactions;
         PostComments = postComments;
         Follows = follows;
+        AuditLogs = auditLogs;
+        SystemSettings = systemSettings;
+        ContentReports = contentReports;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -87,6 +97,11 @@ public class UnitOfWork : IUnitOfWork
     public async Task<IAsyncDisposable> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Database.BeginTransactionAsync(cancellationToken);
+    }
+
+    public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class
+    {
+        return new GenericRepository<TEntity>(_context);
     }
 
     public void Dispose()

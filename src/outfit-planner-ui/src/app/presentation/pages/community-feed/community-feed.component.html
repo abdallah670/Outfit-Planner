@@ -47,7 +47,7 @@
       <app-poll-card
         *ngIf="post.postType === 1 && post.poll"
         [poll]="post.poll"
-        [userVoteOptionId]="post.userVoteOptionId || null"
+        [userVoteOptionId]="null"
         (vote)="onVoteOnPoll(post.poll.id, $event)"
         (viewDetails)="onViewPollDetail($event)">
       </app-poll-card>

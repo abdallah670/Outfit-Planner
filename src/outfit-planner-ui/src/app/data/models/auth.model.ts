@@ -21,8 +21,29 @@ export interface RegistrationRequest {
 
 export interface RegistrationResponse {
   userId: string;
-  token: string;
-  refreshToken: string;
+  token?: string;
+  refreshToken?: string;
   email: string;
   userName: string;
+  requiresEmailVerification?: boolean;
+}
+
+export interface VerifyEmailRequest {
+  email: string;
+  token: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
 }
