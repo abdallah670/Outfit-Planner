@@ -13,17 +13,20 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { PollsActions } from '../../../core/state/polls/polls.actions';
 import { TrendingActions } from '../../../core/state/trending/trending.actions';
 import { FeedActions } from '../../../core/state/feed/feed.actions';
-import { selectPollsLoading, selectRecentPoll, selectRecentPollComments, selectCommentsCursor, selectHasMoreComments, selectCommentsLoading } from '../../../core/state/polls/polls.selectors';
+import { selectPollsLoading, selectRecentPoll, selectRecentPollComments, selectCommentsCursor, selectHasMoreComments, selectCommentsLoading, selectUserPolls } from '../../../core/state/polls/polls.selectors';
 import { selectTrendingOutfits, selectTrendingLoading, selectTrendingTotalCount } from '../../../core/state/trending/trending.selectors';
 import { selectPosts, selectHasMore, selectNextCursor, selectFeedLoading } from '../../../core/state/feed/feed.selectors';
 import { Poll, CastVoteRequest, getTimeLeft, mapPollOptionToDisplayOption } from '../../../domain/entities/poll.entity';
 import { TrendingOutfit } from '../../../domain/entities/outfit.entity';
 import { FeedPost, PostType } from '../../../domain/entities/feed.entity';
+import { PollCardComponent } from '../../components/poll-card/poll-card.component';
+
+type FilterType = 'all' | 'outfits' | 'polls';
 
 @Component({
   selector: 'app-social',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule, MatChipsModule, MatSnackBarModule, MatCardModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule, MatChipsModule, MatSnackBarModule, MatCardModule, PollCardComponent],
   templateUrl: './social.component.html',
   styleUrl: './social.component.scss'
 })
@@ -33,6 +36,13 @@ export class SocialComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   activeTab = signal(0);
+  activeFilter = signal<FilterType>('all');
+
+  filters: { value: FilterType; label: string }[] = [
+    { value: 'all', label: 'All' },
+    { value: 'outfits', label: 'Outfits' },
+    { value: 'polls', label: 'Polls' },
+  ];
 
   // Signals for trending pagination
   private trendingPage = signal(1);
@@ -57,6 +67,20 @@ export class SocialComponent implements OnInit {
   // Trending pagination computed values
   trendingHasMore = computed(() => this.trendingOutfitsSignal().length < this.trendingTotalCount());
   trendingLoadingMore = computed(() => this.trendingLoadingSignal() && this.trendingPage() > 1);
+
+  // Filtered posts computed
+  filteredPosts = computed((): FeedPost[] => {
+    const posts = this.postsSignal();
+    const filter = this.activeFilter();
+    switch (filter) {
+      case 'outfits':
+        return posts.filter((p: FeedPost) => p.postType === PostType.OutfitPost);
+      case 'polls':
+        return posts.filter((p: FeedPost) => p.postType === PostType.PollPost);
+      default:
+        return posts;
+    }
+  });
 
   featuredPoll = computed(() => {
     const activePoll = this.recentPollSignal();
@@ -84,6 +108,10 @@ export class SocialComponent implements OnInit {
     this.store.dispatch(FeedActions.loadPosts({ pageSize: 20 }));
   }
 
+  setFilter(filter: FilterType): void {
+    this.activeFilter.set(filter);
+  }
+
   vote(pollId: string, optionId: string): void {
     const voteRequest: CastVoteRequest = {
       optionId: optionId,
@@ -91,6 +119,29 @@ export class SocialComponent implements OnInit {
       isAnonymous: false
     };
     this.store.dispatch(PollsActions.vote({ pollId, request: voteRequest }));
+  }
+
+  onVoteOnPoll(pollId: string, optionId: string): void {
+    const request: CastVoteRequest = {
+      optionId: optionId,
+      rating: 1,
+      isAnonymous: false,
+    };
+    this.store.dispatch(PollsActions.vote({ pollId, request }));
+  }
+
+  onViewPollDetail(pollId: string): void {
+    this.router.navigate(['/social/polls', pollId]);
+  }
+
+  viewPostDetail(post: FeedPost): void {
+    if (post.postType === PostType.PollPost && post.pollId) {
+      this.router.navigate(['/social/polls', post.pollId]);
+    } else if (post.outfitId) {
+      this.router.navigate(['/outfits', post.outfitId]);
+    } else {
+      this.router.navigate(['/social/feed']);
+    }
   }
 
   loadMoreTrending(): void {

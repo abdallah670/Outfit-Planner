@@ -83,7 +83,7 @@
             <mat-icon>{{ post.userReaction ? 'favorite' : 'favorite_border' }}</mat-icon>
             {{ post.likeCount }}
           </button>
-          <button mat-button>
+          <button mat-button (click)="toggleComments(post.id); $event.stopPropagation()">
             <mat-icon>chat_bubble_outline</mat-icon>
             {{ post.commentCount }}
           </button>
@@ -92,6 +92,32 @@
             <mat-icon>share</mat-icon>
           </button>
         </mat-card-actions>
+
+        <!-- Comment Section (Expandable) -->
+        <div class="comment-section" *ngIf="expandedCommentPostId() === post.id" (click)="$event.stopPropagation()">
+          <div class="comments-list" *ngIf="commentsCache()[post.id]?.items?.length">
+            <div class="comment-item" *ngFor="let comment of commentsCache()[post.id]?.items || []">
+              <img [src]="comment.userAvatarUrl || 'assets/default-avatar.png'" class="comment-avatar" alt="">
+              <div class="comment-body">
+                <strong>{{ comment.userName }}</strong>
+                <p>{{ comment.content }}</p>
+                <span class="comment-time">{{ comment.createdAt | date:'short' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="comment-input-row">
+            <input
+              class="comment-input"
+              type="text"
+              placeholder="Write a comment..."
+              [(ngModel)]="commentText"
+              (keyup.enter)="submitComment(post.id)"
+            />
+            <button mat-icon-button (click)="submitComment(post.id)" [disabled]="!commentText().trim()">
+              <mat-icon color="primary">send</mat-icon>
+            </button>
+          </div>
+        </div>
       </mat-card>
     </ng-container>
 

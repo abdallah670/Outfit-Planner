@@ -1,0 +1,725 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Community Feed - Desktop</title>
+      <style id="theme-styles">
+        :root {
+          --background: #fdf2f8;
+          --foreground: #1f2937;
+          --card: #ffffff;
+          --card-foreground: #1f2937;
+          --primary: #db2777;
+          --primary-foreground: #ffffff;
+          --secondary: #fce7f3;
+          --secondary-foreground: #be185d;
+          --muted: #f3f4f6;
+          --muted-foreground: #6b7280;
+          --accent: #fbcfe8;
+          --accent-foreground: #831843;
+          --destructive: #ef4444;
+          --destructive-foreground: #ffffff;
+          --border: #e5e7eb;
+          --input: #ffffff;
+          --ring: #db2777;
+          --radius-sm: 4px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
+          --font-family-body:
+            system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            sans-serif;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        .export-wrapper {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family-body);
+          background-color: var(--background);
+          color: var(--foreground);
+          min-height: 100vh;
+          -webkit-font-smoothing: antialiased;
+        }
+      </style>
+      <style id="layout-styles">
+        .desktop-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 40px 32px 80px 32px;
+          position: relative;
+        }
+
+        /* Header */
+        .page-header {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-bottom: 32px;
+        }
+
+        .header-top {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .back-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: var(--radius-md);
+          background: var(--card);
+          border: 1px solid var(--border);
+          color: var(--foreground);
+          cursor: pointer;
+        }
+
+        .page-title {
+          font-size: 32px;
+          font-weight: 800;
+          margin: 0;
+          color: var(--foreground);
+          letter-spacing: -0.5px;
+        }
+
+        /* Filters Section */
+        .filters-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 32px;
+        }
+
+        .filter-tabs {
+          display: flex;
+          gap: 8px;
+          background: var(--card);
+          padding: 4px;
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border);
+        }
+
+        .filter-tab {
+          padding: 10px 24px;
+          border: none;
+          background: transparent;
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--muted-foreground);
+          border-radius: var(--radius-md);
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .filter-tab.active {
+          background: var(--primary);
+          color: var(--primary-foreground);
+          box-shadow: 0 2px 8px rgba(219, 39, 119, 0.2);
+        }
+
+        /* Button Base */
+        .btn {
+          height: 44px;
+          padding: 0 20px;
+          border-radius: var(--radius-md);
+          font-size: 14px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          cursor: pointer;
+          border: none;
+          white-space: nowrap;
+        }
+
+        .btn-secondary {
+          background: var(--card);
+          color: var(--foreground);
+          border: 1px solid var(--border);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Posts Grid */
+        .posts-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+          gap: 24px;
+          align-items: start;
+        }
+
+        /* Post Card */
+        .post-card {
+          background: var(--card);
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .post-header {
+          padding: 20px 20px 16px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .user-avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid var(--background);
+        }
+
+        .user-meta {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .user-name {
+          font-size: 15px;
+          font-weight: 700;
+          color: var(--foreground);
+        }
+
+        .post-time {
+          font-size: 13px;
+          color: var(--muted-foreground);
+        }
+
+        .post-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .post-badge.outfit {
+          background: var(--secondary);
+          color: var(--secondary-foreground);
+        }
+
+        .post-badge.poll {
+          background: #e0e7ff;
+          color: #4338ca;
+        }
+
+        .post-content {
+          padding: 0 20px 16px 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .post-text {
+          font-size: 15px;
+          line-height: 1.5;
+          margin: 0;
+          color: var(--foreground);
+        }
+
+        .post-image {
+          width: 100%;
+          border-radius: var(--radius-md);
+          object-fit: cover;
+          background: var(--muted);
+        }
+
+        /* Poll Styles */
+        .poll-container {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .poll-option {
+          position: relative;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          padding: 14px 16px;
+          display: flex;
+          justify-content: space-between;
+          background: var(--card);
+          overflow: hidden;
+          cursor: pointer;
+        }
+
+        .poll-bar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          background: #e0e7ff;
+          z-index: 1;
+        }
+
+        .poll-option.winner .poll-bar {
+          background: var(--secondary);
+        }
+
+        .poll-option-text,
+        .poll-option-percent {
+          position: relative;
+          z-index: 2;
+          font-weight: 500;
+          font-size: 14px;
+        }
+
+        .poll-option-text {
+          color: var(--foreground);
+        }
+
+        .poll-option-percent {
+          color: var(--muted-foreground);
+        }
+
+        .poll-option.winner .poll-option-text,
+        .poll-option.winner .poll-option-percent {
+          color: var(--secondary-foreground);
+          font-weight: 600;
+        }
+
+        .poll-votes-total {
+          font-size: 13px;
+          color: var(--muted-foreground);
+          text-align: right;
+          margin-top: 4px;
+        }
+
+        /* Post Footer */
+        .post-footer {
+          padding: 16px 20px;
+          border-top: 1px solid var(--border);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .post-actions {
+          display: flex;
+          gap: 20px;
+        }
+
+        .action-btn {
+          background: transparent;
+          border: none;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: var(--muted-foreground);
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          padding: 0;
+        }
+
+        .action-btn.active {
+          color: var(--primary);
+        }
+
+        .action-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* Floating Action Button */
+        .fab {
+          position: fixed;
+          bottom: 40px;
+          right: 40px;
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          background: var(--primary);
+          color: var(--primary-foreground);
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 8px 24px rgba(219, 39, 119, 0.4);
+          cursor: pointer;
+          z-index: 100;
+        }
+      </style>
+      <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    </head>
+    <body>
+      <div class="desktop-container">
+        <!-- Header -->
+        <header class="page-header">
+          <div class="header-top">
+            <button class="back-btn" data-media-type="banani-button">
+              <iconify-icon
+                icon="lucide:arrow-left"
+                style="font-size: 20px"
+              ></iconify-icon>
+            </button>
+            <h1 class="page-title">Community Feed</h1>
+          </div>
+        </header>
+
+        <!-- Filters -->
+        <div class="filters-section">
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-media-type="banani-button">
+              All
+            </button>
+            <button class="filter-tab" data-media-type="banani-button">
+              Outfits
+            </button>
+            <button class="filter-tab" data-media-type="banani-button">
+              Polls
+            </button>
+          </div>
+          <button class="btn btn-secondary" data-media-type="banani-button">
+            <iconify-icon
+              icon="lucide:sliders-horizontal"
+              style="font-size: 18px"
+            ></iconify-icon>
+            Filter
+          </button>
+        </div>
+
+        <!-- Posts Grid -->
+        <div class="posts-grid">
+          <!-- Post 1: Outfit -->
+          <div class="post-card" data-media-type="banani-button">
+            <div class="post-header">
+              <div class="user-info">
+                <img
+                  src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F18-25%2FEuropean%2F1"
+                  alt="Sarah Jenkins"
+                  class="user-avatar"
+                />
+                <div class="user-meta">
+                  <span class="user-name">Sarah Jenkins</span>
+                  <span class="post-time">2 hours ago</span>
+                </div>
+              </div>
+              <span class="post-badge outfit">Outfit</span>
+            </div>
+            <div class="post-content">
+              <p class="post-text">
+                Loving this bright spring combination! The pink sweater really
+                makes the whole outfit pop. What do you guys think? 🌸✨
+              </p>
+              <img
+                src="https://storage.googleapis.com/banani-generated-images/generated-images/600b7bef-530d-4999-9bb9-db37f11e2651.jpg"
+                alt="Spring Outfit"
+                class="post-image"
+                data-aspect-ratio="4:5"
+                data-query="woman wearing pink sweater casual spring outfit"
+              />
+            </div>
+            <div class="post-footer">
+              <div class="post-actions">
+                <button
+                  class="action-btn active"
+                  data-media-type="banani-button"
+                >
+                  <span class="action-icon"
+                    ><iconify-icon
+                      icon="lucide:heart"
+                      style="font-size: 20px"
+                    ></iconify-icon
+                  ></span>
+                  245
+                </button>
+                <button class="action-btn" data-media-type="banani-button">
+                  <span class="action-icon"
+                    ><iconify-icon
+                      icon="lucide:message-circle"
+                      style="font-size: 20px"
+                    ></iconify-icon
+                  ></span>
+                  42
+                </button>
+              </div>
+              <button class="action-btn" data-media-type="banani-button">
+                <span class="action-icon"
+                  ><iconify-icon
+                    icon="lucide:share-2"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                ></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Post 2: Poll -->
+          <div class="post-card" data-media-type="banani-button">
+            <div class="post-header">
+              <div class="user-info">
+                <img
+                  src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F25-35%2FHispanic%2F2"
+                  alt="Maria Garcia"
+                  class="user-avatar"
+                />
+                <div class="user-meta">
+                  <span class="user-name">Maria Garcia</span>
+                  <span class="post-time">4 hours ago</span>
+                </div>
+              </div>
+              <span class="post-badge poll">Poll</span>
+            </div>
+            <div class="post-content">
+              <p class="post-text">
+                Help! I have a garden wedding to attend this weekend and I can't
+                decide on which shoes to pair with my floral dress. 👠👗
+              </p>
+              <div class="poll-container">
+                <div class="poll-option winner" data-media-type="banani-button">
+                  <div class="poll-bar" style="width: 68%"></div>
+                  <span class="poll-option-text">Nude Strappy Heels</span>
+                  <span class="poll-option-percent">68%</span>
+                </div>
+                <div class="poll-option" data-media-type="banani-button">
+                  <div class="poll-bar" style="width: 22%"></div>
+                  <span class="poll-option-text">White Block Heels</span>
+                  <span class="poll-option-percent">22%</span>
+                </div>
+                <div class="poll-option" data-media-type="banani-button">
+                  <div class="poll-bar" style="width: 10%"></div>
+                  <span class="poll-option-text">Flat Sandals</span>
+                  <span class="poll-option-percent">10%</span>
+                </div>
+                <span class="poll-votes-total">342 votes</span>
+              </div>
+            </div>
+            <div class="post-footer">
+              <div class="post-actions">
+                <button class="action-btn" data-media-type="banani-button">
+                  <span class="action-icon"
+                    ><iconify-icon
+                      icon="lucide:heart"
+                      style="font-size: 20px"
+                    ></iconify-icon
+                  ></span>
+                  89
+                </button>
+                <button class="action-btn" data-media-type="banani-button">
+                  <span class="action-icon"
+                    ><iconify-icon
+                      icon="lucide:message-circle"
+                      style="font-size: 20px"
+                    ></iconify-icon
+                  ></span>
+                  15
+                </button>
+              </div>
+              <button class="action-btn" data-media-type="banani-button">
+                <span class="action-icon"
+                  ><iconify-icon
+                    icon="lucide:share-2"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                ></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Post 3: Outfit -->
+          <div class="post-card" data-media-type="banani-button">
+            <div class="post-header">
+              <div class="user-info">
+                <img
+                  src="https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F18-25%2FAfrican%2F1"
+                  alt="David Osei"
+                  class="user-avatar"
+                />
+                <div class="user-meta">
+                  <span class="user-name">David Osei</span>
+                  <span class="post-time">5 hours ago</span>
+                </div>
+              </div>
+              <span class="post-badge outfit">Outfit</span>
+            </div>
+            <div class="post-content">
+              <p class="post-text">
+                Keeping it minimalist today. Neutral tones always win. ☕️
+              </p>
+              <img
+                src="https://storage.googleapis.com/banani-generated-images/generated-images/758207b9-34fb-4c81-83cd-ae1d52bf0355.jpg"
+                alt="Minimalist Outfit"
+                class="post-image"
+                data-aspect-ratio="4:5"
+                data-query="man wearing minimalist neutral tone outfit casual"
+              />
+            </div>
+            <div class="post-footer">
+              <div class="post-actions">
+                <button class="action-btn" data-media-type="banani-button">
+                  <span class="action-icon"
+                    ><iconify-icon
+                      icon="lucide:heart"
+                      style="font-size: 20px"
+                    ></iconify-icon
+                  ></span>
+                  124
+                </button>
+                <button class="action-btn" data-media-type="banani-button">
+                  <span class="action-icon"
+                    ><iconify-icon
+                      icon="lucide:message-circle"
+                      style="font-size: 20px"
+                    ></iconify-icon
+                  ></span>
+                  8
+                </button>
+              </div>
+              <button class="action-btn" data-media-type="banani-button">
+                <span class="action-icon"
+                  ><iconify-icon
+                    icon="lucide:share-2"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                ></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Post 4: Outfit -->
+          <div class="post-card" data-media-type="banani-button">
+            <div class="post-header">
+              <div class="user-info">
+                <img
+                  src="https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F35-50%2FNorth%20American%2F2"
+                  alt="Emma Watson"
+                  class="user-avatar"
+                />
+                <div class="user-meta">
+                  <span class="user-name">Emma Watson</span>
+                  <span class="post-time">Yesterday</span>
+                </div>
+              </div>
+              <span class="post-badge outfit">Outfit</span>
+            </div>
+            <div class="post-content">
+              <p class="post-text">
+                Office look for a rainy Tuesday. Layering with this oversized
+                blazer was definitely the right choice. 🌧️💼
+              </p>
+              <img
+                src="https://storage.googleapis.com/banani-generated-images/generated-images/6c3673a8-602b-4f93-af60-10d209d2408f.jpg"
+                alt="Office Outfit"
+                class="post-image"
+                data-aspect-ratio="1:1"
+                data-query="woman wearing oversized blazer office wear rainy day"
+              />
+            </div>
+            <div class="post-footer">
+              <div class="post-actions">
+                <button
+                  class="action-btn active"
+                  data-media-type="banani-button"
+                >
+                  <span class="action-icon"
+                    ><iconify-icon
+                      icon="lucide:heart"
+                      style="font-size: 20px"
+                    ></iconify-icon
+                  ></span>
+                  532
+                </button>
+                <button class="action-btn" data-media-type="banani-button">
+                  <span class="action-icon"
+                    ><iconify-icon
+                      icon="lucide:message-circle"
+                      style="font-size: 20px"
+                    ></iconify-icon
+                  ></span>
+                  67
+                </button>
+              </div>
+              <button class="action-btn" data-media-type="banani-button">
+                <span class="action-icon"
+                  ><iconify-icon
+                    icon="lucide:share-2"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                ></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab" data-media-type="banani-button">
+          <iconify-icon
+            icon="lucide:plus"
+            style="font-size: 28px"
+          ></iconify-icon>
+        </button>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+  <style>
+    :root {
+      --background: #fff9fb;
+      --foreground: #1f2937;
+      --border: #00000014;
+      --input: #ffffff;
+      --primary: #ff6fa8;
+      --primary-foreground: #ffffff;
+      --secondary: #fff0f6;
+      --secondary-foreground: #7b2a4a;
+      --muted: #f3f4f6;
+      --muted-foreground: #9ca3af;
+      --success: #10b981;
+      --success-foreground: #ffffff;
+      --accent: #ffd6e8;
+      --accent-foreground: #7b2a4a;
+      --destructive: #ef4444;
+      --destructive-foreground: #ffffff;
+      --warning: #f59e0b;
+      --warning-foreground: #1f2937;
+      --card: #ffffff;
+      --card-foreground: #111827;
+      --sidebar: #fff4f7;
+      --sidebar-foreground: #5b2d3a;
+      --sidebar-primary: #ffdfeb;
+      --sidebar-primary-foreground: #7b2a4a;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --font-family-body: Inter;
+    }
+  </style>
+</div>
