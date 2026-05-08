@@ -50,7 +50,8 @@ public record UserActivityData(
 public record UserDemographics(
     string Category,
     string Value,
-    int Count
+    int Count,
+    double Percentage
 );
 
 public record SystemPerformanceMetrics(
@@ -91,4 +92,21 @@ public record AnalyticsSummary(
     double EngagementRate,
     int TotalContent,
     double SystemHealth
+);
+
+public record ContentPerformanceData(
+    Guid Id,
+    string Name,
+    string Type,
+    int Views,
+    int LikesCount,
+    int CommentsCount,
+    double EngagementScore
+);
+
+public record ContentTypeStats(
+    string Type,
+    int Count,
+    int TotalEngagement,
+    double AverageEngagement
 );
