@@ -105,15 +105,15 @@ public class GetDetailedAnalyticsQueryHandler : IRequestHandler<GetDetailedAnaly
         var totalPosts = await _unitOfWork.Repository<FeedPost>().CountAsync(cancellationToken);
         var totalPolls = await _unitOfWork.Repository<ValidationPoll>().CountAsync(cancellationToken);
         var totalComments = 0; // Would need comments table
-        var totalLikes = await _context.Outfits.SumAsync(o => o.LikesCount, cancellationToken) +
-                         await _context.FeedPosts.SumAsync(p => p.LikesCount, cancellationToken);
+        var totalLikes = await _unitOfWork.Repository<Outfit>().SumAsync(o => o.LikesCount, cancellationToken) +
+                         await _unitOfWork.Repository<FeedPost>().SumAsync(p => p.LikesCount, cancellationToken);
 
         var totalEngagement = totalLikes + totalComments;
         var totalContent = totalOutfits + totalPosts + totalPolls;
         var engagementRate = totalContent > 0 ? ((double)totalEngagement / totalContent) : 0;
 
         // Top content
-        var topOutfits = await _context.Outfits
+        var topOutfits = await _unitOfWork.Repository<Outfit>()
             .OrderByDescending(o => o.LikesCount + o.CommentsCount)
             .Take(5)
             .Select(o => new ContentPerformanceData(

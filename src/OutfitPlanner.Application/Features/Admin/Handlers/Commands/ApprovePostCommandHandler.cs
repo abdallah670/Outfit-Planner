@@ -7,7 +7,10 @@ using OutfitPlanner.Application.Features.Admin.Requests.Commands;
 using OutfitPlanner.Application;
 using OutfitPlanner.Application.DTOs.Admin;
 using OutfitPlanner.Application.Responses;
-using Result = OutfitPlanner.Application.Common.Result;
+using OutfitPlanner.Application.Common.Result;
+using OutfitPlanner.Domain.Entities;
+using FeedPost = OutfitPlanner.Domain.Entities.FeedPost;
+using Outfit = OutfitPlanner.Domain.Entities.Outfit;
 
 namespace OutfitPlanner.Application.Features.Admin.Handlers.Commands;
 
@@ -183,7 +186,7 @@ public class BulkPostOperationCommandHandler : IRequestHandler<BulkPostOperation
             }
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new BulkOperationResponse(
             results,

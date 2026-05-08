@@ -14,6 +14,8 @@ public class ValidationPoll : BaseEntity
     
     public ICollection<PollOption> Options { get; set; } = new List<PollOption>();
     public ICollection<Vote> Votes { get; set; } = new List<Vote>(); // Relation? Poll->Votes direct? Diagram says ValidationPolls ||--o{ Votes
+    
+    public int TotalVotes { get; set; } = 0;
 }
 
 public class PollOption : BaseEntity
