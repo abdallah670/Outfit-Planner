@@ -20,5 +20,21 @@ export const authGuard: CanActivateFn = (route, state) => {
     router.navigateByUrl('/login');
     return false;
   }
+
+  // Check if user has at least Planner role for regular content access
+  const isPlanner = authService.isPlanner();
+  const isAdmin = authService.isAdmin();
+  
+  if (!isPlanner && !isAdmin) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Access Denied',
+      text: 'You need a Planner or Admin role to access this page.',
+      confirmButtonColor: '#3085d6',
+    });
+    router.navigateByUrl('/login');
+    return false;
+  }
+
   return true;
 };

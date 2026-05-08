@@ -208,4 +208,79 @@ public class AuthController : ControllerBase
     }
 
     #endregion
+
+    #region Email Verification
+
+    [HttpPost("verify-email")]
+    public async Task<ActionResult> VerifyEmail([FromBody] OutfitPlanner.Application.DTOs.Auth.VerifyEmailRequest request)
+    {
+        try
+        {
+            await _authenticationService.VerifyEmailAsync(request.Email, request.Token);
+            return Ok(new { message = "Email verified successfully. You can now log in." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Email verification failed for {Email}", request.Email);
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("resend-verification")]
+    public async Task<ActionResult> ResendVerificationEmail([FromBody] OutfitPlanner.Application.DTOs.Auth.ResendVerificationRequest request)
+    {
+        try
+        {
+            await _authenticationService.ResendVerificationEmailAsync(request.Email);
+            return Ok(new { message = "Verification email sent. Please check your inbox." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to resend verification email for {Email}", request.Email);
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    #endregion
+
+    #region Password Reset
+
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult> ForgotPassword([FromBody] OutfitPlanner.Application.DTOs.Auth.ForgotPasswordRequest request)
+    {
+        try
+        {
+            await _authenticationService.ForgotPasswordAsync(request.Email);
+            // Always return success to prevent email enumeration
+            return Ok(new { message = "If an account exists with this email, a password reset link has been sent." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Forgot password request failed for {Email}", request.Email);
+            // Still return generic success message
+            return Ok(new { message = "If an account exists with this email, a password reset link has been sent." });
+        }
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<ActionResult> ResetPassword([FromBody] OutfitPlanner.Application.DTOs.Auth.ResetPasswordRequest request)
+    {
+        try
+        {
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                return BadRequest(new { message = "Passwords do not match." });
+            }
+
+            await _authenticationService.ResetPasswordAsync(request.Email, request.Token, request.NewPassword);
+            return Ok(new { message = "Password reset successfully. You can now log in with your new password." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Password reset failed for {Email}", request.Email);
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    #endregion
 }

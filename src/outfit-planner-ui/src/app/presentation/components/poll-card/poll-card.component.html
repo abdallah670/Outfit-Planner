@@ -6,7 +6,7 @@
         <mat-chip [color]="getStatusColor(poll.status)" selected size="small">
           {{ getStatusLabel(poll.status) }}
         </mat-chip>
-        <span class="time-remaining" *ngIf="poll.status === PollStatus.Active">
+        <span class="time-remaining" *ngIf="poll.status === 'active'">
           <mat-icon>schedule</mat-icon>
           {{ getTimeRemaining() }}
         </span>

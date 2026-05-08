@@ -29,6 +29,12 @@
     >
       <mat-icon>notifications_none</mat-icon>
     </button>
+    
+    <!-- Admin link (only shown for admin users) -->
+    <button *ngIf="isAdmin()" routerLink="/admin/dashboard" mat-icon-button class="nav-icon-btn" aria-label="Admin Panel">
+      <mat-icon>admin_panel_settings</mat-icon>
+    </button>
+    
     <div class="user-profile" routerLink="/profile" style="cursor: pointer">
       <ng-container *ngIf="profilePictureUrl$ | async as profilePictureUrl; else fallbackAvatar">
         <div

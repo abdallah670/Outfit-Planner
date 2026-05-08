@@ -25,9 +25,9 @@ export const trendingFeature = createFeature({
       loading: true,
       error: null,
     })),
-    on(TrendingActions.loadTrendingSuccess, (state, { outfits, totalCount, append }) => ({
+    on(TrendingActions.loadTrendingSuccess, (state, { outfits, totalCount }) => ({
       ...state,
-      outfits: append ? [...state.outfits, ...outfits] : outfits,
+      outfits,
       totalCount,
       loading: false,
     })),

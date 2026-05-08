@@ -15,7 +15,7 @@ import {
   selectHasMore,
   selectFeedLoading,
 } from '../../../core/state/feed/feed.selectors';
-import { FeedPost, PostType } from '../../../domain/entities/feed.entity';
+import { FeedPost, PostType, PostComment } from '../../../domain/entities/feed.entity';
 import { CastVoteRequest } from '../../../domain/entities/poll.entity';
 import { PollCardComponent } from '../../components/poll-card/poll-card.component';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -135,7 +135,7 @@ export class CommunityFeedComponent implements OnInit {
   // Comment UI state
   expandedCommentPostId = signal<string | null>(null);
   commentText = signal('');
-  commentsCache = signal<{ [postId: string]: { items: FeedPost['comments']; nextCursor: string | null; hasMore: boolean } }>({});
+ commentsCache = signal<{ [postId: string]: { items: PostComment[]; nextCursor: string | null; hasMore: boolean } }>({});
 
   toggleComments(postId: string): void {
     if (this.expandedCommentPostId() === postId) {

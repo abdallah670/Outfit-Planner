@@ -43,7 +43,8 @@ export class CreateOutfitPostComponent implements OnInit {
   private router = inject(Router);
 
   outfitPostForm!: FormGroup;
-    userOutfits: any[] = [];
+  userOutfits: any[] = [];
+  loading$ = this.store.select(selectOutfitPostsLoading);
   selectedOutfit: any | null = null;
 
   // Mock data - in real app, this would come from user's wardrobe

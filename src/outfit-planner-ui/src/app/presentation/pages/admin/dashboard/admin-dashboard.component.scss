@@ -1,0 +1,69 @@
+.dashboard-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  gap: 12px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.kpi-card {
+  text-align: center;
+}
+
+.kpi-content {
+  padding: 24px;
+}
+
+.kpi-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 8px;
+
+  &.new-today {
+    color: #4caf50;
+  }
+
+  &.pending {
+    color: #ff9800;
+  }
+
+  &.locked {
+    color: #f44336;
+  }
+}
+
+.kpi-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.chart-card {
+  height: 300px;
+
+  mat-card-content {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

@@ -305,7 +305,6 @@ export class WardrobeDashboardComponent implements OnInit {
         case '9ca3af':
         case 'd1d5db':
         case '6b7280':
-        case '9ca3af':
           return 'Gray';
 
         // Blue family

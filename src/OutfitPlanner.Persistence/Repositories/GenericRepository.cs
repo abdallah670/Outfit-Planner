@@ -60,18 +60,45 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     public async Task RemoveAsync(T entity)
     {
         _dbSet.Remove(entity);
-    }
+        }
 
     public async Task RemoveRangeAsync(IEnumerable<T> entities)
     {
         _dbSet.RemoveRange(entities);
+        
     }
 
     public async Task UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
+        await _context.SaveChangesAsync();
     }
-    public virtual async Task<int> CountAsync() => await _dbSet.CountAsync();
+
+    public async Task<int> CountAsync()
+    {
+        return await _dbSet.CountAsync();
+    }
+
+    public async Task<int> SumAsync(Expression<Func<T, int>> selector)
+    {
+        return await _dbSet.SumAsync(selector);
+    }
+
+    public async Task<decimal> AverageAsync(Expression<Func<T, decimal>> selector)
+    {
+        return await _dbSet.AverageAsync(selector);
+    }
+
+    public async Task<int> CountAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.CountAsync(predicate);
+    }
+
+    public async Task<int> SumAsync(Expression<Func<T, int>> selector)
+    {
+        return await _dbSet.SumAsync(selector);
+    }
+
     public virtual async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
         => await _dbSet.AnyAsync(predicate);
 

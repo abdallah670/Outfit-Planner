@@ -28,6 +28,9 @@ public class Outfit : BaseEntity
     public ICollection<OutfitItem> Items { get; set; } = new List<OutfitItem>();
    // public ICollection<OutfitFeedback> Feedback { get; set; } = new List<OutfitFeedback>();
     public ICollection<PollOption> PollOptions { get; set; } = new List<PollOption>();
+    
+    public int LikesCount { get; set; } = 0;
+    public int CommentsCount { get; set; } = 0;
 }
 
 public class OutfitItem : BaseEntity

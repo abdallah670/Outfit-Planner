@@ -886,6 +886,12 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("EmailVerificationToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EmailVerificationTokenExpiry")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTimeOffset?>("LastLogin")
                         .HasColumnType("datetimeoffset");
 
@@ -909,6 +915,12 @@ namespace OutfitPlanner.Persistence.Migrations
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiry")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");

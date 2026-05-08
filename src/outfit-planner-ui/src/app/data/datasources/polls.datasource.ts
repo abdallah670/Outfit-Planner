@@ -51,17 +51,18 @@ export interface UpdatePollOptionRequest {
   providedIn: 'root',
 })
 export class PollsDataSource {
-  private readonly apiUrl = `${environment.baseUrl}/api/polls`;
+  private readonly apiUrl = `${environment.baseUrl}/polls`;
 
   constructor(private http: HttpClient) {}
 
   getPolls(): Observable<Poll[]> {
     return this.http
-      .get<PollDto[]>(`${this.apiUrl}`)
+      .get<{ items: PollDto[]; totalCount: number }>(`${this.apiUrl}`)
       .pipe(
-        map((polls: PollDto[]) =>
-          polls.map((p: PollDto) => this.mapPollDtoToEntity(p)),
-        ),
+        map((response) => {
+          const polls = response.items || [];
+          return polls.map((p: PollDto) => this.mapPollDtoToEntity(p));
+        }),
       );
   }
 

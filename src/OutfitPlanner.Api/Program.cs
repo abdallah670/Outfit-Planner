@@ -19,6 +19,10 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add environment variables to configuration
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Host.UseSerilog();
 
 // Add services to the container.
@@ -240,6 +244,26 @@ try
         );
         
         Log.Information("Hangfire recurring job 'daily-trending-calculation' scheduled to run daily at midnight UTC");
+    }
+
+    // Schedule recurring Hangfire job for auto-unlocking accounts
+    using (var scope = app.Services.CreateScope())
+    {
+        var unlockJob = scope.ServiceProvider.GetRequiredService<AccountUnlockBackgroundJob>();
+        var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+        
+        // Schedule job to run every 5 minutes
+        recurringJobManager.AddOrUpdate(
+            "auto-unlock-accounts",
+            () => unlockJob.AutoUnlockAccounts(),
+            "*/5 * * * *", // Cron: Every 5 minutes
+            new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Utc
+            }
+        );
+        
+        Log.Information("Hangfire recurring job 'auto-unlock-accounts' scheduled to run every 5 minutes");
     }
     
     app.Run();

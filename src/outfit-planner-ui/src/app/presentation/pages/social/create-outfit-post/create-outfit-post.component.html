@@ -4,7 +4,7 @@
     <p>Share your outfit with the community</p>
   </div>
 
-  <mat-card class="create-post-card" *ngIf="!loading$ | async">
+  <mat-card class="create-post-card" *ngIf="!(loading$ | async)">
     <form [formGroup]="outfitPostForm" (ngSubmit)="onSubmit()">
       <mat-card-content>
         <!-- Outfit Selection -->

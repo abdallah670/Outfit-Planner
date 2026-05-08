@@ -58,23 +58,23 @@
                       <span class="post-time">{{ post.createdAt | date:'short' }}</span>
                     </div>
                     
-                    <!-- Poll Post -->
-                    <div *ngIf="post.postType === 'PollPost'" class="poll-post-content">
+                    <!-- Poll Post (PostType.PollPost = 1) -->
+                    <div *ngIf="post.postType === 1 && post.poll" class="poll-post-content">
                       <app-poll-card
                         [poll]="post.poll"
                         [showResults]="false"
                         [userVoteOptionId]="null"
-                        (vote)="onVoteOnPoll(post.poll.id, $event)"
-                        (viewDetails)="onViewPollDetail(post.poll.id)"
+                        (vote)="onVoteOnPoll(post.poll!.id, $event)"
+                        (viewDetails)="onViewPollDetail(post.poll!.id)"
                       >
                       </app-poll-card>
                     </div>
                     
-                    <!-- Outfit Post -->
-                    <div *ngIf="post.postType === 'OutfitPost'" class="outfit-post-content">
+                    <!-- Outfit Post (PostType.OutfitPost = 0) -->
+                    <div *ngIf="post.postType === 0" class="outfit-post-content">
                       <div class="outfit-images">
                         <img 
-                          [src]="post.imageUrl || 'assets/placeholder.jpg'" 
+                          [src]="post.outfit?.imageUrl || 'assets/placeholder.jpg'" 
                           alt="Outfit Image"
                           (click)="viewPostDetail(post)"
                         >
@@ -88,7 +88,7 @@
                         >
                         <span class="likes">
                           <mat-icon class="heart-icon">favorite</mat-icon>
-                          {{ post.likes > 1000 ? (post.likes / 1000).toFixed(1) + 'k' : post.likes }} likes
+                          {{ post.likeCount }}
                         </span>
                       </div>
                       <div class="outfit-caption" *ngIf="post.caption">

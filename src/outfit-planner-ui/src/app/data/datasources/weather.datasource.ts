@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Weather, WeatherForecast } from '../../domain/entities/weather.entity';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WeatherDataSource {
-  private readonly apiUrl = 'http://localhost:5000/api/weather';
+  private readonly apiUrl =`${environment.baseUrl}/weather`;
 
   constructor(private readonly http: HttpClient) {}
 

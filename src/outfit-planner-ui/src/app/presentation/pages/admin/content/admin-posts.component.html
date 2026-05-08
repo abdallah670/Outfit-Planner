@@ -1,0 +1,149 @@
+<div class="admin-posts-container">
+  <div class="page-header">
+    <h2>Posts Management</h2>
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchFilter" placeholder="Search posts...">
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="statusFilter">
+          <mat-option value="">All Status</mat-option>
+          <mat-option value="0">Draft</mat-option>
+          <mat-option value="1">Published</mat-option>
+          <mat-option value="2">Approved</mat-option>
+          <mat-option value="3">Rejected</mat-option>
+          <mat-option value="4">Hidden</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" (click)="applyFilter()">
+        <mat-icon>search</mat-icon>
+        Search
+      </button>
+      
+      <button mat-button (click)="bulkApprove()" [disabled]="selectedPosts.size === 0">
+        <mat-icon>check_circle</mat-icon>
+        Approve Selected
+      </button>
+      
+      <button mat-button (click)="bulkReject()" [disabled]="selectedPosts.size === 0">
+        <mat-icon>cancel</mat-icon>
+        Reject Selected
+      </button>
+      
+      <button mat-button color="accent" (click)="bulkDelete()" [disabled]="selectedPosts.size === 0">
+        <mat-icon>delete</mat-icon>
+        Delete Selected
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    @if (loading$ | async) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading posts...</p>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="posts" class="posts-table">
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="toggleAllPosts()" [checked]="isAllSelected()"></mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let post">
+            <mat-checkbox (change)="togglePostSelection(post.id)" [checked]="selectedPosts.has(post.id)"></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let post"> {{post.id.substring(0, 8)}}... </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef> Title </th>
+          <td mat-cell *matCellDef="let post"> 
+            <div class="post-title">
+              <strong>{{post.title}}</strong>
+              <div class="post-content">{{post.content.substring(0, 150)}}...</div>
+              <div class="post-tags">
+                @for (tag of post.tags; track $index) {
+                  <span class="tag">{{tag}}</span>
+                }
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Author Column -->
+        <ng-container matColumnDef="userName">
+          <th mat-header-cell *matHeaderCellDef> Author </th>
+          <td mat-cell *matCellDef="let post"> {{post.userName}} </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let post">
+            <span class="status-badge" [class]="getStatusClass(post)">
+              {{getStatusText(post)}}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Engagement Column -->
+        <ng-container matColumnDef="engagement">
+          <th mat-header-cell *matHeaderCellDef> Engagement </th>
+          <td mat-cell *matCellDef="let post">
+            <div class="engagement-stats">
+              <span><mat-icon>favorite</mat-icon> {{post.likesCount}}</span>
+              <span><mat-icon>comment</mat-icon> {{post.commentsCount}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef> Created </th>
+          <td mat-cell *matCellDef="let post"> {{post.createdAt | date:'medium'}} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let post">
+            <button mat-icon-button (click)="approvePost(post.id)" [disabled]="post.isApproved"
+                    matTooltip="Approve">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+            <button mat-icon-button (click)="rejectPost(post.id)" 
+                    matTooltip="Reject">
+              <mat-icon>cancel</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deletePost(post.id)" color="warn"
+                    matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="totalPosts"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  </div>
+</div>
