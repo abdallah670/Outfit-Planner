@@ -18,7 +18,7 @@
     <!-- Main Content -->
     <main class="main-content">
       <!-- Tabs for content filtering -->
-      <mat-tab-group (selectedIndexChange)="activeTab.set($event.index)" [(selectedIndex)]="activeTab()">
+      <mat-tab-group [selectedIndex]="activeTab()" (selectedIndexChange)="activeTab.set($event)">
         <mat-tab label="Community Feed">
           <ng-template mat-tab-content>
             <!-- Left Sidebar - Community Feed -->

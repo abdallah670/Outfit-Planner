@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,6 +27,7 @@ type FilterType = 'all' | 'outfits' | 'polls';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
     MatIconModule,
     MatButtonModule,
@@ -128,6 +130,29 @@ export class CommunityFeedComponent implements OnInit {
 
   onViewPollDetail(pollId: string): void {
     this.router.navigate(['/social/polls', pollId]);
+  }
+
+  // Comment UI state
+  expandedCommentPostId = signal<string | null>(null);
+  commentText = signal('');
+  commentsCache = signal<{ [postId: string]: { items: FeedPost['comments']; nextCursor: string | null; hasMore: boolean } }>({});
+
+  toggleComments(postId: string): void {
+    if (this.expandedCommentPostId() === postId) {
+      this.expandedCommentPostId.set(null);
+    } else {
+      this.expandedCommentPostId.set(postId);
+      if (!this.commentsCache()[postId]) {
+        this.store.dispatch(FeedActions.loadComments({ postId, pageSize: 10 }));
+      }
+    }
+  }
+
+  submitComment(postId: string): void {
+    const text = this.commentText().trim();
+    if (!text) return;
+    this.store.dispatch(FeedActions.addComment({ postId, content: text }));
+    this.commentText.set('');
   }
 
   loadMore(): void {
