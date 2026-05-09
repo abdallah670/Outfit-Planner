@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.DTOs.User;
 using OutfitPlanner.Application.Features.User.Requests.Queries;

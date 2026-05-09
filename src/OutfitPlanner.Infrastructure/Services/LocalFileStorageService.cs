@@ -1,3 +1,4 @@
+using System.IO;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Contracts.Infrastructure.Models;
 using OutfitPlanner.Infrastructure.Configuration;

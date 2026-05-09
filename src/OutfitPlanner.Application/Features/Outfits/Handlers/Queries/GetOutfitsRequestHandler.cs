@@ -4,7 +4,6 @@ using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
 using Microsoft.Extensions.Logging;
-using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Exceptions;
 
 namespace OutfitPlanner.Application.Features.Outfits.Handlers.Queries;

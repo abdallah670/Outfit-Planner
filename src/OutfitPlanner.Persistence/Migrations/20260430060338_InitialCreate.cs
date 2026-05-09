@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -504,8 +504,8 @@ namespace OutfitPlanner.Persistence.Migrations
                     PollId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Caption = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Visibility = table.Column<int>(type: "int", nullable: false),
-                    LikeCount = table.Column<int>(type: "int", nullable: false),
-                    CommentCount = table.Column<int>(type: "int", nullable: false),
+                    LikesCount = table.Column<int>(type: "int", nullable: false),
+                    CommentsCount = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
@@ -564,8 +564,8 @@ namespace OutfitPlanner.Persistence.Migrations
                     OutfitId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PollId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     VoteCount = table.Column<int>(type: "int", nullable: false),
-                    LikeCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    CommentCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    LikesCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CommentsCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     ReactionCount = table.Column<int>(type: "int", nullable: false),
                     TrendingScore = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     RankPosition = table.Column<int>(type: "int", nullable: false),
@@ -809,7 +809,7 @@ namespace OutfitPlanner.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FeedPosts_LikeCount",
                 table: "FeedPosts",
-                column: "LikeCount");
+                column: "LikesCount");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FeedPosts_OutfitId",

@@ -3,6 +3,8 @@ namespace OutfitPlanner.Application.DTOs.Admin;
 public record RejectPostRequest(string Reason);
 
 public record BulkPostOperationRequest(List<BulkPostOperationItem> Operations);
+public record BulkPollOperationRequest(List<BulkPostOperationItem> Operations);
+public record BulkOutfitOperationRequest(List<BulkPostOperationItem> Operations);
 
 public record BulkPostOperationItem(
     Guid PostId,
@@ -12,7 +14,6 @@ public record BulkPostOperationItem(
 
 public record ContentFilterRequest(
     string? Search = null,
-    string? Status = null,
     string? ContentType = null,
     DateTime? StartDate = null,
     DateTime? EndDate = null,
@@ -24,23 +25,22 @@ public record AdminPostDto(
     Guid Id,
     string UserId,
     string UserName,
-    string Title,
-    string Content,
+    string? Caption,
     List<string> Tags,
     int LikesCount,
     int CommentsCount,
     DateTime CreatedAt,
-    bool IsApproved,
-    PostStatus Status,
-    DateTime? ApprovedAt,
-    string? ApprovedBy
+    OutfitPlanner.Domain.Enums.PostType PostType,
+    // Optional Outfit details
+    Guid? OutfitId = null,
+    string? OutfitName = null,
+    string? OutfitImageUrl = null,
+    List<string>? ItemsImageUrls = null,
+    // Optional Poll details
+    Guid? PollId = null,
+    string? PollQuestion = null,
+    List<string>? PollOptions = null,
+    List<int>? PollOptionVotes = null,
+    int? TotalPollVotes = null,
+    DateTime? PollExpiresAt = null
 );
-
-public enum PostStatus
-{
-    Draft = 0,
-    Published = 1,
-    Approved = 2,
-    Rejected = 3,
-    Hidden = 4
-}

@@ -118,6 +118,13 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
             // 6. Save vote
             await _voteRepository.AddAsync(vote);
             await _unitOfWork.PostReactions.AddAsync(reaction);
+            
+            poll.TotalVotes++;
+            await _validationPollRepository.UpdateAsync(poll);
+            
+            feedPost.LikesCount++;
+            await _unitOfWork.FeedPosts.UpdateAsync(feedPost);
+
             await _unitOfWork.SaveChangesAsync();
             response.Id = vote.Id;
             response.Success = true;

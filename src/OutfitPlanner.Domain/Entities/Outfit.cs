@@ -14,11 +14,9 @@ public class Outfit : BaseEntity
     public string WeatherCondition { get; set; } = string.Empty;
     public Season Season { get; set; }
     public int? ComfortRating { get; set; }
-    public int? StyleRating { get; set; }
     
     public DateTimeOffset? LastWorn { get; set; }
     public int TimesWorn { get; set; }
-    public OutfitStatus Status { get; set; } = OutfitStatus.Active; // Enum
     // metadata jsonb? In SQL Server, likely nvarchar(max).
     // I'll skip metadata prop for now or use string.
     

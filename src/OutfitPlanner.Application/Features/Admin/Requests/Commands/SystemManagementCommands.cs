@@ -6,9 +6,9 @@ namespace OutfitPlanner.Application.Features.Admin.Requests.Commands;
 
 public record SetMaintenanceModeCommand(bool Enabled, string? Message) : IRequest<Result>;
 
-public record CreateBackupCommand(BackupRequest Request) : IRequest<BackupResult>;
+public record CreateBackupCommand(CreateBackupRequest Request) : IRequest<BackupResult>;
 
-public record BackupRequest(
+public record CreateBackupRequest(
     string Type, // "full", "incremental", "differential"
     string? Description = null
 );

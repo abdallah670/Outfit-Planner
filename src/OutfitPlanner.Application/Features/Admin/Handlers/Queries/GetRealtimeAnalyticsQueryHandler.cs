@@ -1,14 +1,18 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.DTOs.Admin;
 using OutfitPlanner.Application.Features.Admin.Requests.Queries;
 using OutfitPlanner.Application;
-using OutfitPlanner.Domain.Entities;
+using User = OutfitPlanner.Domain.Entities.User;
 using UserEngagementMetrics = OutfitPlanner.Application.DTOs.Admin.UserEngagementMetrics;
 using ContentMetrics = OutfitPlanner.Application.DTOs.Admin.ContentMetrics;
-using SystemPerformanceMetrics = OutfitPlanner.Application.DTOs.Admin.SystemPerformanceMetrics;
-using OutfitPlanner.Domain.Entities;
+using UserActivityData = OutfitPlanner.Application.DTOs.Admin.UserActivityData;
+using UserDemographics = OutfitPlanner.Application.DTOs.Admin.UserDemographics;
+using ContentPerformanceData = OutfitPlanner.Application.DTOs.Admin.ContentPerformanceData;
+using ContentTypeStats = OutfitPlanner.Application.DTOs.Admin.ContentTypeStats;
+using OutfitPlanner.Domain.Enums;
 using ValidationPoll = OutfitPlanner.Domain.Entities.ValidationPoll;
 using FeedPost = OutfitPlanner.Domain.Entities.FeedPost;
 using Outfit = OutfitPlanner.Domain.Entities.Outfit;
@@ -39,31 +43,29 @@ public class GetRealtimeAnalyticsQueryHandler : IRequestHandler<GetRealtimeAnaly
         // Real-time content metrics
         var contentStats = await GetRealtimeContentMetrics(last24Hours, now, cancellationToken);
         
-        // Real-time system performance
-        var systemStats = await GetRealtimeSystemMetrics(cancellationToken);
+  
 
         return new RealtimeAnalyticsDto(
             userMetrics,
             contentStats,
-            systemStats,
             now
         );
     }
 
     private async Task<UserEngagementMetrics> GetRealtimeUserMetrics(DateTime startDate, DateTime now, CancellationToken cancellationToken)
     {
-        var totalUsers = await _unitOfWork.Repository<User>().CountAsync(cancellationToken);
+        var totalUsers = await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().CountAsync(cancellationToken);
         
-        var activeUsers = await _unitOfWork.Repository<User>()
-            .Where(u => _unitOfWork.Repository<Outfit>().Any(o => o.CreatedById == u.Id && o.CreatedAt >= startDate) ||
-                       _unitOfWork.Repository<FeedPost>().Any(p => p.CreatedById == u.Id && p.CreatedAt >= startDate))
+        var activeUsers = await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().GetQueryable()
+            .Where(u => _unitOfWork.Repository<Outfit>().GetQueryable().Any(o => o.UserId == u.Id && o.CreatedAt >= startDate) ||
+                       _unitOfWork.Repository<FeedPost>().GetQueryable().Any(p => p.UserId == u.Id && p.CreatedAt >= startDate))
             .CountAsync(cancellationToken);
 
-        var newUsers = await _unitOfWork.Repository<User>()
+        var newUsers = await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().GetQueryable()
             .Where(u => u.CreatedAt >= startDate)
             .CountAsync(cancellationToken);
 
-        var previousDayUsers = await _unitOfWork.Repository<User>()
+        var previousDayUsers = await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().GetQueryable()
             .Where(u => u.CreatedAt >= startDate.AddDays(-1) && u.CreatedAt < startDate)
             .CountAsync(cancellationToken);
 
@@ -79,8 +81,8 @@ public class GetRealtimeAnalyticsQueryHandler : IRequestHandler<GetRealtimeAnaly
         // Real-time demographics
         var demographics = new List<UserDemographics>
         {
-            new("Role", "Admin", await _unitOfWork.Repository<UserRole>().CountAsync(ur => ur.Role.Name == "Admin", cancellationToken), 0),
-            new("Role", "Planner", await _unitOfWork.Repository<UserRole>().CountAsync(ur => ur.Role.Name == "Planner", cancellationToken), 0)
+            new("Role", "Admin", await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().GetQueryable().CountAsync(u => u.Role == UserRole.Admin, cancellationToken), 0),
+            new("Role", "Planner", await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().GetQueryable().CountAsync(u => u.Role == UserRole.Planner, cancellationToken), 0)
         };
 
         foreach (var demo in demographics)
@@ -102,23 +104,25 @@ public class GetRealtimeAnalyticsQueryHandler : IRequestHandler<GetRealtimeAnaly
     {
         var totalOutfits = await _unitOfWork.Repository<Outfit>().CountAsync(cancellationToken);
         var totalPosts = await _unitOfWork.Repository<FeedPost>().CountAsync(cancellationToken);
-        var totalUsers = await _unitOfWork.Repository<User>().CountAsync(cancellationToken);
-        var activeUsers = await _unitOfWork.Repository<User>()
-            .CountAsync(u => u.LastLoginAt >= DateTime.UtcNow.AddHours(-24), cancellationToken);
-        var newUsers = await _unitOfWork.Repository<User>()
+        var totalUsers = await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().CountAsync(cancellationToken);
+        
+        var activeUsers = await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().GetQueryable()
+            .CountAsync(u => u.LastLogin >= DateTime.UtcNow.AddHours(-24), cancellationToken);
+        var newUsers = await _unitOfWork.Repository<OutfitPlanner.Domain.Entities.User>().GetQueryable()
             .CountAsync(u => u.CreatedAt >= DateTime.UtcNow.AddDays(-30), cancellationToken);
 
-        var newOutfits = await _unitOfWork.Repository<Outfit>()
+        var newOutfits = await _unitOfWork.Repository<Outfit>().GetQueryable()
             .CountAsync(o => o.CreatedAt >= startDate, cancellationToken);
 
-        var newPosts = await _unitOfWork.Repository<FeedPost>()
+        var newPosts = await _unitOfWork.Repository<FeedPost>().GetQueryable()
             .CountAsync(p => p.CreatedAt >= startDate, cancellationToken);
 
-        var newPolls = await _unitOfWork.Repository<Poll>()
+        var totalPolls = await _unitOfWork.Repository<ValidationPoll>().CountAsync(cancellationToken);
+        var newPolls = await _unitOfWork.Repository<ValidationPoll>().GetQueryable()
             .CountAsync(p => p.CreatedAt >= startDate, cancellationToken);
 
-        var totalLikes = await _unitOfWork.Repository<Outfit>().SumAsync(o => o.LikesCount, cancellationToken) +
-                         await _unitOfWork.Repository<FeedPost>().SumAsync(p => p.LikesCount, cancellationToken);
+        var totalLikes = await _unitOfWork.Repository<Outfit>().GetQueryable().SumAsync(o => o.LikesCount, cancellationToken) +
+                         await _unitOfWork.Repository<FeedPost>().GetQueryable().SumAsync(p => p.LikesCount, cancellationToken);
 
         var totalComments = 0; // Would need comments table
         var totalContent = totalOutfits + totalPosts + totalPolls;
@@ -126,7 +130,8 @@ public class GetRealtimeAnalyticsQueryHandler : IRequestHandler<GetRealtimeAnaly
 
         // Real-time top content
         var topOutfits = await _unitOfWork.Repository<Outfit>()
-            .GetQueryable(o => o.CreatedAt >= startDate)
+            .GetQueryable()
+            .Where(o => o.CreatedAt >= startDate)
             .OrderByDescending(o => o.LikesCount + o.CommentsCount)
             .Take(5)
             .Select(o => new ContentPerformanceData(
@@ -141,12 +146,13 @@ public class GetRealtimeAnalyticsQueryHandler : IRequestHandler<GetRealtimeAnaly
             .ToListAsync(cancellationToken);
 
         var topPosts = await _unitOfWork.Repository<FeedPost>()
+            .GetQueryable()
             .Where(p => p.CreatedAt >= startDate)
             .OrderByDescending(p => p.LikesCount + p.CommentsCount)
             .Take(5)
             .Select(p => new ContentPerformanceData(
                 p.Id,
-                p.Title,
+                p.Caption,
                 "Post",
                 0, // Views would need tracking
                 p.LikesCount,
@@ -160,15 +166,10 @@ public class GetRealtimeAnalyticsQueryHandler : IRequestHandler<GetRealtimeAnaly
         // Real-time content type breakdown
         var contentTypeBreakdown = new List<ContentTypeStats>
         {
-            new("Outfit", totalOutfits, await _unitOfWork.Repository<Outfit>().SumAsync(o => o.LikesCount + o.CommentsCount, cancellationToken), 0),
-            new("Post", totalPosts, await _unitOfWork.Repository<FeedPost>().SumAsync(p => p.LikesCount + p.CommentsCount, cancellationToken), 0),
-            new("Poll", totalPolls, await _unitOfWork.Repository<ValidationPoll>().SumAsync(p => p.TotalVotes, cancellationToken), 0)
+            new("Outfit", totalOutfits, await _unitOfWork.Repository<Outfit>().GetQueryable().SumAsync(o => o.LikesCount + o.CommentsCount, cancellationToken), 0),
+            new("Post", totalPosts, await _unitOfWork.Repository<FeedPost>().GetQueryable().SumAsync(p => p.LikesCount + p.CommentsCount, cancellationToken), 0),
+            new("Poll", totalPolls, await _unitOfWork.Repository<ValidationPoll>().GetQueryable().SumAsync(p => p.TotalVotes, cancellationToken), 0)
         };
-
-        foreach (var type in contentTypeBreakdown)
-        {
-            type.AverageEngagement = type.Count > 0 ? ((double)type.TotalEngagement / type.Count) : 0;
-        }
 
         return new ContentMetrics(
             totalOutfits,
@@ -182,17 +183,5 @@ public class GetRealtimeAnalyticsQueryHandler : IRequestHandler<GetRealtimeAnaly
         );
     }
 
-    private async Task<SystemPerformanceMetrics> GetRealtimeSystemMetrics(CancellationToken cancellationToken)
-    {
-        // In a real implementation, these would come from system monitoring services
-        // For now, we'll simulate real-time data
-        return new SystemPerformanceMetrics(
-            new Random().NextDouble() * 100, // CPU usage percentage
-            (long)(new Random().NextDouble() * 1024 * 1024 * 1024), // Memory usage in bytes
-            (long)(new Random().NextDouble() * 100 * 1024 * 1024 * 1024), // Disk usage in bytes
-            new Random().Next(10, 100), // Active connections
-            new Random().NextDouble() * 200, // Response time in ms
-            new List<PerformanceData>() // Historical data would come from monitoring system
-        );
-    }
+  
 }

@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using OutfitPlanner.Application.DTOs.User;
 
 namespace OutfitPlanner.Application.Features.User.Requests.Queries;

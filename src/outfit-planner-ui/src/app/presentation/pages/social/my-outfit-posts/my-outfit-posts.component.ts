@@ -66,7 +66,7 @@ export class MyOutfitPostsComponent implements OnInit {
     // Apply sort
     return filtered.sort((a: FeedPost, b: FeedPost) => {
       if (this.activeSort() === 'most-liked') {
-        return b.likeCount - a.likeCount;
+        return b.likesCount - a.likesCount;
       } else {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }

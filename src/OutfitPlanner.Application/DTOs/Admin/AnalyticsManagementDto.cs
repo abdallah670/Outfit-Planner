@@ -1,5 +1,11 @@
 namespace OutfitPlanner.Application.DTOs.Admin;
 
+public record AnalyticsFilterRequest(
+    DateTime? StartDate = null,
+    DateTime? EndDate = null
+);
+
+
 public record ExportAnalyticsRequest(
     string Format, // "csv", "json", "pdf"
     DateTime? StartDate,
@@ -16,10 +22,8 @@ public record ClearCacheRequest(
 );
 
 public record RealtimeAnalyticsDto(
-    int ActiveUsers,
-    int CurrentOutfitViews,
-    int CurrentPollVotes,
-    double SystemLoad,
+    UserEngagementMetrics UserEngagement,
+    ContentMetrics ContentMetrics,
     DateTime LastUpdated
 );
 
@@ -37,7 +41,10 @@ public record ContentMetrics(
     int TotalPosts,
     int TotalPolls,
     int TotalComments,
-    int TotalLikes
+    int TotalLikes,
+    double EngagementRate,
+    List<ContentPerformanceData> TopContent,
+    List<ContentTypeStats> ContentTypeBreakdown
 );
 
 public record UserActivityData(
@@ -47,51 +54,44 @@ public record UserActivityData(
     int ReturningUsers
 );
 
-public record UserDemographics(
-    string Category,
-    string Value,
-    int Count,
-    double Percentage
-);
+public class UserDemographics
+{
+    public string Category { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public double Percentage { get; set; }
 
-public record SystemPerformanceMetrics(
-    double CpuUsage,
-    double MemoryUsage,
-    double DiskUsage,
-    int ActiveConnections,
-    double ResponseTime,
-    List<PerformanceData> HistoricalPerformance
-);
+    public UserDemographics(string category, string value, int count, double percentage)
+    {
+        Category = category;
+        Value = value;
+        Count = count;
+        Percentage = percentage;
+    }
+}
 
-public record PerformanceData(
-    DateTime Timestamp,
-    double CpuUsage,
-    double MemoryUsage,
-    double DiskUsage,
-    int ActiveConnections,
-    double ResponseTime
-);
+
+
+
 
 public record DetailedAnalyticsDto(
     UserEngagementMetrics UserMetrics,
     ContentMetrics ContentMetrics,
-    SystemPerformanceMetrics SystemMetrics,
     List<TimeSeriesData> TimeSeriesData,
-    AnalyticsSummary Summary
+    List<AnalyticsSummary> Summary
 );
 
 public record TimeSeriesData(
-    DateTime Timestamp,
-    double Value,
-    string MetricType
+    DateTime Date,
+    string MetricType,
+    double Value
 );
 
 public record AnalyticsSummary(
-    int TotalUsers,
-    int ActiveUsers,
-    double EngagementRate,
-    int TotalContent,
-    double SystemHealth
+    string Category,
+    string MetricName,
+    int Value,
+    double ChangePercentage
 );
 
 public record ContentPerformanceData(

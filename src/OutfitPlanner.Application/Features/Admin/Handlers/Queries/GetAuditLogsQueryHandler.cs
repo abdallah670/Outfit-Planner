@@ -25,9 +25,10 @@ public class GetAuditLogsQueryHandler : IRequestHandler<GetAuditLogsQuery, Pagin
         var query = _unitOfWork.Repository<AuditLog>().GetQueryable();
         
         // Apply user filter
-        if (!string.IsNullOrEmpty(request.Filter.UserId))
+        if (request.Filter.UserId.HasValue)
         {
-            query = query.Where(a => a.UserId == request.Filter.UserId);
+            var userIdString = request.Filter.UserId.Value.ToString();
+            query = query.Where(a => a.UserId == userIdString);
         }
         
         // Apply action filter

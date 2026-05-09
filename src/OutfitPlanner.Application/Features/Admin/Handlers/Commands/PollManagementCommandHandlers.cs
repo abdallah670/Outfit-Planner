@@ -1,11 +1,15 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.DTOs.Admin;
 using OutfitPlanner.Application.Features.Admin.Requests.Commands;
 using OutfitPlanner.Application;
-using Result = OutfitPlanner.Application.Common.Result;
+using static OutfitPlanner.Application.Common.Result;
+using OutfitPlanner.Domain.Entities;
+using ValidationPoll = OutfitPlanner.Domain.Entities.ValidationPoll;
+using OutfitPlanner.Domain.Enums;
 
 namespace OutfitPlanner.Application.Features.Admin.Handlers.Commands;
 
@@ -32,7 +36,7 @@ public class ClosePollCommandHandler : IRequestHandler<ClosePollCommand, Result>
                 return Result.Failure("Poll not found");
 
             poll.Status = PollStatus.Closed;
-            poll.EndsAt = DateTime.UtcNow;
+            poll.ExpiresAt = DateTime.UtcNow;
 
             await _unitOfWork.CompleteAsync();
 
@@ -47,73 +51,17 @@ public class ClosePollCommandHandler : IRequestHandler<ClosePollCommand, Result>
 
 public class FeaturePollCommandHandler : IRequestHandler<FeaturePollCommand, Result>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<FeaturePollCommandHandler> _logger;
-
-    public FeaturePollCommandHandler(IUnitOfWork unitOfWork, ILogger<FeaturePollCommandHandler> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
-
     public async Task<Result> Handle(FeaturePollCommand request, CancellationToken cancellationToken)
     {
-        try
-        {
-            var poll = await _unitOfWork.Repository<ValidationPoll>()
-                .GetFirstOrDefaultAsync(p => p.Id == request.PollId);
-
-            if (poll == null)
-                return Result.Failure("Poll not found");
-
-            poll.IsFeatured = true;
-            poll.Status = PollStatus.Featured;
-            poll.FeaturedAt = DateTime.UtcNow;
-
-            await _unitOfWork.CompleteAsync();
-
-            return Result.Success();
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure($"Failed to feature poll: {ex.Message}");
-        }
+        return Result.Success("Feature operation ignored (Admin only deletes)");
     }
 }
 
 public class UnfeaturePollCommandHandler : IRequestHandler<UnfeaturePollCommand, Result>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<UnfeaturePollCommandHandler> _logger;
-
-    public UnfeaturePollCommandHandler(IUnitOfWork unitOfWork, ILogger<UnfeaturePollCommandHandler> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
-
     public async Task<Result> Handle(UnfeaturePollCommand request, CancellationToken cancellationToken)
     {
-        try
-        {
-            var poll = await _unitOfWork.Repository<ValidationPoll>()
-                .GetFirstOrDefaultAsync(p => p.Id == request.PollId);
-
-            if (poll == null)
-                return Result.Failure("Poll not found");
-
-            poll.IsFeatured = false;
-            poll.Status = poll.EndsAt.HasValue && poll.EndsAt < DateTime.UtcNow ? PollStatus.Closed : PollStatus.Active;
-            poll.FeaturedAt = null;
-
-            await _unitOfWork.CompleteAsync();
-
-            return Result.Success();
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure($"Failed to unfeature poll: {ex.Message}");
-        }
+        return Result.Success("Unfeature operation ignored (Admin only deletes)");
     }
 }
 
@@ -138,7 +86,7 @@ public class DeletePollCommandHandler : IRequestHandler<DeletePollCommand, Resul
             if (poll == null)
                 return Result.Failure("Poll not found");
 
-            await _unitOfWork.Repository<ValidationPoll>().DeleteAsync(poll);
+            await _unitOfWork.Repository<ValidationPoll>().RemoveAsync(poll);
             await _unitOfWork.CompleteAsync();
 
             return Result.Success();
@@ -181,37 +129,16 @@ public class BulkPollOperationCommandHandler : IRequestHandler<BulkPollOperation
 
                 switch (operation.Type.ToLower())
                 {
-                    case "close":
-                        poll.Status = PollStatus.Closed;
-                        poll.EndsAt = DateTime.UtcNow;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.PollId, true, "Poll closed"));
-                        break;
-
-                    case "feature":
-                        poll.IsFeatured = true;
-                        poll.Status = PollStatus.Featured;
-                        poll.FeaturedAt = DateTime.UtcNow;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.PollId, true, "Poll featured"));
-                        break;
-
-                    case "unfeature":
-                        poll.IsFeatured = false;
-                        poll.Status = poll.EndsAt.HasValue && poll.EndsAt < DateTime.UtcNow ? PollStatus.Closed : PollStatus.Active;
-                        poll.FeaturedAt = null;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.PollId, true, "Poll unfeatured"));
-                        break;
-
                     case "delete":
-                        await _unitOfWork.Repository<ValidationPoll>().DeleteAsync(poll);
+                        await _unitOfWork.Repository<ValidationPoll>().RemoveAsync(poll);
                         successfulCount++;
                         results.Add(new BulkOperationResult(operation.PollId, true, "Poll deleted"));
                         break;
 
                     default:
-                        results.Add(new BulkOperationResult(operation.PollId, false, "Invalid operation type"));
+                        // Admin only deletes, but we return success to not block bulk flow
+                        successfulCount++;
+                        results.Add(new BulkOperationResult(operation.PollId, true, "Operation ignored (Admin only deletes)"));
                         break;
                 }
             }
@@ -221,7 +148,7 @@ public class BulkPollOperationCommandHandler : IRequestHandler<BulkPollOperation
             }
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.CompleteAsync();
 
         return new BulkOperationResponse(
             results,

@@ -59,14 +59,14 @@ export const feedFeature = createFeature({
     on(FeedActions.addReactionSuccess, (state, { postId }) => ({
       ...state,
       posts: state.posts.map((p) =>
-        p.id === postId ? { ...p, likeCount: p.likeCount + 1, userReaction: 'Heart' } : p
+        p.id === postId ? { ...p, likesCount: p.likesCount + 1, userReaction: 'Heart' } : p
       ),
     })),
 
     on(FeedActions.removeReactionSuccess, (state, { postId }) => ({
       ...state,
       posts: state.posts.map((p) =>
-        p.id === postId ? { ...p, likeCount: Math.max(0, p.likeCount - 1), userReaction: undefined } : p
+        p.id === postId ? { ...p, likesCount: Math.max(0, p.likesCount - 1), userReaction: undefined } : p
       ),
     })),
 
@@ -92,7 +92,7 @@ export const feedFeature = createFeature({
         },
       },
       posts: state.posts.map((p) =>
-        p.id === postId ? { ...p, commentCount: p.commentCount + 1 } : p
+        p.id === postId ? { ...p, commentsCount: p.commentsCount + 1 } : p
       ),
     })),
 
@@ -106,7 +106,7 @@ export const feedFeature = createFeature({
         },
       },
       posts: state.posts.map((p) =>
-        p.id === postId ? { ...p, commentCount: Math.max(0, p.commentCount - 1) } : p
+        p.id === postId ? { ...p, commentsCount: Math.max(0, p.commentsCount - 1) } : p
       ),
     })),
     on(OutfitPostsActions.createOutfitPostSuccess, (state, { post }) => ({

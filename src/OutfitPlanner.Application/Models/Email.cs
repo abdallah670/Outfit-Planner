@@ -1,4 +1,4 @@
-﻿namespace OutfitPlanner.Application.Models
+namespace OutfitPlanner.Application.Models
 {
     public class Email
     {

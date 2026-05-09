@@ -12,7 +12,7 @@ export interface AdminUser {
 export interface AdminUserDetail extends AdminUser {
   outfitCount: number;
   postCount: number;
-  commentCount: number;
+  commentsCount: number;
   recentActivity: AuditLogEntry[];
 }
 
@@ -104,12 +104,22 @@ export interface AdminPostDto {
   id: string;
   userId: string;
   userName: string;
-  title: string;
-  content: string;
+  caption?: string;
   tags: string[];
   likesCount: number;
   commentsCount: number;
   createdAt: string;
+  postType: number;
+  outfitId?: string;
+  outfitName?: string;
+  outfitImageUrl?: string;
+  itemsImageUrls?: string[];
+  pollId?: string;
+  pollQuestion?: string;
+  pollOptions?: string[];
+  pollOptionVotes?: number[];
+  totalPollVotes?: number;
+  pollExpiresAt?: string;
   isApproved: boolean;
   status: string;
   approvedAt: string | null;
@@ -258,7 +268,7 @@ export interface UserDemographics {
 
 export interface ContentPerformanceData {
   id: string;
-  title: string;
+  name: string;
   type: string;
   views: number;
   likes: number;

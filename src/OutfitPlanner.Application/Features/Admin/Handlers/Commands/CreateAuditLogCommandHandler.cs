@@ -26,13 +26,13 @@ public class CreateAuditLogCommandHandler : IRequestHandler<CreateAuditLogComman
         var auditLog = new AuditLog
         {
             UserId = request.UserId,
-            UserName = request.UserName,
+            UserName = request.UserName ?? "System",
             Action = request.Action,
-            EntityType = request.EntityType,
-            EntityId = request.EntityId,
+            EntityType = request.EntityType ?? "Unknown",
+            EntityId = request.EntityId ?? string.Empty,
             OldValues = request.OldValues,
             NewValues = request.NewValues,
-            IpAddress = request.IpAddress,
+            IpAddress = request.IpAddress ?? string.Empty,
             Timestamp = DateTimeOffset.UtcNow
         };
         

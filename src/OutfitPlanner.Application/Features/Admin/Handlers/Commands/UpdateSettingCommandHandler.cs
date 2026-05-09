@@ -44,7 +44,7 @@ public class UpdateSettingCommandHandler : IRequestHandler<UpdateSettingCommand,
         await _mediator.Send(new CreateAuditLogCommand(
                 "UpdateSetting",
                 $"Updated setting {setting.Key} to {setting.Value}",
-                Guid.Empty
+                "System"
             ), cancellationToken);
         
         _logger.LogInformation("Setting {Key} updated from {OldValue} to {NewValue}", request.Key, oldValue, request.Value);

@@ -81,11 +81,11 @@
         <mat-card-actions class="post-actions">
           <button mat-button (click)="toggleReaction(post, $event)" [color]="post.userReaction ? 'warn' : ''">
             <mat-icon>{{ post.userReaction ? 'favorite' : 'favorite_border' }}</mat-icon>
-            {{ post.likeCount }}
+            {{ post.likesCount }}
           </button>
           <button mat-button (click)="toggleComments(post.id); $event.stopPropagation()">
             <mat-icon>chat_bubble_outline</mat-icon>
-            {{ post.commentCount }}
+            {{ post.commentsCount }}
           </button>
           <span class="spacer"></span>
           <button mat-icon-button>

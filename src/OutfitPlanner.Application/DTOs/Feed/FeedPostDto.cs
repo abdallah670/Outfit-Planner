@@ -17,8 +17,8 @@ public class FeedPostDto
     public ValidationPollDto? Poll { get; set; }
     public string? Caption { get; set; }
     public Visibility Visibility { get; set; }
-    public int LikeCount { get; set; }
-    public int CommentCount { get; set; }
+    public int LikesCount { get; set; }
+    public int CommentsCount { get; set; }
     public string? UserReaction { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

@@ -50,7 +50,7 @@ public enum StylePreference
 public enum PrivacyLevel
 {
     Private,
-    Follwers,
+    Followers,
     Public
 }
 
@@ -65,7 +65,8 @@ public enum PollStatus
 {
     Active,
     Closed,
-    Expired
+    Expired,
+    Featured
 }
 
 public enum OutfitStatus
@@ -113,9 +114,10 @@ public enum PostType{
     Poll,
     Outfit
 }
-public enum Visibility{
+public enum Visibility
+{
     Private,
-    Follwers,
+    Followers,
     Public  
 }
 public enum ReactionType{
@@ -133,3 +135,4 @@ public enum UserRole
     Admin,
     Planner
 }
+

@@ -12,8 +12,8 @@ public class TrendingOutfit : BaseEntity
     public ValidationPoll? Poll { get; set; }
     
     public int VoteCount { get; set; }
-    public int LikeCount { get; set; }
-    public int CommentCount { get; set; }
+    public int LikesCount { get; set; }
+    public int CommentsCount { get; set; }
     public int ReactionCount { get; set; }
     public decimal TrendingScore { get; set; }
     public int RankPosition { get; set; }

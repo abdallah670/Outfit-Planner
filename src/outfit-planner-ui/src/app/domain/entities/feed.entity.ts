@@ -23,9 +23,10 @@ export interface FeedPost {
   pollId?: string;
   poll?: Poll;
   caption?: string;
+  tags?: string[];
   visibility: Visibility;
-  likeCount: number;
-  commentCount: number;
+  likesCount: number;
+  commentsCount: number;
   userReaction?: string;
   createdAt: Date;
 }

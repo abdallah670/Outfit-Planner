@@ -19,11 +19,12 @@ public class FeedPost : BaseEntity
     public ValidationPoll? Poll { get; set; }
     
     public string? Caption { get; set; }
+    public List<string> Tags { get; set; } = new();
     
     public Visibility Visibility { get; set; } = Visibility.Public;
     
-    public int LikeCount { get; set; }
-    public int CommentCount { get; set; }
+    public int LikesCount { get; set; }
+    public int CommentsCount { get; set; }
     
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? UpdatedAt { get; set; }

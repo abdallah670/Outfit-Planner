@@ -10,7 +10,7 @@ public record AuditLogDto(
 
 public record AuditLogDetailDto(
     Guid Id,
-    string UserId,
+    Guid UserId,
     string UserName,
     string Action,
     string EntityType,
@@ -22,7 +22,7 @@ public record AuditLogDetailDto(
 );
 
 public record AuditLogFilterRequest(
-    string? UserId = null, 
+    Guid? UserId = null, 
     string? Action = null, 
     DateTimeOffset? StartDate = null, 
     DateTimeOffset? EndDate = null, 

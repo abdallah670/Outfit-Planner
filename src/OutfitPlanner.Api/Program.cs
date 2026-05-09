@@ -1,6 +1,7 @@
 using OutfitPlanner.Api.Middleware;
 using OutfitPlanner.Api.Converters;
 using OutfitPlanner.Infrastructure;
+using OutfitPlanner.Infrastructure.Services;
 using OutfitPlanner.Persistence.Data;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using System.Text.Json.Serialization;
 using Hangfire;
 using Hangfire.SqlServer;
-using OutfitPlanner.Infrastructure.Services;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()

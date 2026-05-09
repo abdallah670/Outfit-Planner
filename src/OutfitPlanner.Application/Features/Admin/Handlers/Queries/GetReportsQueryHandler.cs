@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.Features.Admin.DTOs;
@@ -22,8 +23,7 @@ public class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, Paginated
     public async Task<PaginatedResult<ContentReportDto>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
     {
         var query = _unitOfWork.Repository<ContentReport>()
-            .GetQueryable(include: r => r.Include(r => r.ReporterUser).Include(r => r.TargetUser))
-            .AsQueryable();
+            .GetQueryable();
         
         // Apply status filter
         if (request.Filter.Status.HasValue)
@@ -38,21 +38,22 @@ public class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, Paginated
         }
         
         var total = await query.CountAsync(cancellationToken);
-        var reports = await query
+        var reportsList = await query
             .OrderByDescending(r => r.CreatedAt)
             .Skip((request.Filter.Page - 1) * request.Filter.PageSize)
             .Take(request.Filter.PageSize)
-            .Select(r => new ContentReportDto(
+            .ToListAsync(cancellationToken);
+
+        var reportDtos = reportsList.Select(r => new ContentReportDto(
                 r.Id,
-                r.ReporterUser?.UserName,
-                r.TargetUserId,
+                r.ReporterUserName,
+                Guid.TryParse(r.TargetUserId, out var guid) ? guid : Guid.Empty,
                 r.ContentType,
                 r.Reason,
                 r.Status,
                 r.CreatedAt
-            ))
-            .ToListAsync(cancellationToken);
+            )).ToList();
         
-        return new PaginatedResult<ContentReportDto>(reports, total, request.Filter.Page, request.Filter.PageSize);
+        return new PaginatedResult<ContentReportDto>(reportDtos, total, request.Filter.Page, request.Filter.PageSize);
     }
 }
