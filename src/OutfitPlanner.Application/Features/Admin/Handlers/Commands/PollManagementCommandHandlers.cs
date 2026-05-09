@@ -49,22 +49,6 @@ public class ClosePollCommandHandler : IRequestHandler<ClosePollCommand, Result>
     }
 }
 
-public class FeaturePollCommandHandler : IRequestHandler<FeaturePollCommand, Result>
-{
-    public async Task<Result> Handle(FeaturePollCommand request, CancellationToken cancellationToken)
-    {
-        return Result.Success("Feature operation ignored (Admin only deletes)");
-    }
-}
-
-public class UnfeaturePollCommandHandler : IRequestHandler<UnfeaturePollCommand, Result>
-{
-    public async Task<Result> Handle(UnfeaturePollCommand request, CancellationToken cancellationToken)
-    {
-        return Result.Success("Unfeature operation ignored (Admin only deletes)");
-    }
-}
-
 public class DeletePollCommandHandler : IRequestHandler<DeletePollCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;

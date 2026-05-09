@@ -1,4 +1,4 @@
-namespace OutfitPlanner.Application.Features.Admin.DTOs;
+namespace OutfitPlanner.Application.DTOs.Admin;
 
 public record AuditLogDto(
     Guid Id, 
@@ -10,7 +10,7 @@ public record AuditLogDto(
 
 public record AuditLogDetailDto(
     Guid Id,
-    Guid UserId,
+    string UserId,
     string UserName,
     string Action,
     string EntityType,
@@ -22,7 +22,7 @@ public record AuditLogDetailDto(
 );
 
 public record AuditLogFilterRequest(
-    Guid? UserId = null, 
+    string? UserId = null, 
     string? Action = null, 
     DateTimeOffset? StartDate = null, 
     DateTimeOffset? EndDate = null, 
