@@ -13,7 +13,7 @@ public class TrendingOutfitDto
     public string UserName { get; set; } = string.Empty;
     public string? UserAvatar { get; set; }
     public int VoteCount { get; set; }
-    public int CommentCount { get; set; }
+    public int CommentsCount { get; set; }
     public double TrendingScore { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

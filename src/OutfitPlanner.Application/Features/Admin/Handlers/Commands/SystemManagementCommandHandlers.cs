@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.Features.Admin.Requests.Commands;
+using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application;
 using Result = OutfitPlanner.Application.Common.Result;
 
@@ -24,23 +25,16 @@ public class SetMaintenanceModeCommandHandler : IRequestHandler<SetMaintenanceMo
     {
         try
         {
-            // In a real implementation, this would update a system settings table
-            // or call a configuration service to set maintenance mode
-            
-            // For now, we'll log the action and return success
             var maintenanceLog = new AuditLog
             {
-                Id = Guid.NewGuid(),
                 UserId = "system",
                 UserName = "System",
                 Action = request.Enabled ? "EnableMaintenanceMode" : "DisableMaintenanceMode",
                 EntityType = "System",
                 EntityId = "maintenance",
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow,
                 IpAddress = "127.0.0.1",
-                UserAgent = "Admin Panel",
-                RequestData = $"{{ \"enabled\": {request.Enabled.ToString().ToLower()}, \"message\": \"{request.Message}\" }}",
-                Success = true
+                NewValues = $"{{ \"enabled\": {request.Enabled.ToString().ToLower()}, \"message\": \"{request.Message}\" }}"
             };
 
             await _unitOfWork.Repository<AuditLog>().AddAsync(maintenanceLog);
@@ -72,21 +66,12 @@ public class CreateBackupCommandHandler : IRequestHandler<CreateBackupCommand, B
         {
             var backupId = Guid.NewGuid();
             var fileName = $"backup_{DateTime.UtcNow:yyyyMMdd_HHmmss}_{command.Request.Type}.bak";
-            var createdAt = DateTime.UtcNow;
+            var createdAt = DateTimeOffset.UtcNow;
 
-            // In a real implementation, this would:
-            // 1. Create a database backup using the appropriate database provider
-            // 2. Store the backup file in a secure location
-            // 3. Update backup records in the database
-            // 4. Return the backup information
-
-            // For now, we'll simulate the backup process
             await Task.Delay(1000, cancellationToken); // Simulate backup time
 
-            // Log the backup action
             var backupLog = new AuditLog
             {
-                Id = Guid.NewGuid(),
                 UserId = "system",
                 UserName = "System",
                 Action = "CreateBackup",
@@ -94,15 +79,12 @@ public class CreateBackupCommandHandler : IRequestHandler<CreateBackupCommand, B
                 EntityId = backupId.ToString(),
                 Timestamp = createdAt,
                 IpAddress = "127.0.0.1",
-                UserAgent = "Admin Panel",
-                RequestData = $"{{ \"type\": \"{command.Request.Type}\", \"description\": \"{command.Request.Description}\" }}",
-                Success = true
+                NewValues = $"{{ \"type\": \"{command.Request.Type}\", \"description\": \"{command.Request.Description}\" }}"
             };
 
             await _unitOfWork.Repository<AuditLog>().AddAsync(backupLog);
             await _unitOfWork.CompleteAsync();
 
-            // Simulate backup size (would be actual file size)
             var backupSize = (long)(new Random().NextDouble() * 100 * 1024 * 1024); // 0-100MB
 
             return new BackupResult(
@@ -110,7 +92,7 @@ public class CreateBackupCommandHandler : IRequestHandler<CreateBackupCommand, B
                 backupId.ToString(),
                 fileName,
                 backupSize,
-                createdAt,
+                createdAt.DateTime,
                 "Backup created successfully"
             );
         }
@@ -143,29 +125,18 @@ public class RestartServiceCommandHandler : IRequestHandler<RestartServiceComman
     {
         try
         {
-            // In a real implementation, this would:
-            // 1. Validate the service name
-            // 2. Call the appropriate service management API
-            // 3. Monitor the restart process
-            // 4. Log the action
-
-            // For now, we'll simulate the restart process
             await Task.Delay(2000, cancellationToken); // Simulate restart time
 
-            // Log the restart action
             var restartLog = new AuditLog
             {
-                Id = Guid.NewGuid(),
                 UserId = "system",
                 UserName = "System",
                 Action = "RestartService",
                 EntityType = "Service",
                 EntityId = command.ServiceName,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow,
                 IpAddress = "127.0.0.1",
-                UserAgent = "Admin Panel",
-                RequestData = $"{{ \"serviceName\": \"{command.ServiceName}\" }}",
-                Success = true
+                NewValues = $"{{ \"serviceName\": \"{command.ServiceName}\" }}"
             };
 
             await _unitOfWork.Repository<AuditLog>().AddAsync(restartLog);
@@ -195,28 +166,18 @@ public class ClearCacheCommandHandler : IRequestHandler<ClearCacheCommand, Resul
     {
         try
         {
-            // In a real implementation, this would:
-            // 1. Connect to the cache service (Redis, MemoryCache, etc.)
-            // 2. Clear the specified cache key or all cache
-            // 3. Log the action
-
-            // For now, we'll simulate the cache clearing process
             await Task.Delay(500, cancellationToken); // Simulate cache clearing time
 
-            // Log the cache clearing action
             var cacheLog = new AuditLog
             {
-                Id = Guid.NewGuid(),
                 UserId = "system",
                 UserName = "System",
                 Action = "ClearCache",
                 EntityType = "Cache",
                 EntityId = command.CacheKey ?? "all",
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow,
                 IpAddress = "127.0.0.1",
-                UserAgent = "Admin Panel",
-                RequestData = $"{{ \"cacheKey\": \"{command.CacheKey ?? "all"}\" }}",
-                Success = true
+                NewValues = $"{{ \"cacheKey\": \"{command.CacheKey ?? "all"}\" }}"
             };
 
             await _unitOfWork.Repository<AuditLog>().AddAsync(cacheLog);

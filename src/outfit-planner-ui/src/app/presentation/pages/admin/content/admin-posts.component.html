@@ -70,8 +70,13 @@
           <th mat-header-cell *matHeaderCellDef> Title </th>
           <td mat-cell *matCellDef="let post"> 
             <div class="post-title">
-              <strong>{{post.title}}</strong>
-              <div class="post-content">{{post.content.substring(0, 150)}}...</div>
+              @if (post.postType === 0) {
+                <strong>{{post.caption || 'Untitled Outfit'}}</strong>
+                <div class="post-content">{{(post.caption || '').substring(0, 150)}}</div>
+              } @else {
+                <strong>{{post.pollQuestion || 'Poll Post'}}</strong>
+                <div class="post-content">Poll Options: {{post.pollOptions?.join(', ')}}</div>
+              }
               <div class="post-tags">
                 @for (tag of post.tags; track $index) {
                   <span class="tag">{{tag}}</span>

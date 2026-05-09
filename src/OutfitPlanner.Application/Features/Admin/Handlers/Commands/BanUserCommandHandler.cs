@@ -28,7 +28,7 @@ public class BanUserCommandHandler : IRequestHandler<BanUserCommand, Result>
 
     public async Task<Result> Handle(BanUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Repository<User>().GetFirstOrDefaultAsync(u => u.Id == request.UserId);
+        var user = await _unitOfWork.Repository<Domain.Entities.User>().GetFirstOrDefaultAsync(u => u.Id == request.UserId);
         if (user == null)
             return Result.Failure("User not found");
             
@@ -45,9 +45,10 @@ public class BanUserCommandHandler : IRequestHandler<BanUserCommand, Result>
         
         // Log audit
         await _mediator.Send(new CreateAuditLogCommand(
-            request.UserId,
-            user.UserName!,
             "User_Banned",
+            $"User banned. Reason: {request.Reason}",
+            request.UserId,
+            user.UserName,
             "User",
             request.UserId,
             null,

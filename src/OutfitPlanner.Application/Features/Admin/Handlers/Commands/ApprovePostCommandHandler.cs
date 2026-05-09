@@ -7,7 +7,7 @@ using OutfitPlanner.Application.Features.Admin.Requests.Commands;
 using OutfitPlanner.Application;
 using OutfitPlanner.Application.DTOs.Admin;
 using OutfitPlanner.Application.Responses;
-using OutfitPlanner.Application.Common.Result;
+using static OutfitPlanner.Application.Common.Result;
 using OutfitPlanner.Domain.Entities;
 using FeedPost = OutfitPlanner.Domain.Entities.FeedPost;
 using Outfit = OutfitPlanner.Domain.Entities.Outfit;
@@ -38,12 +38,7 @@ public class ApprovePostCommandHandler : IRequestHandler<ApprovePostCommand, Res
             if (post == null)
                 return Result.Failure("Post not found");
 
-            post.IsApproved = true;
-            post.Status = PostStatus.Approved;
-            post.ApprovedAt = DateTime.UtcNow;
-
-            await _unitOfWork.CompleteAsync();
-
+            // Admin only deletes posts now, approval is automatic
             return Result.Success();
         }
         catch (Exception ex)
@@ -74,12 +69,7 @@ public class RejectPostCommandHandler : IRequestHandler<RejectPostCommand, Resul
             if (post == null)
                 return Result.Failure("Post not found");
 
-            post.IsApproved = false;
-            post.Status = PostStatus.Rejected;
-            post.ApprovedAt = DateTime.UtcNow;
-
-            await _unitOfWork.SaveChangesAsync();
-
+            // Admin only deletes posts now
             return Result.Success();
         }
         catch (Exception ex)
@@ -153,26 +143,15 @@ public class BulkPostOperationCommandHandler : IRequestHandler<BulkPostOperation
 
                 switch (operation.Type.ToLower())
                 {
-                    case "approve":
-                        post.IsApproved = true;
-                        post.Status = PostStatus.Approved;
-                        post.ApprovedAt = DateTime.UtcNow;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.PostId, true, "Post approved"));
-                        break;
-
-                    case "reject":
-                        post.IsApproved = false;
-                        post.Status = PostStatus.Rejected;
-                        post.ApprovedAt = DateTime.UtcNow;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.PostId, true, "Post rejected"));
-                        break;
-
                     case "delete":
-                        await _unitOfWork.Repository<FeedPost>().DeleteAsync(post);
+                        await _unitOfWork.Repository<FeedPost>().RemoveAsync(post);
                         successfulCount++;
                         results.Add(new BulkOperationResult(operation.PostId, true, "Post deleted"));
+                        break;
+
+                    case "approve":
+                    case "reject":
+                        results.Add(new BulkOperationResult(operation.PostId, true, "Operation ignored (Admin only deletes)"));
                         break;
 
                     default:

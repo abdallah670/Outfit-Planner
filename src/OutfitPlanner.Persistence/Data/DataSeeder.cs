@@ -459,8 +459,8 @@ public class DataSeeder
                 OutfitId = outfit.Id,
                 Caption = outfitCaptions[i % outfitCaptions.Length],
                 Visibility = Visibility.Public,
-                LikeCount = random.Next(5, 50),
-                CommentCount = random.Next(0, 10),
+                LikesCount = random.Next(5, 50),
+                CommentsCount = random.Next(0, 10),
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 14))
             };
             feedPosts.Add(post);
@@ -481,9 +481,9 @@ public class DataSeeder
             }
 
             // Add some comments
-            var commentCount = random.Next(0, 4);
-            var commenters = users.OrderBy(x => random.Next()).Take(commentCount).ToList();
-            for (int c = 0; c < commentCount; c++)
+            var CommentsCount = random.Next(0, 4);
+            var commenters = users.OrderBy(x => random.Next()).Take(CommentsCount).ToList();
+            for (int c = 0; c < CommentsCount; c++)
             {
                 var commenter = commenters[c];
                 var comment = new PostComment
@@ -512,8 +512,8 @@ public class DataSeeder
                 PollId = poll.Id,
                 Caption = pollCaptions[i % pollCaptions.Length],
                 Visibility = Visibility.Public,
-                LikeCount = random.Next(3, 30),
-                CommentCount = random.Next(1, 8),
+                LikesCount = random.Next(3, 30),
+                CommentsCount = random.Next(1, 8),
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 10))
             };
             feedPosts.Add(post);
@@ -534,8 +534,8 @@ public class DataSeeder
             }
 
             // Add comments asking for votes
-            var commentCount = random.Next(1, 3);
-            for (int c = 0; c < commentCount; c++)
+            var CommentsCount = random.Next(1, 3);
+            for (int c = 0; c < CommentsCount; c++)
             {
                 var commenter = users[random.Next(users.Count)];
                 comments.Add(new PostComment
@@ -554,7 +554,7 @@ public class DataSeeder
         await _context.PostReactions.AddRangeAsync(reactions);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Seeded {Count} feed posts, {CommentCount} comments, {ReactionCount} reactions",
+        _logger.LogInformation("Seeded {Count} feed posts, {CommentsCount} comments, {ReactionCount} reactions",
             feedPosts.Count, comments.Count, reactions.Count);
     }
 

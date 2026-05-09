@@ -36,7 +36,7 @@ public class ResolveReportCommandHandler : IRequestHandler<ResolveReportCommand,
         report.Resolution = request.Resolution;
         report.ResolvedAt = DateTimeOffset.UtcNow;
         
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.CompleteAsync();
         
         // Take action if requested
         if (request.TakeAction)
@@ -46,11 +46,12 @@ public class ResolveReportCommandHandler : IRequestHandler<ResolveReportCommand,
         
         // Log audit
         await _mediator.Send(new CreateAuditLogCommand(
-            "",
-            "",
             "Report_Resolved",
+            $"Report {report.Id} resolved with action: {request.TakeAction}",
+            "System", // System action
+            "System",
             "ContentReport",
-            request.ReportId.ToString(),
+            report.Id.ToString(),
             oldValues,
             System.Text.Json.JsonSerializer.Serialize(report),
             ""
@@ -66,7 +67,7 @@ public class ResolveReportCommandHandler : IRequestHandler<ResolveReportCommand,
         {
             case ReportReason.Harassment:
             // Ban the user
-                await _mediator.Send(new BanUserCommand(report.TargetUserId, "Auto-banned due to harassment report", DateTimeOffset.UtcNow.AddDays(30)));
+                await _mediator.Send(new BanUserCommand(report.TargetUserId, "Auto-banned due to harassment report", DateTime.UtcNow.AddDays(30)));
                 break;
                 
             case ReportReason.InappropriateContent:
@@ -84,27 +85,30 @@ public class ResolveReportCommandHandler : IRequestHandler<ResolveReportCommand,
     
     private async Task DeleteContent(string contentType, string contentId, CancellationToken cancellationToken)
     {
+        var guid = Guid.TryParse(contentId, out var g) ? g : Guid.Empty;
+        if (guid == Guid.Empty) return;
+
         switch (contentType)
         {
             case "FeedPost":
-                var post = await _context.FeedPosts.FindAsync(contentId);
+                var post = await _unitOfWork.Repository<FeedPost>().GetFirstOrDefaultAsync(p => p.Id == guid);
                 if (post != null)
-                    _context.FeedPosts.Remove(post);
+                    await _unitOfWork.Repository<FeedPost>().RemoveAsync(post);
                 break;
                 
             case "Poll":
-                var poll = await _context.Polls.FindAsync(contentId);
+                var poll = await _unitOfWork.Repository<ValidationPoll>().GetFirstOrDefaultAsync(p => p.Id == guid);
                 if (poll != null)
-                    _context.Polls.Remove(poll);
+                    await _unitOfWork.Repository<ValidationPoll>().RemoveAsync(poll);
                 break;
                 
             case "Comment":
-                var comment = await _context.PostComments.FindAsync(contentId);
+                var comment = await _unitOfWork.Repository<PostComment>().GetFirstOrDefaultAsync(c => c.Id == guid);
                 if (comment != null)
-                    _context.PostComments.Remove(comment);
+                    await _unitOfWork.Repository<PostComment>().RemoveAsync(comment);
                 break;
         }
         
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.CompleteAsync();
     }
 }

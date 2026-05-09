@@ -90,9 +90,10 @@ public class CreatePollPostCommandHandler : IRequestHandler<CreatePollPostComman
                 PollId = poll.Id,
                 Poll = poll,
                 Caption = null,
+                Tags = request.Tags,
                 Visibility = request.Visibility,
-                LikeCount = 0,
-                CommentCount = 0,
+                LikesCount = 0,
+                CommentsCount = 0,
                 CreatedAt = DateTimeOffset.UtcNow
             };
 

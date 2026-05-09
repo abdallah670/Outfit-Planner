@@ -1,4 +1,4 @@
-﻿namespace OutfitPlanner.Application.Models.Identity
+namespace OutfitPlanner.Application.Models.Identity
 {
     public class RegistrationResponse
     {

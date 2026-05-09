@@ -230,7 +230,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
             .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.Outfit.User.ProfilePictureUrl))
             .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.VoteCount))
-            .ForMember(d => d.CommentCount, opt => opt.MapFrom(s => s.CommentCount))
+            .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.CommentsCount))
             .ForMember(d => d.TrendingScore, opt => opt.MapFrom(s => s.TrendingScore))
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.Date));
 

@@ -15,7 +15,7 @@ public record AdminUserDetailDto(
     AdminUserDto User, 
     int OutfitCount, 
     int PostCount, 
-    int CommentCount, 
+    int CommentsCount, 
     List<AuditLogDto> RecentActivity
 );
 
@@ -28,7 +28,7 @@ public record UserFilterRequest(
 );
 
 public record LockedAccountDto(
-    string UserId,
+    Guid UserId,
     string? UserName,
     string? Email,
     DateTimeOffset LockoutEnd,

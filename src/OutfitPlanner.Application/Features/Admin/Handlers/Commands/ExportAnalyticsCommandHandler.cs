@@ -3,11 +3,13 @@ using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
-using OutfitPlanner.Application.Common;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.DTOs.Admin;
 using OutfitPlanner.Application.Features.Admin.Requests.Commands;
+using OutfitPlanner.Application.Features.Admin.Requests.Queries;
+using OutfitPlanner.Application.Features.Admin.Handlers.Queries;
 using OutfitPlanner.Application;
-using Result = OutfitPlanner.Application.Common.Result;
+using static OutfitPlanner.Application.Common.Result;
 
 namespace OutfitPlanner.Application.Features.Admin.Handlers.Commands;
 
@@ -30,7 +32,8 @@ public class ExportAnalyticsCommandHandler : IRequestHandler<ExportAnalyticsComm
 
         // Get analytics data
         var analyticsQuery = new GetDetailedAnalyticsQuery(new AnalyticsFilterRequest(startDate, endDate));
-        var analyticsHandler = new GetDetailedAnalyticsQueryHandler(_unitOfWork);
+        var analyticsLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger<GetDetailedAnalyticsQueryHandler>.Instance;
+        var analyticsHandler = new GetDetailedAnalyticsQueryHandler(_unitOfWork, analyticsLogger);
         var analytics = await analyticsHandler.Handle(analyticsQuery, cancellationToken);
 
         byte[] fileContents;
@@ -55,7 +58,7 @@ public class ExportAnalyticsCommandHandler : IRequestHandler<ExportAnalyticsComm
         return new AnalyticsExportResult(fileName, contentType, fileContents);
     }
 
-    private (byte[] contents, string contentType, string fileName) ExportToCsv(DetailedAnalyticsDto analytics)
+    private (byte[] contents, string contentType, string fileName) ExportToCsv(OutfitPlanner.Application.DTOs.Admin.DetailedAnalyticsDto analytics)
     {
         var csv = new StringBuilder();
         
@@ -68,29 +71,24 @@ public class ExportAnalyticsCommandHandler : IRequestHandler<ExportAnalyticsComm
         csv.AppendLine($"Users,New Users,{analytics.UserMetrics.NewUsers},{analytics.UserMetrics.UserGrowthRate:F2}");
         
         // Content metrics
-        csv.AppendLine($"Content,Total Outfits,{analytics.ContentStats.TotalOutfits},0");
-        csv.AppendLine($"Content,Total Posts,{analytics.ContentStats.TotalPosts},0");
-        csv.AppendLine($"Content,Total Polls,{analytics.ContentStats.TotalPolls},0");
-        csv.AppendLine($"Content,Total Likes,{analytics.ContentStats.TotalLikes},0");
-        csv.AppendLine($"Content,Engagement Rate,{analytics.ContentStats.EngagementRate:F2},0");
+        csv.AppendLine($"Content,Total Outfits,{analytics.ContentMetrics.TotalOutfits},0");
+        csv.AppendLine($"Content,Total Posts,{analytics.ContentMetrics.TotalPosts},0");
+        csv.AppendLine($"Content,Total Polls,{analytics.ContentMetrics.TotalPolls},0");
+        csv.AppendLine($"Content,Total Likes,{analytics.ContentMetrics.TotalLikes},0");
         
-        // System metrics
-        csv.AppendLine($"System,CPU Usage,{analytics.SystemStats.CpuUsage:F2},0");
-        csv.AppendLine($"System,Memory Usage,{analytics.SystemStats.MemoryUsage},0");
-        csv.AppendLine($"System,Response Time,{analytics.SystemStats.ResponseTime:F2},0");
 
         var contents = Encoding.UTF8.GetBytes(csv.ToString());
         return (contents, "text/csv", $"analytics_{DateTime.UtcNow:yyyyMMdd}.csv");
     }
 
-    private (byte[] contents, string contentType, string fileName) ExportToJson(DetailedAnalyticsDto analytics)
+    private (byte[] contents, string contentType, string fileName) ExportToJson(OutfitPlanner.Application.DTOs.Admin.DetailedAnalyticsDto analytics)
     {
         var json = JsonSerializer.Serialize(analytics, new JsonSerializerOptions { WriteIndented = true });
         var contents = Encoding.UTF8.GetBytes(json);
         return (contents, "application/json", $"analytics_{DateTime.UtcNow:yyyyMMdd}.json");
     }
 
-    private (byte[] contents, string contentType, string fileName) ExportToPdf(DetailedAnalyticsDto analytics)
+    private (byte[] contents, string contentType, string fileName) ExportToPdf(OutfitPlanner.Application.DTOs.Admin.DetailedAnalyticsDto analytics)
     {
         // For PDF export, you would typically use a library like iTextSharp or PdfSharp
         // For now, we'll create a simple text-based representation
@@ -108,17 +106,11 @@ public class ExportAnalyticsCommandHandler : IRequestHandler<ExportAnalyticsComm
         pdfContent.AppendLine();
         
         pdfContent.AppendLine("Content Metrics");
-        pdfContent.AppendLine($"Total Outfits: {analytics.ContentStats.TotalOutfits}");
-        pdfContent.AppendLine($"Total Posts: {analytics.ContentStats.TotalPosts}");
-        pdfContent.AppendLine($"Total Polls: {analytics.ContentStats.TotalPolls}");
-        pdfContent.AppendLine($"Total Likes: {analytics.ContentStats.TotalLikes}");
-        pdfContent.AppendLine($"Engagement Rate: {analytics.ContentStats.EngagementRate:F2}%");
-        pdfContent.AppendLine();
-        
-        pdfContent.AppendLine("System Performance");
-        pdfContent.AppendLine($"CPU Usage: {analytics.SystemStats.CpuUsage:F2}%");
-        pdfContent.AppendLine($"Memory Usage: {analytics.SystemStats.MemoryUsage / 1024 / 1024}MB");
-        pdfContent.AppendLine($"Response Time: {analytics.SystemStats.ResponseTime:F2}ms");
+        pdfContent.AppendLine($"Total Outfits: {analytics.ContentMetrics.TotalOutfits}");
+        pdfContent.AppendLine($"Total Posts: {analytics.ContentMetrics.TotalPosts}");
+        pdfContent.AppendLine($"Total Polls: {analytics.ContentMetrics.TotalPolls}");
+        pdfContent.AppendLine($"Total Likes: {analytics.ContentMetrics.TotalLikes}");
+        pdfContent.AppendLine($"Engagement Rate: {analytics.ContentMetrics.EngagementRate:F2}%");
 
         var contents = Encoding.UTF8.GetBytes(pdfContent.ToString());
         return (contents, "text/plain", $"analytics_{DateTime.UtcNow:yyyyMMdd}.txt");

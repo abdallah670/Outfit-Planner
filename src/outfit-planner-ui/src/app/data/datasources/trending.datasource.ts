@@ -13,7 +13,7 @@ interface TrendingOutfitDto {
   userName: string;
   userAvatar?: string;
   voteCount: number;
-  commentCount: number;
+  commentsCount: number;
   trendingScore: number;
   createdAt: string;
 }
@@ -45,7 +45,7 @@ export class TrendingDataSource {
       userAvatar: dto.userAvatar || 'assets/default-avatar.png',
       imageUrl: dto.imageUrl || 'assets/placeholder.png',
       likes: dto.voteCount,
-      comments: dto.commentCount,
+      comments: dto.commentsCount,
       occasion: 'Trending',
       trendingScore: dto.trendingScore,
       voteId: '', // Legacy field for mapping compatibility

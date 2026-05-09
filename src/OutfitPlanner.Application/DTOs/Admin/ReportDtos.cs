@@ -5,7 +5,7 @@ namespace OutfitPlanner.Application.Features.Admin.DTOs;
 public record ContentReportDto(
     Guid Id, 
     string? ReporterUserName, 
-    string TargetUserId, 
+    Guid TargetUserId, 
     string ContentType, 
     ReportReason Reason, 
     ReportStatus Status, 

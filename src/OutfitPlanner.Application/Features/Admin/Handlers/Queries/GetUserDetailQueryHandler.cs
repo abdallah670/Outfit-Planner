@@ -1,12 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.DTOs.Admin;
 using OutfitPlanner.Application.Features.Admin.DTOs;
 using OutfitPlanner.Application.Features.Admin.Requests.Queries;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application;
-
 
 namespace OutfitPlanner.Application.Features.Admin.Handlers.Queries;
 
@@ -30,19 +31,21 @@ public class GetUserDetailQueryHandler : IRequestHandler<GetUserDetailQuery, Adm
             throw new Exception("User not found");
             
         var roles = await _userManager.GetRolesAsync(user);
+        var claims = await _userManager.GetClaimsAsync(user);
         var isLocked = user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.UtcNow;
-        var isBanned = user.Claims.Any(c => c.Type == "Banned" && c.Value == "true");
+        var isBanned = claims.Any(c => c.Type == "Banned" && c.Value == "true");
         
         // Get user statistics
         var outfitCount = await _unitOfWork.Repository<Outfit>()
             .CountAsync(o => o.UserId == request.UserId, cancellationToken);
         var postCount = await _unitOfWork.Repository<FeedPost>()
             .CountAsync(p => p.UserId == request.UserId, cancellationToken);
-        var commentCount = await _unitOfWork.Repository<PostComment>()
+        var CommentsCount = await _unitOfWork.Repository<PostComment>()
             .CountAsync(c => c.UserId == request.UserId, cancellationToken);
             
         // Get recent activity (last 10 audit logs)
         var recentActivity = await _unitOfWork.Repository<AuditLog>()
+            .GetQueryable()
             .Where(a => a.UserId == request.UserId)
             .OrderByDescending(a => a.Timestamp)
             .Take(10)
@@ -64,7 +67,7 @@ public class GetUserDetailQueryHandler : IRequestHandler<GetUserDetailQuery, Adm
             adminUserDto,
             outfitCount,
             postCount,
-            commentCount,
+            CommentsCount,
             recentActivity
         );
     }

@@ -1,154 +1,17 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.DTOs.Admin;
 using OutfitPlanner.Application.Features.Admin.Requests.Commands;
 using OutfitPlanner.Application;
-using Result = OutfitPlanner.Application.Common.Result;
+using static OutfitPlanner.Application.Common.Result;
+using OutfitPlanner.Domain.Entities;
+using Outfit = OutfitPlanner.Domain.Entities.Outfit;
 
 namespace OutfitPlanner.Application.Features.Admin.Handlers.Commands;
 
-
-public class FeatureOutfitCommandHandler : IRequestHandler<FeatureOutfitCommand, Result>
-{
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<FeatureOutfitCommandHandler> _logger;
-
-    public FeatureOutfitCommandHandler(IUnitOfWork unitOfWork, ILogger<FeatureOutfitCommandHandler> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
-
-    public async Task<Result> Handle(FeatureOutfitCommand request, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var outfit = await _unitOfWork.Repository<Outfit>()
-                .GetFirstOrDefaultAsync(o => o.Id == request.OutfitId);
-
-            if (outfit == null)
-                return Result.Failure("Outfit not found");
-
-            outfit.IsFeatured = true;
-            outfit.FeaturedAt = DateTime.UtcNow;
-
-            await _unitOfWork.CompleteAsync();
-
-            return Result.Success();
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure($"Failed to feature outfit: {ex.Message}");
-        }
-    }
-}
-
-public class UnfeatureOutfitCommandHandler : IRequestHandler<UnfeatureOutfitCommand, Result>
-{
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<UnfeatureOutfitCommandHandler> _logger;
-
-    public UnfeatureOutfitCommandHandler(IUnitOfWork unitOfWork, ILogger<UnfeatureOutfitCommandHandler> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
-
-    public async Task<Result> Handle(UnfeatureOutfitCommand request, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var outfit = await _unitOfWork.Repository<Outfit>()
-                .GetFirstOrDefaultAsync(o => o.Id == request.OutfitId);
-
-            if (outfit == null)
-                return Result.Failure("Outfit not found");
-
-            outfit.IsFeatured = false;
-            outfit.FeaturedAt = null;
-
-            await _unitOfWork.CompleteAsync();
-
-            return Result.Success();
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure($"Failed to unfeature outfit: {ex.Message}");
-        }
-    }
-}
-
-public class ApproveOutfitCommandHandler : IRequestHandler<ApproveOutfitCommand, Result>
-{
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<ApproveOutfitCommandHandler> _logger;
-
-    public ApproveOutfitCommandHandler(IUnitOfWork unitOfWork, ILogger<ApproveOutfitCommandHandler> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
-
-    public async Task<Result> Handle(ApproveOutfitCommand request, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var outfit = await _unitOfWork.Repository<Outfit>()
-                .GetFirstOrDefaultAsync(o => o.Id == request.OutfitId);
-
-            if (outfit == null)
-                return Result.Failure("Outfit not found");
-
-            outfit.IsApproved = true;
-            outfit.ApprovedAt = DateTime.UtcNow;
-
-            await _unitOfWork.CompleteAsync();
-
-            return Result.Success();
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure($"Failed to approve outfit: {ex.Message}");
-        }
-    }
-}
-
-public class RejectOutfitCommandHandler : IRequestHandler<RejectOutfitCommand, Result>
-{
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<RejectOutfitCommandHandler> _logger;
-
-    public RejectOutfitCommandHandler(IUnitOfWork unitOfWork, ILogger<RejectOutfitCommandHandler> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
-
-    public async Task<Result> Handle(RejectOutfitCommand request, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var outfit = await _unitOfWork.Repository<Outfit>()
-                .GetFirstOrDefaultAsync(o => o.Id == request.OutfitId);
-
-            if (outfit == null)
-                return Result.Failure("Outfit not found");
-
-            outfit.IsApproved = false;
-            outfit.ApprovedAt = DateTime.UtcNow;
-
-            await _unitOfWork.CompleteAsync();
-
-            return Result.Success();
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure($"Failed to reject outfit: {ex.Message}");
-        }
-    }
-}
 
 public class DeleteOutfitCommandHandler : IRequestHandler<DeleteOutfitCommand, Result>
 {
@@ -166,12 +29,12 @@ public class DeleteOutfitCommandHandler : IRequestHandler<DeleteOutfitCommand, R
         try
         {
             var outfit = await _unitOfWork.Repository<Outfit>()
-                .GetFirstOrDefaultAsync(o => o.Id == request.OutfitId, include: o => o.Include(o => o.OutfitImages));
+                .GetFirstOrDefaultAsync(o => o.Id == request.OutfitId, include: o => o.Include(o => o.Items));
 
             if (outfit == null)
                 return Result.Failure("Outfit not found");
 
-            await _unitOfWork.Repository<Outfit>().DeleteAsync(outfit);
+            await _unitOfWork.Repository<Outfit>().RemoveAsync(outfit);
             await _unitOfWork.CompleteAsync();
 
             return Result.Success();
@@ -203,8 +66,8 @@ public class BulkOutfitOperationCommandHandler : IRequestHandler<BulkOutfitOpera
         {
             try
             {
-                var outfit = await _context.Outfits
-                    .FirstOrDefaultAsync(o => o.Id == operation.OutfitId, cancellationToken);
+                var outfit = await _unitOfWork.Repository<Outfit>()
+                    .GetFirstOrDefaultAsync(o => o.Id == operation.OutfitId);
 
                 if (outfit == null)
                 {
@@ -214,38 +77,18 @@ public class BulkOutfitOperationCommandHandler : IRequestHandler<BulkOutfitOpera
 
                 switch (operation.Type.ToLower())
                 {
-                    case "feature":
-                        outfit.IsFeatured = true;
-                        outfit.FeaturedAt = DateTime.UtcNow;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.OutfitId, true, "Outfit featured"));
-                        break;
-
-                    case "unfeature":
-                        outfit.IsFeatured = false;
-                        outfit.FeaturedAt = null;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.OutfitId, true, "Outfit unfeatured"));
-                        break;
-
-                    case "approve":
-                        outfit.IsApproved = true;
-                        outfit.ApprovedAt = DateTime.UtcNow;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.OutfitId, true, "Outfit approved"));
-                        break;
-
-                    case "reject":
-                        outfit.IsApproved = false;
-                        outfit.ApprovedAt = DateTime.UtcNow;
-                        successfulCount++;
-                        results.Add(new BulkOperationResult(operation.OutfitId, true, "Outfit rejected"));
-                        break;
-
                     case "delete":
-                        await _unitOfWork.Repository<Outfit>().DeleteAsync(outfit);
+                        await _unitOfWork.Repository<Outfit>().RemoveAsync(outfit);
                         successfulCount++;
                         results.Add(new BulkOperationResult(operation.OutfitId, true, "Outfit deleted"));
+                        break;
+
+                    case "feature":
+                    case "unfeature":
+                    case "approve":
+                    case "reject":
+                        successfulCount++;
+                        results.Add(new BulkOperationResult(operation.OutfitId, true, "Operation ignored (Admin only deletes)"));
                         break;
 
                     default:
@@ -259,7 +102,7 @@ public class BulkOutfitOperationCommandHandler : IRequestHandler<BulkOutfitOpera
             }
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.CompleteAsync();
 
         return new BulkOperationResponse(
             results,

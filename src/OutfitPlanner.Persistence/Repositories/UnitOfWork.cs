@@ -89,7 +89,12 @@ public class UnitOfWork : IUnitOfWork
         ContentReports = contentReports;
     }
 
+
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.SaveChangesAsync(cancellationToken);
+    }
+    public async Task<int> CompleteAsync(CancellationToken cancellationToken = default)
     {
         return await _context.SaveChangesAsync(cancellationToken);
     }

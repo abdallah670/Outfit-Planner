@@ -29,7 +29,7 @@ public interface IUnitOfWork : IDisposable
     ISystemSettingRepository SystemSettings { get; }
     IContentReportRepository ContentReports { get; }
    
-
+    Task<int> CompleteAsync(CancellationToken cancellationToken = default);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class;
     /// <summary>

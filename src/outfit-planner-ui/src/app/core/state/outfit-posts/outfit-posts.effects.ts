@@ -29,8 +29,8 @@ export class OutfitPostsEffects {
               outfitId: action.outfitId,
               caption: action.caption,
               visibility: action.visibility,
-              likeCount: 0,
-              commentCount: 0,
+              likesCount: 0,
+              commentsCount: 0,
               createdAt: new Date(),
             };
             return OutfitPostsActions.createOutfitPostSuccess({ post: newPost });

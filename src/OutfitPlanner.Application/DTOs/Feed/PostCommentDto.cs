@@ -13,7 +13,7 @@ public class PostCommentDto
     public string UserAvatarUrl { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public Guid? ParentCommentId { get; set; }
-    public int LikeCount { get; set; }
+    public int LikesCount { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public List<PostCommentDto> Replies { get; set; } = new();
 }

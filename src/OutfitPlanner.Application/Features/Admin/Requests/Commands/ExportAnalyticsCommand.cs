@@ -12,9 +12,3 @@ public record AnalyticsExportResult(
     byte[] FileContents
 );
 
-public record RealtimeAnalyticsDto(
-    UserEngagementMetrics UserMetrics,
-    ContentMetrics ContentStats,
-    SystemPerformanceMetrics SystemStats,
-    DateTime LastUpdated
-);
