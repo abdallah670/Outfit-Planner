@@ -88,6 +88,14 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Add Application Services
 builder.Services.AddApplication(builder.Configuration);
 
+// Add role-based authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("AdminOrPlanner", policy => policy.RequireRole("Admin", "Planner"));
+    options.AddPolicy("PlannerOnly", policy => policy.RequireRole("Planner"));
+});
+
 // Add Memory Cache for search results
 builder.Services.AddMemoryCache();
 
@@ -201,6 +209,12 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Add user activity tracking middleware
+app.UseMiddleware<UserActivityMiddleware>();
+
+// Add audit logging middleware
+app.UseMiddleware<AuditLogMiddleware>();
 
 // Hangfire Dashboard - accessible at /hangfire
 app.UseHangfireDashboard("/hangfire", new DashboardOptions

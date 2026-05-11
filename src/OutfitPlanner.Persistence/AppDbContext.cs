@@ -30,6 +30,7 @@ public class AppDbContext : IdentityDbContext<User>
     public DbSet<PostReaction> PostReactions { get; set; }
     public DbSet<PostComment> PostComments { get; set; }
     public DbSet<Follow> Follows { get; set; }
+    public DbSet<UserActivity> UserActivities { get; set; }
     
     // Admin entities
     public DbSet<AuditLog> AuditLogs { get; set; }

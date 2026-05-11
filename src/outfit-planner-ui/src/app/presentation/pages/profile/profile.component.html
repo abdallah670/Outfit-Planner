@@ -6,13 +6,14 @@
     <p>Loading profile...</p>
   </div>
 
-  <!-- Error State -->
-  <div *ngIf="error$ | async as error" class="error-message">
-    <span>{{ error }}</span>
-    <button class="btn-icon" (click)="clearError()" aria-label="Dismiss error">✕</button>
-  </div>
-   <ng-template #ownProfileTpl>
-     <ng-container *ngIf="profile$ | async as profile">
+   <!-- Error State -->
+   <div *ngIf="error$ | async as error" class="error-message">
+     <span>{{ error }}</span>
+     <button class="btn-icon" (click)="clearError()" aria-label="Dismiss error">✕</button>
+   </div>
+
+   <!-- Profile Content -->
+   <ng-container *ngIf="profile$ | async as profile; else noProfile">
     <div class="profile-header">
       <div class="profile-info">
         <div class="avatar-container">
@@ -152,11 +153,11 @@
           </div>
 
           <!-- Accepts Trends -->
-          <div class="profile-section" *ngIf="$any(profile).styleProfile?.acceptsTrends !== undefined">
+          <div class="profile-section" *ngIf="$any(profile).styleProfile && $any(profile).styleProfile?.acceptsTrends !== undefined">
             <label>Trends</label>
             <div class="tag-list">
-              <span class="tag" [class.active]="$any(profile).styleProfile.acceptsTrends">
-                {{ $any(profile).styleProfile.acceptsTrends ? 'Accepts Trends' : 'Classic Only' }}
+              <span class="tag" [class.active]="$any(profile).styleProfile?.acceptsTrends">
+                {{ $any(profile).styleProfile?.acceptsTrends ? 'Accepts Trends' : 'Classic Only' }}
               </span>
             </div>
           </div>
@@ -420,8 +421,19 @@
       <button class="logout-btn" (click)="onLogout()">Log Out</button>
       <a href="javascript:void(0)" class="delete-account" (click)="confirmDeleteAccount()"
         >Delete Account</a
-      >
-     </div>
-   </ng-container>
-   </ng-template>
- </main>
+       >
+      </div>
+  </ng-container>
+
+  <!-- No Profile Template -->
+  <ng-template #noProfile>
+    <div *ngIf="!(loading$ | async) && !(error$ | async)" class="empty-state">
+      <h3>No profile found</h3>
+      <p>Please try reloading the page.</p>
+      <button class="reload-btn" (click)="reloadProfile()">
+        Reload Profile
+      </button>
+    </div>
+  </ng-template>
+  </main>
+<!-- End of Main Content -->

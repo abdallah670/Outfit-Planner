@@ -1,9 +1,14 @@
 
 import { Outfit } from './outfit.entity';
 import { Poll } from './poll.entity';
+/**
+ * IMPORTANT: These values must match the C# backend PostType enum:
+ * - Poll = 0 (C# first item default)
+ * - Outfit = 1 (C# second item default)
+ */
 export enum PostType {
-  OutfitPost = 0,
-  PollPost = 1,
+  PollPost = 0,
+  OutfitPost = 1,
 }
 
 export enum Visibility {

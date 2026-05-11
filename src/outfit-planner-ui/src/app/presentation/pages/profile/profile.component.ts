@@ -448,4 +448,7 @@ export class ProfileComponent implements OnInit {
      window.history.back();
    }
 
+   reloadProfile(): void {
+     this.store.dispatch(UserActions.loadProfile());
+   }
 }

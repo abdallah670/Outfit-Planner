@@ -13,9 +13,6 @@ public class OutfitConfiguration : IEntityTypeConfiguration<Outfit>
         builder.Property(o => o.Occasion)
             .HasConversion<string>(); // Store enum as string
 
-        builder.Property(o => o.Status)
-            .HasConversion<string>();
-
         builder.HasMany(o => o.Items)
             .WithOne(i => i.Outfit)
             .HasForeignKey(i => i.OutfitId)

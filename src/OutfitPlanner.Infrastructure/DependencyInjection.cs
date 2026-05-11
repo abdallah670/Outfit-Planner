@@ -64,6 +64,14 @@ public static class DependencyInjection
         // Register Account Unlock Background Job
         services.AddScoped<AccountUnlockBackgroundJob>();
 
+        // Register Infrastructure Services
+        services.AddHealthChecks();
+        services.AddScoped<IBackupService, BackupService>();
+        services.AddScoped<ICacheManagementService, CacheManagementService>();
+        services.AddScoped<IMaintenanceService, MaintenanceService>();
+        services.AddScoped<IServiceManagementService, ServiceManagementService>();
+        services.AddScoped<IUserActivityService, UserActivityService>();
+
         return services;
     }
 }

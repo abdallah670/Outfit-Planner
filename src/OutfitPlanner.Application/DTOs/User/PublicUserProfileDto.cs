@@ -10,6 +10,7 @@ public class PublicUserProfileDto
 {
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("username")]
     public string UserName { get; set; } = string.Empty; // Handle (@username)
     public string? ProfilePictureUrl { get; set; }
     public string? Bio { get; set; }

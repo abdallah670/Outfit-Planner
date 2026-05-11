@@ -42,6 +42,7 @@ public class FeedPostConfiguration : IEntityTypeConfiguration<FeedPost>
         builder.HasIndex(x => x.UserId);
         builder.HasIndex(x => x.CreatedAt);
         builder.HasIndex(x => x.LikesCount);
+        builder.HasIndex(x => x.CommentsCount);
     }
 }
 

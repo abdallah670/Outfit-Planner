@@ -103,7 +103,7 @@ public class GetDetailedAnalyticsQueryHandler : IRequestHandler<GetDetailedAnaly
             .Take(5)
             .Select(p => new ContentPerformanceData(
                 p.Id,
-                p.Caption,
+                p.Caption ?? "",
                 "Post",
                 0,
                 p.LikesCount,

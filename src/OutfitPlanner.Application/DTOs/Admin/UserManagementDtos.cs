@@ -1,4 +1,5 @@
-namespace OutfitPlanner.Application.Features.Admin.DTOs;
+
+namespace OutfitPlanner.Application.DTOs.Admin;
 
 public record AdminUserDto(
     string Id, 

@@ -1,11 +1,11 @@
 using OutfitPlanner.Domain.Entities;
 
-namespace OutfitPlanner.Application.Features.Admin.DTOs;
+namespace OutfitPlanner.Application.DTOs.Admin;
 
 public record ContentReportDto(
     Guid Id, 
     string? ReporterUserName, 
-    Guid TargetUserId, 
+    string TargetUserId, 
     string ContentType, 
     ReportReason Reason, 
     ReportStatus Status, 

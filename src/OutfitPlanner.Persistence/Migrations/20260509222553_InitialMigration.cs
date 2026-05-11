@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OutfitPlanner.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,10 +52,16 @@ namespace OutfitPlanner.Persistence.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastLogin = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshTokenExpiration = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EmailVerificationToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailVerificationTokenExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PasswordResetToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordResetTokenExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -74,6 +80,50 @@ namespace OutfitPlanner.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuditLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EntityType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EntityId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OldValues = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewValues = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditLogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContentReports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReporterId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReporterUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TargetUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContentId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reason = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ResolvedById = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResolvedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    Resolution = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContentReports", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -112,6 +162,43 @@ namespace OutfitPlanner.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NotificationSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemSettings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Key = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsEditable = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserActivities",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserAgent = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AdditionalData = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserActivities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -274,12 +361,14 @@ namespace OutfitPlanner.Persistence.Migrations
                         name: "FK_Follows_AspNetUsers_FollowerId",
                         column: x => x.FollowerId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Follows_AspNetUsers_FollowingId",
                         column: x => x.FollowingId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -293,11 +382,11 @@ namespace OutfitPlanner.Persistence.Migrations
                     WeatherCondition = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Season = table.Column<int>(type: "int", nullable: false),
                     ComfortRating = table.Column<int>(type: "int", nullable: true),
-                    StyleRating = table.Column<int>(type: "int", nullable: true),
                     LastWorn = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     TimesWorn = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LikesCount = table.Column<int>(type: "int", nullable: false),
+                    CommentsCount = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
@@ -370,6 +459,7 @@ namespace OutfitPlanner.Persistence.Migrations
                     Context = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalVotes = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
@@ -503,6 +593,7 @@ namespace OutfitPlanner.Persistence.Migrations
                     OutfitId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     PollId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Caption = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Visibility = table.Column<int>(type: "int", nullable: false),
                     LikesCount = table.Column<int>(type: "int", nullable: false),
                     CommentsCount = table.Column<int>(type: "int", nullable: false),
@@ -516,7 +607,8 @@ namespace OutfitPlanner.Persistence.Migrations
                         name: "FK_FeedPosts_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FeedPosts_Outfits_OutfitId",
                         column: x => x.OutfitId,
@@ -566,7 +658,6 @@ namespace OutfitPlanner.Persistence.Migrations
                     VoteCount = table.Column<int>(type: "int", nullable: false),
                     LikesCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CommentsCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    ReactionCount = table.Column<int>(type: "int", nullable: false),
                     TrendingScore = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     RankPosition = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -643,7 +734,8 @@ namespace OutfitPlanner.Persistence.Migrations
                         name: "FK_PostComments_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_PostComments_FeedPosts_PostId",
                         column: x => x.PostId,
@@ -675,7 +767,8 @@ namespace OutfitPlanner.Persistence.Migrations
                         name: "FK_PostReactions_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_PostReactions_FeedPosts_PostId",
                         column: x => x.PostId,
@@ -802,12 +895,17 @@ namespace OutfitPlanner.Persistence.Migrations
                 column: "ClothingItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FeedPosts_CommentsCount",
+                table: "FeedPosts",
+                column: "CommentsCount");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FeedPosts_CreatedAt",
                 table: "FeedPosts",
                 column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FeedPosts_LikeCount",
+                name: "IX_FeedPosts_LikesCount",
                 table: "FeedPosts",
                 column: "LikesCount");
 
@@ -1011,10 +1109,16 @@ namespace OutfitPlanner.Persistence.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "AuditLogs");
+
+            migrationBuilder.DropTable(
                 name: "CalendarEvents");
 
             migrationBuilder.DropTable(
                 name: "ClothingTags");
+
+            migrationBuilder.DropTable(
+                name: "ContentReports");
 
             migrationBuilder.DropTable(
                 name: "Follows");
@@ -1038,7 +1142,13 @@ namespace OutfitPlanner.Persistence.Migrations
                 name: "StyleRules");
 
             migrationBuilder.DropTable(
+                name: "SystemSettings");
+
+            migrationBuilder.DropTable(
                 name: "TrendingOutfits");
+
+            migrationBuilder.DropTable(
+                name: "UserActivities");
 
             migrationBuilder.DropTable(
                 name: "UserPreferences");

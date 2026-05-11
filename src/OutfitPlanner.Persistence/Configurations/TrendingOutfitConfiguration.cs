@@ -26,9 +26,7 @@ public class TrendingOutfitConfiguration : IEntityTypeConfiguration<TrendingOutf
         builder.Property(x => x.CommentsCount)
             .IsRequired()
             .HasDefaultValue(0);
-        
-        builder.Property(x => x.ReactionCount)
-            .IsRequired();
+      
         
         builder.Property(x => x.RankPosition)
             .IsRequired();

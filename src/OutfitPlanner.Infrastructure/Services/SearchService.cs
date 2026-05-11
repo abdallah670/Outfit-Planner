@@ -67,7 +67,7 @@ public class SearchService : ISearchService
         // Use compiled query for better performance
         var outfitQuery = _context.Outfits
             .AsNoTracking()
-            .Where(o => o.UserId == userId && o.Status != OutfitStatus.Deleted)
+            .Where(o => o.UserId == userId)
             .AsQueryable();
 
         // Apply text search (only if query provided)
@@ -333,7 +333,7 @@ public class SearchService : ISearchService
             // Occasion facets
             var occasions = await _context.Outfits
                 .AsNoTracking()
-                .Where(o => o.UserId == userId && o.Status != OutfitStatus.Deleted)
+                .Where(o => o.UserId == userId)
                 .GroupBy(o => o.Occasion)
                 .Select(g => new { Occasion = g.Key, Count = g.Count() })
                 .ToListAsync(cancellationToken);
@@ -346,7 +346,7 @@ public class SearchService : ISearchService
             // Season facets
             var seasons = await _context.Outfits
                 .AsNoTracking()
-                .Where(o => o.UserId == userId && o.Status != OutfitStatus.Deleted)
+                .Where(o => o.UserId == userId)
                 .GroupBy(o => o.Season)
                 .Select(g => new { Season = g.Key, Count = g.Count() })
                 .ToListAsync(cancellationToken);

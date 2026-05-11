@@ -19,62 +19,67 @@
       <style>
         /*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
         @layer properties;
-        :root,
-        :root {
-          --color-background: #fafafb;
-          --color-foreground: #2d3748;
-          --color-border: #edf2f7;
-          --color-primary: #fab4c6;
-          --color-secondary: #f3f4f6;
-          --color-muted: #f7fafc;
-          --color-muted-foreground: #718096;
-          --radius-md: 12px;
-          --radius-lg: 20px;
-          --radius-xl: 32px;
-          --font-body: Nunito;
-          --font-headings: Nunito;
-          --text-xs: 12px;
-          --text-sm: 14px;
-          --text-base: 16px;
-          --text-lg: 18px;
-          --text-xl: 20px;
-          --text-2xl: 24px;
-          --text-3xl: 30px;
-          --font-sans:
-            ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-            "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-          --font-mono:
-            ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-            "Liberation Mono", "Courier New", monospace;
-          --color-red-500: oklch(63.7% 0.237 25.331);
-          --color-white: #fff;
-          --spacing: 0.25rem;
-          --container-sm: 24rem;
-          --text-xs--line-height: calc(1 / 0.75);
-          --text-sm--line-height: calc(1.25 / 0.875);
-          --text-base--line-height: calc(1.5 / 1);
-          --text-lg--line-height: calc(1.75 / 1.125);
-          --text-xl--line-height: calc(1.75 / 1.25);
-          --text-2xl--line-height: calc(2 / 1.5);
-          --text-3xl--line-height: calc(2.25 / 1.875);
-          --font-weight-medium: 500;
-          --font-weight-semibold: 600;
-          --font-weight-bold: 700;
-          --font-weight-black: 900;
-          --tracking-wider: 0.05em;
-          --leading-tight: 1.25;
-          --leading-relaxed: 1.625;
-          --radius-2xl: 1rem;
-          --radius-3xl: 1.5rem;
-          --blur-sm: 8px;
-          --blur-md: 12px;
-          --default-transition-duration: 150ms;
-          --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-          --default-font-family: var(--font-sans);
-          --default-mono-font-family: var(--font-mono);
-        }
         @layer theme, base, components, utilities;
-        @layer theme;
+        @layer theme {
+          :root,
+          :root {
+            --font-sans:
+              ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+              "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            --font-mono:
+              ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+              "Liberation Mono", "Courier New", monospace;
+            --color-red-500: oklch(63.7% 0.237 25.331);
+            --color-white: #fff;
+            --spacing: 0.25rem;
+            --container-sm: 24rem;
+            --container-lg: 32rem;
+            --container-2xl: 42rem;
+            --text-xs: 12px;
+            --text-xs--line-height: calc(1 / 0.75);
+            --text-sm: 14px;
+            --text-sm--line-height: calc(1.25 / 0.875);
+            --text-base: 16px;
+            --text-base--line-height: calc(1.5 / 1);
+            --text-lg: 18px;
+            --text-lg--line-height: calc(1.75 / 1.125);
+            --text-xl: 20px;
+            --text-xl--line-height: calc(1.75 / 1.25);
+            --text-2xl: 24px;
+            --text-2xl--line-height: calc(2 / 1.5);
+            --text-3xl: 30px;
+            --text-3xl--line-height: calc(2.25 / 1.875);
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-black: 900;
+            --tracking-wider: 0.05em;
+            --leading-tight: 1.25;
+            --leading-relaxed: 1.625;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 32px;
+            --radius-2xl: 1rem;
+            --radius-3xl: 1.5rem;
+            --animate-spin: spin 1s linear infinite;
+            --blur-sm: 8px;
+            --blur-md: 12px;
+            --default-transition-duration: 150ms;
+            --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            --default-font-family: var(--font-sans);
+            --default-mono-font-family: var(--font-mono);
+            --color-background: #fafafb;
+            --color-foreground: #2d3748;
+            --color-border: #edf2f7;
+            --color-primary: #fab4c6;
+            --color-primary-foreground: #1a202c;
+            --color-secondary: #f3f4f6;
+            --color-muted: #f7fafc;
+            --color-muted-foreground: #718096;
+            --font-body: Nunito;
+            --font-headings: Nunito;
+          }
+        }
         @layer base {
           *,
           ::after,
@@ -318,8 +323,14 @@
           .bottom-0 {
             bottom: calc(var(--spacing) * 0);
           }
+          .bottom-3 {
+            bottom: calc(var(--spacing) * 3);
+          }
           .left-0 {
             left: calc(var(--spacing) * 0);
+          }
+          .left-1\/2 {
+            left: calc(1 / 2 * 100%);
           }
           .mx-auto {
             margin-inline: auto;
@@ -341,6 +352,9 @@
           }
           .mt-12 {
             margin-top: calc(var(--spacing) * 12);
+          }
+          .mr-1 {
+            margin-right: calc(var(--spacing) * 1);
           }
           .mr-2 {
             margin-right: calc(var(--spacing) * 2);
@@ -365,6 +379,9 @@
           }
           .mb-10 {
             margin-bottom: calc(var(--spacing) * 10);
+          }
+          .ml-auto {
+            margin-left: auto;
           }
           .block {
             display: block;
@@ -399,6 +416,14 @@
           .size-\[20px\] {
             width: 20px;
             height: 20px;
+          }
+          .size-\[22px\] {
+            width: 22px;
+            height: 22px;
+          }
+          .size-\[24px\] {
+            width: 24px;
+            height: 24px;
           }
           .size-\[28px\] {
             width: 28px;
@@ -452,6 +477,9 @@
           .w-11 {
             width: calc(var(--spacing) * 11);
           }
+          .w-12 {
+            width: calc(var(--spacing) * 12);
+          }
           .w-28 {
             width: calc(var(--spacing) * 28);
           }
@@ -464,6 +492,9 @@
           .w-px {
             width: 1px;
           }
+          .max-w-2xl {
+            max-width: var(--container-2xl);
+          }
           .max-w-\[400px\] {
             max-width: 400px;
           }
@@ -473,18 +504,31 @@
           .max-w-\[1200px\] {
             max-width: 1200px;
           }
+          .max-w-lg {
+            max-width: var(--container-lg);
+          }
           .max-w-sm {
             max-width: var(--container-sm);
           }
           .min-w-\[120px\] {
             min-width: 120px;
           }
+          .flex-1 {
+            flex: 1;
+          }
           .shrink-0 {
             flex-shrink: 0;
+          }
+          .-translate-x-1\/2 {
+            --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
+            translate: var(--tw-translate-x) var(--tw-translate-y);
           }
           .translate-y-full {
             --tw-translate-y: 100%;
             translate: var(--tw-translate-x) var(--tw-translate-y);
+          }
+          .animate-spin {
+            animation: var(--animate-spin);
           }
           .cursor-pointer {
             cursor: pointer;
@@ -525,6 +569,9 @@
           .gap-4 {
             gap: calc(var(--spacing) * 4);
           }
+          .gap-5 {
+            gap: calc(var(--spacing) * 5);
+          }
           .gap-6 {
             gap: calc(var(--spacing) * 6);
           }
@@ -533,6 +580,9 @@
           }
           .gap-10 {
             gap: calc(var(--spacing) * 10);
+          }
+          .gap-12 {
+            gap: calc(var(--spacing) * 12);
           }
           .self-center {
             align-self: center;
@@ -566,6 +616,14 @@
           }
           .rounded-xl {
             border-radius: var(--radius-xl);
+          }
+          .rounded-l-lg {
+            border-top-left-radius: var(--radius-lg);
+            border-bottom-left-radius: var(--radius-lg);
+          }
+          .rounded-r-lg {
+            border-top-right-radius: var(--radius-lg);
+            border-bottom-right-radius: var(--radius-lg);
           }
           .border {
             border-style: var(--tw-border-style);
@@ -617,6 +675,16 @@
           .bg-primary {
             background-color: var(--color-primary);
           }
+          .bg-primary\/10 {
+            background-color: color-mix(in srgb, #fab4c6 10%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-primary) 10%,
+                transparent
+              );
+            }
+          }
           .bg-red-500 {
             background-color: var(--color-red-500);
           }
@@ -646,6 +714,12 @@
               );
             }
           }
+          .fill-primary {
+            fill: var(--color-primary);
+          }
+          .fill-primary-foreground {
+            fill: var(--color-primary-foreground);
+          }
           .object-cover {
             object-fit: cover;
           }
@@ -655,11 +729,20 @@
           .p-8 {
             padding: calc(var(--spacing) * 8);
           }
+          .px-2 {
+            padding-inline: calc(var(--spacing) * 2);
+          }
+          .px-2\.5 {
+            padding-inline: calc(var(--spacing) * 2.5);
+          }
           .px-3 {
             padding-inline: calc(var(--spacing) * 3);
           }
           .px-4 {
             padding-inline: calc(var(--spacing) * 4);
+          }
+          .px-5 {
+            padding-inline: calc(var(--spacing) * 5);
           }
           .px-6 {
             padding-inline: calc(var(--spacing) * 6);
@@ -669,6 +752,12 @@
           }
           .py-1 {
             padding-block: calc(var(--spacing) * 1);
+          }
+          .py-1\.5 {
+            padding-block: calc(var(--spacing) * 1.5);
+          }
+          .py-2 {
+            padding-block: calc(var(--spacing) * 2);
           }
           .py-4 {
             padding-block: calc(var(--spacing) * 4);
@@ -681,6 +770,15 @@
           }
           .pt-6 {
             padding-top: calc(var(--spacing) * 6);
+          }
+          .pt-10 {
+            padding-top: calc(var(--spacing) * 10);
+          }
+          .pb-3 {
+            padding-bottom: calc(var(--spacing) * 3);
+          }
+          .pb-4 {
+            padding-bottom: calc(var(--spacing) * 4);
           }
           .pb-20 {
             padding-bottom: calc(var(--spacing) * 20);
@@ -722,6 +820,9 @@
             font-size: var(--text-xs);
             line-height: var(--tw-leading, var(--text-xs--line-height));
           }
+          .text-\[12px\] {
+            font-size: 12px;
+          }
           .text-\[13px\] {
             font-size: 13px;
           }
@@ -731,8 +832,14 @@
           .text-\[15px\] {
             font-size: 15px;
           }
+          .text-\[16px\] {
+            font-size: 16px;
+          }
           .text-\[28px\] {
             font-size: 28px;
+          }
+          .text-\[32px\] {
+            font-size: 32px;
           }
           .leading-none {
             --tw-leading: 1;
@@ -777,6 +884,9 @@
           }
           .text-primary {
             color: var(--color-primary);
+          }
+          .text-primary-foreground {
+            color: var(--color-primary-foreground);
           }
           .text-white {
             color: var(--color-white);
@@ -964,13 +1074,6 @@
               }
             }
           }
-          .hover\:opacity-90 {
-            &:hover {
-              @media (hover: hover) {
-                opacity: 90%;
-              }
-            }
-          }
           .hover\:shadow-md {
             &:hover {
               @media (hover: hover) {
@@ -1025,6 +1128,11 @@
           .sm\:text-left {
             @media (width >= 40rem) {
               text-align: left;
+            }
+          }
+          .md\:grid-cols-2 {
+            @media (width >= 48rem) {
+              grid-template-columns: repeat(2, minmax(0, 1fr));
             }
           }
           .md\:grid-cols-3 {
@@ -1231,6 +1339,11 @@
           inherits: false;
           initial-value: 1;
         }
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
         @layer properties {
           @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or
             ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
@@ -1288,7 +1401,7 @@
       <link
         rel="preload"
         as="image"
-        href="/api/flow-image/3%3A4%0Aman%20wearing%20casual%20minimalist%20everyday%20outfit%2C%20linen%20beige%20shirt%2C%20grey%20straight%20leg%20trousers%2C%20clean%20studio%20lighting"
+        href="/api/flow-image/4%3A5%0Aman%20wearing%20casual%20minimalist%20everyday%20outfit%2C%20linen%20beige%20shirt%2C%20grey%20straight%20leg%20trousers%2C%20clean%20studio%20lighting"
       />
       <link
         rel="preload"
@@ -1298,22 +1411,12 @@
       <link
         rel="preload"
         as="image"
-        href="/api/flow-image/3%3A4%0Awoman%20in%20elegant%20dark%20green%20velvet%20evening%20dress%20with%20high%20slit%2C%20elegant%20high%20fashion%20lighting"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="/api/flow-image/3%3A4%0Awoman%20wearing%20sporty%20white%20tracksuit%2C%20black%20fanny%20pack%2C%20sunglasses%2C%20concrete%20background"
-      />
-      <link
-        rel="preload"
-        as="image"
         href="/api/flow-image/3%3A4%0Awoman%20wearing%20chic%20beige%20trench%20coat%2C%20black%20slip%20dress%20beneath%2C%20burgundy%20boots%2C%20gallery%20background"
       />
       <link
         rel="preload"
         as="image"
-        href="/api/flow-image/3%3A4%0Awoman%20walking%20in%20airport%20wearing%20comfortable%20travel%20outfit%2C%20grey%20sweater%2C%20beige%20linen%20pants%2C%20large%20tote%20bag"
+        href="/api/flow-image/4%3A5%0Awoman%20in%20elegant%20dark%20green%20velvet%20evening%20dress%20with%20high%20slit%2C%20elegant%20high%20fashion%20lighting"
       />
     </head>
     <body>
@@ -1389,7 +1492,7 @@
         <div class="mx-auto flex w-full max-w-[1200px] flex-col px-6 pb-20">
           <div class="mt-8 flex w-full">
             <button
-              class="flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-border text-foreground hover:bg-muted shadow-sm transition-colors"
+              class="flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-border text-foreground shadow-sm"
               data-media-type="banani-button"
             >
               <iconify-icon
@@ -1435,7 +1538,7 @@
                   >
                 </p>
                 <button
-                  class="flex h-[38px] items-center justify-center gap-2 rounded-md bg-primary px-6 text-[14px] font-semibold text-white shadow-sm hover:opacity-90 transition-opacity"
+                  class="flex h-[38px] items-center justify-center gap-2 rounded-md bg-primary px-6 text-[14px] font-semibold text-white shadow-sm"
                   data-media-type="banani-button"
                 >
                   <iconify-icon
@@ -1509,362 +1612,342 @@
             class="flex w-full items-center gap-8 border-b border-border text-sm font-bold text-muted-foreground mt-8 mb-6 overflow-x-auto"
           >
             <button
-              class="flex h-12 items-center justify-center whitespace-nowrap transition-colors border-b-2 border-primary text-primary"
+              class="flex h-12 items-center justify-center whitespace-nowrap border-b-2 border-primary text-primary"
               data-media-type="banani-button"
             >
               <span data-file="/components/TabNav.jsx" data-idx="0"
-                >Outfits (38)</span
-              ></button
-            ><button
-              class="flex h-12 items-center justify-center whitespace-nowrap transition-colors border-b-2 border-transparent hover:text-foreground"
-              data-media-type="banani-button"
-            >
-              <span data-file="/components/TabNav.jsx" data-idx="1"
                 >Activity</span
               ></button
             ><button
-              class="flex h-12 items-center justify-center whitespace-nowrap transition-colors border-b-2 border-transparent hover:text-foreground"
+              class="flex h-12 items-center justify-center whitespace-nowrap border-b-2 border-transparent"
               data-media-type="banani-button"
             >
-              <span data-file="/components/TabNav.jsx" data-idx="2"
+              <span data-file="/components/TabNav.jsx" data-idx="1"
                 >Followers</span
               ></button
             ><button
-              class="flex h-12 items-center justify-center whitespace-nowrap transition-colors border-b-2 border-transparent hover:text-foreground"
+              class="flex h-12 items-center justify-center whitespace-nowrap border-b-2 border-transparent"
               data-media-type="banani-button"
             >
-              <span data-file="/components/TabNav.jsx" data-idx="3"
+              <span data-file="/components/TabNav.jsx" data-idx="2"
                 >Following</span
               >
             </button>
           </div>
-          <div
-            class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"
-          >
+          <div class="flex flex-col gap-8 w-full max-w-2xl mx-auto pb-20">
             <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
+              class="flex flex-col rounded-xl bg-white border border-border shadow-sm overflow-hidden"
             >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
+              <div class="flex items-center justify-between p-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="h-10 w-10 overflow-hidden rounded-full border border-border"
+                  >
+                    <img
+                      src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
+                      class="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-bold text-foreground"
+                      ><span
+                        data-file="/components/ActivityFeed.jsx"
+                        data-idx="0"
+                        >Emily Chen</span
+                      ></span
+                    ><span class="text-xs text-muted-foreground"
+                      ><span
+                        data-file="/components/ActivityFeed.jsx"
+                        data-idx="1"
+                        >2 hours ago</span
+                      ></span
+                    >
+                  </div>
+                </div>
+                <button
+                  class="text-muted-foreground"
+                  data-media-type="banani-button"
+                >
+                  <iconify-icon
+                    icon="lucide:more-horizontal"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon>
+                </button>
+              </div>
+              <div class="px-4 pb-3 text-sm text-foreground">
+                <span data-file="/components/ActivityFeed.jsx" data-idx="2"
+                  >Loving this casual look for the weekend! The linen shirt is a
+                  game changer. ☕</span
+                >
+              </div>
+              <div class="relative aspect-[4/5] w-full bg-muted">
                 <img
                   data-query="man wearing casual minimalist everyday outfit, linen beige shirt, grey straight leg trousers, clean studio lighting"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/7b61b915-4cfc-4635-8382-cea237a1689d.jpg"
-                  class="h-full w-full object-cover"
+                  data-aspect-ratio="4:5"
+                  style="aspect-ratio: 4/5"
+                  src="https://storage.googleapis.com/banani-generated-images/generated-images/e38adde2-7cdf-4105-8566-4d5dddb13fa5.jpg"
+                  class="w-full h-full object-cover"
                 />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
-                >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="0"
-                    >Casual</span
-                  >
-                </div>
               </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="1"
-                    >Weekend Coffee Run</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span data-file="/components/OutfitGridV2.jsx" data-idx="2"
-                      >Spring • 3 items</span
+              <div class="flex items-center gap-6 p-4">
+                <button
+                  class="flex items-center gap-2 text-primary"
+                  data-media-type="banani-button"
+                >
+                  <iconify-icon
+                    icon="lucide:heart"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                  ><span class="text-sm font-semibold"
+                    ><span data-file="/components/ActivityFeed.jsx" data-idx="3"
+                      >245</span
                     ></span
-                  >
+                  ></button
+                ><button
+                  class="flex items-center gap-2 text-muted-foreground"
+                  data-media-type="banani-button"
+                >
+                  <iconify-icon
+                    icon="lucide:message-circle"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                  ><span class="text-sm font-semibold"
+                    ><span data-file="/components/ActivityFeed.jsx" data-idx="4"
+                      >18</span
+                    ></span
+                  ></button
+                ><button
+                  class="flex items-center gap-2 text-muted-foreground ml-auto"
+                  data-media-type="banani-button"
+                >
+                  <iconify-icon
+                    icon="lucide:bookmark"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon>
+                </button>
+              </div>
+            </div>
+            <div
+              class="flex flex-col rounded-xl bg-white border border-border shadow-sm overflow-hidden"
+            >
+              <div class="flex items-center justify-between p-4">
+                <div class="flex items-center gap-3">
                   <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
+                    class="h-10 w-10 overflow-hidden rounded-full border border-border"
                   >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
+                    <img
+                      src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
+                      class="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-bold text-foreground"
                       ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="3"
-                        >245</span
+                        data-file="/components/ActivityFeed.jsx"
+                        data-idx="5"
+                        >Emily Chen</span
+                      ></span
+                    ><span class="text-xs text-muted-foreground"
+                      ><span
+                        data-file="/components/ActivityFeed.jsx"
+                        data-idx="6"
+                        >5 hours ago</span
                       ></span
                     >
                   </div>
                 </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman wearing green tailored blazer over white blouse, dark grey trousers, business casual, bright office background"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/c155cf0d-02e1-41d8-8dbe-91cc957aeacb.jpg"
-                  class="h-full w-full object-cover"
-                />
                 <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
+                  class="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold"
                 >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="4"
-                    >Business Casual</span
+                  <iconify-icon
+                    icon="lucide:bar-chart-2"
+                    class="block size-[14px]"
+                    style="font-size: 14px"
+                  ></iconify-icon
+                  ><span data-file="/components/ActivityFeed.jsx" data-idx="7"
+                    >Poll</span
                   >
                 </div>
               </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="5"
-                    >Office Meeting Look</span
+              <div class="px-4 pb-3 text-sm text-foreground font-medium">
+                <span data-file="/components/ActivityFeed.jsx" data-idx="8"
+                  >Help me choose an outfit for my office meeting tomorrow!
+                  Option A or B? 👔</span
+                >
+              </div>
+              <div class="flex w-full gap-1 px-4 pb-4">
+                <div
+                  class="relative flex-1 aspect-[3/4] rounded-l-lg overflow-hidden border border-border"
+                >
+                  <img
+                    data-query="woman wearing green tailored blazer over white blouse, dark grey trousers, business casual, bright office background"
+                    data-aspect-ratio="3:4"
+                    style="aspect-ratio: 3/4"
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/c155cf0d-02e1-41d8-8dbe-91cc957aeacb.jpg"
+                    class="w-full h-full object-cover"
+                  /><button
+                    class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 px-6 py-2 rounded-full font-bold text-sm shadow-sm text-foreground"
+                    data-media-type="banani-button"
                   >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span data-file="/components/OutfitGridV2.jsx" data-idx="6"
-                      >Fall • 4 items</span
+                    <span data-file="/components/ActivityFeed.jsx" data-idx="9"
+                      >Vote A (64%)</span
+                    >
+                  </button>
+                </div>
+                <div
+                  class="relative flex-1 aspect-[3/4] rounded-r-lg overflow-hidden border border-border"
+                >
+                  <img
+                    data-query="woman wearing chic beige trench coat, black slip dress beneath, burgundy boots, gallery background"
+                    data-aspect-ratio="3:4"
+                    style="aspect-ratio: 3/4"
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/fc9d1233-9605-4f8f-8ca7-ef8f62980c4a.jpg"
+                    class="w-full h-full object-cover"
+                  /><button
+                    class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 px-6 py-2 rounded-full font-bold text-sm shadow-sm text-foreground"
+                    data-media-type="banani-button"
+                  >
+                    <span data-file="/components/ActivityFeed.jsx" data-idx="10"
+                      >Vote B (36%)</span
+                    >
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center gap-6 px-4 pb-4">
+                <div class="flex items-center gap-2 text-muted-foreground">
+                  <iconify-icon
+                    icon="lucide:users"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon
+                  ><span class="text-sm font-medium"
+                    ><span
+                      data-file="/components/ActivityFeed.jsx"
+                      data-idx="11"
+                      >1,204 votes</span
                     ></span
                   >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
+                </div>
+                <button
+                  class="flex items-center gap-2 text-muted-foreground ml-auto"
+                  data-media-type="banani-button"
+                >
+                  <iconify-icon
+                    icon="lucide:message-circle"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                  ><span class="text-sm font-semibold"
+                    ><span
+                      data-file="/components/ActivityFeed.jsx"
+                      data-idx="12"
+                      >42</span
+                    ></span
                   >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
+                </button>
+              </div>
+            </div>
+            <div
+              class="flex flex-col rounded-xl bg-white border border-border shadow-sm overflow-hidden"
+            >
+              <div class="flex items-center justify-between p-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="h-10 w-10 overflow-hidden rounded-full border border-border"
+                  >
+                    <img
+                      src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
+                      class="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-bold text-foreground"
                       ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="7"
-                        >182</span
+                        data-file="/components/ActivityFeed.jsx"
+                        data-idx="13"
+                        >Emily Chen</span
+                      ></span
+                    ><span class="text-xs text-muted-foreground"
+                      ><span
+                        data-file="/components/ActivityFeed.jsx"
+                        data-idx="14"
+                        >Yesterday</span
                       ></span
                     >
                   </div>
                 </div>
+                <button
+                  class="text-muted-foreground"
+                  data-media-type="banani-button"
+                >
+                  <iconify-icon
+                    icon="lucide:more-horizontal"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon>
+                </button>
               </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
+              <div class="px-4 pb-3 text-sm text-foreground">
+                <span data-file="/components/ActivityFeed.jsx" data-idx="15"
+                  >Ready for dinner ✨ Obsessed with this velvet dress.</span
+                >
+              </div>
+              <div class="relative aspect-[4/5] w-full bg-muted">
                 <img
                   data-query="woman in elegant dark green velvet evening dress with high slit, elegant high fashion lighting"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/0d6cd192-bdd4-415a-bfb7-966c4ebc2717.jpg"
-                  class="h-full w-full object-cover"
+                  data-aspect-ratio="4:5"
+                  style="aspect-ratio: 4/5"
+                  src="https://storage.googleapis.com/banani-generated-images/generated-images/4507894e-7faa-4e81-b14a-623e4260414d.jpg"
+                  class="w-full h-full object-cover"
                 />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
+              </div>
+              <div class="flex items-center gap-6 p-4">
+                <button
+                  class="flex items-center gap-2 text-muted-foreground"
+                  data-media-type="banani-button"
                 >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="8"
-                    >Evening</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="9"
-                    >Dinner Date</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
+                  <iconify-icon
+                    icon="lucide:heart"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                  ><span class="text-sm font-semibold"
                     ><span
-                      data-file="/components/OutfitGridV2.jsx"
-                      data-idx="10"
-                      >Summer • 2 items</span
+                      data-file="/components/ActivityFeed.jsx"
+                      data-idx="16"
+                      >310</span
                     ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="11"
-                        >310</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman wearing sporty white tracksuit, black fanny pack, sunglasses, concrete background"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/3bb129bd-5087-4b27-9422-bfa904d68d91.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
+                  ></button
+                ><button
+                  class="flex items-center gap-2 text-muted-foreground"
+                  data-media-type="banani-button"
                 >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="12"
-                    >Sporty</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="13"
-                    >Sunday Errands</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
+                  <iconify-icon
+                    icon="lucide:message-circle"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon
+                  ><span class="text-sm font-semibold"
                     ><span
-                      data-file="/components/OutfitGridV2.jsx"
-                      data-idx="14"
-                      >Spring • 3 items</span
+                      data-file="/components/ActivityFeed.jsx"
+                      data-idx="17"
+                      >24</span
                     ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="15"
-                        >124</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman wearing chic beige trench coat, black slip dress beneath, burgundy boots, gallery background"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/fc9d1233-9605-4f8f-8ca7-ef8f62980c4a.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
+                  ></button
+                ><button
+                  class="flex items-center gap-2 text-muted-foreground ml-auto"
+                  data-media-type="banani-button"
                 >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="16"
-                    >Formal</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="17"
-                    >Gallery Opening</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span
-                      data-file="/components/OutfitGridV2.jsx"
-                      data-idx="18"
-                      >Winter • 4 items</span
-                    ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="19"
-                        >456</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman walking in airport wearing comfortable travel outfit, grey sweater, beige linen pants, large tote bag"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/8423842d-740f-4d0b-9b3f-e0c23c58f836.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
-                >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="20"
-                    >Travel</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="21"
-                    >Airport Look</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span
-                      data-file="/components/OutfitGridV2.jsx"
-                      data-idx="22"
-                      >Fall • 5 items</span
-                    ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="23"
-                        >289</span
-                      ></span
-                    >
-                  </div>
-                </div>
+                  <iconify-icon
+                    icon="lucide:bookmark"
+                    class="block size-[20px]"
+                    style="font-size: 20px"
+                  ></iconify-icon>
+                </button>
               </div>
             </div>
           </div>

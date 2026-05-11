@@ -82,14 +82,17 @@ public class DataSeeder
             return;
         }
 
+        // Create roles if they don't exist
+        await SeedRolesAsync();
+
         var users = new List<User>
         {
-            new User { UserName = "admin", Email = "admin@example.com", Name = "Admin" },
-            new User { UserName = "StyleMaven92", Email = "stylemaven92@example.com", Name = "Style Maven 92" },
-            new User { UserName = "Fashionista_A", Email = "alex@example.com", Name = "Alex Fashion" },
-            new User { UserName = "ChicExplorer", Email = "chic@example.com", Name = "Chic Explorer" },
-            new User { UserName = "TrendSetter", Email = "trend@example.com", Name = "Trend Setter" },
-            new User { UserName = "UrbanVibes", Email = "urban@example.com", Name = "Urban Vibes" }
+            new User { UserName = "admin", Email = "admin@example.com", Name = "Admin", Role = OutfitPlanner.Domain.Enums.UserRole.Admin },
+            new User { UserName = "StyleMaven92", Email = "stylemaven92@example.com", Name = "Style Maven 92", Role = OutfitPlanner.Domain.Enums.UserRole.Planner },
+            new User { UserName = "Fashionista_A", Email = "alex@example.com", Name = "Alex Fashion", Role = OutfitPlanner.Domain.Enums.UserRole.Planner },
+            new User { UserName = "ChicExplorer", Email = "chic@example.com", Name = "Chic Explorer", Role = OutfitPlanner.Domain.Enums.UserRole.Planner },
+            new User { UserName = "TrendSetter", Email = "trend@example.com", Name = "Trend Setter", Role = OutfitPlanner.Domain.Enums.UserRole.Planner },
+            new User { UserName = "UrbanVibes", Email = "urban@example.com", Name = "Urban Vibes", Role = OutfitPlanner.Domain.Enums.UserRole.Planner }
         };
 
         var password = "Password123!";
@@ -100,6 +103,15 @@ public class DataSeeder
             if (result.Succeeded)
             {
                 _logger.LogInformation("Created user: {UserName}", user.UserName);
+                // Assign specific role to user
+                if (user.Role == OutfitPlanner.Domain.Enums.UserRole.Admin)
+                {
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                }
+                else if (user.Role == OutfitPlanner.Domain.Enums.UserRole.Planner)
+                {
+                    await _userManager.AddToRoleAsync(user, "Planner");
+                }
             }
             else
             {
@@ -108,6 +120,36 @@ public class DataSeeder
         }
 
         _logger.LogInformation("Seeded {Count} users", users.Count);
+    }
+
+    private async Task SeedRolesAsync()
+    {
+        // Check if roles already exist
+        if (await _roleManager.Roles.AnyAsync())
+        {
+            _logger.LogInformation("Roles already exist, skipping role seeding.");
+            return;
+        }
+
+        var roles = new[] { "Admin", "Planner" };
+
+        foreach (var role in roles)
+        {
+            if (!await _roleManager.RoleExistsAsync(role))
+            {
+                var result = await _roleManager.CreateAsync(new IdentityRole(role));
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("Created role: {RoleName}", role);
+                }
+                else
+                {
+                    _logger.LogError("Failed to create role {RoleName}: {Errors}", role, string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+        }
+
+        _logger.LogInformation("Seeded roles successfully!");
     }
 
     private async Task SeedClothingItemsAsync()
@@ -224,9 +266,7 @@ public class DataSeeder
                 Season = (Season)(i % 5),
                 WeatherCondition = GetWeatherCondition(i),
                 ComfortRating = random.Next(3, 6),
-                StyleRating = random.Next(3, 6),
                 TimesWorn = random.Next(0, 10),
-                Status = OutfitStatus.Active,
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 30)),
                 ImageUrl = $"/uploads/outfit-images/outfit-seed-{i + 1}.jpg"
             };
@@ -483,7 +523,7 @@ public class DataSeeder
             // Add some comments
             var CommentsCount = random.Next(0, 4);
             var commenters = users.OrderBy(x => random.Next()).Take(CommentsCount).ToList();
-            for (int c = 0; c < CommentsCount; c++)
+            for (int c = 0; c < CommentsCount && c < commenters.Count; c++)
             {
                 var commenter = commenters[c];
                 var comment = new PostComment
@@ -668,7 +708,7 @@ public class DataSeeder
                 OutfitId = outfits[i].Id,
                 PollId = poll?.Id ?? Guid.Empty,
                 VoteCount = random.Next(10, 200),
-                ReactionCount = random.Next(5, 100),
+               
                 TrendingScore = random.Next(50, 100) / 10.0m,
                 RankPosition = i + 1,
                 Date = DateTime.UtcNow.Date,

@@ -66,21 +66,19 @@ public class MappingProfile : Profile
         CreateMap<CreateOutfitDto, Outfit>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => Enum.Parse<OccasionType>(s.Occasion, true)))
             .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season, true)))
-            .ForMember(d => d.Status, opt => opt.MapFrom(s => OutfitStatus.Active))
+            
             .ForMember(d => d.ImageUrl, opt => opt.Ignore());
 
         // Outfit - Update
         CreateMap<UpdateOutfitDto, Outfit>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Occasion != null ? Enum.Parse<OccasionType>(s.Occasion, true) : default(OccasionType)))
             .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season != null ? Enum.Parse<Season>(s.Season, true) : default(Season)))
-            .ForMember(d => d.Status, opt => opt.Ignore())
             .ForMember(d => d.UserId, opt => opt.Ignore())
             .ForMember(d => d.Id, opt => opt.Ignore())
             .ForMember(d => d.CreatedAt, opt => opt.Ignore())
             .ForMember(d => d.TimesWorn, opt => opt.Ignore())
             .ForMember(d => d.LastWorn, opt => opt.Ignore())
             .ForMember(d => d.ComfortRating, opt => opt.Condition(s => s.ComfortRating.HasValue))
-            .ForMember(d => d.StyleRating, opt => opt.Condition(s => s.StyleRating.HasValue))
             .ForMember(d => d.Name, opt => opt.Condition(s => !string.IsNullOrEmpty(s.Name)))
             .ForMember(d => d.WeatherCondition, opt => opt.Condition(s => !string.IsNullOrEmpty(s.WeatherCondition)))
             .ForMember(d => d.ImageUrl, opt => opt.Condition(s => !string.IsNullOrEmpty(s.ImageUrl)))
@@ -89,18 +87,15 @@ public class MappingProfile : Profile
         // Outfit - To DTOs
         CreateMap<Outfit, OutfitDto>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Occasion.ToString()))
-            .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season.ToString()))
-            .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()));
+            .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season.ToString()));
 
         CreateMap<OutfitDto, Outfit>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => Enum.Parse<OccasionType>(s.Occasion, true)))
-            .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season, true)))
-            .ForMember(d => d.Status, opt => opt.MapFrom(s => Enum.Parse<OutfitStatus>(s.Status, true)));
+            .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season, true)));
 
         CreateMap<Outfit, OutfitListDto>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Occasion.ToString()))
             .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season.ToString()))
-            .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()))
             .ForMember(d => d.ItemCount, opt => opt.MapFrom(s => s.Items.Count))
             .ForMember(d => d.ThumbnailUrl, opt => opt.MapFrom(s => s.Items.FirstOrDefault() != null ? s.Items.FirstOrDefault().ClothingItem.ThumbnailUrl : string.Empty));
 

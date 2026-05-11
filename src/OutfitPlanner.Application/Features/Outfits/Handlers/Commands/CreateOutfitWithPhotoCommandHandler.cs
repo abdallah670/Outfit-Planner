@@ -75,7 +75,6 @@ public class CreateOutfitWithPhotoCommandHandler : IRequestHandler<CreateOutfitW
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
                 Name = request.Name,
-                Status = OutfitStatus.Active,
                 CreatedAt = DateTimeOffset.UtcNow,
                 ImageUrl = imageUrl,
                 Items = new List<OutfitItem>() // Empty list - no clothing items

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.DTOs.Admin;
-using OutfitPlanner.Application.Features.Admin.DTOs;
 using OutfitPlanner.Application.Features.Admin.Requests.Queries;
 using OutfitPlanner.Application;
 using OutfitPlanner.Domain.Entities;

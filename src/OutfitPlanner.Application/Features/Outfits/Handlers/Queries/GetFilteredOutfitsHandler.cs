@@ -22,7 +22,7 @@ public class GetFilteredOutfitsHandler : IRequestHandler<GetFilteredOutfitsReque
     {
         // Get queryable with include for Items and ClothingItem
         var query = _unitOfWork.Outfits.Get(
-            filter: o => o.UserId == request.UserId && o.Status != OutfitStatus.Deleted,
+            filter: o => o.UserId == request.UserId,
             include: q => q.Include(o => o.Items).ThenInclude(oi => oi.ClothingItem));
 
         // Apply occasion filter
@@ -76,10 +76,8 @@ public class GetFilteredOutfitsHandler : IRequestHandler<GetFilteredOutfitsReque
                 WeatherCondition = o.WeatherCondition,
                 Season = o.Season.ToString(),
                 ComfortRating = o.ComfortRating,
-                StyleRating = o.StyleRating,
                 LastWorn = o.LastWorn,
                 TimesWorn = o.TimesWorn,
-                Status = o.Status.ToString(),
                 CreatedAt = o.CreatedAt,
                 ImageUrl = o.ImageUrl,
                 Items = o.Items.Select(oi => new OutfitItemDto

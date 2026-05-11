@@ -233,7 +233,6 @@ public class GetTodaysPickQueryHandler
         var outfits = await _outfitRepository.GetByUserIdAsync(userId);
 
         var validOutfits = outfits
-            .Where(o => o.Status == OutfitStatus.Active)
             .ToList();
 
         if (!validOutfits.Any())
