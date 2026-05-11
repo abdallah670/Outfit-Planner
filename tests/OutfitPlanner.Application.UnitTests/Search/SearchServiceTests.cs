@@ -43,9 +43,9 @@ public class SearchServiceTests : IDisposable
              
                 Season = Season.Summer,
                 Occasion = OccasionType.Casual,
-                Status = OutfitStatus.Active,
+               
                 ComfortRating = 5,
-                StyleRating = 4,
+               
                 ImageUrl = "/images/outfit1.jpg"
             },
             new Outfit
@@ -56,9 +56,9 @@ public class SearchServiceTests : IDisposable
             
                 Season = Season.Winter,
                 Occasion = OccasionType.Formal,
-                Status = OutfitStatus.Active,
+            
                 ComfortRating = 4,
-                StyleRating = 5,
+             
                 ImageUrl = "/images/outfit2.jpg"
             },
             new Outfit
@@ -68,9 +68,9 @@ public class SearchServiceTests : IDisposable
                 Name = "Other User Outfit",
                 Season = Season.Spring,
                 Occasion = OccasionType.Casual,
-                Status = OutfitStatus.Active,
-                ComfortRating = 3,
-                StyleRating = 3
+               
+                ComfortRating = 3
+                
             }
         };
 
