@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Common;
-using OutfitPlanner.Application.Features.Admin.DTOs;
+using OutfitPlanner.Application.DTOs.Admin;
 using OutfitPlanner.Application.Features.Admin.Requests.Queries;
 using OutfitPlanner.Domain.Entities;
 
@@ -47,7 +47,7 @@ public class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, Paginated
         var reportDtos = reportsList.Select(r => new ContentReportDto(
                 r.Id,
                 r.ReporterUserName,
-                Guid.TryParse(r.TargetUserId, out var guid) ? guid : Guid.Empty,
+               r.TargetUserId,
                 r.ContentType,
                 r.Reason,
                 r.Status,

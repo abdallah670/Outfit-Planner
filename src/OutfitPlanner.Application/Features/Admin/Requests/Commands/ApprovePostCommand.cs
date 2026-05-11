@@ -1,12 +1,8 @@
 using MediatR;
 using OutfitPlanner.Application.Common;
-using OutfitPlanner.Application.DTOs;
-
+using OutfitPlanner.Application.DTOs.Admin;
 namespace OutfitPlanner.Application.Features.Admin.Requests.Commands;
 
-public record ApprovePostCommand(Guid PostId) : IRequest<Result>;
-
-public record RejectPostCommand(Guid PostId, string Reason) : IRequest<Result>;
 
 public record DeletePostCommand(Guid PostId) : IRequest<Result>;
 

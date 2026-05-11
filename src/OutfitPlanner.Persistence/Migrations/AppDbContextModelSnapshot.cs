@@ -541,6 +541,8 @@ namespace OutfitPlanner.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommentsCount");
+
                     b.HasIndex("CreatedAt");
 
                     b.HasIndex("LikesCount");
@@ -716,13 +718,6 @@ namespace OutfitPlanner.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Season")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StyleRating")
                         .HasColumnType("int");
 
                     b.Property<int>("TimesWorn")
@@ -982,9 +977,6 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<int>("RankPosition")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReactionCount")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("TrendingScore")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
@@ -1107,6 +1099,44 @@ namespace OutfitPlanner.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.UserActivity", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AdditionalData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserActivities");
                 });
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.UserPreferences", b =>

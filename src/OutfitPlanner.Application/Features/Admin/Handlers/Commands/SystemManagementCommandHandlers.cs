@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Common;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Features.Admin.Requests.Commands;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application;
@@ -13,11 +14,13 @@ namespace OutfitPlanner.Application.Features.Admin.Handlers.Commands;
 public class SetMaintenanceModeCommandHandler : IRequestHandler<SetMaintenanceModeCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMaintenanceService _maintenanceService;
     private readonly ILogger<SetMaintenanceModeCommandHandler> _logger;
 
-    public SetMaintenanceModeCommandHandler(IUnitOfWork unitOfWork, ILogger<SetMaintenanceModeCommandHandler> logger)
+    public SetMaintenanceModeCommandHandler(IUnitOfWork unitOfWork, IMaintenanceService maintenanceService, ILogger<SetMaintenanceModeCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _maintenanceService = maintenanceService;
         _logger = logger;
     }
 
@@ -25,6 +28,18 @@ public class SetMaintenanceModeCommandHandler : IRequestHandler<SetMaintenanceMo
     {
         try
         {
+            _logger.LogInformation("Setting maintenance mode to {Enabled} with message: {Message}", 
+                request.Enabled, request.Message);
+
+            if (request.Enabled)
+            {
+                await _maintenanceService.EnableMaintenanceModeAsync(request.Message);
+            }
+            else
+            {
+                await _maintenanceService.DisableMaintenanceModeAsync();
+            }
+
             var maintenanceLog = new AuditLog
             {
                 UserId = "system",
@@ -40,65 +55,77 @@ public class SetMaintenanceModeCommandHandler : IRequestHandler<SetMaintenanceMo
             await _unitOfWork.Repository<AuditLog>().AddAsync(maintenanceLog);
             await _unitOfWork.CompleteAsync();
 
+            _logger.LogInformation("Maintenance mode {Action} successfully", 
+                request.Enabled ? "enabled" : "disabled");
+
             return Result.Success();
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to set maintenance mode to {Enabled}", request.Enabled);
             return Result.Failure($"Failed to set maintenance mode: {ex.Message}");
         }
     }
 }
 
-public class CreateBackupCommandHandler : IRequestHandler<CreateBackupCommand, BackupResult>
+public class CreateBackupCommandHandler : IRequestHandler<CreateBackupCommand, OutfitPlanner.Application.Contracts.Infrastructure.BackupResult>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IBackupService _backupService;
     private readonly ILogger<CreateBackupCommandHandler> _logger;
 
-    public CreateBackupCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateBackupCommandHandler> logger)
+    public CreateBackupCommandHandler(IUnitOfWork unitOfWork, IBackupService backupService, ILogger<CreateBackupCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _backupService = backupService;
         _logger = logger;
     }
 
-    public async Task<BackupResult> Handle(CreateBackupCommand command, CancellationToken cancellationToken)
+    public async Task<OutfitPlanner.Application.Contracts.Infrastructure.BackupResult> Handle(CreateBackupCommand command, CancellationToken cancellationToken)
     {
         try
         {
-            var backupId = Guid.NewGuid();
-            var fileName = $"backup_{DateTime.UtcNow:yyyyMMdd_HHmmss}_{command.Request.Type}.bak";
-            var createdAt = DateTimeOffset.UtcNow;
+            _logger.LogInformation("Creating backup: {Name}", command.Name);
 
-            await Task.Delay(1000, cancellationToken); // Simulate backup time
-
-            var backupLog = new AuditLog
-            {
-                UserId = "system",
-                UserName = "System",
-                Action = "CreateBackup",
-                EntityType = "Backup",
-                EntityId = backupId.ToString(),
-                Timestamp = createdAt,
-                IpAddress = "127.0.0.1",
-                NewValues = $"{{ \"type\": \"{command.Request.Type}\", \"description\": \"{command.Request.Description}\" }}"
-            };
-
-            await _unitOfWork.Repository<AuditLog>().AddAsync(backupLog);
-            await _unitOfWork.CompleteAsync();
-
-            var backupSize = (long)(new Random().NextDouble() * 100 * 1024 * 1024); // 0-100MB
-
-            return new BackupResult(
-                true,
-                backupId.ToString(),
-                fileName,
-                backupSize,
-                createdAt.DateTime,
-                "Backup created successfully"
+            var backupRequest = new BackupRequest(
+                command.Name,
+                command.Description ?? "Manual backup",
+                command.IncludeFiles,
+                command.Compress,
+                command.ExcludedTables
             );
+
+            var backupResult = await _backupService.CreateBackupAsync(backupRequest);
+
+            if (backupResult.Success)
+            {
+                var backupLog = new AuditLog
+                {
+                    UserId = "system",
+                    UserName = "System",
+                    Action = "CreateBackup",
+                    EntityType = "Backup",
+                    EntityId = backupResult.BackupId,
+                    Timestamp = DateTimeOffset.UtcNow,
+                    IpAddress = "127.0.0.1",
+                    NewValues = $"{{ \"backupId\": \"{backupResult.BackupId}\", \"fileName\": \"{backupResult.FileName}\", \"fileSize\": {backupResult.FileSize} }}"
+                };
+
+                await _unitOfWork.Repository<AuditLog>().AddAsync(backupLog);
+                await _unitOfWork.CompleteAsync();
+
+                _logger.LogInformation("Backup created successfully: {BackupId}", backupResult.BackupId);
+            }
+            else
+            {
+                _logger.LogError("Failed to create backup: {Error}", backupResult.ErrorMessage);
+            }
+
+            return backupResult;
         }
         catch (Exception ex)
         {
-            return new BackupResult(
+            return new OutfitPlanner.Application.Contracts.Infrastructure.BackupResult(
                 false,
                 Guid.Empty.ToString(),
                 string.Empty,
@@ -113,11 +140,13 @@ public class CreateBackupCommandHandler : IRequestHandler<CreateBackupCommand, B
 public class RestartServiceCommandHandler : IRequestHandler<RestartServiceCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceManagementService _serviceManagementService;
     private readonly ILogger<RestartServiceCommandHandler> _logger;
 
-    public RestartServiceCommandHandler(IUnitOfWork unitOfWork, ILogger<RestartServiceCommandHandler> logger)
+    public RestartServiceCommandHandler(IUnitOfWork unitOfWork, IServiceManagementService serviceManagementService, ILogger<RestartServiceCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _serviceManagementService = serviceManagementService;
         _logger = logger;
     }
 
@@ -125,27 +154,39 @@ public class RestartServiceCommandHandler : IRequestHandler<RestartServiceComman
     {
         try
         {
-            await Task.Delay(2000, cancellationToken); // Simulate restart time
+            _logger.LogInformation("Restarting service: {ServiceName}", command.ServiceName);
 
-            var restartLog = new AuditLog
+            var restartResult = await _serviceManagementService.RestartServiceAsync(command.ServiceName);
+
+            if (restartResult.Success)
             {
-                UserId = "system",
-                UserName = "System",
-                Action = "RestartService",
-                EntityType = "Service",
-                EntityId = command.ServiceName,
-                Timestamp = DateTimeOffset.UtcNow,
-                IpAddress = "127.0.0.1",
-                NewValues = $"{{ \"serviceName\": \"{command.ServiceName}\" }}"
-            };
+                var restartLog = new AuditLog
+                {
+                    UserId = "system",
+                    UserName = "System",
+                    Action = "RestartService",
+                    EntityType = "Service",
+                    EntityId = restartResult.ServiceName,
+                    Timestamp = DateTimeOffset.UtcNow,
+                    IpAddress = "127.0.0.1",
+                    NewValues = $"{{ \"serviceName\": \"{restartResult.ServiceName}\", \"restartedAt\": \"{restartResult.RestartedAt:O}\", \"downtime\": \"{restartResult.Downtime.TotalMilliseconds}ms\" }}"
+                };
 
-            await _unitOfWork.Repository<AuditLog>().AddAsync(restartLog);
-            await _unitOfWork.CompleteAsync();
+                await _unitOfWork.Repository<AuditLog>().AddAsync(restartLog);
+                await _unitOfWork.CompleteAsync();
 
-            return Result.Success();
+                _logger.LogInformation("Service {ServiceName} restarted successfully", restartResult.ServiceName);
+                return Result.Success();
+            }
+            else
+            {
+                _logger.LogError("Failed to restart service {ServiceName}: {Error}", command.ServiceName, restartResult.ErrorMessage);
+                return Result.Failure($"Failed to restart service {command.ServiceName}: {restartResult.ErrorMessage}");
+            }
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to restart service: {ServiceName}", command.ServiceName);
             return Result.Failure($"Failed to restart service {command.ServiceName}: {ex.Message}");
         }
     }
@@ -154,11 +195,13 @@ public class RestartServiceCommandHandler : IRequestHandler<RestartServiceComman
 public class ClearCacheCommandHandler : IRequestHandler<ClearCacheCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheManagementService _cacheManagementService;
     private readonly ILogger<ClearCacheCommandHandler> _logger;
 
-    public ClearCacheCommandHandler(IUnitOfWork unitOfWork, ILogger<ClearCacheCommandHandler> logger)
+    public ClearCacheCommandHandler(IUnitOfWork unitOfWork, ICacheManagementService cacheManagementService, ILogger<ClearCacheCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _cacheManagementService = cacheManagementService;
         _logger = logger;
     }
 
@@ -166,7 +209,23 @@ public class ClearCacheCommandHandler : IRequestHandler<ClearCacheCommand, Resul
     {
         try
         {
-            await Task.Delay(500, cancellationToken); // Simulate cache clearing time
+            _logger.LogInformation("Clearing cache for key: {CacheKey}", command.CacheKey ?? "all");
+
+            if (string.IsNullOrEmpty(command.CacheKey))
+            {
+                // Clear all cache
+                await _cacheManagementService.ClearAllCacheAsync();
+            }
+            else if (command.CacheKey.Contains("*"))
+            {
+                // Clear cache by pattern
+                await _cacheManagementService.ClearCacheByPatternAsync(command.CacheKey);
+            }
+            else
+            {
+                // Clear specific cache key
+                await _cacheManagementService.ClearCacheByKeyAsync(command.CacheKey);
+            }
 
             var cacheLog = new AuditLog
             {
@@ -183,10 +242,12 @@ public class ClearCacheCommandHandler : IRequestHandler<ClearCacheCommand, Resul
             await _unitOfWork.Repository<AuditLog>().AddAsync(cacheLog);
             await _unitOfWork.CompleteAsync();
 
+            _logger.LogInformation("Successfully cleared cache for key: {CacheKey}", command.CacheKey ?? "all");
             return Result.Success();
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to clear cache for key: {CacheKey}", command.CacheKey);
             return Result.Failure($"Failed to clear cache: {ex.Message}");
         }
     }

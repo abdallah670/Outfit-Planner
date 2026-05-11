@@ -1,5 +1,5 @@
 using MediatR;
-using OutfitPlanner.Application.Features.Admin.DTOs;
+using OutfitPlanner.Application.DTOs.Admin;
 
 namespace OutfitPlanner.Application.Features.Admin.Requests.Queries;
 

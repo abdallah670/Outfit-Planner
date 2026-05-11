@@ -12,8 +12,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Store } from '@ngrx/store';
-import { PollsActions } from '../../../core/state/polls/polls.actions';
-import { POLLS_REPOSITORY, PollsRepository } from '../../../domain/repositories/polls.repository';
+import { PollsActions } from '../../../../core/state/polls/polls.actions';
+import { POLLS_REPOSITORY, PollsRepository } from '../../../../domain/repositories/polls.repository';
 
 interface PollOptionForm {
   description: string;

@@ -16,9 +16,8 @@ import { DailySuggestionComponent } from './presentation/pages/daily-suggestion/
 import { OutfitDetailComponent } from './presentation/pages/outfit-detail/outfit-detail.component';
 import { SettingsComponent } from './presentation/pages/settings/settings.component';
 import { CalendarComponent } from './presentation/pages/calendar/calendar.component';
-import { SocialComponent } from './presentation/pages/social/social.component';
-import { CommunityFeedComponent } from './presentation/pages/community-feed/community-feed.component';
-import { CreatePollComponent } from './presentation/pages/create-poll/create-poll.component';
+import { CommunityFeedComponent } from './presentation/pages/social/community-feed/community-feed.component';
+import { CreatePollComponent } from './presentation/pages/social/create-poll/create-poll.component';
 import { PollDetailComponent } from './presentation/pages/social/poll-detail/poll-detail.component';
 import { GlobalSearchComponent } from './presentation/pages/global-search/global-search.component';
 import { NotificationsCenterComponent } from './presentation/pages/notifications-center/notifications-center.component';
@@ -62,9 +61,9 @@ export const routes: Routes = [
   { path: 'outfits/today', component: DailySuggestionComponent },
   { path: 'outfits/:id', component: OutfitDetailComponent, canActivate: [authGuard] },
   { path: 'calendar', component: CalendarComponent },
-  { path: 'social', component: SocialComponent, canActivate: [authGuard] },
+  { path: 'social', component: CommunityFeedComponent, canActivate: [authGuard] },
   { path: 'social/feed', component: CommunityFeedComponent, canActivate: [authGuard] },
-  { path: 'social/create', component: CreatePollComponent, canActivate: [authGuard] },
+  { path: 'social/create-poll', component: CreatePollComponent, canActivate: [authGuard] },
   { path: 'social/trending', component: TrendingOutfitsComponent, canActivate: [authGuard] },
   { path: 'social/profile/:userId',component:PublicProfileComponent, canActivate: [authGuard] },
   { path: 'profile/:userId',component:PublicProfileComponent, canActivate: [authGuard] },

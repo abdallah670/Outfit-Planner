@@ -30,6 +30,7 @@ public class UnitOfWork : IUnitOfWork
     public IPostReactionRepository PostReactions { get; }
     public IPostCommentRepository PostComments { get; }
     public IFollowRepository Follows { get; }
+    public IUserActivityRepository UserActivities { get; }
     public IAuditLogRepository AuditLogs { get; }
     public ISystemSettingRepository SystemSettings { get; }
     public IContentReportRepository ContentReports { get; }
@@ -57,6 +58,7 @@ public class UnitOfWork : IUnitOfWork
         IPostReactionRepository postReactions,
         IPostCommentRepository postComments,
         IFollowRepository follows,
+        IUserActivityRepository userActivities,
         IAuditLogRepository auditLogs,
         ISystemSettingRepository systemSettings,
         IContentReportRepository contentReports
@@ -84,6 +86,7 @@ public class UnitOfWork : IUnitOfWork
         PostReactions = postReactions;
         PostComments = postComments;
         Follows = follows;
+        UserActivities = userActivities;
         AuditLogs = auditLogs;
         SystemSettings = systemSettings;
         ContentReports = contentReports;

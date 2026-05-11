@@ -25,6 +25,7 @@ public interface IUnitOfWork : IDisposable
     IPostReactionRepository PostReactions { get; }
     IPostCommentRepository PostComments { get; }
     IFollowRepository Follows { get; }
+    IUserActivityRepository UserActivities { get; }
      IAuditLogRepository AuditLogs { get; }
     ISystemSettingRepository SystemSettings { get; }
     IContentReportRepository ContentReports { get; }

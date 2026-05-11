@@ -72,7 +72,7 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
             // Create the outfit entity
             var outfit = _mapper.Map<Outfit>(request.Request);
             outfit.UserId = request.UserId;
-            outfit.Status = OutfitStatus.Active;
+           
             outfit.CreatedAt = DateTimeOffset.UtcNow;
 
             // Clear items mapped from DTO and add properly constructed items
@@ -96,7 +96,7 @@ public class CreateOutfitCommandHandler : IRequestHandler<CreateOutfitCommand, O
             var savedOutfit = await _unitOfWork.Outfits.GetWithItemsByIdAsync(outfit.Id);
 
             // Pre-generate outfit image if enabled and outfit has at least one item
-            if (_cacheSettings.EnablePreGeneration && savedOutfit.Items.Count >= 1)
+            if (_cacheSettings.EnablePreGeneration && savedOutfit?.Items?.Count >= 1)
             {
                 var imagePath = await PreGenerateOutfitImageAsync(savedOutfit);
                 

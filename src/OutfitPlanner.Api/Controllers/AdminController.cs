@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.DTOs.Admin;
-using OutfitPlanner.Application.Features.Admin.DTOs;
 using OutfitPlanner.Application.Features.Admin.Requests.Commands;
 using OutfitPlanner.Application.Features.Admin.Requests.Queries;
+using OutfitPlanner.Application.Features.Admin.Queries;
+using OutfitPlanner.Application.Contracts.Infrastructure;
+using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Infrastructure.Services;
 
 namespace OutfitPlanner.Api.Controllers;
@@ -41,6 +43,113 @@ public class AdminController : ControllerBase
         {
             _logger.LogError(ex, "Failed to get locked out accounts");
             return StatusCode(500, new { message = "Failed to retrieve locked accounts" });
+        }
+    }
+
+    // Analytics Dashboard
+    [HttpGet("analytics/dashboard")]
+    public async Task<ActionResult<AnalyticsDashboardDto>> GetAnalyticsDashboard()
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetDashboardAnalyticsQuery(null, null));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get analytics dashboard");
+            return StatusCode(500, new { message = "Failed to retrieve analytics dashboard" });
+        }
+    }
+
+    // Role Management
+    [HttpGet("roles")]
+    public async Task<ActionResult<List<RoleDto>>> GetRoles()
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetRolesQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get roles");
+            return StatusCode(500, new { message = "Failed to retrieve roles" });
+        }
+    }
+
+    [HttpGet("roles/users")]
+    public async Task<ActionResult<List<UserRoleDto>>> GetUserRoles()
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetUserRolesQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get user roles");
+            return StatusCode(500, new { message = "Failed to retrieve user roles" });
+        }
+    }
+
+    [HttpGet("roles/management")]
+    public async Task<ActionResult<RoleManagementDto>> GetRoleManagement()
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetRoleManagementQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get role management data");
+            return StatusCode(500, new { message = "Failed to retrieve role management data" });
+        }
+    }
+
+    [HttpPost("roles/assign")]
+    public async Task<ActionResult<Result>> AssignRole([FromBody] RoleAssignmentRequest request)
+    {
+        try
+        {
+            var result = await _mediator.Send(new AssignRoleCommand(request.UserId, request.Role));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to assign role");
+            return StatusCode(500, new { message = "Failed to assign role" });
+        }
+    }
+
+    [HttpPost("roles/update")]
+    public async Task<ActionResult<Result>> UpdateUserRole([FromBody] RoleAssignmentRequest request)
+    {
+        try
+        {
+            var result = await _mediator.Send(new UpdateUserRoleCommand(request.UserId, request.Role));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to update user role");
+            return StatusCode(500, new { message = "Failed to update user role" });
+        }
+    }
+
+    [HttpDelete("roles/{userId}/{role}")]
+    public async Task<ActionResult<Result>> RemoveRole(string userId, string role)
+    {
+        try
+        {
+            var result = await _mediator.Send(new RemoveRoleCommand(userId, role));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to remove role");
+            return StatusCode(500, new { message = "Failed to remove role" });
         }
     }
 
@@ -384,29 +493,20 @@ public class AdminController : ControllerBase
         }
     }
 
-    // Audit Logs
-    [HttpGet("audit-logs")]
-    public async Task<ActionResult<PaginatedResult<AuditLogDto>>> GetAuditLogs([FromQuery] AuditLogFilterRequest filter)
-    {
-        try
-        {
-            var result = await _mediator.Send(new GetAuditLogsQuery(filter));
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to get audit logs");
-            return StatusCode(500, "Internal server error");
-        }
-    }
-
+    
     // System Operations
     [HttpPost("system/backup")]
     public async Task<ActionResult<BackupResult>> CreateBackup([FromBody] CreateBackupRequest request)
     {
         try
         {
-            var result = await _mediator.Send(new CreateBackupCommand(request));
+            var result = await _mediator.Send(new CreateBackupCommand(
+                request.Name,
+                request.Description,
+                request.IncludeFiles,
+                request.Compress,
+                request.ExcludedTables
+            ));
             return Ok(result);
         }
         catch (Exception ex)
@@ -442,6 +542,211 @@ public class AdminController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to clear cache");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    // User Activity Management
+    [HttpGet("activities")]
+    public async Task<ActionResult<PaginatedResult<OutfitPlanner.Application.Contracts.Infrastructure.UserActivity>>> GetUserActivities(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? userId = null,
+        [FromQuery] ActivityType? activityType = null,
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetUserActivitiesQuery(pageNumber, pageSize, userId, activityType, startDate, endDate));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get user activities");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("activities/{userId}/login-history")]
+    public async Task<ActionResult<PaginatedResult<UserLoginHistory>>> GetUserLoginHistory(
+        string userId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetUserLoginHistoryQuery(userId, pageNumber, pageSize));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get login history for user: {UserId}", userId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("activities/statistics")]
+    public async Task<ActionResult<UserActivityStatistics>> GetUserActivityStatistics(
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetUserActivityStatisticsQuery(startDate, endDate));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get user activity statistics");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("activities/active-users")]
+    public async Task<ActionResult<IEnumerable<ActiveUser>>> GetActiveUsers()
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetActiveUsersQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get active users");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("activities/{userId}/session-info")]
+    public async Task<ActionResult<UserSessionInfo?>> GetUserSessionInfo(string userId)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetUserSessionInfoQuery(userId));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get session info for user: {UserId}", userId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("activities/analytics")]
+    public async Task<ActionResult<UserActivityAnalytics>> GetUserActivityAnalytics()
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetUserActivityAnalyticsQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get user activity analytics");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("activities/trends")]
+    public async Task<ActionResult<UserActivityTrends>> GetUserActivityTrends(
+        [FromQuery] DateTime startDate,
+        [FromQuery] DateTime endDate)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetUserActivityTrendsQuery(startDate, endDate));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get user activity trends");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    // Audit Log Management
+    [HttpGet("audit-logs")]
+    public async Task<ActionResult<PaginatedResult<AuditLog>>> GetAuditLogs(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? userId = null,
+        [FromQuery] string? action = null,
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetAuditLogsQuery(pageNumber, pageSize, userId, action, startDate, endDate));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get audit logs");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("audit-logs/{id}")]
+    public async Task<ActionResult<AuditLog?>> GetAuditLogDetails(Guid id)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetAuditLogDetailsQuery(id));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get audit log details for ID: {Id}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("audit-logs/statistics")]
+    public async Task<ActionResult<AuditLogStatistics>> GetAuditLogStatistics(
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetAuditLogStatisticsQuery(startDate, endDate));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get audit log statistics");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("audit-logs/analytics")]
+    public async Task<ActionResult<AuditLogAnalytics>> GetAuditLogAnalytics()
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetAuditLogAnalyticsQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get audit log analytics");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("audit-logs/trends")]
+    public async Task<ActionResult<AuditLogTrends>> GetAuditLogTrends(
+        [FromQuery] DateTime startDate,
+        [FromQuery] DateTime endDate)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetAuditLogTrendsQuery(startDate, endDate));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get audit log trends");
             return StatusCode(500, "Internal server error");
         }
     }
