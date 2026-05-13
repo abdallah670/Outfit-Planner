@@ -13,3 +13,9 @@ public class VoteOnPollCommand : IRequest<BaseCommandResponse>
     public Guid PollId { get; set; }
     public CastVoteDto Request { get; set; } = new();
 }
+
+public class UnVoteOnPollCommand : IRequest<BaseCommandResponse>
+{
+    public string UserId { get; set; } = string.Empty;
+    public unCastVoteDto Request { get; set; } = new();
+}

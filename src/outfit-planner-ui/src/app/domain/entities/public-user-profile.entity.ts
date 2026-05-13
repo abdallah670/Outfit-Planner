@@ -4,7 +4,7 @@
 export interface PublicUserProfile {
   id: string;
   name: string;
-  userName: string; // handle
+  username: string; // handle (lowercase to match [JsonPropertyName("username")] in backend)
   profilePictureUrl?: string;
   bio?: string;
   createdAt: Date;
@@ -15,6 +15,8 @@ export interface PublicUserProfile {
   totalWears: number;
   followersCount: number;
   followingCount: number;
+  isfollowing: boolean;
+  
 
   // Style profile (optional)
   styleProfile?: {

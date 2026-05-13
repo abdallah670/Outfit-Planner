@@ -41,13 +41,6 @@
           <h3>Poll Options</h3>
           <div formArrayName="options">
             <div *ngFor="let option of optionsArray.controls; let i = index" class="option-row">
-              <mat-form-field appearance="outline" class="option-field">
-                <mat-label>Option {{ i + 1 }}</mat-label>
-                <input matInput [formControlName]="i" placeholder="Enter option text...">
-                <mat-error *ngIf="option.get('description')?.hasError('required')">
-                  Option text is required
-                </mat-error>
-              </mat-form-field>
               <button 
                 mat-icon-button 
                 color="warn" 

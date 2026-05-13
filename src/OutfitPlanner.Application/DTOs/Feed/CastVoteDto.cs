@@ -10,11 +10,11 @@ public class CastVoteDto
 {
     [Required]
     public Guid OptionId { get; set; }
+
+}
+public class unCastVoteDto
+{
     
-    [Range(1, 5)]
-    public int Rating { get; set; }
-    
-    public string? Comment { get; set; }
-    
-    public bool IsAnonymous { get; set; }
+    [Required]
+    public Guid OptionId { get; set; }
 }

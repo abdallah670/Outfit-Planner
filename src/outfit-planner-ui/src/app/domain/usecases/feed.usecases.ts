@@ -4,13 +4,18 @@ import { FEED_REPOSITORY, FeedRepository } from '../repositories/feed.repository
 import { FeedPost } from '../entities/feed.entity';
 import { PostComment } from '../entities/feed.entity';
 import { CommandResponse, CursorPagedResult } from '../entities/response.entity';
+import {  PollsRepository } from '../repositories/polls.repository';
+import { POLLS_REPOSITORY } from '../repositories/polls.repository';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class FeedUseCases {
+  
   constructor(
     @Inject(FEED_REPOSITORY) private readonly feedRepository: FeedRepository,
+    @Inject(POLLS_REPOSITORY) private readonly pollsRepository: PollsRepository,
   ) {}
 
   getFeedPosts(
@@ -63,5 +68,12 @@ export class FeedUseCases {
 
   createOutfitPost(dto: { outfitId: string; caption?: string; visibility: number }): Observable<CommandResponse> {
     return this.feedRepository.createOutfitPost(dto);
+  }
+   voteOnPoll(pollId: string, optionId: string): Observable<CommandResponse> {
+    return this.pollsRepository.vote(pollId, {optionId});
+  }
+
+  removeVote( optionId: string): Observable<void> {
+    return this.pollsRepository.removeVote(optionId);
   }
 }

@@ -92,6 +92,7 @@ export enum PrivacyLevel {
 
 export interface UpdateUserProfileRequest {
   name?: string;
+  bio?: string;
   styleProfile?: UserStyleProfile;
   preferences?: UserPreferences;
 }

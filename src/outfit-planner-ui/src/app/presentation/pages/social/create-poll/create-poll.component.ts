@@ -187,26 +187,26 @@ export class CreatePollComponent implements OnInit {
     };
     reader.readAsDataURL(file);
 
-    this.pollsRepository.uploadPollImage(file).subscribe({
-      next: (imageUrl: string) => {
-        const currentImages = this.uploadedImages();
-        currentImages.set(optionIndex, imageUrl);
-        this.uploadedImages.set(new Map(currentImages));
+    // this.pollsRepository.uploadPollImage(file).subscribe({
+    //   next: (imageUrl: string) => {
+    //     const currentImages = this.uploadedImages();
+    //     currentImages.set(optionIndex, imageUrl);
+    //     this.uploadedImages.set(new Map(currentImages));
 
-        const currentUploading = this.uploadingOptions();
-        currentUploading.delete(optionIndex);
-        this.uploadingOptions.set(new Set(currentUploading));
+    //     const currentUploading = this.uploadingOptions();
+    //     currentUploading.delete(optionIndex);
+    //     this.uploadingOptions.set(new Set(currentUploading));
 
-        const options = this.pollForm.get('options') as FormArray;
-        const optionGroup = options.at(optionIndex) as FormGroup;
-        optionGroup.patchValue({ outfitId: imageUrl });
-      },
-      error: () => {
-        const currentUploading = this.uploadingOptions();
-        currentUploading.delete(optionIndex);
-        this.uploadingOptions.set(new Set(currentUploading));
-      },
-    });
+    //     const options = this.pollForm.get('options') as FormArray;
+    //     const optionGroup = options.at(optionIndex) as FormGroup;
+    //     optionGroup.patchValue({ outfitId: imageUrl });
+    //   },
+    //   error: () => {
+    //     const currentUploading = this.uploadingOptions();
+    //     currentUploading.delete(optionIndex);
+    //     this.uploadingOptions.set(new Set(currentUploading));
+    //   },
+    // });
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal ,CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +17,7 @@ type TabType = 'activity' | 'followers' | 'following';
 @Component({
   selector: 'app-public-profile',
   standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule],
   templateUrl: './public-profile.component.html',
   styleUrls: ['./public-profile.component.scss']
@@ -45,6 +46,7 @@ export class PublicProfileComponent implements OnInit {
 
   // Follow state
   isFollowing = signal(false);
+  followLoading = signal(false);
 
   // Activity Feed
   activityPosts = signal<FeedPost[]>([]);
@@ -63,13 +65,14 @@ export class PublicProfileComponent implements OnInit {
   followingLoading = signal(false);
   followingHasMore = signal(false);
   followingCursor = signal<string | null>(null);
+  followedUserIds = signal<Set<string>>(new Set());
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('userId');
     if (id) {
       this.userId.set(id);
       this.loadPublicProfile(id);
-      this.checkFollowStatus(id);
+      //this.checkFollowStatus(id);
     }
   }
 
@@ -240,9 +243,80 @@ export class PublicProfileComponent implements OnInit {
     if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
     return num.toString();
   }
+  toggleFollowListUser(userId: string, event: Event): void {
+    event.stopPropagation();
 
-  toggleReaction(post: any): void {
-    // TODO: Implement reaction toggle functionality
-    console.log('Toggle reaction for post:', post);
+    const isFollowing = this.followedUserIds().has(userId);
+
+    if (isFollowing) {
+      this.followUseCases.unfollowUser(userId).subscribe({
+        next: () => {
+          // Update the specific user in the list
+          this.followingList.update(list =>
+            list.map(u => u.userId === userId ? { ...u, isFollowing: false } : u)
+          );
+        }
+      });
+    } else {
+      this.followUseCases.followUser(userId).subscribe({
+        next: () => {
+          // Update the specific user in the list
+          this.followingList.update(list =>
+            list.map(u => u.userId === userId ? { ...u, isFollowing: true } : u)
+          );
+        }
+      });
+    }
+  }
+  toggleVote(post:FeedPost,optionId: string, event: Event): void {
+    event.stopPropagation();
+    const poll = post?.poll;
+    if (!poll) return;
+
+    // if (poll.userVotedOptionId === optionId) {
+    //   this.feedUseCases.removeVote(poll.id,optionId).subscribe({
+    //     next: () => post.poll?.userVotedOptionId = null
+    //   });
+    // } else {
+    //   this.feedUseCases.voteOnPoll(poll.id, optionId).subscribe({
+    //     next: () => post.poll?.userVotedOptionId = optionId
+    //   });
+    // }
+  }
+  toggleReaction(post: FeedPost,event:Event): void {
+    // event.stopPropagation();
+    // const hasLiked = post.hasLiked;
+    // const isOwner = post.isOwner;
+    // if (isOwner) return;
+    
+    // if (hasLiked) {
+    //   this.feedUseCases.unlikePost(post.id).subscribe({
+    //     next: () => post.hasLiked = false
+    //   });
+    // } else {
+    //   this.feedUseCases.likePost(post.id).subscribe({
+    //     next: () => post.hasLiked = true
+    //   });
+    // }
+    
+    
+
+  }
+  getTimeAgo(dateString: Date): string {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMonths = Math.floor(diffMs / 2592000000);
+    const diffYears = Math.floor(diffMs / 31536000000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 30) return `${diffDays}d ago`;
+    if (diffMonths < 12) return `${diffMonths}mo ago`;
+    return `${diffYears}y ago`;
   }
 }

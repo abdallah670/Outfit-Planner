@@ -116,6 +116,7 @@ public class MappingProfile : Profile
         // User - To Profile DTO
         CreateMap<User, UserProfileDto>()
             .ForMember(d => d.Email, opt => opt.MapFrom(s => s.Email ?? string.Empty))
+            .ForMember(d => d.Bio, opt => opt.MapFrom(s => s.Bio))
             .ForMember(d => d.StyleProfile, opt => opt.MapFrom(s => s.StyleProfile))
             .ForMember(d => d.Preferences, opt => opt.MapFrom(s => s.Preferences));
 
@@ -145,6 +146,7 @@ public class MappingProfile : Profile
         // Update DTOs to Entities
         CreateMap<UpdateUserProfileDto, User>()
             .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Name))
+            .ForMember(d => d.Bio, opt => opt.MapFrom(s => s.Bio))
             .ForMember(d => d.ProfilePictureUrl, opt => opt.Ignore());
 
         CreateMap<UpdateStyleProfileDto, UserStyleProfile>()
@@ -176,6 +178,7 @@ public class MappingProfile : Profile
         // Update DTOs to Entities
         CreateMap<UpdateUserProfileDto, User>()
             .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Name))
+            .ForMember(d => d.Bio, opt => opt.MapFrom(s => s.Bio))
             .ForMember(d => d.ProfilePictureUrl, opt => opt.Ignore());
 
         CreateMap<UpdateStyleProfileDto, UserStyleProfile>()
@@ -206,13 +209,13 @@ public class MappingProfile : Profile
 
         // PollOption
         CreateMap<PollOption, PollOptionDto>()
-            .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.Votes.Count));
+            .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.Votes.Count))
+            .ForMember(d => d.OutfitThumbnail, opt => opt.MapFrom(s => s.Outfit != null ? s.Outfit.ImageUrl : null))
+            .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Outfit != null ? s.Outfit.Name : "Option"));
 
         CreateMap<PollOptionDto, PollOption>();
 
-        // Vote
-        CreateMap<Vote, VoteDto>()
-            .ForMember(d => d.Rating, opt => opt.MapFrom(s => s.Rating));
+     
 
         CreateMap<VoteDto, Vote>();
 

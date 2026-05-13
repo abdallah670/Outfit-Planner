@@ -39,7 +39,7 @@ public record AdminPostDto(
     // Optional Poll details
     Guid? PollId = null,
     string? PollQuestion = null,
-    List<string>? PollOptions = null,
+    List<Guid>? PollOptions = null,
     List<int>? PollOptionVotes = null,
     int? TotalPollVotes = null,
     DateTime? PollExpiresAt = null

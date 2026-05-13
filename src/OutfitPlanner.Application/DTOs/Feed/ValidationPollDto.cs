@@ -17,5 +17,6 @@ public class ValidationPollDto
     public string Status { get; set; } = string.Empty;
     public List<PollOptionDto> Options { get; set; } = new();
     public int TotalVotes { get; set; }
+    public Guid? UserVotedOptionId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

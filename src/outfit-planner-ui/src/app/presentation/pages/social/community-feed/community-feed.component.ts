@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, ViewEncapsulation, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -17,7 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TrendingOutfitsComponent } from '../trending-outfits/trending-outfits.component';
 
-type FilterType = 'all' | 'outfits' | 'polls';
 type FeedTab = 'all' | 'following' | 'trending' | 'my-outfits' | 'my-polls' | 'my-followers' | 'my-following';
 
 interface FeedTabConfig {
@@ -26,47 +25,30 @@ interface FeedTabConfig {
   icon?: string;
 }
 
-  @Component({
-    selector: 'app-community-feed',
-    standalone: true,
-    imports: [
-      CommonModule,
-      FormsModule,
-      RouterModule,
-      MatIconModule,
-      TrendingOutfitsComponent,
-    ],
-    templateUrl: './community-feed.component.html',
-    styleUrl: './community-feed.component.scss',
-    encapsulation: ViewEncapsulation.None,
-  })
+@Component({
+  selector: 'app-community-feed',
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    TrendingOutfitsComponent,
+  ],
+  templateUrl: './community-feed.component.html',
+  styleUrl: './community-feed.component.scss',
+  encapsulation: ViewEncapsulation.Emulated,
+})
 export class CommunityFeedComponent implements OnInit {
   private store = inject(Store);
   private router = inject(Router);
 
+  readonly PostType = PostType;
+
   activeTab = signal<FeedTab>('all');
 
-  goBack(): void {
-    this.router.navigate(['/']);
-  }
-
-  // Feed posts (used for "all", "my-outfits", "my-polls" tabs - backend handles filtering)
-  private allPostsSignal = toSignal(this.store.select(selectPosts), { initialValue: [] as FeedPost[] }) as () => FeedPost[];
-  loading = toSignal(this.store.select(selectFeedLoading), { initialValue: false });
-  nextCursor = toSignal(this.store.select(selectNextCursor), { initialValue: null as string | null });
-  hasMore = toSignal(this.store.select(selectHasMore), { initialValue: false });
-
-  // Placeholder for user avatar - can be replaced with real auth state
-  userAvatar = signal<string>('');
-
-  /** Display posts based on active tab. Backend handles filtering via postType parameter. */
-  displayPosts = computed((): FeedPost[] => {
-    return this.allPostsSignal();
-  });
-
-  /** Whether the trending tab is active (shows TrendingOutfitsComponent instead of posts grid) */
-  isTrending = computed(() => this.activeTab() === 'trending');
-
+  // Feed tabs — populated from API / config
   feedTabs: FeedTabConfig[] = [
     { value: 'all', label: 'All' },
     { value: 'following', label: 'Following' },
@@ -77,6 +59,20 @@ export class CommunityFeedComponent implements OnInit {
     { value: 'my-following', label: 'My Following' },
   ];
 
+  // Feed posts
+  private allPostsSignal = toSignal(this.store.select(selectPosts), { initialValue: [] as FeedPost[] }) as () => FeedPost[];
+  loading = toSignal(this.store.select(selectFeedLoading), { initialValue: false });
+  nextCursor = toSignal(this.store.select(selectNextCursor), { initialValue: null as string | null });
+  hasMore = toSignal(this.store.select(selectHasMore), { initialValue: false });
+
+  userAvatar = signal<string>('');
+
+  displayPosts = computed((): FeedPost[] => {
+    return this.allPostsSignal();
+  });
+
+  isTrending = computed(() => this.activeTab() === 'trending');
+
   ngOnInit(): void {
     this.store.dispatch(FeedActions.loadPosts({ pageSize: 20 }));
   }
@@ -84,7 +80,7 @@ export class CommunityFeedComponent implements OnInit {
   setTab(tab: FeedTab): void {
     this.activeTab.set(tab);
 
-    // For trending tab, no need to load data here — TrendingOutfitsComponent handles it via its own ngOnInit
+    // For trending tab, no need to load data here — TrendingOutfitsComponent handles it
     if (tab === 'trending') {
       return;
     }
@@ -96,7 +92,7 @@ export class CommunityFeedComponent implements OnInit {
   }
 
   viewPostDetail(post: FeedPost): void {
-    if (post.postType === PostType.PollPost && post.pollId) {
+    if (post.postType === PostType.Poll && post.pollId) {
       this.router.navigate(['/social/polls', post.pollId]);
     } else if (post.outfitId) {
       this.router.navigate(['/outfits', post.outfitId]);
@@ -114,20 +110,19 @@ export class CommunityFeedComponent implements OnInit {
     }
   }
 
-  onVoteOnPoll(pollId: string, optionId: string): void {
+  onVoteOnPoll(pollId: string | undefined, optionId: string): void {
+    if (!pollId) return;
     const request: CastVoteRequest = {
-      optionId: optionId,
-      rating: 1,
-      isAnonymous: false,
+      optionId: optionId
     };
     this.store.dispatch(PollsActions.vote({ pollId, request }));
   }
 
-  onViewPollDetail(pollId: string): void {
+  onViewPollDetail(pollId: string | undefined): void {
+    if (!pollId) return;
     this.router.navigate(['/social/polls', pollId]);
   }
 
-  /** Format count: 1200 -> 1.2k */
   formatCount(count: number): string {
     if (count >= 1000000) {
       return (count / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -138,25 +133,21 @@ export class CommunityFeedComponent implements OnInit {
     return count.toString();
   }
 
-  /** Get option label: A, B, C, ... */
   getOptionLabel(index: number): string {
     return String.fromCharCode(65 + index);
   }
 
-  /** Calculate vote percentage for a poll option */
-  getVotePercent(option: PollOption, poll: Poll): number {
-    if (!poll.totalVotes || poll.totalVotes === 0) return 0;
+  getVotePercent(option: PollOption, poll?: Poll): number {
+    if (!poll?.totalVotes || poll.totalVotes === 0) return 0;
     return Math.round((option.voteCount / poll.totalVotes) * 100);
   }
 
-  /** Check if this is the winning poll option */
   isWinningOption(option: PollOption, poll: Poll): boolean {
     if (!poll.options || poll.options.length === 0) return false;
     const maxVotes = Math.max(...poll.options.map(opt => opt.voteCount));
     return option.voteCount === maxVotes && option.voteCount > 0;
   }
 
-  /** Format date to relative time string */
   getTimeAgo(date: Date | string | undefined): string {
     if (!date) return '';
     const now = new Date();
@@ -205,5 +196,13 @@ export class CommunityFeedComponent implements OnInit {
     if (this.hasMore() && this.nextCursor()) {
       this.store.dispatch(FeedActions.loadPosts({ cursor: this.nextCursor() ?? undefined, pageSize: 20 }));
     }
+  }
+
+  openCreatePost(): void {
+    this.router.navigate(['/social/create-outfit-post']);
+  }
+
+  openCreatePoll(): void {
+    this.router.navigate(['/social/create-poll']);
   }
 }

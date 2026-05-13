@@ -23,7 +23,7 @@ export class UserDataSource {
   private readonly apiUrl = `${environment.baseUrl}/user`;
   private readonly baseUrlPrefix = environment.baseUrl.replace(/\/api$/i, '');
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getAbsoluteUrl(url: string | undefined): string | undefined {
     if (!url) return url;
@@ -78,11 +78,11 @@ export class UserDataSource {
   }
 
   unfollowUser(userId: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/users/${userId}/follow`);
+    return this.http.delete<any>(`${this.apiUrl}/users/${userId}/unfollow`);
   }
 
   isFollowing(userId: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/users/${userId}/is-following`);
+    return this.http.get<boolean>(`${this.apiUrl}/users/${userId}/isfollowing`);
   }
 
   getFollowers(userId: string, cursor?: string, pageSize: number = 20): Observable<any> {

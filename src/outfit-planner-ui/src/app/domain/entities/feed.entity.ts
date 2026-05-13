@@ -7,8 +7,8 @@ import { Poll } from './poll.entity';
  * - Outfit = 1 (C# second item default)
  */
 export enum PostType {
-  PollPost = 0,
-  OutfitPost = 1,
+  Poll = 0,
+  Outfit = 1,
 }
 
 export enum Visibility {
@@ -34,6 +34,11 @@ export interface FeedPost {
   commentsCount: number;
   userReaction?: string;
   createdAt: Date;
+  isfollowing?:boolean;
+  isowner?:boolean;
+  hasvoted?:boolean;
+  uservote:string;
+  isliked:boolean;
 }
 
 /**

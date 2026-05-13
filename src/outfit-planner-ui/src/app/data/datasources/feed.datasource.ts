@@ -105,6 +105,27 @@ getUserFeed(
   }
 
   private mapFeedPost(post: any): FeedPost {
+    const resourceUrl = environment.resourceBaseUrl;
+    
+    // Prefix user avatar
+    if (post.userAvatarUrl && !post.userAvatarUrl.startsWith('http')) {
+      post.userAvatarUrl = `${resourceUrl}${post.userAvatarUrl}`;
+    }
+
+    // Prefix outfit image
+    if (post.outfit && post.outfit.imageUrl && !post.outfit.imageUrl.startsWith('http')) {
+      post.outfit.imageUrl = `${resourceUrl}${post.outfit.imageUrl}`;
+    }
+
+    // Prefix poll option thumbnails
+    if (post.poll && post.poll.options) {
+      post.poll.options.forEach((option: any) => {
+        if (option.outfitThumbnail && !option.outfitThumbnail.startsWith('http')) {
+          option.outfitThumbnail = `${resourceUrl}${option.outfitThumbnail}`;
+        }
+      });
+    }
+
     return {
       ...post,
       createdAt: new Date(post.createdAt),
@@ -117,7 +138,13 @@ getUserFeed(
         ...post.poll,
         createdAt: new Date(post.poll.createdAt),
         expiresAt: new Date(post.poll.expiresAt)
-      } : undefined
+      } : undefined,
+        isfollowing:post.isFollowing,
+      isliked:post.isLiked,
+      isowner:post.isOwner,
+      hasvoted:post.hasVoted,
+      uservote:post.userVote
+
     };
   }
 

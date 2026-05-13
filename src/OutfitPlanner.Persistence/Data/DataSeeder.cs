@@ -397,7 +397,6 @@ public class DataSeeder
                     Id = Guid.NewGuid(),
                     PollId = poll.Id,
                     OutfitId = outfits[(i + j) % outfits.Count].Id,
-                    Description = $"Option {j + 1}",
                     DisplayOrder = j,
                     CreatedAt = DateTimeOffset.UtcNow
                 };
@@ -414,8 +413,6 @@ public class DataSeeder
                         PollId = poll.Id,
                         OptionId = option.Id,
                         VoterId = availableUsers[v].Id,
-                        Rating = random.Next(1, 6),
-                        IsAnonymous = random.Next(2) == 0,
                         CreatedAt = DateTimeOffset.UtcNow.AddHours(-random.Next(1, 48))
                     });
                 }
@@ -624,7 +621,7 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(),
                 FollowerId = users[i].Id,
-                FollowingId = users[0].Id,
+                FollowedId = users[0].Id,
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 30))
             });
         }
@@ -638,14 +635,14 @@ public class DataSeeder
                 {
                     Id = Guid.NewGuid(),
                     FollowerId = users[i].Id,
-                    FollowingId = users[j].Id,
+                    FollowedId = users[j].Id,
                     CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 20))
                 });
                 follows.Add(new Follow
                 {
                     Id = Guid.NewGuid(),
                     FollowerId = users[j].Id,
-                    FollowingId = users[i].Id,
+                    FollowedId = users[i].Id,
                     CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 20))
                 });
             }
@@ -660,7 +657,7 @@ public class DataSeeder
             {
                 // Check if this follow relationship already exists
                 var existingFollow = follows.FirstOrDefault(f => 
-                    f.FollowerId == follower.Id && f.FollowingId == following.Id);
+                    f.FollowerId == follower.Id && f.FollowedId == following.Id);
                 
                 if (existingFollow == null)
                 {
@@ -668,7 +665,7 @@ public class DataSeeder
                     {
                         Id = Guid.NewGuid(),
                         FollowerId = follower.Id,
-                        FollowingId = following.Id,
+                        FollowedId = following.Id,
                         CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 15))
                     });
                 }

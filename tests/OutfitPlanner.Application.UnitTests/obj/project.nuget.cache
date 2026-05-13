@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "58ts+ZHs4Kw=",
+  "dgSpecHash": "/uYl1vqFeec=",
   "success": true,
   "projectFilePath": "F:\\Meno\\Outfit-Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
   "expectedPackageFiles": [
@@ -14,6 +14,10 @@
     "C:\\Users\\HP\\.nuget\\packages\\fluentassertions\\8.8.0\\fluentassertions.8.8.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\hangfire.aspnetcore\\1.8.2\\hangfire.aspnetcore.1.8.2.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\hangfire.core\\1.8.2\\hangfire.core.1.8.2.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\hangfire.memorystorage\\1.8.1.2\\hangfire.memorystorage.1.8.1.2.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\hangfire.netcore\\1.8.2\\hangfire.netcore.1.8.2.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\mediatr\\14.0.0\\mediatr.14.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\10.0.5\\microsoft.aspnetcore.authentication.jwtbearer.10.0.5.nupkg.sha512",
@@ -26,11 +30,14 @@
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.codecoverage\\17.12.0\\microsoft.codecoverage.17.12.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.data.sqlclient\\6.1.1\\microsoft.data.sqlclient.6.1.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\6.0.2\\microsoft.data.sqlclient.sni.runtime.6.0.2.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.data.sqlite.core\\8.0.0\\microsoft.data.sqlite.core.8.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.5\\microsoft.entityframeworkcore.10.0.5.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.5\\microsoft.entityframeworkcore.abstractions.10.0.5.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.5\\microsoft.entityframeworkcore.analyzers.10.0.5.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.entityframeworkcore.inmemory\\10.0.5\\microsoft.entityframeworkcore.inmemory.10.0.5.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.5\\microsoft.entityframeworkcore.relational.10.0.5.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\8.0.0\\microsoft.entityframeworkcore.sqlite.8.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\8.0.0\\microsoft.entityframeworkcore.sqlite.core.8.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\10.0.5\\microsoft.entityframeworkcore.sqlserver.10.0.5.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\10.0.5\\microsoft.extensions.caching.abstractions.10.0.5.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.extensions.caching.memory\\10.0.5\\microsoft.extensions.caching.memory.10.0.5.nupkg.sha512",
@@ -75,6 +82,10 @@
     "C:\\Users\\HP\\.nuget\\packages\\serilog.sinks.debug\\3.0.0\\serilog.sinks.debug.3.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\serilog.sinks.file\\7.0.0\\serilog.sinks.file.7.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\sixlabors.imagesharp\\3.1.12\\sixlabors.imagesharp.3.1.12.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.6\\sqlitepclraw.bundle_e_sqlite3.2.1.6.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\sqlitepclraw.core\\2.1.6\\sqlitepclraw.core.2.1.6.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.6\\sqlitepclraw.lib.e_sqlite3.2.1.6.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.6\\sqlitepclraw.provider.e_sqlite3.2.1.6.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.clientmodel\\1.5.1\\system.clientmodel.1.5.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.configuration.configurationmanager\\9.0.4\\system.configuration.configurationmanager.9.0.4.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.diagnostics.eventlog\\9.0.4\\system.diagnostics.eventlog.9.0.4.nupkg.sha512",
@@ -92,6 +103,30 @@
     "C:\\Users\\HP\\.nuget\\packages\\xunit.runner.visualstudio\\2.8.2\\xunit.runner.visualstudio.2.8.2.nupkg.sha512"
   ],
   "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "message": "OutfitPlanner.Infrastructure depends on Hangfire.AspNetCore (>= 1.8.1.2) but Hangfire.AspNetCore 1.8.1.2 was not found. Hangfire.AspNetCore 1.8.2 was resolved instead.",
+      "projectPath": "F:\\Meno\\Outfit-Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
+      "warningLevel": 1,
+      "filePath": "F:\\Meno\\Outfit-Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
+      "libraryId": "Hangfire.AspNetCore",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "message": "OutfitPlanner.Infrastructure depends on Hangfire.Core (>= 1.8.1.2) but Hangfire.Core 1.8.1.2 was not found. Hangfire.Core 1.8.2 was resolved instead.",
+      "projectPath": "F:\\Meno\\Outfit-Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
+      "warningLevel": 1,
+      "filePath": "F:\\Meno\\Outfit-Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
+      "libraryId": "Hangfire.Core",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
     {
       "code": "NU1903",
       "level": "Warning",

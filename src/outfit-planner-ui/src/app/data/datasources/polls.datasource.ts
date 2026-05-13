@@ -55,20 +55,9 @@ export class PollsDataSource {
 
   constructor(private http: HttpClient) {}
 
-  getPolls(): Observable<Poll[]> {
-    return this.http
-      .get<{ items: PollDto[]; totalCount: number }>(`${this.apiUrl}`)
-      .pipe(
-        map((response) => {
-          const polls = response.items || [];
-          return polls.map((p: PollDto) => this.mapPollDtoToEntity(p));
-        }),
-      );
-  }
-
   getUserPolls(): Observable<Poll[]> {
     return this.http
-      .get<PollDto[]>(`${this.apiUrl}/my`)
+      .get<PollDto[]>(`${this.apiUrl}/my-polls`)
       .pipe(
         map((polls: PollDto[]) =>
           polls.map((p: PollDto) => this.mapPollDtoToEntity(p)),
@@ -90,6 +79,11 @@ export class PollsDataSource {
     return this.http.post<CommandResponse>(`${this.apiUrl}/${pollId}/vote`, dto);
   }
 
+  removeVote(optionId:string): Observable<void> {
+   return this.http.delete<void>(`${this.apiUrl}/vote`, { body: optionId });
+
+  }
+
   updatePoll(pollId: string, request: UpdatePollRequest): Observable<Poll> {
     return this.http.put<PollDto>(`${this.apiUrl}/${pollId}`, request)
       .pipe(map((poll: PollDto) => this.mapPollDtoToEntity(poll)));
@@ -103,12 +97,6 @@ export class PollsDataSource {
     return this.http.post<void>(`${this.apiUrl}/${pollId}/close`, {});
   }
 
-  uploadPollImage(file: File): Observable<string> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<{ url: string }>(`${environment.baseUrl}/poll-image-upload/upload`, formData)
-      .pipe(map(res => res.url));
-  }
 
   getRecentPollWithComments(cursor?: string, pageSize: number = 20): Observable<{ poll: Poll; comments: any[] }> {
     let url = `${this.apiUrl}/recent-poll?commentsPageSize=${pageSize}`;
@@ -150,14 +138,17 @@ export class PollsDataSource {
   }
 
   private mapOptionDtoToEntity(dto: PollOptionDto): PollOption {
+    const resourceUrl = environment.resourceBaseUrl;
     return {
       id: dto.id,
       pollId: dto.pollId,
       outfitId: dto.outfitId,
-      description: dto.description,
+    
       displayOrder: dto.displayOrder,
       voteCount: dto.voteCount,
-      outfitThumbnail: dto.outfitThumbnail,
+      outfitThumbnail: dto.outfitThumbnail && !dto.outfitThumbnail.startsWith('http') 
+        ? `${resourceUrl}${dto.outfitThumbnail}` 
+        : dto.outfitThumbnail,
     };
   }
 }

@@ -49,19 +49,13 @@ namespace OutfitPlanner.Api.Middleware{
                 case NotFoundException notFoundException:
                     statusCode = HttpStatusCode.NotFound;
                     break;
-                // case DbUpdateConcurrencyException concurrencyEx:
-                //     statusCode = HttpStatusCode.Conflict;
-                //     errorDetails.ErrorType = "ConcurrencyError";
-                //     errorDetails.ErrorMessage = "The data you are trying to update has been modified or deleted by another user. Please refresh and try again.";
-                //     result = JsonSerializer.Serialize(errorDetails);
-                //     _logger.LogWarning(concurrencyEx, "Concurrency conflict detected during update.");
-                //     break;
                 default:
+                    // Log unhandled exceptions
+                    _logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
                     break;
             }
             httpContext.Response.StatusCode = (int)statusCode;
             await httpContext.Response.WriteAsync(result);
-            
         }
     }
     public class ErrorDetails

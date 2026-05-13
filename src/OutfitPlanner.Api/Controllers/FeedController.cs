@@ -66,9 +66,11 @@ public class FeedController : ControllerBase
     {
         try
         {
+            var viewerId = User.Identity?.IsAuthenticated == true ? GetUserId() : null;
             var query = new GetUserFeedQuery
             {
                 UserId = userId,
+                ViewerUserId = viewerId,
                 Cursor = cursor,
                 PageSize = pageSize,
                 PostType = postType
@@ -82,6 +84,29 @@ public class FeedController : ControllerBase
             _logger.LogError(ex, "Error retrieving feed for user {UserId}", userId);
             return StatusCode(500, new { message = "Failed to retrieve user feed" });
         }
+    }
+
+    /// <summary>
+    /// Get my own posts
+    /// </summary>
+    [HttpGet("my-posts")]
+    public async Task<ActionResult<CursorPagination.CursorPagedResult<FeedPostDto>>> GetMyPosts(
+        [FromQuery] string? cursor = null,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? sortBy = "recent",
+        [FromQuery] string? postType = null)
+    {
+        var userId = GetUserId();
+        var query = new GetUserFeedQuery
+        {
+            UserId = userId,
+            Cursor = cursor,
+            PageSize = pageSize,
+            PostType = postType
+        };
+        
+        var posts = await _mediator.Send(query);
+        return Ok(posts);
     }
 
     /// <summary>

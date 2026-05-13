@@ -16,6 +16,9 @@ interface TrendingOutfitDto {
   commentsCount: number;
   trendingScore: number;
   createdAt: string;
+  isFollowing?:boolean;
+  isOwner?:boolean;
+  isLiked:boolean;
 }
 
 @Injectable({
@@ -43,13 +46,16 @@ export class TrendingDataSource {
       userId: dto.userId,
       userName: dto.userName,
       userAvatar: dto.userAvatar || 'assets/default-avatar.png',
-      imageUrl: dto.imageUrl || 'assets/placeholder.png',
+      imageUrl:  dto.imageUrl && !dto.imageUrl.startsWith('http') 
+        ? `${environment.resourceBaseUrl}${dto.imageUrl}` 
+        : dto.imageUrl || 'assets/placeholder.png',
       likes: dto.voteCount,
       comments: dto.commentsCount,
-      occasion: 'Trending',
       trendingScore: dto.trendingScore,
-      voteId: '', // Legacy field for mapping compatibility
       createdAt: new Date(dto.createdAt),
+      isfollowing:dto.isFollowing,
+      isliked:dto.isLiked,
+      isowner:dto.isOwner
     };
   }
 }

@@ -83,7 +83,7 @@ public class GetPostsQueryHandler : IRequestHandler<GetPostsQuery, PaginatedResu
                 // Poll
                 p.PollId,
                 p.Poll != null ? p.Poll.Question : null,
-                p.Poll != null ? p.Poll.Options.OrderBy(o => o.DisplayOrder).Select(o => o.Description).ToList() : null,
+                p.Poll != null ? p.Poll.Options.OrderBy(o => o.DisplayOrder).Select(o => o.Id).ToList() : null,
                 p.Poll != null ? p.Poll.Options.OrderBy(o => o.DisplayOrder).Select(o => o.Votes.Count).ToList() : null,
                 p.Poll != null ? p.Poll.TotalVotes : null,
                 p.Poll != null ? p.Poll.ExpiresAt.DateTime : (DateTime?)null

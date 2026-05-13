@@ -932,13 +932,13 @@ namespace OutfitPlanner.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Follows_FollowerId_FollowingId",
                 table: "Follows",
-                columns: new[] { "FollowerId", "FollowingId" },
+                columns: new[] { "FollowerId", "FollowedId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Follows_FollowingId",
                 table: "Follows",
-                column: "FollowingId");
+                column: "FollowedId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_CreatedAt",

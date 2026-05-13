@@ -11,6 +11,7 @@ public class UserProfileDto
     [JsonPropertyName("username")]
     public string UserName { get; set; } = string.Empty; // Handle (@username)
     public string? ProfilePictureUrl { get; set; }
+    public string? Bio { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? LastLogin { get; set; }
     

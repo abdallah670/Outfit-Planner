@@ -11,6 +11,7 @@ namespace OutfitPlanner.Application.Features.Feed.Requests.Queries;
 public class GetUserFeedQuery : IRequest<CursorPagination.CursorPagedResult<FeedPostDto>>
 {
     public string UserId { get; set; } = string.Empty;
+    public string? ViewerUserId { get; set; } // The currently logged-in user viewing the profile
     public string? Cursor { get; set; }
     public int PageSize { get; set; } = 20;
     public string? PostType { get; set; } // "OutfitPost", "PollPost", or null for all

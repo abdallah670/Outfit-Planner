@@ -10,6 +10,7 @@ export interface Poll {
   status: PollStatus;
   options: PollOption[];
   totalVotes: number;
+  userVotedOptionId?: string;
   createdAt: Date;
 }
 
@@ -20,7 +21,6 @@ export interface PollOption {
   id: string;
   pollId?: string;
   outfitId?: string;
-  description: string;
   displayOrder: number;
   voteCount: number;
   outfitThumbnail?: string;
@@ -34,9 +34,6 @@ export interface Vote {
   pollId: string;
   optionId: string;
   voterId: string;
-  rating: number;
-  comment?: string;
-  isAnonymous: boolean;
   createdAt: Date;
 }
 
@@ -65,7 +62,6 @@ export interface UpdatePollRequest {
  */
 export interface CreatePollOptionRequest {
   outfitId?: string;
-  description: string;
   displayOrder?: number;
 }
 
@@ -74,9 +70,6 @@ export interface CreatePollOptionRequest {
  */
 export interface CastVoteRequest {
   optionId: string;
-  rating: number;
-  comment?: string;
-  isAnonymous: boolean;
 }
 
 /**
@@ -96,11 +89,10 @@ export interface RecentPollWithCommentsDto {
 /**
  * Helper to map PollOption from ValidationPoll to local interface
  */
-export function mapPollOptionToDisplayOption(option: PollOption): { id: string; imageUrl: string; label: string; votes: number } {
+export function mapPollOptionToDisplayOption(option: PollOption): { id: string; imageUrl: string; votes: number } {
   return {
     id: option.id,
     imageUrl: option.outfitThumbnail || '',
-    label: option.description,
     votes: option.voteCount,
   };
 }

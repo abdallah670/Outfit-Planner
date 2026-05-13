@@ -10,18 +10,18 @@ import { CursorPagedResult } from '../../domain/entities/response.entity';
 })
 export class FollowDataSource {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.baseUrl}/api/follow`;
+  private apiUrl = `${environment.baseUrl}/user/users`;
 
   followUser(userId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${userId}`, {});
+    return this.http.post(`${this.apiUrl}/${userId}/follow`, {});
   }
 
   unfollowUser(userId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${userId}`);
+    return this.http.delete(`${this.apiUrl}/${userId}/unfollow`);
   }
 
   isFollowing(userId: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/${userId}/status`);
+    return this.http.get<boolean>(`${this.apiUrl}/${userId}/isfollowing`);
   }
 
   getFollowers(userId: string, cursor?: string, pageSize: number = 20): Observable<CursorPagedResult<Follower>> {

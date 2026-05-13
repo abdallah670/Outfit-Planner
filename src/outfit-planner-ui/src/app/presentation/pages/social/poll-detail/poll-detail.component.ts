@@ -47,7 +47,7 @@ import { Poll, PollOption, CastVoteRequest, PollStatus } from '../../../../domai
                 <span class="option-letter">{{ getLetter(i) }}</span>
               </div>
               <div class="option-info">
-                <p class="description">{{ option.description }}</p>
+                
                 
                 <!-- Progress Bar for results (shown if expired or voted) -->
                 <div class="results-container" *ngIf="p.status !== PollStatus.Active || hasVoted()">
@@ -212,8 +212,6 @@ export class PollDetailComponent implements OnInit {
   vote(pollId: string, optionId: string): void {
     const request: CastVoteRequest = {
       optionId,
-      rating: 5,
-      isAnonymous: false
     };
     this.store.dispatch(PollsActions.vote({ pollId, request }));
     this.hasVoted.set(true);

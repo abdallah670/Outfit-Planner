@@ -1,158 +1,249 @@
-<div class="profile-container">
+<div class="profile-page">
   <!-- Back Button -->
-  <button class="back-btn" (click)="onBack()">
-    <mat-icon>arrow_back</mat-icon>
-  </button>
+  <div class="back-row">
+    <button class="back-btn" (click)="onBack()">
+      <iconify-icon icon="lucide:arrow-left" style="font-size: 20px"></iconify-icon>
+    </button>
+  </div>
 
   <!-- Profile Card -->
   <div class="profile-card">
-    <div class="profile-header">
-      <div class="avatar-section">
-        <img [src]="publicProfile()?.profilePictureUrl || 'assets/default-avatar.png'" alt="Profile Picture" class="avatar">
+    <div class="profile-card__left">
+      <div class="avatar-wrapper">
+        <img [src]="publicProfile()?.profilePictureUrl || 'assets/default-avatar.png'" alt="Profile Picture" class="avatar-img">
       </div>
-      
-      <div class="info-section">
-        <div class="header-main">
-          <div class="name-handle">
-            <h1 class="display-name">{{ publicProfile()?.name }}</h1>
-            <p class="handle">{{ publicProfile()?.userName }}</p>
-          </div>
-          <button class="follow-btn" [class.following]="isFollowing()" (click)="onFollowToggle()">
-            <mat-icon *ngIf="!isFollowing()">person_add</mat-icon>
-            {{ isFollowing() ? 'Following' : 'Follow' }}
-          </button>
-        </div>
-        
-        <p class="bio">{{ publicProfile()?.bio }}</p>
-        
-        <div class="stats-row">
-          <div class="stat-item">
-            <span class="stat-value">{{ stats().outfits }}</span>
-            <span class="stat-label">Outfits</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">{{ stats().items }}</span>
-            <span class="stat-label">Items</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">{{ formatCount(stats().followers) }}</span>
-            <span class="stat-label">Followers</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">{{ formatCount(stats().following) }}</span>
-            <span class="stat-label">Following</span>
-          </div>
-        </div>
+      <div class="user-info">
+        <h1 class="user-info__name">{{ publicProfile()?.name }}</h1>
+        <span class="user-info__handle" *ngIf="publicProfile()?.username || publicProfile()?.['username']">
+          @{{ publicProfile()?.username || publicProfile()?.['username'] }}
+        </span>
+        <p class="user-info__bio" *ngIf="publicProfile()?.bio; else emptyBio">{{ publicProfile()?.bio }}</p>
+        <ng-template #emptyBio>
+          <p class="user-info__bio user-info__bio--empty">No bio provided.</p>
+        </ng-template>
+        <button class="follow-btn" [class.follow-btn--following]="isFollowing()" [disabled]="followLoading()" (click)="onFollowToggle()">
+          <iconify-icon [icon]="isFollowing() ? 'lucide:user-check' : 'lucide:user-plus'" style="font-size: 16px"></iconify-icon>
+          <span>{{ isFollowing() ? 'Following' : 'Follow' }}</span>
+        </button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat clickable" (click)="setTab('activity')">
+        <span class="stat__value">{{ stats().outfits }}</span>
+        <span class="stat__label">Outfits</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat__value">{{ stats().items }}</span>
+        <span class="stat__label">Items</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat clickable" (click)="setTab('followers')">
+        <span class="stat__value">{{ formatCount(stats().followers) }}</span>
+        <span class="stat__label">Followers</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat clickable" (click)="setTab('following')">
+        <span class="stat__value">{{ formatCount(stats().following) }}</span>
+        <span class="stat__label">Following</span>
       </div>
     </div>
   </div>
 
-  <!-- Tabs -->
-  <nav class="tabs-nav">
-    <button 
-      [class.active]="activeTab() === 'activity'" 
+  <!-- Tab Navigation -->
+  <nav class="tab-nav">
+    <button
+      class="tab-nav__btn"
+      [class.tab-nav__btn--active]="activeTab() === 'activity'"
       (click)="setTab('activity')"
-      mat-button
-    >
-      Activity
-    </button>
-    <button 
-      [class.active]="activeTab() === 'followers'" 
+    >Activity</button>
+    <button
+      class="tab-nav__btn"
+      [class.tab-nav__btn--active]="activeTab() === 'followers'"
       (click)="setTab('followers')"
-      mat-button
-    >
-      Followers
-    </button>
-    <button 
-      [class.active]="activeTab() === 'following'" 
+    >Followers</button>
+    <button
+      class="tab-nav__btn"
+      [class.tab-nav__btn--active]="activeTab() === 'following'"
       (click)="setTab('following')"
-      mat-button
-    >
-      Following
-    </button>
+    >Following</button>
   </nav>
 
-  <!-- Activity Tab Content -->
-  <div class="content-area" *ngIf="activeTab() === 'activity'">
-    <div class="feed-posts" *ngIf="activityPosts().length > 0; else emptyActivity">
-      <div class="post-card" *ngFor="let post of activityPosts()">
-        <div class="post-header">
-          <img [src]="post.userAvatarUrl || 'assets/default-avatar.png'" class="post-avatar">
-          <div class="post-user-info">
-            <strong>{{ post.userName }}</strong>
-            <span>{{ post.createdAt | date:'short' }}</span>
+  <!-- Activity Tab -->
+  <div class="feed" *ngIf="activeTab() === 'activity'">
+    @if (activityPosts().length > 0) {
+      <div class="feed__list">
+        @for (post of activityPosts(); track post.id) {
+          <div class="post-card">
+            <!-- Post Header -->
+            <div class="post-card__header">
+              <div class="post-card__user">
+                <div class="post-card__avatar-wrap">
+                  <img [src]="post.userAvatarUrl || 'assets/default-avatar.png'" class="post-card__avatar-img">
+                </div>
+                <div class="post-card__meta">
+                  <span class="post-card__username">{{ post.userName }}</span>
+                  <span class="post-card__time">{{ getTimeAgo(post.createdAt) }}</span>
+                </div>
+              </div>
+              @if (post.poll) {
+                <div class="post-card__badge">
+                  <iconify-icon icon="lucide:bar-chart-2" style="font-size: 14px"></iconify-icon>
+                  <span>Poll</span>
+                </div>
+              } @else {
+               <span class="post-card__badge">
+                  <iconify-icon icon="lucide:shirt" style="font-size:12px"></iconify-icon>
+                  <span>Outfit</span>
+                </span>
+              }
+            </div>
+
+            <!-- Caption -->
+            @if (post.caption) {
+              <div class="post-card__caption">{{ post.caption }}</div>
+            }
+
+            <!-- Outfit Post Image -->
+            @if (post.outfit) {
+              <div class="post-card__media">
+                <img [src]="post.outfit.imageUrl || 'assets/placeholder-outfit.jpg'" [alt]="post.outfit.name">
+              </div>
+            }
+
+            <!-- Poll Post Content -->
+            @if (post.poll) {
+              <div class="poll-grid">
+                <!-- options start from A then B and so on, depending on the number of options-->
+                @for (option of post.poll.options; track option.id; let i = $index) {
+                  <div class="poll-grid__option" [class.poll-grid__option--left]="i === 0" [class.poll-grid__option--right]="i === 1">
+                    @if (option.outfitThumbnail) {
+                      <img [src]="option.outfitThumbnail || '/assets/placeholder.jpg'" alt="Option {{ i === 0 ? 'A' : 'B' }}" class="poll-grid__img">
+                    } @else {
+                      <div class="poll-grid__img poll-grid__img--placeholder">
+                        <iconify-icon icon="lucide:shirt" style="font-size: 24px"></iconify-icon>
+                      </div>
+                    }
+                    <button class="poll-grid__vote-btn"
+                            [class.poll-grid__vote-btn--voted]="post.poll.userVotedOptionId === option.id"
+                            (click)="toggleVote(post, option.id,$event)">
+                      Vote {{ i === 0 ? 'A' : 'B' }} ({{ post.poll.totalVotes > 0 ? ((option.voteCount / post.poll.totalVotes * 100) | number:'1.0-0') : 0 }}%)
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Post Actions -->
+            <div class="post-card__actions">
+              @if (post.poll) {
+                <!-- Poll-specific actions -->
+                <div class="post-card__action-group">
+                  <iconify-icon icon="lucide:users" style="font-size: 18px"></iconify-icon>
+                  <span class="post-card__action-count">{{ post.poll.totalVotes | number }} votes</span>
+                </div>
+                <button class="post-card__action-btn post-card__action-btn--end">
+                  <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
+                  <span>{{ post.commentsCount }}</span>
+                </button>
+              } @else {
+                <!-- Outfit post actions -->
+                <button class="post-card__action-btn" [class.post-card__action-btn--active]="post.userReaction === 'Heart'" (click)="toggleReaction(post,$event)">
+                  <iconify-icon [icon]="post.userReaction === 'Heart' ? 'lucide:heart-off' : 'lucide:heart'" style="font-size: 20px"></iconify-icon>
+                  <span>{{ post.likesCount }}</span>
+                </button>
+                <button class="post-card__action-btn">
+                  <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
+                  <span>{{ post.commentsCount }}</span>
+                </button>
+              }
+            </div>
           </div>
-        </div>
-        <div class="post-content" [innerHTML]="post.caption || ''"></div>
-        <div class="post-actions">
-          <button class="action-btn" (click)="toggleReaction(post)">
-            <mat-icon>favorite</mat-icon>
-            <span>{{ post.likesCount }}</span>
-          </button>
-        </div>
+        }
+
+        @if (activityHasMore()) {
+          <div class="load-more">
+            <button class="load-more__btn" (click)="loadMoreActivity()" [disabled]="activityLoading()">
+              {{ activityLoading() ? 'Loading...' : 'Load More' }}
+            </button>
+          </div>
+        }
       </div>
-      
-      <div class="load-more-container" *ngIf="activityHasMore()">
-        <button mat-button class="load-more-btn" (click)="loadMoreActivity()" [disabled]="activityLoading()">
-          {{ activityLoading() ? 'Loading...' : 'Load More' }}
-        </button>
-      </div>
-    </div>
-    <ng-template #emptyActivity>
+    } @else {
       <div class="empty-state">
-        <mat-icon>post_add</mat-icon>
+        <iconify-icon icon="lucide:layout-grid" style="font-size: 48px"></iconify-icon>
         <p>No activity yet.</p>
       </div>
-    </ng-template>
+    }
   </div>
 
-  <!-- Followers Tab Content -->
-  <div class="content-area" *ngIf="activeTab() === 'followers'">
-    <div class="user-list" *ngIf="followersList().length > 0; else emptyFollowers">
-      <div class="user-item" *ngFor="let follower of followersList()">
-        <img [src]="follower.follower?.profilePictureUrl || 'assets/default-avatar.png'" class="user-avatar">
-        <div class="user-info">
-          <div class="user-name">{{ follower.follower?.name || 'Unknown' }}</div>
-          <div class="user-handle">@{{ follower.follower?.userName || 'unknown' }}</div>
-        </div>
-        <button class="follow-btn-small">Follow</button>
+  <!-- Followers Tab -->
+  <div class="feed" *ngIf="activeTab() === 'followers'">
+    @if (followersList().length > 0) {
+      <div class="user-list">
+        @for (follower of followersList(); track follower.userId) {
+          <div class="user-list__item" [routerLink]="['/profile', follower.userId]" style="cursor: pointer;">
+            <img [src]="follower.avatarUrl || 'assets/default-avatar.png'" class="user-list__avatar">
+            <div class="user-list__info">
+              <div class="user-list__name">{{ follower.userName || 'Unknown' }}</div>
+              <div class="user-list__handle">@{{ follower.userName || 'unknown' }}</div>
+            </div>
+            <button class="user-list__follow-btn" 
+                    [style.background]="followedUserIds().has(follower.userId) ? '#f3f4f6' : ''"
+                    [style.color]="followedUserIds().has(follower.userId) ? '#1f2937' : ''"
+                    (click)="toggleFollowListUser(follower.userId, $event)">
+              {{ followedUserIds().has(follower.userId) ? 'Following' : 'Follow' }}
+            </button>
+          </div>
+        }
+        @if (followersHasMore()) {
+          <div class="load-more">
+            <button class="load-more__btn" (click)="loadMoreFollowers()" [disabled]="followersLoading()">
+              {{ followersLoading() ? 'Loading...' : 'Load More' }}
+            </button>
+          </div>
+        }
       </div>
-      <div class="load-more-container" *ngIf="followersHasMore()">
-        <button mat-button class="load-more-btn" (click)="loadMoreFollowers()" [disabled]="followersLoading()">
-          {{ followersLoading() ? 'Loading...' : 'Load More' }}
-        </button>
-      </div>
-    </div>
-    <ng-template #emptyFollowers>
+    } @else {
       <div class="empty-state">
-        <mat-icon>people</mat-icon>
+        <iconify-icon icon="lucide:users" style="font-size: 48px"></iconify-icon>
         <p>No followers yet.</p>
       </div>
-    </ng-template>
+    }
   </div>
 
-  <!-- Following Tab Content -->
-  <div class="content-area" *ngIf="activeTab() === 'following'">
-    <div class="user-list" *ngIf="followingList().length > 0; else emptyFollowing">
-      <div class="user-item" *ngFor="let following of followingList()">
-        <img [src]="following.following?.profilePictureUrl || 'assets/default-avatar.png'" class="user-avatar">
-        <div class="user-info">
-          <div class="user-name">{{ following.following?.name || 'Unknown' }}</div>
-          <div class="user-handle">@{{ following.following?.userName || 'unknown' }}</div>
-        </div>
-        <button class="follow-btn-small">Follow</button>
+  <!-- Following Tab -->
+  <div class="feed" *ngIf="activeTab() === 'following'">
+    @if (followingList().length > 0) {
+      <div class="user-list">
+        @for (following of followingList(); track following.userId) {
+          <div class="user-list__item" [routerLink]="['/profile', following.userId]" style="cursor: pointer;">
+            <img [src]="following.avatarUrl || 'assets/default-avatar.png'" class="user-list__avatar">
+            <div class="user-list__info">
+              <div class="user-list__name">{{ following.userName || 'Unknown' }}</div>
+              <div class="user-list__handle">@{{ following.userName || 'unknown' }}</div>
+            </div>
+            <button class="user-list__follow-btn" 
+                    [style.background]="followedUserIds().has(following.userId) ? '#f3f4f6' : ''"
+                    [style.color]="followedUserIds().has(following.userId) ? '#1f2937' : ''"
+                    (click)="toggleFollowListUser(following.userId, $event)">
+              {{'Following' }}
+            </button>
+          </div>
+        }
+        @if (followingHasMore()) {
+          <div class="load-more">
+            <button class="load-more__btn" (click)="loadMoreFollowing()" [disabled]="followingLoading()">
+              {{ followingLoading() ? 'Loading...' : 'Load More' }}
+            </button>
+          </div>
+        }
       </div>
-      <div class="load-more-container" *ngIf="followingHasMore()">
-        <button mat-button class="load-more-btn" (click)="loadMoreFollowing()" [disabled]="followingLoading()">
-          {{ followingLoading() ? 'Loading...' : 'Load More' }}
-        </button>
-      </div>
-    </div>
-    <ng-template #emptyFollowing>
+    } @else {
       <div class="empty-state">
-        <mat-icon>person_add</mat-icon>
+        <iconify-icon icon="lucide:user-plus" style="font-size: 48px"></iconify-icon>
         <p>Not following anyone yet.</p>
       </div>
-    </ng-template>
+    }
   </div>
 </div>

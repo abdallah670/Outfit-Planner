@@ -35,6 +35,12 @@ public class GetPublicUserProfileQueryHandler(
 
         var followersCount = await followRepository.GetFollowersCountAsync(request.UserId);
         var followingCount = await followRepository.GetFollowingCountAsync(request.UserId);
+        
+        var isfollowing = false;
+        if (!string.IsNullOrEmpty(request.RequesterId))
+        {
+            isfollowing = await followRepository.IsFollowingAsync(request.RequesterId, request.UserId);
+        }
 
         // Style profile (if exists)
         PublicUserStyleProfileDto? styleProfile = null;
@@ -63,6 +69,7 @@ public class GetPublicUserProfileQueryHandler(
             TotalWears = totalWears,
             FollowersCount = followersCount,
             FollowingCount = followingCount,
+            IsFollowing = isfollowing,
             StyleProfile = styleProfile
         };
     }

@@ -17,9 +17,9 @@ export class PollsUseCases {
     @Inject(POLLS_REPOSITORY) private readonly pollsRepository: PollsRepository,
   ) {}
 
-  getPolls(): Observable<Poll[]> {
-    return this.pollsRepository.getPolls();
-  }
+  // getPolls(): Observable<Poll[]> {
+  //   return this.pollsRepository.getPolls();
+  // }
 
   getMyPolls(): Observable<Poll[]> {
     return this.pollsRepository.getUserPolls();
@@ -33,8 +33,12 @@ export class PollsUseCases {
     return this.pollsRepository.createPoll(dto);
   }
 
-  voteOnPoll(pollId: string, dto: CastVoteRequest): Observable<CommandResponse> {
-    return this.pollsRepository.vote(pollId, dto);
+  voteOnPoll(pollId: string, optionId: string): Observable<CommandResponse> {
+    return this.pollsRepository.vote(pollId, {optionId});
+  }
+
+  removeVote( optionId: string): Observable<void> {
+    return this.pollsRepository.removeVote(optionId);
   }
 
   updatePoll(pollId: string, request: UpdatePollRequest): Observable<Poll> {
@@ -49,9 +53,9 @@ export class PollsUseCases {
     return this.pollsRepository.closePoll(pollId);
   }
 
-  uploadPollImage(file: File): Observable<string> {
-    return this.pollsRepository.uploadPollImage(file);
-  }
+  // uploadPollImage(file: File): Observable<string> {
+  //   return this.pollsRepository.uploadPollImage(file);
+  // }
 
   getRecentPollWithComments(cursor?: string, pageSize?: number): Observable<{ poll: Poll; comments: any[]; commentsCursor?: string | null; hasMoreComments?: boolean }> {
     return this.pollsRepository.getRecentPollWithComments(cursor, pageSize);

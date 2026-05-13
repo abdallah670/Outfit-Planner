@@ -12,6 +12,7 @@ public class GetFollowersQuery : IRequest<CursorPagination.CursorPagedResult<Fol
     public string UserId { get; set; } = string.Empty;
     public string? Cursor { get; set; }
     public int PageSize { get; set; } = 20;
+    public string? RequesterId { get; set; }
 }
 
 /// <summary>
@@ -23,4 +24,5 @@ public class FollowerDto
     public string UserName { get; set; } = string.Empty;
     public string? AvatarUrl { get; set; }
     public DateTime CreatedAt { get; set; }
+    public bool IsFollowing { get; set; } = false;
 }

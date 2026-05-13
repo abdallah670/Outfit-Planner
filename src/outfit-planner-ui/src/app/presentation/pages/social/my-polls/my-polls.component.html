@@ -55,7 +55,6 @@
 
         <div class="poll-options-preview">
           <div *ngFor="let option of poll.options.slice(0, 3)" class="option-preview">
-            <span class="option-text">{{ option.description }}</span>
             <span class="option-votes">{{ option.voteCount }} votes</span>
           </div>
           <div *ngIf="poll.options.length > 3" class="more-options">
