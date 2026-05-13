@@ -9,13 +9,16 @@ export interface Follower {
   userName: string;
   userAvatarUrl: string;
   createdAt: Date;
+  isFollowing: boolean;
 }
+
 export interface Following {
   id: string;
   userId: string;
   userName: string;
   userAvatarUrl: string;
   createdAt: Date;
+  isFollowing: boolean;
 }
 export interface FollowStats {
   followersCount: number;

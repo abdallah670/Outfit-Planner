@@ -8,6 +8,9 @@ public class UpdateUserProfileDto
 {
     [MaxLength(100)]
     public string? Name { get; set; }
+
+    [MaxLength(500)]
+    public string? Bio { get; set; }
     
     public UpdateStyleProfileDto? StyleProfile { get; set; }
     public UpdateUserPreferencesDto? Preferences { get; set; }

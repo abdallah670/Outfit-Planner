@@ -7,7 +7,7 @@ public class TrendingOutfit : BaseEntity
 {
     public Guid OutfitId { get; set; }
     public Outfit Outfit { get; set; } = null!;
-    
+  
     public Guid? PollId { get; set; }
     public ValidationPoll? Poll { get; set; }
     

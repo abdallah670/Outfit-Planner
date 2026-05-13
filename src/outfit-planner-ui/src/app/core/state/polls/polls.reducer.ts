@@ -34,21 +34,21 @@ export const pollsFeature = createFeature({
   name: 'polls',
   reducer: createReducer(
     initialState,
-    on(PollsActions.loadPolls, (state) => ({
-      ...state,
-      loading: true,
-      error: null,
-    })),
-    on(PollsActions.loadPollsSuccess, (state, { polls }) => ({
-      ...state,
-      polls,
-      loading: false,
-    })),
-    on(PollsActions.loadPollsFailure, (state, { error }) => ({
-      ...state,
-      loading: false,
-      error,
-    })),
+    // on(PollsActions.loadPolls, (state) => ({
+    //   ...state,
+    //   loading: true,
+    //   error: null,
+    // })),
+    // on(PollsActions.loadPollsSuccess, (state, { polls }) => ({
+    //   ...state,
+    //   polls,
+    //   loading: false,
+    // })),
+    // on(PollsActions.loadPollsFailure, (state, { error }) => ({
+    //   ...state,
+    //   loading: false,
+    //   error,
+    // })),
     on(PollsActions.loadUserPolls, (state) => ({
       ...state,
       userPollsLoading: true,

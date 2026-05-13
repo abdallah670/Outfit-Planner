@@ -90,7 +90,6 @@ export class EditPollComponent implements OnInit {
       this.optionsArray.push(
         this.fb.group({
           id: [option.id],
-          description: [option.description, Validators.required],
         })
       );
     });
@@ -124,7 +123,7 @@ export class EditPollComponent implements OnInit {
         context: formValue.context,
         expiresAt: formValue.expiresAt ? formValue.expiresAt.toISOString() : undefined,
         options: formValue.options.map((opt: any): CreatePollOptionRequest => ({
-          description: opt.description,
+         
         })),
       };
 

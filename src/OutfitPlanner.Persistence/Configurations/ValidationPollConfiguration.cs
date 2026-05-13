@@ -31,9 +31,7 @@ public class PollOptionConfiguration : IEntityTypeConfiguration<PollOption>
 {
     public void Configure(EntityTypeBuilder<PollOption> builder)
     {
-        builder.Property(o => o.Description)
-            .IsRequired()
-            .HasMaxLength(200);
+      
 
         builder.HasMany(o => o.Votes)
             .WithOne(v => v.Option)

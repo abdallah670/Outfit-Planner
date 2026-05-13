@@ -15,17 +15,18 @@ public class FollowRepository : GenericRepository<Follow>, IFollowRepository
         _context = context;
     }
 
-    public async Task<bool> IsFollowingAsync(string followerId, string followingId)
+    public async Task<bool> IsFollowingAsync(string followerId, string followedId)
     {
-        return await _dbSet
-            .AnyAsync(f => f.FollowerId == followerId && f.FollowingId == followingId);
+      var follow = await _dbSet
+            .FirstOrDefaultAsync(f => f.FollowerId == followerId && f.FollowedId == followedId);
+        return follow != null;
     }
 
     public async Task<List<Follow>> GetFollowersAsync(string userId, int page, int pageSize)
     {
         return await _dbSet
             .Include(f => f.Follower)
-            .Where(f => f.FollowingId == userId)
+            .Where(f => f.FollowedId == userId)
             .OrderByDescending(f => f.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -35,7 +36,7 @@ public class FollowRepository : GenericRepository<Follow>, IFollowRepository
     public async Task<List<Follow>> GetFollowingAsync(string userId, int page, int pageSize)
     {
         return await _dbSet
-            .Include(f => f.Following)
+            .Include(f => f.Followed)
             .Where(f => f.FollowerId == userId)
             .OrderByDescending(f => f.CreatedAt)
             .Skip((page - 1) * pageSize)
@@ -46,7 +47,7 @@ public class FollowRepository : GenericRepository<Follow>, IFollowRepository
     public async Task<int> GetFollowersCountAsync(string userId)
     {
         return await _dbSet
-            .CountAsync(f => f.FollowingId == userId);
+            .CountAsync(f => f.FollowedId == userId);
     }
 
     public async Task<int> GetFollowingCountAsync(string userId)
@@ -59,7 +60,7 @@ public class FollowRepository : GenericRepository<Follow>, IFollowRepository
     {
         var query = _dbSet
             .Include(f => f.Follower)
-            .Where(f => f.FollowingId == userId)
+            .Where(f => f.FollowedId == userId)
             .AsQueryable();
 
         // Apply cursor filter if provided
@@ -105,7 +106,7 @@ public class FollowRepository : GenericRepository<Follow>, IFollowRepository
     public async Task<CursorPagination.CursorPagedResult<Follow>> GetFollowingCursorAsync(string userId, string? cursor, int pageSize)
     {
         var query = _dbSet
-            .Include(f => f.Following)
+            .Include(f => f.Followed)
             .Where(f => f.FollowerId == userId)
             .AsQueryable();
 

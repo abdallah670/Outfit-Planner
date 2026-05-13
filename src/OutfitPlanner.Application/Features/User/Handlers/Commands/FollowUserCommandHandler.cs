@@ -37,7 +37,7 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, BaseC
         var follow = new Follow
         {
             FollowerId = request.FollowerId,
-            FollowingId = request.FollowingId,
+            FollowedId = request.FollowingId,
             CreatedAt = DateTimeOffset.UtcNow
         };
 

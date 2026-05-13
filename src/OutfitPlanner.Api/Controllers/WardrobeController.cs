@@ -40,7 +40,7 @@ public class WardrobeController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(List<ClothingItemListDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<List<ClothingItemListDto>>> GetAll()
+    public async Task<ActionResult<List<ClothingItemListDto>>> GetAllClothingItems()
     {
         var userId = GetUserId();
         var items = await _mediator.Send(new GetClothingItemListRequest { UserId = userId });
@@ -53,7 +53,7 @@ public class WardrobeController : ControllerBase
     [HttpGet("filtered")]
     [ProducesResponseType(typeof(PagedResult<ClothingItemListDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<PagedResult<ClothingItemListDto>>> GetFiltered(
+    public async Task<ActionResult<PagedResult<ClothingItemListDto>>> GetFilteredClothingItems(
         [FromQuery] string? category,
         [FromQuery] string? color,
         [FromQuery] string? condition,
@@ -92,7 +92,7 @@ public class WardrobeController : ControllerBase
     [ProducesResponseType(typeof(ClothingItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<ClothingItemDto>> GetById(Guid id)
+    public async Task<ActionResult<ClothingItemDto>> GetClothingItemById(Guid id)
     {
         var userId = GetUserId();
         var item = await _mediator.Send(new GetClothingItemByIdRequest { Id = id, UserId = userId });
@@ -123,15 +123,15 @@ public class WardrobeController : ControllerBase
     [ProducesResponseType(typeof(ClothingItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<ClothingItemDto>> Create([FromForm] CreateClothingItemDto request, IFormFile? image)
+    public async Task<ActionResult<ClothingItemDto>> CreateClothingItem([FromForm] CreateClothingItemDto request)
     {
         var userId = GetUserId();
 
-        if (image != null)
+        if (request.Image != null)
         {
             var uploadResult = await _imageStorageService.UploadImageAsync(
-                image.OpenReadStream(),
-                image.FileName,
+                request.Image.OpenReadStream(),
+                request.Image.FileName,
                 userId);
 
             if (uploadResult.Success)
@@ -152,7 +152,7 @@ public class WardrobeController : ControllerBase
             return BadRequest(new BaseCommandResponse { Success = false, Message = "Failed to create clothing item" });
 
         _logger.LogInformation("User {UserId} created clothing item {ItemId}", userId, response.Id);
-        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+        return CreatedAtAction(nameof(GetClothingItemById), new { id = response.Id }, response);
     }
 
     /// <summary>
@@ -163,15 +163,15 @@ public class WardrobeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<ClothingItemDto>> Update(Guid id, [FromForm] UpdateClothingItemDto request, IFormFile? image)
+    public async Task<ActionResult<ClothingItemDto>> UpdateClothingItem(Guid id, [FromForm] UpdateClothingItemDto request)
     {
         var userId = GetUserId();
 
-        if (image != null)
+        if (request.Image != null)
         {
             var uploadResult = await _imageStorageService.UploadImageAsync(
-                image.OpenReadStream(),
-                image.FileName,
+                request.Image.OpenReadStream(),
+                request.Image.FileName,
                 userId);
 
             if (uploadResult.Success)
@@ -199,7 +199,7 @@ public class WardrobeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult> Delete(Guid id)
+    public async Task<ActionResult> DeleteClothingItem(Guid id)
     {
         var userId = GetUserId();
         var command = new DeleteClothingItemCommand
@@ -224,18 +224,13 @@ public class WardrobeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<ClothingItemDto>> RecordWear(Guid id, [FromBody] RecordWearDto dto)
+    public async Task<ActionResult<ClothingItemDto>> RecordClothingItemWear(Guid id, [FromBody] RecordWearDto dto)
     {
         var userId = GetUserId();
-
-        // Ensure DTO matches route parameter
+        
         if (dto.ClothingItemId != id)
         {
-            return BadRequest(new BaseCommandResponse
-            {
-                Success = false,
-                Message = "Clothing item ID in route does not match DTO"
-            });
+            return BadRequest(new BaseCommandResponse { Success = false, Message = "ID mismatch" });
         }
 
         var command = new RecordWearCommand
@@ -244,7 +239,6 @@ public class WardrobeController : ControllerBase
             Request = dto
         };
         var response = await _mediator.Send(command);
-
         return Ok(response);
     }
 

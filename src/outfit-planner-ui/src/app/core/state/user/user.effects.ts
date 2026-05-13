@@ -471,13 +471,14 @@ export const loadUserProfile$ = createEffect(
               id: publicUser.id,
               name: publicUser.name,
               email: '',
-              username: publicUser.userName || '',
+              username: publicUser.username || '',
               profilePictureUrl: publicUser.profilePictureUrl,
               bio: publicUser.bio,
               createdAt: new Date(publicUser.createdAt).toISOString(),
               wardrobeItemCount: publicUser.wardrobeItemCount,
               outfitCount: publicUser.outfitCount,
               totalWears: publicUser.totalWears,
+              
               styleProfile: publicUser.styleProfile ? {
                 style: publicUser.styleProfile.style as any,
                 preferredColors: publicUser.styleProfile.preferredColors,

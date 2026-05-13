@@ -15,7 +15,8 @@ public class PublicUserProfileDto
     public string? ProfilePictureUrl { get; set; }
     public string? Bio { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
-
+    public bool IsFollowing { get; set; } = false; // Added for frontend
+    
     // Stats
     public int OutfitCount { get; set; }
     public int WardrobeItemCount { get; set; }

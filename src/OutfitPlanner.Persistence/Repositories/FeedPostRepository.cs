@@ -29,6 +29,11 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
             .Include(p => p.Outfit)
             .Include(p => p.Poll)
                 .ThenInclude(p => p!.Options)
+                    .ThenInclude(o => o.Outfit)
+            .Include(p => p.Poll)
+                .ThenInclude(p => p!.Options)
+                    .ThenInclude(o => o.Votes)
+            .Include(p => p.Reactions)
             .Where(p => p.Visibility == visibility)
             .AsQueryable();
 
@@ -88,6 +93,7 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
             .Include(p => p.Outfit)
             .Include(p => p.Poll)
                 .ThenInclude(p => p!.Options)
+                    .ThenInclude(o => o.Outfit)
             .Include(p => p.Comments)
                 .ThenInclude(c => c.User)
             .Include(p => p.Reactions)

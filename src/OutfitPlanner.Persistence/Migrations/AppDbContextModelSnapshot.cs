@@ -565,21 +565,21 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("FollowerId")
+                    b.Property<string>("FollowedId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("FollowingId")
+                    b.Property<string>("FollowerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FollowedId");
+
                     b.HasIndex("FollowerId");
 
-                    b.HasIndex("FollowingId");
-
-                    b.HasIndex("FollowerId", "FollowingId")
+                    b.HasIndex("FollowerId", "FollowedId")
                         .IsUnique();
 
                     b.ToTable("Follows", (string)null);
@@ -780,11 +780,6 @@ namespace OutfitPlanner.Persistence.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
@@ -1267,17 +1262,11 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("IsAnonymous")
-                        .HasColumnType("bit");
-
                     b.Property<Guid>("OptionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("PollId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
 
                     b.Property<string>("VoterId")
                         .IsRequired()
@@ -1491,21 +1480,21 @@ namespace OutfitPlanner.Persistence.Migrations
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.Follow", b =>
                 {
+                    b.HasOne("OutfitPlanner.Domain.Entities.User", "Followed")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OutfitPlanner.Domain.Entities.User", "Follower")
                         .WithMany("Following")
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OutfitPlanner.Domain.Entities.User", "Following")
-                        .WithMany("Followers")
-                        .HasForeignKey("FollowingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Followed");
 
                     b.Navigation("Follower");
-
-                    b.Navigation("Following");
                 });
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.Outfit", b =>

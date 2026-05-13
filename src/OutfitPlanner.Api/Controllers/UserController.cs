@@ -25,14 +25,7 @@ public class UserController : ControllerBase
         _mediator = mediator;
         _logger = logger;
     }
-     #region Profile 
-     /// <summary>
-     /// Get other profile
-     /// </summary>
-     [HttpGet("UserProfile")]
-     
-     
-    /// <summary>
+        /// <summary>
     /// Get current user profile
     /// </summary>
     [HttpGet("profile")]
@@ -67,7 +60,8 @@ public class UserController : ControllerBase
     {
         try
         {
-            var query = new GetPublicUserProfileQuery { UserId = userId };
+            var currentUserId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            var query = new GetPublicUserProfileQuery { UserId = userId, RequesterId = currentUserId };
             var profile = await _mediator.Send(query);
 
             if (profile == null)
@@ -185,7 +179,7 @@ public class UserController : ControllerBase
             return StatusCode(500, new { message = "Failed to upload profile picture" });
         }
     }
-    #endregion
+   
 
     /// <summary>
     /// Change user password
@@ -670,11 +664,13 @@ public class UserController : ControllerBase
          [FromQuery] string? cursor = null,
          [FromQuery] int pageSize = 20)
      {
+        var currentUserId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
          var query = new GetFollowersQuery
          {
              UserId = userId,
              Cursor = cursor,
-             PageSize = pageSize
+             PageSize = pageSize,
+             RequesterId = currentUserId
          };
          
          var result = await _mediator.Send(query);
@@ -691,11 +687,13 @@ public class UserController : ControllerBase
          [FromQuery] string? cursor = null,
          [FromQuery] int pageSize = 20)
      {
+        var currentUserId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
          var query = new GetFollowingQuery
          {
              UserId = userId,
              Cursor = cursor,
-             PageSize = pageSize
+             PageSize = pageSize,
+             RequesterId = currentUserId
          };
          
          var result = await _mediator.Send(query);
@@ -737,7 +735,7 @@ public class UserController : ControllerBase
      /// <summary>
      /// Unfollow a user
      /// </summary>
-     [HttpDelete("users/{userId}/follow")]
+     [HttpDelete("users/{userId}/unfollow")]
      public async Task<IActionResult> UnfollowUser(string userId)
      {
          try
@@ -769,7 +767,7 @@ public class UserController : ControllerBase
      /// <summary>
      /// Check if current user is following a specific user
      /// </summary>
-     [HttpGet("users/{userId}/is-following")]
+     [HttpGet("users/{userId}/isfollowing")]
      public async Task<ActionResult<bool>> IsFollowing(string userId)
      {
          try

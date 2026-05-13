@@ -1,0 +1,195 @@
+<div class="feed-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-top">
+      <h1 class="page-title">Community Feed</h1>
+      <div class="feed-page__actions">
+        <button class="feed-page__btn feed-page__btn--primary" (click)="openCreatePost()">
+          <iconify-icon icon="lucide:plus" style="font-size: 16px"></iconify-icon>
+          <span>Create Post</span>
+        </button>
+        <button class="feed-page__btn feed-page__btn--outline" (click)="openCreatePoll()">
+          <iconify-icon icon="lucide:bar-chart-2" style="font-size: 16px"></iconify-icon>
+          <span>Create Poll</span>
+        </button>
+      </div>
+    </div>
+    <p class="feed-page__subtitle">
+      Discover outfit inspiration and see what others are wearing today.
+    </p>
+  </header>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-tabs">
+      <button
+        class="filter-tab"
+        *ngFor="let tab of feedTabs"
+        [class.active]="activeTab() === tab.value"
+        (click)="setTab(tab.value)"
+      >
+        <iconify-icon
+          *ngIf="tab.icon"
+          [icon]="'lucide:' + tab.icon"
+          style="font-size:14px; margin-right: 4px;"
+        ></iconify-icon>
+        {{ tab.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Trending section -->
+  @if (isTrending()) {
+  <app-trending-outfits></app-trending-outfits>
+  }
+
+  <!-- Posts Grid -->
+  @if (!isTrending()) {
+  <div class="posts-grid">
+    @for (post of displayPosts(); track post.id) {
+    <article class="post-card" (click)="viewPostDetail(post)">
+      <!-- Post header -->
+      <div class="post-header">
+        <div class="user-info">
+          <div class="user-avatar-wrap">
+            <img [routerLink]="['/profile', post.userId]" class="user-avatar"
+              [src]="post.userAvatarUrl || 'assets/default-avatar.png'"
+              alt="user"
+            />
+          </div>
+          <div [routerLink]="['/profile', post.userId]" class="user-meta">
+            <span class="user-name">{{ post.userName }}</span>
+            <span class="post-time">{{ getTimeAgo(post.createdAt) }}</span>
+          </div>
+        </div>
+        <div class="post-header-actions">
+          @if (post.postType === PostType.Poll) {
+          <span class="post-badge poll">
+            <iconify-icon icon="lucide:bar-chart-2" style="font-size:12px"></iconify-icon>
+            <span>Poll</span>
+          </span>
+          } @else {
+          <span class="post-badge outfit">
+            <iconify-icon icon="lucide:shirt" style="font-size:12px"></iconify-icon>
+            <span>Outfit</span>
+          </span>
+          }
+        
+        </div>
+      </div>
+
+      <!-- Post content -->
+      @if (post.postType === PostType.Poll && post.poll) {
+      <div class="post-content">
+        <p class="post-text">
+          <strong>{{ post.userName }}</strong> {{ post.caption }}
+        </p>
+        <div class="poll-container">
+          @for (option of post.poll.options; track option.id; let i = $index) {
+          <div
+            class="poll-option"
+            [class.winner]="isWinningOption(option, post.poll)"
+            (click)="onVoteOnPoll(post.pollId, option.id); $event.stopPropagation()"
+             >
+            <div class="poll-grid__option" [class.poll-grid__option--left]="i === 0" [class.poll-grid__option--right]="i === 1">
+                    @if (option.outfitThumbnail) {
+                      <img [src]="option.outfitThumbnail || '/assets/placeholder.jpg'" [alt]="getOptionLabel(i)" class="poll-grid__img">
+                    } @else {
+                      <div class="poll-grid__img poll-grid__img--placeholder">
+                        <iconify-icon icon="lucide:shirt" style="font-size: 24px"></iconify-icon>
+                      </div>
+                    }
+                    <button class="poll-grid__vote-btn"
+                            [class.poll-grid__vote-btn--voted]="post.poll.userVotedOptionId === option.id"
+                            (click)="onVoteOnPoll(post.pollId, option.id)">
+                      Vote {{ i === 0 ? 'A' : 'B' }} ({{ post.poll.totalVotes > 0 ? ((option.voteCount / post.poll.totalVotes * 100) | number:'1.0-0') : 0 }}%)
+                    </button>
+                </div>
+          
+            
+          <span class="poll-option-percent">{{ getVotePercent(option, post.poll) }}%</span>
+          </div>
+          }
+          <div class="poll-votes-total">{{ formatCount(post.poll.totalVotes) }} votes</div>
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="post-actions">
+          <button class="action-btn">
+            <span class="action-icon">
+              <iconify-icon icon="lucide:users" style="font-size:18px"></iconify-icon>
+            </span>
+            {{ formatCount(post.poll.totalVotes) }} votes
+          </button>
+          <button class="action-btn" (click)="toggleComments(post.id); $event.stopPropagation()">
+            <span class="action-icon">
+              <iconify-icon icon="lucide:message-circle" style="font-size:18px"></iconify-icon>
+            </span>
+            {{ post.commentsCount || 0 }}
+          </button>
+        </div>
+        <button class="action-btn">
+          <span class="action-icon">
+            <iconify-icon icon="lucide:share-2" style="font-size:18px"></iconify-icon>
+          </span>
+        </button>
+      </div>
+      }
+      @else {
+      <div class="post-content">
+        <p class="post-text">{{ post.caption }}</p>
+        <div class="post-image">
+          <img
+            [src]="post.outfit?.imageUrl"
+            class="post-image-img"
+            alt="outfit"
+          />
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="post-actions">
+          <button
+            class="action-btn"
+            (click)="toggleReaction(post, $event)"
+            [class.active]="post.userReaction"
+          >
+            <span class="action-icon">
+              <iconify-icon icon="lucide:heart" style="font-size:18px"></iconify-icon>
+            </span>
+            {{ formatCount(post.likesCount) }}
+          </button>
+          <button class="action-btn" (click)="toggleComments(post.id); $event.stopPropagation()">
+            <span class="action-icon">
+              <iconify-icon icon="lucide:message-circle" style="font-size:18px"></iconify-icon>
+            </span>
+            {{ post.commentsCount }}
+          </button>
+          <button class="action-btn">
+            <span class="action-icon">
+              <iconify-icon icon="lucide:send" style="font-size:18px"></iconify-icon>
+            </span>
+          </button>
+        </div>
+        <button class="action-btn">
+          <span class="action-icon">
+            <iconify-icon icon="lucide:bookmark" style="font-size:18px"></iconify-icon>
+          </span>
+        </button>
+      </div>
+      }
+    </article>
+    }
+  </div>
+  }
+
+  <!-- Loader -->
+  @if (loading()) {
+  <div class="feed-page__spinner d-flex justify-content-center pb-20">
+    <div class="feed-page__spinner-ring">
+      <iconify-icon icon="lucide:loader-2" style="font-size: 24px"></iconify-icon>
+    </div>
+  </div>
+  }
+
+ 
+</div>

@@ -76,7 +76,7 @@ public class CreatePollPostCommandHandler : IRequestHandler<CreatePollPostComman
                 poll.Options.Add(new PollOption
                 {
                     OutfitId = outfit.Id,
-                    Description = outfit.Name ?? $"Option {i + 1}",
+                   
                     DisplayOrder = i
                 });
             }

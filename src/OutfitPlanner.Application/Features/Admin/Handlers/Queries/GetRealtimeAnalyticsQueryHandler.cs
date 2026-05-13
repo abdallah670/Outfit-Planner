@@ -152,7 +152,7 @@ public class GetRealtimeAnalyticsQueryHandler : IRequestHandler<GetRealtimeAnaly
             .Take(5)
             .Select(p => new ContentPerformanceData(
                 p.Id,
-                p.Caption,
+                p.Caption??"",
                 "Post",
                 0, // Views would need tracking
                 p.LikesCount,

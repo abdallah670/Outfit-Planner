@@ -15,24 +15,24 @@ export class PollsEffects {
   private pollsUseCases = inject(PollsUseCases);
   private router = inject(Router);
 
-  loadPolls$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(PollsActions.loadPolls),
-        mergeMap(() =>
-          this.pollsUseCases.getPolls().pipe(
-            map((polls: Poll[]) => PollsActions.loadPollsSuccess({ polls })),
-            catchError((error) =>
-              of(
-                PollsActions.loadPollsFailure({
-                  error: error.message,
-                }),
-              ),
-            ),
-          ),
-        ),
-      ),
-  );
+  // loadPolls$ = createEffect(
+  //   () =>
+  //     this.actions$.pipe(
+  //       ofType(PollsActions.loadPolls),
+  //       mergeMap(() =>
+  //         this.pollsUseCases.getPolls().pipe(
+  //           map((polls: Poll[]) => PollsActions.loadPollsSuccess({ polls })),
+  //           catchError((error) =>
+  //             of(
+  //               PollsActions.loadPollsFailure({
+  //                 error: error.message,
+  //               }),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  // );
 
   loadPollById$ = createEffect(
     () =>
@@ -224,7 +224,7 @@ export class PollsEffects {
       this.actions$.pipe(
         ofType(PollsActions.vote),
         mergeMap((action: ReturnType<typeof PollsActions.vote>) =>
-          this.pollsUseCases.voteOnPoll(action.pollId, action.request).pipe(
+          this.pollsUseCases.voteOnPoll(action.pollId, action.request.optionId!).pipe(
             map(() => PollsActions.voteSuccess({ pollId: action.pollId })),
             catchError((error) =>
               of(

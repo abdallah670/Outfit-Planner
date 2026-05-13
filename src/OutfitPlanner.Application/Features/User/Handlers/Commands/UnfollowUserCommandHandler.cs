@@ -19,7 +19,7 @@ public class UnfollowUserCommandHandler : IRequestHandler<UnfollowUserCommand, B
     {
         var response = new BaseCommandResponse();
 
-        var follows = await _followRepository.FindAsync(f => f.FollowerId == request.FollowerId && f.FollowingId == request.FollowingId);
+        var follows = await _followRepository.FindAsync(f => f.FollowerId == request.FollowerId && f.FollowedId == request.FollowingId);
         var follow = follows.FirstOrDefault();
 
         if (follow == null)

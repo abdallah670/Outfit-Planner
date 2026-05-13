@@ -246,7 +246,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpDelete("content/posts/{postId}")]
-    public async Task<ActionResult<Result>> DeletePost(Guid postId)
+    public async Task<ActionResult<Result>> AdminDeletePost(Guid postId)
     {
         try
         {
@@ -339,7 +339,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("content/polls/{pollId}/close")]
-    public async Task<ActionResult<Result>> ClosePoll(Guid pollId, [FromBody] string reason = "Closed by admin")
+    public async Task<ActionResult<Result>> AdminClosePoll(Guid pollId, [FromBody] string reason = "Closed by admin")
     {
         try
         {
@@ -354,7 +354,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpDelete("content/polls/{pollId}")]
-    public async Task<ActionResult<Result>> DeletePoll(Guid pollId)
+    public async Task<ActionResult<Result>> AdminDeletePoll(Guid pollId)
     {
         try
         {
@@ -401,7 +401,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpDelete("content/outfits/{outfitId}")]
-    public async Task<ActionResult<Result>> DeleteOutfit(Guid outfitId)
+    public async Task<ActionResult<Result>> AdminDeleteOutfit(Guid outfitId)
     {
         try
         {
@@ -493,7 +493,7 @@ public class AdminController : ControllerBase
         }
     }
 
-    
+
     // System Operations
     [HttpPost("system/backup")]
     public async Task<ActionResult<BackupResult>> CreateBackup([FromBody] CreateBackupRequest request)

@@ -12,7 +12,7 @@ public class CreatePollOptionDto
     
     [Required]
     [StringLength(200, MinimumLength = 1)]
-    public string Description { get; set; } = string.Empty;
+    
     
     public int DisplayOrder { get; set; }
 }

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace OutfitPlanner.Application.DTOs.Outfit;
 
 /// <summary>
@@ -9,7 +11,7 @@ public class CreateOutfitWithPhotoDto
     public string? Occasion { get; set; }
     public string? Season { get; set; }
     public string? WeatherCondition { get; set; }
-    // Photo is sent as IFormFile in the controller, not in JSON body
+    public IFormFile? Photo { get; set; }
 }
 
 /// <summary>

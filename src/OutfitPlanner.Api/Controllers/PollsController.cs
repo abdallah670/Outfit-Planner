@@ -33,7 +33,7 @@ public class PollsController : ControllerBase
     /// <summary>
     /// Get all polls created by the current user
     /// </summary>
-    [HttpGet]
+    [HttpGet("my-polls")]
     public async Task<ActionResult<List<ValidationPollDto>>> GetMyPolls([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
         var userId = GetUserId();
@@ -142,6 +142,20 @@ public class PollsController : ControllerBase
             return BadRequest(response);
             
         return Ok(response);
+    }
+
+    [HttpDelete("vote")]
+    public async Task<ActionResult<BaseCommandResponse>> UnVoteOnPoll([FromBody]Guid optionId)
+    {
+        var userId = GetUserId();
+        var uncastVoteRequest = new unCastVoteDto { OptionId = optionId };
+        var command = new UnVoteOnPollCommand {   UserId = userId, Request = uncastVoteRequest };
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return NotFound(response.Message);
+            
+        return NoContent();
     }
 
     /// <summary>

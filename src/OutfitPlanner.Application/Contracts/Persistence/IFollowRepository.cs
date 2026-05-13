@@ -6,7 +6,7 @@ namespace OutfitPlanner.Application.Contracts.Persistence;
 
 public interface IFollowRepository : IGenericRepository<Follow>
 {
-    Task<bool> IsFollowingAsync(string followerId, string followingId);
+    Task<bool> IsFollowingAsync(string followerId, string followedId);
     Task<List<Follow>> GetFollowersAsync(string userId, int page, int pageSize);
     Task<List<Follow>> GetFollowingAsync(string userId, int page, int pageSize);
     Task<int> GetFollowersCountAsync(string userId);

@@ -21,4 +21,9 @@ public class FeedPostDto
     public int CommentsCount { get; set; }
     public string? UserReaction { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+    public bool IsFollowing { get; set; } = false;
+    public bool IsOwner { get; set; } = false;
+    public bool HasVoted { get; set; } = false;
+    public string? UserVote { get; set; } = null;
+    public bool IsLiked { get; set; } = false;
 }

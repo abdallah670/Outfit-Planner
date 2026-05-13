@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace OutfitPlanner.Application.DTOs.Wardrobe;
 
 public class UpdateClothingItemDto
@@ -18,4 +20,5 @@ public class UpdateClothingItemDto
     public string ThumbnailUrl { get; set; } = string.Empty;
     public string MaintenanceNotes { get; set; } = string.Empty;
     public List<string> Tags { get; set; } = new();
+    public IFormFile? Image { get; set; }
 }

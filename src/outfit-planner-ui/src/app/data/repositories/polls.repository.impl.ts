@@ -16,9 +16,7 @@ import { CommandResponse } from '../../domain/entities/response.entity';
 export class PollsRepositoryImpl implements PollsRepository {
   private pollsDataSource = inject(PollsDataSource);
 
-  getPolls(): Observable<Poll[]> {
-    return this.pollsDataSource.getPolls();
-  }
+  
 
   getUserPolls(): Observable<Poll[]> {
     return this.pollsDataSource.getUserPolls();
@@ -36,6 +34,10 @@ export class PollsRepositoryImpl implements PollsRepository {
     return this.pollsDataSource.vote(pollId, dto);
   }
 
+  removeVote(optionId:string): Observable<void> {
+    return this.pollsDataSource.removeVote(optionId);
+  }
+
   updatePoll(pollId: string, request: UpdatePollRequest): Observable<Poll> {
     return this.pollsDataSource.updatePoll(pollId, request);
   }
@@ -46,10 +48,6 @@ export class PollsRepositoryImpl implements PollsRepository {
 
   closePoll(pollId: string): Observable<void> {
     return this.pollsDataSource.closePoll(pollId);
-  }
-
-  uploadPollImage(file: File): Observable<string> {
-    return this.pollsDataSource.uploadPollImage(file);
   }
 
   getRecentPollWithComments(cursor?: string, pageSize?: number): Observable<{ poll: Poll; comments: any[] }> {

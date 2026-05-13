@@ -14,6 +14,9 @@ using Hangfire;
 using Hangfire.SqlServer;
 
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    .MinimumLevel.Override("Swashbuckle", Serilog.Events.LogEventLevel.Debug)
     .WriteTo.Console()
     .WriteTo.File("Logs/outfitplanner-log.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
@@ -31,6 +34,8 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
         options.JsonSerializerOptions.Converters.Add(new NullableTimeSpanConverter());
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 builder.Services.AddSwaggerGen(options =>
 {
@@ -64,6 +69,9 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
+
+    // Use full names to avoid collisions between DTOs with same names in different namespaces
+    options.CustomSchemaIds(type => type.FullName?.Replace("`", "_").Replace("[", "_").Replace("]", "_").Replace(",", "_").Replace(" ", ""));
 });
 
 builder.Services.AddCors(options =>
