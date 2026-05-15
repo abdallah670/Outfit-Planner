@@ -16,7 +16,9 @@ public interface IFeedPostRepository : IGenericRepository<FeedPost>
         int pageSize, 
         string sortBy, 
         Visibility visibility,
-        PostType? postType);
+        PostType? postType,
+        bool followingOnly = false);
+
     
     Task<FeedPost?> GetByIdWithDetailsAsync(Guid id);
     Task<FeedPost?> GetByOutfitIdAsync(Guid outfitId);

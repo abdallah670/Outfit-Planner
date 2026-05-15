@@ -63,10 +63,14 @@ export class PollDetailComponent implements OnInit {
     }
 
     this.loading.set(true);
+    console.log('Fetching post with ID:', id);
+
     this.subscriptions.add(
       this.feedUseCases.getPostById(id).subscribe({
         next: (post) => {
+          console.log('Received post:', post);
           if (post.poll) {
+
             this.pollPost.set(post as FeedPostWithComments);
 
             // Extract author info directly from the FeedPost

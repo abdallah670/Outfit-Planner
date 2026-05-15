@@ -3,7 +3,9 @@ import { trendingFeature } from './trending.reducer';
 export const {
   selectTrendingState,
   selectOutfits: selectTrendingOutfits,
-  selectTotalCount: selectTrendingTotalCount,
+  selectNextCursor: selectTrendingNextCursor,
+  selectHasMore: selectTrendingHasMore,
   selectLoading: selectTrendingLoading,
   selectError: selectTrendingError,
 } = trendingFeature;
+

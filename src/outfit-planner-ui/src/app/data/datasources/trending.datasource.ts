@@ -3,6 +3,8 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { TrendingOutfit } from '../../domain/entities/outfit.entity';
+import { CursorPagedResult } from '../../domain/entities/response.entity';
+
 
 interface TrendingOutfitDto {
   id: string;
@@ -29,16 +31,21 @@ export class TrendingDataSource {
 
   constructor(private http: HttpClient) {}
 
-  getTrendingOutfits(page = 1, pageSize = 20): Observable<{ items: TrendingOutfit[]; totalCount: number }> {
-    return this.http
-      .get<any>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}`)
-      .pipe(
-        map((response: any) => ({
-          items: response.items.map((o: TrendingOutfitDto) => this.mapTrendingOutfitDtoToEntity(o)),
-          totalCount: response.totalCount,
-        })),
-      );
+  getTrendingOutfits(cursor?: string, pageSize: number = 20): Observable<CursorPagedResult<TrendingOutfit>> {
+    let url = `${this.apiUrl}?pageSize=${pageSize}`;
+    if (cursor) {
+      url += `&cursor=${encodeURIComponent(cursor)}`;
+    }
+    return this.http.get<any>(url).pipe(
+      map((response: any) => ({
+        items: response.items.map((o: TrendingOutfitDto) => this.mapTrendingOutfitDtoToEntity(o)),
+        nextCursor: response.nextCursor,
+        hasMore: response.hasMore,
+        pageSize: response.pageSize
+      }))
+    );
   }
+
 
   private mapTrendingOutfitDtoToEntity(dto: TrendingOutfitDto): TrendingOutfit {
     return {

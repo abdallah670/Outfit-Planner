@@ -21,14 +21,13 @@ import { CreatePollComponent } from './presentation/pages/social/create-poll/cre
 import { PollDetailComponent } from './presentation/pages/social/poll-detail/poll-detail.component';
 import { GlobalSearchComponent } from './presentation/pages/global-search/global-search.component';
 import { NotificationsCenterComponent } from './presentation/pages/notifications-center/notifications-center.component';
-import { TrendingOutfitsComponent } from './presentation/pages/social/trending-outfits/trending-outfits.component';
 import { authGuard } from './core/guards/auth-guard';
 import { adminGuard } from './core/guards/admin-guard';
 import { PublicProfileComponent } from './presentation/pages/public-profile/public-profile.component';
 import { MyPollsComponent } from './presentation/pages/social/my-polls/my-polls.component';
 import { EditPollComponent } from './presentation/pages/social/edit-poll/edit-poll.component';
 import { CreateOutfitPostComponent } from './presentation/pages/social/create-outfit-post/create-outfit-post.component';
-import { MyOutfitPostsComponent } from './presentation/pages/social/my-outfit-posts/my-outfit-posts.component';
+
 import { AdminLayoutComponent } from './presentation/layouts/admin-layout/admin-layout.component';
 import { AdminDashboardComponent } from './presentation/pages/admin/dashboard/admin-dashboard.component';
 import { AdminUsersComponent } from './presentation/pages/admin/users/admin-users.component';
@@ -64,14 +63,13 @@ export const routes: Routes = [
   { path: 'social', component: CommunityFeedComponent, canActivate: [authGuard] },
   { path: 'social/feed', component: CommunityFeedComponent, canActivate: [authGuard] },
   { path: 'social/create-poll', component: CreatePollComponent, canActivate: [authGuard] },
-  { path: 'social/trending', component: TrendingOutfitsComponent, canActivate: [authGuard] },
   { path: 'social/profile/:userId',component:PublicProfileComponent, canActivate: [authGuard] },
   { path: 'profile/:userId',component:PublicProfileComponent, canActivate: [authGuard] },
   { path: 'social/polls/:id', component: PollDetailComponent, canActivate: [authGuard] },
   { path: 'social/polls/:id/edit', component: EditPollComponent, canActivate: [authGuard] },
   { path: 'social/my-polls', component: MyPollsComponent, canActivate: [authGuard] },
   { path: 'social/create-post', component: CreateOutfitPostComponent, canActivate: [authGuard] },
-  { path: 'social/my-posts', component: MyOutfitPostsComponent, canActivate: [authGuard] },
+
   { path: 'search', component: GlobalSearchComponent, canActivate: [authGuard] },
   { path: 'notifications', component: NotificationsCenterComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },

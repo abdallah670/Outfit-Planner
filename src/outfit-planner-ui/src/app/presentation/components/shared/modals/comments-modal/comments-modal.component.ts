@@ -21,7 +21,17 @@ import Swal from 'sweetalert2';
   styleUrls: ['./comments-modal.component.scss']
 })
 export class CommentsModalComponent implements OnInit, OnDestroy {
-  @Input() postId!: string;
+  private _postId!: string;
+  @Input() set postId(value: string) {
+    if (value && value !== this._postId) {
+      this._postId = value;
+      this.loadComments(true);
+    }
+  }
+  get postId(): string {
+    return this._postId;
+  }
+  
   @Input() isInline = false;
   @Input() onCommentAdded?: (postId: string) => void;
   @Input() onCommentDeleted?: (postId: string) => void;
@@ -50,7 +60,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
 
   ngOnInit(): void {
-    this.loadComments(true);
+    // Initialization moved to postId setter to handle dynamic loading
   }
 
   
@@ -64,8 +74,10 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
       this.cursor = null;
       this.comments = [];
       this.loading = true;
+      this.cdRef.detectChanges();
     } else if (this.cursor && !this.loadingMore) {
       this.loadingMore = true;
+      this.cdRef.detectChanges();
     }
 
     const sub = this.feedUseCases.getComments(this.postId, this.cursor || undefined, this.pageSize).subscribe({
@@ -85,6 +97,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
         console.error('Failed to load comments', err);
         this.loading = false;
         this.loadingMore = false;
+        this.cdRef.detectChanges();
       }
     });
     this.subscriptions.add(sub);
@@ -137,18 +150,35 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
 
   submitComment(): void {
     const trimmed = this.newCommentContent.trim();
-    if (!trimmed) return;
+    if (!trimmed || !this.postId) return;
+
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) return;
 
     this.subscriptions.add(
       this.feedUseCases.addComment(this.postId, trimmed).subscribe({
-        next: () => {
+        next: (response) => {
+          // Create local comment for immediate feedback
+          const newComment: PostComment = {
+            id: response.id,
+            userId: currentUser.id,
+            userName: currentUser.userName || 'You',
+            userAvatarUrl: currentUser.avatarUrl || 'assets/default-avatar.png',
+            content: trimmed,
+            createdAt: new Date(),
+            isDeleted: false,
+            replies: []
+          };
+
+          this.comments = [newComment, ...this.comments];
           this.newCommentContent = '';
           this.onCommentAdded?.(this.postId);
-          this.loadComments(true);
+          this.cdRef.detectChanges();
         },
         error: (err) => {
           console.error('Failed to add comment', err);
           Swal.fire('Error', 'Failed to add comment', 'error');
+          this.cdRef.detectChanges();
         }
       })
     );
@@ -159,6 +189,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
     this.replyContent = `@${comment.userName} `;
     // Auto expand if it's not already
     this.expandedReplies.add(comment.id);
+    this.cdRef.detectChanges();
     
     // Focus input after a short delay
     setTimeout(() => {
@@ -173,11 +204,15 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
   cancelReplying(): void {
     this.replyingToCommentId = null;
     this.replyContent = '';
+    this.cdRef.detectChanges();
   }
 
   submitReply(parentCommentId: string, replyToUser?: string): void {
     let trimmed = this.replyContent.trim();
-    if (!trimmed) return;
+    if (!trimmed || !this.postId) return;
+
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) return;
 
     if (replyToUser) {
       trimmed = `@${replyToUser} ${trimmed}`;
@@ -185,18 +220,49 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.feedUseCases.addComment(this.postId, trimmed, parentCommentId).subscribe({
-        next: () => {
+        next: (response) => {
+          // Find the parent comment in the tree and add the reply
+          const newReply: PostComment = {
+            id: response.id,
+            userId: currentUser.id,
+            userName: currentUser.userName || 'You',
+            userAvatarUrl: currentUser.avatarUrl || 'assets/default-avatar.png',
+            content: trimmed,
+            createdAt: new Date(),
+            isDeleted: false,
+            parentCommentId: parentCommentId,
+            replies: []
+          };
+
+          this.addReplyToTree(this.comments, parentCommentId, newReply);
+          
           this.replyContent = '';
           this.replyingToCommentId = null;
           this.onCommentAdded?.(this.postId);
-          this.loadComments(true);
+          this.cdRef.detectChanges();
         },
         error: (err) => {
           console.error('Failed to add reply', err);
           Swal.fire('Error', 'Failed to add reply', 'error');
+          this.cdRef.detectChanges();
         }
       })
     );
+  }
+
+  private addReplyToTree(comments: PostComment[], parentId: string, newReply: PostComment): boolean {
+    for (const comment of comments) {
+      if (comment.id === parentId) {
+        comment.replies = comment.replies || [];
+        comment.replies.push(newReply);
+        this.expandedReplies.add(comment.id);
+        return true;
+      }
+      if (comment.replies && comment.replies.length > 0) {
+        if (this.addReplyToTree(comment.replies, parentId, newReply)) return true;
+      }
+    }
+    return false;
   }
 
   deleteComment(commentId: string): void {

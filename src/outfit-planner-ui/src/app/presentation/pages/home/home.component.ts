@@ -110,7 +110,8 @@ export class HomeComponent implements OnInit {
     this.loadTodaysPick();
     
     // Load trending outfits - only 3 for home page
-    this.store.dispatch(TrendingActions.loadTrending({ page: 1, pageSize: 3 }));
+    this.store.dispatch(TrendingActions.loadTrending({ pageSize: 3 }));
+
   }
 
   private loadWeather(): void {

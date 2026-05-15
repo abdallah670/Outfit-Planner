@@ -22,7 +22,8 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
         int pageSize, 
         string sortBy, 
         Visibility visibility,
-        PostType? postType)
+        PostType? postType,
+        bool followingOnly = false)
     {
         var query = _dbSet
             .Include(p => p.User)
@@ -37,14 +38,26 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
             .Where(p => p.Visibility == visibility)
             .AsQueryable();
 
+        if (followingOnly && !string.IsNullOrEmpty(userId))
+        {
+            var followedUserIds = _context.Follows
+                .Where(f => f.FollowerId == userId)
+                .Select(f => f.FollowedId);
+                
+            query = query.Where(p => followedUserIds.Contains(p.UserId));
+        }
+
         if (postType.HasValue)
         {
             query = query.Where(p => p.PostType == postType.Value);
         }
-        if (!string.IsNullOrEmpty(userId))
+        
+        // If not followingOnly, we still might want to filter by a specific user (e.g. for profile feed)
+        if (!followingOnly && !string.IsNullOrEmpty(userId))
         {
             query = query.Where(p => p.UserId == userId);
         }
+
 
         // Apply cursor filter if provided
         if (!string.IsNullOrEmpty(cursor))

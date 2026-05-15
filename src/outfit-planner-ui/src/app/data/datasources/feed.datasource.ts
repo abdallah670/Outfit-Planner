@@ -21,7 +21,8 @@ export class FeedDataSource {
     pageSize: number = 20,
     visibility: string = 'Public',
     sortBy: string = 'recent',
-    postType?: string
+    postType?: string,
+    followingOnly: boolean = false
   ): Observable<CursorPagedResult<FeedPost>> {
     let params = new HttpParams()
       .set('pageSize', pageSize.toString())
@@ -34,6 +35,10 @@ export class FeedDataSource {
     if (postType) {
       params = params.set('postType', postType);
     }
+    if (followingOnly) {
+      params = params.set('followingOnly', 'true');
+    }
+
 
     return this.http.get<CursorPagedResult<any>>(this.apiUrl, { params }).pipe(
       map(response => ({

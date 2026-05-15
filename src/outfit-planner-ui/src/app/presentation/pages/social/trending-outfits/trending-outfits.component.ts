@@ -27,7 +27,8 @@ export class TrendingOutfitsComponent implements OnInit {
   loading = toSignal(this.store.select(selectTrendingLoading), { initialValue: false });
 
   ngOnInit(): void {
-    this.store.dispatch(TrendingActions.loadTrending({ page: 1, pageSize: 20 }));
+    this.store.dispatch(TrendingActions.loadTrending({ pageSize: 20 }));
+
   }
 
   react(outfit: TrendingOutfit, reactionType: string = 'Like'): void {

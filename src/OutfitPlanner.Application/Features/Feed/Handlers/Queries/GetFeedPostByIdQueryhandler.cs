@@ -21,7 +21,20 @@ public class GetFeedPostByIdQueryHandler : IRequestHandler<GetFeedPostByIdQuery,
     public async Task<GetFeedPostByIdDto?> Handle(GetFeedPostByIdQuery request, CancellationToken cancellationToken)
     {
         var post = await _unitOfWork.FeedPosts.GetByIdWithDetailsAsync(request.PostId);
+        
+        if (post == null)
+        {
+            // Try searching by PollId in case the ID provided was a PollId (e.g. from My Polls list)
+            post = await _unitOfWork.FeedPosts.GetByPollIdAsync(request.PostId);
+            if (post != null)
+            {
+                // If found by PollId, we still want the full details
+                post = await _unitOfWork.FeedPosts.GetByIdWithDetailsAsync(post.Id);
+            }
+        }
+
         if (post == null) return null;
+
 
         var postDto =new GetFeedPostByIdDto
         {
@@ -40,7 +53,11 @@ public class GetFeedPostByIdQueryHandler : IRequestHandler<GetFeedPostByIdQuery,
             CommentsCount = post.CommentsCount,
             CreatedAt = post.CreatedAt
         };
-        postDto.Poll.TotalVotes = post.Poll?.TotalVotes ?? 0;
+        if (postDto.Poll != null)
+        {
+            postDto.Poll.TotalVotes = post.Poll?.TotalVotes ?? 0;
+        }
+
         if(!string.IsNullOrEmpty(request.RequesterId)&&post.UserId.ToString()==request.RequesterId)
         {
             postDto.IsOwner = true;
