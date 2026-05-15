@@ -21,9 +21,9 @@
         <ng-template #emptyBio>
           <p class="user-info__bio user-info__bio--empty">No bio provided.</p>
         </ng-template>
-        <button class="follow-btn" [class.follow-btn--following]="isFollowing()" [disabled]="followLoading()" (click)="onFollowToggle()">
-          <iconify-icon [icon]="isFollowing() ? 'lucide:user-check' : 'lucide:user-plus'" style="font-size: 16px"></iconify-icon>
-          <span>{{ isFollowing() ? 'Following' : 'Follow' }}</span>
+        <button [hidden]="publicProfile()?.isOwner" class="follow-btn" [class.follow-btn--following]="publicProfile()?.isFollowing" [disabled]="followLoading()" (click)="onFollowToggle()">
+          <iconify-icon [icon]="publicProfile()?.isFollowing ? 'lucide:user-check' : 'lucide:user-plus'" style="font-size: 16px"></iconify-icon>
+          <span>{{ publicProfile()?.isFollowing ? 'Following' : 'Follow' }}</span>
         </button>
       </div>
     </div>
@@ -77,19 +77,23 @@
           <div class="post-card">
             <!-- Post Header -->
             <div class="post-card__header">
-              <div class="post-card__user">
-                <div class="post-card__avatar-wrap">
-                  <img [src]="post.userAvatarUrl || 'assets/default-avatar.png'" class="post-card__avatar-img">
+                <div class="post-card__user">
+                  <div class="post-card__avatar-wrap" (click)="goToUserProfile(post.userId)" style="cursor: pointer;">
+                    <img [src]="post.userAvatarUrl || 'assets/default-avatar.png'" class="post-card__avatar-img">
+                  </div>
+                  <div class="post-card__meta">
+                    <span class="post-card__username" (click)="goToUserProfile(post.userId)" style="cursor: pointer;">{{ post.userName }}</span>
+                    <span class="post-card__time">{{ getTimeAgo(post.createdAt) }}</span>
+                  </div>
                 </div>
-                <div class="post-card__meta">
-                  <span class="post-card__username">{{ post.userName }}</span>
-                  <span class="post-card__time">{{ getTimeAgo(post.createdAt) }}</span>
-                </div>
-              </div>
               @if (post.poll) {
                 <div class="post-card__badge">
                   <iconify-icon icon="lucide:bar-chart-2" style="font-size: 14px"></iconify-icon>
                   <span>Poll</span>
+                  <span class="badge-divider"></span>
+                  <span class="status-label" [class.status-label--active]="post.poll.status === 'active'" [class.status-label--closed]="post.poll.status === 'closed'" [class.status-label--expired]="post.poll.status === 'expired'">
+                    {{ post.poll.status === 'active' ? 'Active' : post.poll.status === 'closed' ? 'Closed' : 'Expired' }}
+                  </span>
                 </div>
               } @else {
                <span class="post-card__badge">
@@ -99,9 +103,22 @@
               }
             </div>
 
-            <!-- Caption -->
-            @if (post.caption) {
+            <!-- Caption  if not poll-->
+             @if (!post.poll && post.caption) {
               <div class="post-card__caption">{{ post.caption }}</div>
+            }
+            @else if (post.poll) {
+              <div class="post-card__caption post-card__caption--empty">{{ post.poll.question }}</div>
+            }
+
+            
+           
+            @if (post.tags && post.tags.length > 0) {
+              <div class="post-card__tags">
+                @for (tag of post.tags; track tag) {
+                  <span class="post-card__tag" (click)="onTagClick(tag)">#{{ tag }}</span>
+                }
+              </div>
             }
 
             <!-- Outfit Post Image -->
@@ -113,23 +130,40 @@
 
             <!-- Poll Post Content -->
             @if (post.poll) {
-              <div class="poll-grid">
-                <!-- options start from A then B and so on, depending on the number of options-->
+              <div class="poll-options">
                 @for (option of post.poll.options; track option.id; let i = $index) {
-                  <div class="poll-grid__option" [class.poll-grid__option--left]="i === 0" [class.poll-grid__option--right]="i === 1">
+                <div
+                  class="poll-option-card"
+                  [class.winner]="isWinner(post.poll, option.id)"
+                >
+                  <div class="option-image-wrapper">
                     @if (option.outfitThumbnail) {
-                      <img [src]="option.outfitThumbnail || '/assets/placeholder.jpg'" alt="Option {{ i === 0 ? 'A' : 'B' }}" class="poll-grid__img">
+                      <img [src]="option.outfitThumbnail || 'assets/placeholder.jpg'" [alt]="'Option ' + getOptionLabel(i)" class="option-image" />
                     } @else {
-                      <div class="poll-grid__img poll-grid__img--placeholder">
+                      <div class="option-image option-image--placeholder">
                         <iconify-icon icon="lucide:shirt" style="font-size: 24px"></iconify-icon>
                       </div>
                     }
-                    <button class="poll-grid__vote-btn"
-                            [class.poll-grid__vote-btn--voted]="post.poll.userVotedOptionId === option.id"
-                            (click)="toggleVote(post, option.id,$event)">
-                      Vote {{ i === 0 ? 'A' : 'B' }} ({{ post.poll.totalVotes > 0 ? ((option.voteCount / post.poll.totalVotes * 100) | number:'1.0-0') : 0 }}%)
+                  </div>
+                  <div class="option-content">
+                    <div class="option-header">
+                      <span class="option-title">{{ option.description || 'Option ' + getOptionLabel(i) }}</span>
+                    </div>
+                    <button
+                      class="vote-btn"
+                      [class.voted]="post.poll.userVotedOptionId === option.id"
+                      (click)="toggleVote(post, option.id, $event)"
+                      [disabled]="post.poll.status !== 'active'"
+                    >
+                      @if (post.poll.userVotedOptionId === option.id) {
+                        <iconify-icon icon="lucide:check-circle-2" style="font-size: 18px"></iconify-icon>
+                        <span>You Voted {{ getvotePercentage(post.poll.totalVotes, option.voteCount) }} </span>
+                      } @else {
+                        <span>Vote {{ getvotePercentage(post.poll.totalVotes, option.voteCount) }}</span>
+                      }
                     </button>
                   </div>
+                </div>
                 }
               </div>
             }
@@ -138,21 +172,25 @@
             <div class="post-card__actions">
               @if (post.poll) {
                 <!-- Poll-specific actions -->
-                <div class="post-card__action-group">
+                <div class="post-card__action-group clickable" (click)="openVotersModal(post.poll.id)">
                   <iconify-icon icon="lucide:users" style="font-size: 18px"></iconify-icon>
                   <span class="post-card__action-count">{{ post.poll.totalVotes | number }} votes</span>
                 </div>
-                <button class="post-card__action-btn post-card__action-btn--end">
+                <button class="post-card__action-btn" (click)="openCommentsModal(post.id)">
                   <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
                   <span>{{ post.commentsCount }}</span>
                 </button>
+                <button class="post-card__action-btn post-card__action-btn--end" [routerLink]="['/social/polls', post.id]">
+                  <iconify-icon icon="lucide:external-link" style="font-size: 18px"></iconify-icon>
+                  <span>Details</span>
+                </button>
               } @else {
                 <!-- Outfit post actions -->
-                <button class="post-card__action-btn" [class.post-card__action-btn--active]="post.userReaction === 'Heart'" (click)="toggleReaction(post,$event)">
-                  <iconify-icon [icon]="post.userReaction === 'Heart' ? 'lucide:heart-off' : 'lucide:heart'" style="font-size: 20px"></iconify-icon>
+                <button class="post-card__action-btn" [class.post-card__action-btn--active]="post.isLiked" (click)="toggleReaction(post,$event)">
+                  <iconify-icon [icon]="post.isLiked?'lucide:heart-off' : 'lucide:heart'" style="font-size: 20px"></iconify-icon>
                   <span>{{ post.likesCount }}</span>
                 </button>
-                <button class="post-card__action-btn">
+                <button class="post-card__action-btn" (click)="openCommentsModal(post.id)">
                   <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
                   <span>{{ post.commentsCount }}</span>
                 </button>
@@ -188,11 +226,11 @@
               <div class="user-list__name">{{ follower.userName || 'Unknown' }}</div>
               <div class="user-list__handle">@{{ follower.userName || 'unknown' }}</div>
             </div>
-            <button class="user-list__follow-btn" 
-                    [style.background]="followedUserIds().has(follower.userId) ? '#f3f4f6' : ''"
-                    [style.color]="followedUserIds().has(follower.userId) ? '#1f2937' : ''"
-                    (click)="toggleFollowListUser(follower.userId, $event)">
-              {{ followedUserIds().has(follower.userId) ? 'Following' : 'Follow' }}
+            <button [hidden]="follower.isOwner" class="user-list__follow-btn" 
+                    [style.background]="follower.isFollowing ? '#f3f4f6' : ''"
+                    [style.color]="follower.isFollowing ? '#1f2937' : ''"
+                    (click)="toggleFollowerListUser(follower.userId, $event)">
+              {{ follower.isFollowing ? 'Following' : 'Follow' }}
             </button>
           </div>
         }
@@ -223,11 +261,11 @@
               <div class="user-list__name">{{ following.userName || 'Unknown' }}</div>
               <div class="user-list__handle">@{{ following.userName || 'unknown' }}</div>
             </div>
-            <button class="user-list__follow-btn" 
-                    [style.background]="followedUserIds().has(following.userId) ? '#f3f4f6' : ''"
-                    [style.color]="followedUserIds().has(following.userId) ? '#1f2937' : ''"
-                    (click)="toggleFollowListUser(following.userId, $event)">
-              {{'Following' }}
+            <button [hidden]="following.isOwner"  class="user-list__follow-btn" 
+                    [style.background]="following.isFollowing ? '#f3f4f6' : ''"
+                    [style.color]="following.isFollowing ? '#1f2937' : ''"
+                    (click)=" toggleFollowingListUser(following.userId, $event)">
+              {{  following.isFollowing ? 'Following' : 'Follow' }}
             </button>
           </div>
         }

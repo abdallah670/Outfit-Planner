@@ -6,6 +6,8 @@ import { OutfitPostsDataSource } from '../../data/datasources/outfit-posts.datas
 import { FeedPost } from '../../domain/entities/feed.entity';
 import { PostComment } from '../../domain/entities/feed.entity';
 import { CommandResponse, CursorPagedResult } from '../../domain/entities/response.entity';
+import { VoterInfo } from '../../domain/entities/poll.entity';
+
 
 @Injectable({
   providedIn: 'root',
@@ -58,9 +60,17 @@ export class FeedRepositoryImpl implements FeedRepository {
   deleteComment(commentId: string): Observable<void> {
     return this.feedDataSource.deleteComment(commentId);
   }
+  
+  updateComment(commentId: string, content: string): Observable<CommandResponse> {
+    return this.feedDataSource.updateComment(commentId, content);
+  }
 
   createOutfitPost(dto: { outfitId: string; caption?: string; visibility: number }): Observable<CommandResponse> {
     return this.outfitPostsDataSource.createOutfitPost(dto);
+  }
+
+  getVotersForPoll(pollId: string, optionId?: string): Observable<VoterInfo[]> {
+    return this.feedDataSource.getVotersForPoll(pollId, optionId);
   }
 }
 

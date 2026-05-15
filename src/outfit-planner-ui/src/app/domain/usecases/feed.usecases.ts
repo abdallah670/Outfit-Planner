@@ -6,6 +6,9 @@ import { PostComment } from '../entities/feed.entity';
 import { CommandResponse, CursorPagedResult } from '../entities/response.entity';
 import {  PollsRepository } from '../repositories/polls.repository';
 import { POLLS_REPOSITORY } from '../repositories/polls.repository';
+import { VoterInfo } from '../entities/poll.entity';
+
+
 
 
 @Injectable({
@@ -66,14 +69,24 @@ export class FeedUseCases {
     return this.feedRepository.deleteComment(commentId);
   }
 
+  updateComment(commentId: string, content: string): Observable<CommandResponse> {
+    return this.feedRepository.updateComment(commentId, content);
+  }
+
   createOutfitPost(dto: { outfitId: string; caption?: string; visibility: number }): Observable<CommandResponse> {
     return this.feedRepository.createOutfitPost(dto);
   }
+
+  
    voteOnPoll(pollId: string, optionId: string): Observable<CommandResponse> {
     return this.pollsRepository.vote(pollId, {optionId});
   }
 
-  removeVote( optionId: string): Observable<void> {
-    return this.pollsRepository.removeVote(optionId);
-  }
+   removeVote( optionId: string): Observable<void> {
+     return this.pollsRepository.removeVote(optionId);
+   }
+
+   getVotersForPoll(pollId: string, optionId?: string): Observable<VoterInfo[]> {
+     return this.feedRepository.getVotersForPoll(pollId, optionId);
+   }
 }

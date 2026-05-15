@@ -18,7 +18,7 @@ export class PollsUseCases {
   ) {}
 
   // getPolls(): Observable<Poll[]> {
-  //   return this.pollsRepository.getPolls();
+  //   return this.pollsRepository.getPolls
   // }
 
   getMyPolls(): Observable<Poll[]> {

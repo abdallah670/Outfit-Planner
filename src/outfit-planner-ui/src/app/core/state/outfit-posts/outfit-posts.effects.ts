@@ -32,11 +32,10 @@ export class OutfitPostsEffects {
               likesCount: 0,
               commentsCount: 0,
               createdAt: new Date(),
-              isliked:false,
-              isfollowing:false,
-              isowner:true,
-              hasvoted:false,
-              uservote:''
+              isLiked: false,
+              isFollowing: false,
+              isOwner: true,
+              hasVoted: false
             };
             return OutfitPostsActions.createOutfitPostSuccess({ post: newPost });
           }),

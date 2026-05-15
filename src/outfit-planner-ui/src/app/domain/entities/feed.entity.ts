@@ -1,6 +1,6 @@
 
 import { Outfit } from './outfit.entity';
-import { Poll } from './poll.entity';
+import { Poll, PollOption } from './poll.entity';
 /**
  * IMPORTANT: These values must match the C# backend PostType enum:
  * - Poll = 0 (C# first item default)
@@ -34,12 +34,16 @@ export interface FeedPost {
   commentsCount: number;
   userReaction?: string;
   createdAt: Date;
-  isfollowing?:boolean;
-  isowner?:boolean;
-  hasvoted?:boolean;
-  uservote:string;
-  isliked:boolean;
+  isFollowing?:boolean;
+  isOwner?:boolean;
+  hasVoted?:boolean;
+  isLiked:boolean;
 }
+export interface FeedPostWithComments extends FeedPost {
+  comments: PostComment[];
+}
+
+
 
 /**
  * Represents a comment on a feed post
@@ -54,7 +58,6 @@ export interface PostComment {
   isDeleted: boolean;
   parentCommentId?: string;
   replies?: PostComment[];
-  likes?: string[]; // User IDs who liked the comment
 }
 /**
  * likes

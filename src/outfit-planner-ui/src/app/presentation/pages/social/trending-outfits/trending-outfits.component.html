@@ -15,7 +15,6 @@
            </ng-template>
          </div>
           <div class="outfit-info">
-            <p class="outfit-occasion" *ngIf="outfit.occasion">{{ outfit.occasion }}</p>
             <div class="stats">
               <mat-icon>favorite</mat-icon>
               <span>{{ outfit.likes > 1000 ? (outfit.likes / 1000).toFixed(1) + 'k' : outfit.likes }} likes</span>

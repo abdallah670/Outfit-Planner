@@ -5,6 +5,7 @@ import { Observable, map } from 'rxjs';
 import { FeedPost } from '../../domain/entities/feed.entity';
 import { PostComment } from '../../domain/entities/feed.entity';
 import { CommandResponse,CursorPagedResult } from '../../domain/entities/response.entity';
+import { VoterInfo } from '../../domain/entities/poll.entity';
 
 
 @Injectable({
@@ -42,7 +43,7 @@ export class FeedDataSource {
       }))
     );
   }
-getUserFeed(
+ getUserFeed(
     userId: string,
     cursor?: string,
     pageSize: number = 20,
@@ -104,6 +105,30 @@ getUserFeed(
     return this.http.delete<void>(`${this.apiUrl}/comments/${commentId}`);
   }
 
+  updateComment(commentId: string, content: string): Observable<CommandResponse> {
+    return this.http.put<CommandResponse>(`${this.apiUrl}/comments/${commentId}`, { content });
+  }
+
+  getVotersForPoll(pollId: string, optionId?: string): Observable<VoterInfo[]> {
+    let url = `${environment.baseUrl}/polls/${pollId}/voters`;
+    let params = new HttpParams();
+    if (optionId) {
+      params = params.set('optionId', optionId);
+    }
+
+    return this.http.get<any[]>(url, { params }).pipe(
+      map(votes => votes.map((v: any) => ({
+        voterId: v.voterId,
+        voterName: v.voterName,
+        voterAvatarUrl: v.voterAvatarUrl ? (v.voterAvatarUrl.startsWith('http') ? v.voterAvatarUrl : `${environment.resourceBaseUrl}${v.voterAvatarUrl}`) : 'assets/default-avatar.png',
+        votedAt: new Date(v.votedAt),
+        optionId: v.optionId,
+        optionDescription: v.optionDescription || '',
+        optionDisplayOrder: v.optionDisplayOrder ?? 0
+      })))
+    );
+  }
+
   private mapFeedPost(post: any): FeedPost {
     const resourceUrl = environment.resourceBaseUrl;
     
@@ -136,19 +161,27 @@ getUserFeed(
       } : undefined,
       poll: post.poll ? {
         ...post.poll,
+        status: post.poll.status?.toLowerCase(),
         createdAt: new Date(post.poll.createdAt),
-        expiresAt: new Date(post.poll.expiresAt)
+        expiresAt: new Date(post.poll.expiresAt),
+        userVotedOptionId: post.poll.userVotedOptionId
       } : undefined,
-        isfollowing:post.isFollowing,
-      isliked:post.isLiked,
-      isowner:post.isOwner,
-      hasvoted:post.hasVoted,
-      uservote:post.userVote
-
+      isFollowing: post.isFollowing,
+      isLiked: post.isLiked,
+      isOwner: post.isOwner,
+      hasVoted: post.hasVoted,
+      comments: post.comments ? post.comments.map((c: any) => this.mapPostComment(c)) : undefined
     };
   }
 
   private mapPostComment(comment: any): PostComment {
+    const resourceUrl = environment.resourceBaseUrl;
+    
+    // Prefix user avatar if it's a relative URL
+    if (comment.userAvatarUrl && !comment.userAvatarUrl.startsWith('http')) {
+      comment.userAvatarUrl = `${resourceUrl}${comment.userAvatarUrl}`;
+    }
+    
     return {
       ...comment,
       createdAt: new Date(comment.createdAt),

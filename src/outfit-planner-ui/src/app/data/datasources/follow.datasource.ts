@@ -19,7 +19,7 @@ export class FollowDataSource {
   unfollowUser(userId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${userId}/unfollow`);
   }
-
+  
   isFollowing(userId: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/${userId}/isfollowing`);
   }

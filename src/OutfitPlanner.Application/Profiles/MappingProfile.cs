@@ -209,11 +209,13 @@ public class MappingProfile : Profile
 
         // PollOption
         CreateMap<PollOption, PollOptionDto>()
-            .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.Votes.Count))
             .ForMember(d => d.OutfitThumbnail, opt => opt.MapFrom(s => s.Outfit != null ? s.Outfit.ImageUrl : null))
-            .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Outfit != null ? s.Outfit.Name : "Option"));
+            .ForMember(d=>d.Description, opt => opt.MapFrom(s => !string.IsNullOrEmpty(s.Description) ? s.Description : (s.Outfit != null ? s.Outfit.Name : string.Empty)));
 
-        CreateMap<PollOptionDto, PollOption>();
+        CreateMap<PollOptionDto, PollOption>()
+        .ForMember(d=>d.Description, opt => opt.MapFrom(s => !string.IsNullOrEmpty(s.Description) ? s.Description : string.Empty));
+
+
 
      
 
@@ -261,7 +263,8 @@ CreateMap<FeedPost, FeedPostDto>()
 CreateMap<PostComment, PostCommentDto>()
     .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Name))
     .ForMember(d => d.UserAvatarUrl, opt => opt.MapFrom(s => s.User.ProfilePictureUrl))
-    .ForMember(d => d.Replies, opt => opt.MapFrom(s => s.Replies));
+    .ForMember(d => d.Replies, opt => opt.MapFrom(s => s.Replies)).
+    ForMember(d=>d.ParentCommentId, opt => opt.MapFrom(s => s.ParentCommentId.HasValue ? s.ParentCommentId.Value.ToString() : null));
      } 
 }
 

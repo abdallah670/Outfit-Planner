@@ -103,6 +103,17 @@ public class DeletePostCommentCommandHandler : IRequestHandler<DeletePostComment
             response.Message = "Unauthorized to delete this comment";
             return response;
         }
+        //first change the replies parent comment id to removed comment parent comment id
+
+        var commentReplies = await _commentRepository.GetByParentCommentId(request.CommentId);
+        if (commentReplies != null)
+        {
+            foreach (var commentReply in commentReplies)
+            {
+                commentReply.ParentCommentId = comment.ParentCommentId;
+                await _commentRepository.UpdateAsync(commentReply);
+            }
+        }
 
         await _commentRepository.RemoveAsync(comment);
 
@@ -130,6 +141,49 @@ public class DeletePostCommentCommandHandler : IRequestHandler<DeletePostComment
 
         response.Success = true;
         response.Message = "Comment deleted successfully";
+
+        return response;
+    }
+}
+
+public class UpdatePostCommentCommandHandler : IRequestHandler<UpdatePostCommentCommand, BaseCommandResponse>
+{
+    private readonly IPostCommentRepository _commentRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UpdatePostCommentCommandHandler(
+        IPostCommentRepository commentRepository,
+        IUnitOfWork unitOfWork)
+    {
+        _commentRepository = commentRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<BaseCommandResponse> Handle(UpdatePostCommentCommand request, CancellationToken cancellationToken)
+    {
+        var response = new BaseCommandResponse();
+
+        var comment = await _commentRepository.GetByIdAsync(request.CommentId);
+        if (comment == null)
+        {
+            response.Success = false;
+            response.Message = "Comment not found";
+            return response;
+        }
+
+        if (comment.UserId != request.UserId)
+        {
+            response.Success = false;
+            response.Message = "Unauthorized to update this comment";
+            return response;
+        }
+
+        comment.Content = request.Content;
+        await _commentRepository.UpdateAsync(comment);
+        await _unitOfWork.SaveChangesAsync();
+
+        response.Success = true;
+        response.Message = "Comment updated successfully";
 
         return response;
     }

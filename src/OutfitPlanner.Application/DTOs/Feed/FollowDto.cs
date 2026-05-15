@@ -6,6 +6,8 @@ public class FollowDto
     public string AvatarUrl { get; set; } = string.Empty;
     public DateTimeOffset FollowedAt { get; set; }
     public bool IsFollowing { get; set; } = false;
+     public bool IsOwner { get; set; } = false;
+
 }
 
 public class FollowersResponse

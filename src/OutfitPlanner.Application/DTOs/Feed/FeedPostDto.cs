@@ -24,6 +24,10 @@ public class FeedPostDto
     public bool IsFollowing { get; set; } = false;
     public bool IsOwner { get; set; } = false;
     public bool HasVoted { get; set; } = false;
-    public string? UserVote { get; set; } = null;
     public bool IsLiked { get; set; } = false;
+}
+public class GetFeedPostByIdDto : FeedPostDto
+{
+    public List<PostCommentDto> Comments { get; set; } = new();
+
 }

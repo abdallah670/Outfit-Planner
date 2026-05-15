@@ -23,7 +23,7 @@ public class GetFollowingQueryHandler : IRequestHandler<GetFollowingQuery, Curso
             request.UserId,
             request.Cursor,
             request.PageSize);
-        var followedUserIds = (await _followRepository.FindAsync(f => f.FollowerId == request.UserId, cancellationToken))
+        var followedUserIds = (await _followRepository.FindAsync(f => f.FollowerId == request.RequesterId, cancellationToken))
                       .Select(f => f.FollowedId)
                       .ToList();
         var dtos = result.Items.Select(f => new FollowingDto
@@ -32,7 +32,9 @@ public class GetFollowingQueryHandler : IRequestHandler<GetFollowingQuery, Curso
             UserName = f.Followed?.UserName ?? "Unknown",
             AvatarUrl = f.Followed?.ProfilePictureUrl,
             CreatedAt = f.CreatedAt.DateTime,
-            IsFollowing = followedUserIds.Contains(f.FollowedId)
+            IsFollowing = followedUserIds.Contains(f.FollowedId),
+            IsOwner = f.FollowedId == request.RequesterId
+
         }).ToList();
 
         return new CursorPagination.CursorPagedResult<FollowingDto>

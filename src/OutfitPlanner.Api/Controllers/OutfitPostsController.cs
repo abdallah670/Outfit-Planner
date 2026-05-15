@@ -59,7 +59,7 @@ public class OutfitPostsController : ControllerBase
     public async Task<ActionResult<FeedPostDto>> GetOutfitPost(Guid id)
     {
         var userId = GetUserId();
-        var query = new GetFeedPostByIdQuery { PostId = id, UserId = userId };
+        var query = new GetFeedPostByIdQuery { PostId = id, RequesterId = userId };
         var post = await _mediator.Send(query);
         
         if (post == null)

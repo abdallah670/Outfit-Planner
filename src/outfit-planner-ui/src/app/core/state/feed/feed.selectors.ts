@@ -17,6 +17,8 @@ export const selectPostById = (postId: string) =>
   createSelector(selectPosts, (posts: FeedPost[]): FeedPost | undefined =>
     posts.find(post => post.id === postId)
   );
+export const selectPostByIdloading = (postId: string) =>
+  createSelector(selectFeedLoading, (loading: boolean) => loading);
 
 export const selectPostComments = (postId: string) =>
   createSelector(selectCommentsByPost, (commentsByPost: any) => commentsByPost[postId]?.items || []);

@@ -1,0 +1,518 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Share to Feed</title>
+      <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+      <style id="theme-styles">
+        :root {
+          --background: #fdf2f8;
+          --foreground: #1f2937;
+          --card: #ffffff;
+          --card-foreground: #1f2937;
+          --primary: #db2777;
+          --primary-foreground: #ffffff;
+          --secondary: #fce7f3;
+          --secondary-foreground: #be185d;
+          --muted: #f3f4f6;
+          --muted-foreground: #6b7280;
+          --accent: #fbcfe8;
+          --accent-foreground: #831843;
+          --destructive: #ef4444;
+          --destructive-foreground: #ffffff;
+          --border: #e5e7eb;
+          --input: #ffffff;
+          --ring: #db2777;
+          --radius-sm: 4px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
+          --font-family-body:
+            system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            sans-serif;
+        }
+        * {
+          box-sizing: border-box;
+        }
+        .export-wrapper {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family-body);
+          -webkit-font-smoothing: antialiased;
+          background-color: #111827; /* Dark modal backdrop */
+        }
+      </style>
+      <style id="modal-layout">
+        .modal-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          min-height: 812px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+        }
+
+        .modal {
+          background: var(--card);
+          width: 100%;
+          max-width: 600px;
+          border-radius: var(--radius-lg);
+          box-shadow:
+            0 20px 25px -5px rgba(0, 0, 0, 0.1),
+            0 10px 10px -5px rgba(0, 0, 0, 0.04);
+          display: flex;
+          flex-direction: column;
+        }
+
+        .modal-header {
+          padding: 20px 24px;
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .modal-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--foreground);
+          margin: 0;
+        }
+
+        .modal-close {
+          background: transparent;
+          border: none;
+          color: var(--muted-foreground);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px;
+          border-radius: var(--radius-sm);
+        }
+
+        .modal-body {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+
+        .modal-footer {
+          padding: 16px 24px;
+          border-top: 1px solid var(--border);
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+          background: var(--muted);
+          border-bottom-left-radius: var(--radius-lg);
+          border-bottom-right-radius: var(--radius-lg);
+        }
+      </style>
+      <style id="form-styles">
+        .outfit-preview {
+          display: flex;
+          gap: 16px;
+          padding: 12px;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          background: var(--muted);
+        }
+
+        .outfit-preview-img {
+          width: 80px;
+          height: 80px;
+          border-radius: var(--radius-sm);
+          object-fit: cover;
+        }
+
+        .outfit-preview-info {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .outfit-preview-title {
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--foreground);
+          margin: 0 0 4px 0;
+        }
+
+        .outfit-preview-meta {
+          font-size: 13px;
+          color: var(--muted-foreground);
+          margin: 0;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .form-label {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--foreground);
+        }
+
+        .input-simulation {
+          width: 100%;
+          min-height: 42px;
+          padding: 10px 12px;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          background: var(--input);
+          color: var(--foreground);
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          cursor: text;
+        }
+
+        .input-simulation.textarea {
+          min-height: 100px;
+          align-items: flex-start;
+        }
+
+        .input-simulation.has-icon {
+          padding-left: 36px;
+        }
+
+        .placeholder-text {
+          color: var(--muted-foreground);
+        }
+
+        .text-value {
+          color: var(--foreground);
+        }
+
+        .input-with-icon {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 12px;
+          color: var(--muted-foreground);
+          display: flex;
+          pointer-events: none;
+        }
+
+        .post-options-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+
+        .tags-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 4px;
+        }
+
+        .tag-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          background: var(--secondary);
+          color: var(--secondary-foreground);
+          border-radius: var(--radius-xl);
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .tag-badge.outline {
+          background: var(--card);
+          color: var(--foreground);
+          border: 1px solid var(--border);
+        }
+
+        .tag-badge.dashed {
+          background: var(--card);
+          color: var(--muted-foreground);
+          border: 1px dashed var(--border);
+          cursor: pointer;
+        }
+
+        .tag-close {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0.7;
+        }
+
+        .btn {
+          padding: 10px 20px;
+          border-radius: var(--radius-md);
+          font-weight: 500;
+          font-size: 14px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          border: none;
+        }
+
+        .btn-primary {
+          background: var(--primary);
+          color: var(--primary-foreground);
+        }
+
+        .btn-outline {
+          background: var(--card);
+          border: 1px solid var(--border);
+          color: var(--foreground);
+        }
+      </style>
+    </head>
+    <body>
+      <div class="modal-overlay">
+        <div class="modal">
+          <!-- Header -->
+          <div class="modal-header">
+            <h2 class="modal-title">Share to Feed</h2>
+            <button class="modal-close" data-media-type="banani-button">
+              <div
+                style="
+                  width: 20px;
+                  height: 20px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:x"
+                  style="font-size: 20px"
+                ></iconify-icon>
+              </div>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="modal-body">
+            <!-- Outfit Preview -->
+            <div class="outfit-preview">
+              <img
+                src="https://storage.googleapis.com/banani-generated-images/generated-images/b649967f-80c6-41bb-8c21-25f7c331bb35.jpg"
+                class="outfit-preview-img"
+                alt="Weekend Coffee Run"
+                data-aspect-ratio="1:1"
+                data-query="minimalist casual outfit fashion neutral"
+              />
+              <div class="outfit-preview-info">
+                <h3 class="outfit-preview-title">Weekend Coffee Run</h3>
+                <p class="outfit-preview-meta">Spring • 3 items • Casual</p>
+              </div>
+            </div>
+
+            <!-- Caption -->
+            <div class="form-group">
+              <div class="form-label">Caption</div>
+              <div class="input-simulation textarea">
+                <span class="placeholder-text"
+                  >Write a caption for your outfit...</span
+                >
+              </div>
+            </div>
+
+            <!-- Location & Privacy Row -->
+            <div class="post-options-row">
+              <div class="form-group">
+              <div class="form-group">
+                <div class="form-label">Privacy</div>
+                <div class="input-with-icon" data-media-type="banani-button">
+                  <div
+                    class="input-icon"
+                    style="
+                      width: 16px;
+                      height: 16px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <iconify-icon
+                      icon="lucide:globe"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </div>
+                  <div
+                    class="input-simulation has-icon"
+                    style="justify-content: space-between"
+                  >
+                    <span class="text-value">Public</span>
+                    <div
+                      style="
+                        width: 16px;
+                        height: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      "
+                    >
+                      <iconify-icon
+                        icon="lucide:chevron-down"
+                        style="font-size: 16px; color: var(--muted-foreground)"
+                      ></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tag Friends -->
+            <div class="form-group">
+              <div class="form-label">Tag Friends</div>
+              <div class="input-with-icon" data-media-type="banani-button">
+                <div
+                  class="input-icon"
+                  style="
+                    width: 16px;
+                    height: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <iconify-icon
+                    icon="lucide:at-sign"
+                    style="font-size: 16px"
+                  ></iconify-icon>
+                </div>
+                <div class="input-simulation has-icon">
+                  <span class="placeholder-text">Search users to tag...</span>
+                </div>
+              </div>
+              <div class="tags-container">
+                <div class="tag-badge">
+                  @emily_styles
+                  <div
+                    class="tag-close"
+                    data-media-type="banani-button"
+                    style="
+                      width: 14px;
+                      height: 14px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <iconify-icon
+                      icon="lucide:x"
+                      style="font-size: 14px"
+                    ></iconify-icon>
+                  </div>
+                </div>
+                <div class="tag-badge">
+                  @sarah_j
+                  <div
+                    class="tag-close"
+                    data-media-type="banani-button"
+                    style="
+                      width: 14px;
+                      height: 14px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <iconify-icon
+                      icon="lucide:x"
+                      style="font-size: 14px"
+                    ></iconify-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          <!-- Footer -->
+          <div class="modal-footer">
+            <button class="btn btn-outline" data-media-type="banani-button">
+              Cancel
+            </button>
+            <button class="btn btn-primary" data-media-type="banani-button">
+              <div
+                style="
+                  width: 16px;
+                  height: 16px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:send"
+                  style="font-size: 16px"
+                ></iconify-icon>
+              </div>
+              Share Post
+            </button>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+  <style>
+    :root {
+      --background: #fff9fb;
+      --foreground: #1f2937;
+      --border: #00000014;
+      --input: #ffffff;
+      --primary: #ff6fa8;
+      --primary-foreground: #ffffff;
+      --secondary: #fff0f6;
+      --secondary-foreground: #7b2a4a;
+      --muted: #f3f4f6;
+      --muted-foreground: #9ca3af;
+      --success: #10b981;
+      --success-foreground: #ffffff;
+      --accent: #ffd6e8;
+      --accent-foreground: #7b2a4a;
+      --destructive: #ef4444;
+      --destructive-foreground: #ffffff;
+      --warning: #f59e0b;
+      --warning-foreground: #1f2937;
+      --card: #ffffff;
+      --card-foreground: #111827;
+      --sidebar: #fff4f7;
+      --sidebar-foreground: #5b2d3a;
+      --sidebar-primary: #ffdfeb;
+      --sidebar-primary-foreground: #7b2a4a;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --font-family-body: Inter;
+    }
+  </style>
+</div>

@@ -1,16 +1,18 @@
-import { Component, OnInit, inject, signal ,CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import { Component, OnInit, inject, signal, CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef, ComponentRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
+import Swal from 'sweetalert2';
 import { UserUseCases } from '../../../domain/usecases/user.usecases';
 import { FeedUseCases } from '../../../domain/usecases/feed.usecases';
 import { FollowUseCases } from '../../../domain/usecases/follow.usecases';
 import { PublicUserProfile } from '../../../domain/entities/public-user-profile.entity';
-
 import { CursorPagedResult } from '../../../domain/entities/response.entity';
 import { FeedPost } from '../../../domain/entities/feed.entity';
+import { CommentsModalComponent } from '../../components/shared/modals/comments-modal/comments-modal.component';
+import { VotersModalComponent } from '../../components/shared/modals/voters-modal/voters-modal.component';
 
 type TabType = 'activity' | 'followers' | 'following';
 
@@ -18,15 +20,18 @@ type TabType = 'activity' | 'followers' | 'following';
   selector: 'app-public-profile',
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule, CommentsModalComponent, VotersModalComponent],
   templateUrl: './public-profile.component.html',
   styleUrls: ['./public-profile.component.scss']
 })
 export class PublicProfileComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private userUseCases = inject(UserUseCases);
   private feedUseCases = inject(FeedUseCases);
   private followUseCases = inject(FollowUseCases);
+  private viewContainerRef = inject(ViewContainerRef);
+  private cdRef = inject(ChangeDetectorRef);
 
   userId = signal<string | null>(null);
   
@@ -44,8 +49,7 @@ export class PublicProfileComponent implements OnInit {
   // Tab management
   activeTab = signal<TabType>('activity');
 
-  // Follow state
-  isFollowing = signal(false);
+  // Follow status
   followLoading = signal(false);
 
   // Activity Feed
@@ -72,7 +76,7 @@ export class PublicProfileComponent implements OnInit {
     if (id) {
       this.userId.set(id);
       this.loadPublicProfile(id);
-      //this.checkFollowStatus(id);
+      this.setTab('activity');
     }
   }
 
@@ -91,12 +95,6 @@ export class PublicProfileComponent implements OnInit {
     });
   }
 
-  private checkFollowStatus(userId: string): void {
-    this.followUseCases.isFollowing(userId).subscribe({
-      next: (status) => this.isFollowing.set(status),
-      error: () => this.isFollowing.set(false)
-    });
-  }
 
   setTab(tab: TabType): void {
     this.activeTab.set(tab);
@@ -127,6 +125,7 @@ export class PublicProfileComponent implements OnInit {
         this.activityCursor.set(result.nextCursor);
         this.activityHasMore.set(result.hasMore);
         this.activityLoading.set(false);
+         
       },
       error: (err) => {
         console.error('Failed to load activity', err);
@@ -223,15 +222,25 @@ export class PublicProfileComponent implements OnInit {
     const id = this.userId();
     if (!id) return;
 
-    if (this.isFollowing()) {
+    if (this.publicProfile()?.isFollowing) {
       this.followUseCases.unfollowUser(id).subscribe({
-        next: () => this.isFollowing.set(false)
+        next: () => {
+          this.publicProfile.update((profile) => ({ ...profile!, isFollowing: false }));
+          this.stats.update(s => ({ ...s, followers: s.followers - 1 }));
+        }
       });
     } else {
       this.followUseCases.followUser(id).subscribe({
-        next: () => this.isFollowing.set(true)
+        next: () => {
+          this.publicProfile.update((profile) => ({ ...profile!, isFollowing: true }));
+          this.stats.update(s => ({ ...s, followers: s.followers + 1 }));
+        }
       });
     }
+  }
+
+  goToUserProfile(userId: string): void {
+    this.router.navigate(['/profile', userId]);
   }
 
   onBack(): void {
@@ -243,16 +252,17 @@ export class PublicProfileComponent implements OnInit {
     if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
     return num.toString();
   }
-  toggleFollowListUser(userId: string, event: Event): void {
+  toggleFollowerListUser(userId: string, event: Event): void {
     event.stopPropagation();
 
-    const isFollowing = this.followedUserIds().has(userId);
+    // Find the user in followers or following list   
+    const follower = this.followersList().find(u => u.userId === userId);
 
-    if (isFollowing) {
+    if (follower.isFollowing) {
       this.followUseCases.unfollowUser(userId).subscribe({
         next: () => {
           // Update the specific user in the list
-          this.followingList.update(list =>
+          this.followersList.update(list =>
             list.map(u => u.userId === userId ? { ...u, isFollowing: false } : u)
           );
         }
@@ -261,6 +271,27 @@ export class PublicProfileComponent implements OnInit {
       this.followUseCases.followUser(userId).subscribe({
         next: () => {
           // Update the specific user in the list
+          this.followersList.update(list =>
+            list.map(u => u.userId === userId ? { ...u, isFollowing: true } : u)
+          );
+        }
+      });
+    }
+  }
+  toggleFollowingListUser(userId: string, event: Event): void {
+    event.stopPropagation();
+    const following = this.followingList().find(u => u.userId === userId);
+    if (following.isFollowing) {
+      this.followUseCases.unfollowUser(userId).subscribe({
+        next: () => {
+          this.followingList.update(list =>
+            list.map(u => u.userId === userId ? { ...u, isFollowing: false } : u)
+          );
+        }
+      });
+    } else {
+      this.followUseCases.followUser(userId).subscribe({
+        next: () => {
           this.followingList.update(list =>
             list.map(u => u.userId === userId ? { ...u, isFollowing: true } : u)
           );
@@ -268,39 +299,84 @@ export class PublicProfileComponent implements OnInit {
       });
     }
   }
+
   toggleVote(post:FeedPost,optionId: string, event: Event): void {
     event.stopPropagation();
     const poll = post?.poll;
     if (!poll) return;
-
-    // if (poll.userVotedOptionId === optionId) {
-    //   this.feedUseCases.removeVote(poll.id,optionId).subscribe({
-    //     next: () => post.poll?.userVotedOptionId = null
-    //   });
-    // } else {
-    //   this.feedUseCases.voteOnPoll(poll.id, optionId).subscribe({
-    //     next: () => post.poll?.userVotedOptionId = optionId
-    //   });
-    // }
+    //if user voted before and click the same option, remove vote. Otherwise, vote on the new option and remove previous vote if exists
+    if (poll.userVotedOptionId === optionId) {
+      this.feedUseCases.removeVote(optionId).subscribe({
+        next: () => this.activityPosts.update(posts => posts.map(p => {
+          if (p.id === post.id && p.poll) {
+            return {
+              ...p,
+              poll: {
+                ...p.poll,
+                userVotedOptionId: undefined,
+                totalVotes: p.poll.totalVotes - 1,
+                options: p.poll.options.map(o => o.id === optionId ? { ...o, voteCount: o.voteCount - 1 } : o)
+              }
+            };
+          }          return p;
+        }))
+      });
+    } else if (poll.userVotedOptionId!== optionId && poll.userVotedOptionId) {
+      this.feedUseCases.voteOnPoll(poll.id, optionId).subscribe({
+        next: () => this.activityPosts.update(posts => posts.map(p => {
+          if (p.id === post.id && p.poll) {
+            return {
+              ...p,
+              poll: {
+                ...p.poll,
+                userVotedOptionId: optionId,
+                totalVotes: p.poll.totalVotes, // stays the same (removed old vote, added new vote)
+                options: p.poll.options.map(o => o.id === optionId ? { ...o, voteCount: o.voteCount + 1 } : o.id === poll.userVotedOptionId ? { ...o, voteCount: o.voteCount - 1 } : o)
+              }
+            };
+          }
+          return p;
+        }))
+      });
+    }
+      else {
+      this.feedUseCases.voteOnPoll(poll.id, optionId).subscribe({
+        next: () => this.activityPosts.update(posts => posts.map(p => {
+          if (p.id === post.id && p.poll) {
+            return {
+              ...p,
+              poll: {
+                ...p.poll,
+                userVotedOptionId: optionId,
+                totalVotes: p.poll.totalVotes + 1,
+                options: p.poll.options.map(o => o.id === optionId ? { ...o, voteCount: o.voteCount + 1 } : o)
+              }
+            };
+          }
+          return p;
+        }))
+      });
+    }
   }
   toggleReaction(post: FeedPost,event:Event): void {
-    // event.stopPropagation();
-    // const hasLiked = post.hasLiked;
-    // const isOwner = post.isOwner;
-    // if (isOwner) return;
+    event.stopPropagation();
+    const hasLiked = post.isLiked;
+    const isOwner = post.isOwner;
+    if (isOwner) return;
     
-    // if (hasLiked) {
-    //   this.feedUseCases.unlikePost(post.id).subscribe({
-    //     next: () => post.hasLiked = false
-    //   });
-    // } else {
-    //   this.feedUseCases.likePost(post.id).subscribe({
-    //     next: () => post.hasLiked = true
-    //   });
-    // }
-    
-    
-
+    if (hasLiked) {
+      this.feedUseCases.removeReaction(post.id).subscribe({
+        next: () => this.activityPosts.update(posts => posts.map(p => p.id === post.id ? { ...p, isLiked: false, likesCount: p.likesCount - 1 } : p))
+      });
+    } else {
+      this.feedUseCases.addReaction(post.id).subscribe({
+        next: () => this.activityPosts.update(posts => posts.map(p => p.id === post.id ? { ...p, isLiked: true, likesCount: p.likesCount + 1 } : p))
+      });
+    }
+  }
+  onTagClick(tag: string): void {
+    //Tag for following   
+    // this.router.navigate(['/feed'], { queryParams: { tag } });
   }
   getTimeAgo(dateString: Date): string {
     const now = new Date();
@@ -318,5 +394,89 @@ export class PublicProfileComponent implements OnInit {
     if (diffDays < 30) return `${diffDays}d ago`;
     if (diffMonths < 12) return `${diffMonths}mo ago`;
     return `${diffYears}y ago`;
+  }
+  getOptionLabel(index: number): string {
+    // For up to 26 options, label them A, B, C, etc. Beyond that, use "Option 1", "Option 2", etc.
+    const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    return labels[index] || `Option ${index + 1}`;
+  }
+
+  getvotePercentage(totalVotes: number, voteCount: number): string {
+    if (totalVotes === 0) return '0%';
+    const percentage = (voteCount / totalVotes) * 100;
+    return `${percentage.toFixed(0)}%`;
+  }
+
+  isWinner(poll: any, optionId: string): boolean {
+    if (!poll || poll.totalVotes === 0) return false;
+    const maxVotes = Math.max(...poll.options.map((o: any) => o.voteCount));
+    const option = poll.options.find((o: any) => o.id === optionId);
+    return option ? option.voteCount === maxVotes : false;
+  }
+
+  openCommentsModal(postId: string): void {
+    // Create the comments modal component dynamically
+    const componentRef = this.viewContainerRef.createComponent(CommentsModalComponent);
+    componentRef.instance.postId = postId;
+
+    // Set callbacks to update commentsCount in the activity feed
+    componentRef.instance.onCommentAdded = (id: string) => {
+      this.activityPosts.update(posts => posts.map(p =>
+        p.id === id ? { ...p, commentsCount: p.commentsCount + 1 } : p
+      ));
+    };
+    componentRef.instance.onCommentDeleted = (id: string) => {
+      this.activityPosts.update(posts => posts.map(p =>
+        p.id === id ? { ...p, commentsCount: Math.max(0, p.commentsCount - 1) } : p
+      ));
+    };
+
+    // Get the native element of the component
+    const element = (componentRef.hostView as any).rootNodes[0] as HTMLElement;
+
+    // Show SweetAlert with the component embedded
+    Swal.fire({
+      html: element,
+      width: 600,
+      showCloseButton: false,
+      showConfirmButton: false,
+      background: 'transparent',
+      backdrop: true,
+      didOpen: () => {
+        // Trigger change detection multiple times to ensure signals are evaluated
+        componentRef.changeDetectorRef.detectChanges();
+        setTimeout(() => componentRef.changeDetectorRef.detectChanges(), 100);
+      },
+      willClose: () => {
+        // Clean up component when modal closes
+        componentRef.destroy();
+      }
+    });
+  }
+
+  openVotersModal(pollId: string, optionId?: string): void {
+    // Create the voters modal component dynamically
+    const componentRef = this.viewContainerRef.createComponent(VotersModalComponent);
+    componentRef.instance.pollId = pollId;
+    componentRef.instance.optionId = optionId;
+
+    // Get the native element
+    const element = (componentRef.hostView as any).rootNodes[0] as HTMLElement;
+
+    // Show SweetAlert
+    Swal.fire({
+      html: element,
+      width: 500,
+      showCloseButton: false,
+      showConfirmButton: false,
+      background: 'transparent',
+      backdrop: true,
+      didOpen: () => {
+        componentRef.changeDetectorRef.detectChanges();
+      },
+      willClose: () => {
+        componentRef.destroy();
+      }
+    });
   }
 }

@@ -17,13 +17,13 @@ public class CreatePollPostCommandValidator : AbstractValidator<CreatePollPostCo
             .MaximumLength(500)
             .WithMessage("Question cannot exceed 500 characters");
 
-        RuleFor(x => x.OutfitIds)
+        RuleFor(x => x.Options)
             .NotNull()
-            .WithMessage("OutfitIds is required")
+            .WithMessage("Options is required")
             .Must(x => x.Count >= 2)
-            .WithMessage("At least 2 outfits are required")
+            .WithMessage("At least 2 options are required")
             .Must(x => x.Count <= 4)
-            .WithMessage("Maximum 4 outfits allowed");
+            .WithMessage("Maximum 4 options allowed");
 
         RuleFor(x => x.ExpiresAt)
             .NotEmpty()

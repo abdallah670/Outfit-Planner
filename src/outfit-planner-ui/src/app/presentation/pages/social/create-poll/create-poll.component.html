@@ -1,131 +1,85 @@
 <div class="create-poll-page">
+  <!-- Header -->
   <header class="page-header">
-    <div class="header-left">
-      <button mat-icon-button (click)="onCancel()" aria-label="Go back">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1>Create New Poll</h1>
-    </div>
-    <div class="header-actions">
-      <button mat-stroked-button color="accent" routerLink="/social/feed">
-        <mat-icon>groups</mat-icon>
-        Community Feed
-      </button>
-    </div>
+    <button mat-icon-button (click)="onCancel()" aria-label="Go back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="page-title">Create Poll</h1>
   </header>
 
-  <form [formGroup]="pollForm" (ngSubmit)="onSubmit()" class="poll-form">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Poll Details</mat-card-title>
-      </mat-card-header>
+  <!-- Wizard Stepper -->
+  <div class="wizard-stepper">
+    <div class="step completed">
+      <div class="step-circle">
+        <mat-icon>check</mat-icon>
+      </div>
+      <span class="step-label">Select Outfits</span>
+    </div>
+    <div class="step active">
+      <div class="step-circle">2</div>
+      <span class="step-label">Configure Poll</span>
+    </div>
+    <div class="step">
+      <div class="step-circle">3</div>
+      <span class="step-label">Preview &amp; Publish</span>
+    </div>
+  </div>
 
-      <mat-card-content>
-        <!-- Question -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Question</mat-label>
-          <textarea
-            matInput
-            formControlName="question"
-            placeholder="Ask your question... (e.g., Which outfit looks better for a date?)"
-            rows="3">
-          </textarea>
-          <mat-hint align="end">{{ pollForm.get('question')?.value?.length || 0 }}/500</mat-hint>
-          <mat-error *ngIf="pollForm.get('question')?.hasError('required')">
-            Question is required
-          </mat-error>
-          <mat-error *ngIf="pollForm.get('question')?.hasError('minlength')">
-            Question must be at least 3 characters
-          </mat-error>
-          <mat-error *ngIf="pollForm.get('question')?.hasError('maxlength')">
-            Question cannot exceed 500 characters
-          </mat-error>
-        </mat-form-field>
+  <form [formGroup]="pollForm" (ngSubmit)="onSubmit()" class="builder-layout">
+    <!-- Left Column: Options -->
+    <div class="options-section">
+      <div class="section-header">
+        <h2 class="section-title">Poll Options ({{ options.length }}/{{ maxOptions }})</h2>
+      </div>
 
-        <!-- Context -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Context (Optional)</mat-label>
-          <textarea
-            matInput
-            formControlName="context"
-            placeholder="Add any additional context..."
-            rows="2">
-          </textarea>
-        </mat-form-field>
+      <div class="options-list">
+        <div
+          *ngFor="let option of options.controls; let i = index"
+          [formGroupName]="i"
+          class="option-card">
+          <div class="drag-handle">
+            <mat-icon>drag_indicator</mat-icon>
+          </div>
 
-        <!-- Expiry Date -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Expires At</mat-label>
-          <input
-            matInput
-            [matDatepicker]="picker"
-            formControlName="expiresAt"
-            [min]="minDate"
-            placeholder="Choose an expiry date">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          <mat-error *ngIf="pollForm.get('expiresAt')?.hasError('required')">
-            Expiry date is required
-          </mat-error>
-        </mat-form-field>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-divider></mat-divider>
-
-    <!-- Options Section -->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Poll Options</mat-card-title>
-        <mat-card-subtitle>
-          Add {{ minOptions }} to {{ maxOptions }} options for people to vote on
-        </mat-card-subtitle>
-      </mat-card-header>
-
-      <mat-card-content>
-        <div formArrayName="options" class="options-list">
-          <div
-            *ngFor="let option of options.controls; let i = index"
-            [formGroupName]="i"
-            class="option-item">
-            <div class="option-header">
-              <span class="option-letter">{{ getOptionLetter(i) }}</span>
-              <button
-                *ngIf="canRemoveOption()"
-                mat-icon-button
-                color="warn"
-                type="button"
-                (click)="removeOption(i)"
-                aria-label="Remove option">
-                <mat-icon>delete</mat-icon>
-              </button>
+          <div class="option-image-wrapper" *ngIf="getImagePreview(i); else noImage">
+            <img [src]="getImagePreview(i)" alt="Option image" class="option-image" />
+          </div>
+          <ng-template #noImage>
+            <div class="option-image-placeholder">
+              <mat-icon>image</mat-icon>
             </div>
+          </ng-template>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Description</mat-label>
-              <input
-                matInput
-                formControlName="description"
-                [placeholder]="'Describe option ' + getOptionLetter(i)">
-              <mat-error *ngIf="option.get('description')?.hasError('required')">
-                Description is required
-              </mat-error>
-              <mat-error *ngIf="option.get('description')?.hasError('maxlength')">
-                Description cannot exceed 200 characters
-              </mat-error>
-            </mat-form-field>
+          <div class="option-details">
+            <span class="option-label">Option {{ getOptionLetter(i) }}</span>
+            <input
+              class="option-name"
+              matInput
+              formControlName="description"
+              [placeholder]="'Option ' + getOptionLetter(i)"
+            />
+            <p class="option-meta" *ngIf="option.get('outfitId')?.value">
+              Outfit ID: {{ option.get('outfitId')?.value | slice:0:12 }}...
+            </p>
+          </div>
 
-            <!-- Optional: Outfit Picker -->
-            <div class="outfit-picker-section">
-              <button
-                mat-stroked-button
-                type="button"
-                color="primary"
-                disabled>
-                <mat-icon>checkroom</mat-icon>
-                Select Outfit (Coming Soon)
-              </button>
-            </div>
+          <div class="option-actions">
+            <button
+              mat-icon-button
+              class="icon-btn"
+              (click)="onSelectOutfit(i)"
+              aria-label="Select outfit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              *ngIf="canRemoveOption()"
+              mat-icon-button
+              class="icon-btn destructive"
+              type="button"
+              (click)="removeOption(i)"
+              aria-label="Remove option">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
         </div>
 
@@ -137,28 +91,101 @@
           color="primary"
           (click)="addOption()"
           class="add-option-btn">
-          <mat-icon>add</mat-icon>
-          Add Option ({{ options.length }}/{{ maxOptions }})
+          <mat-icon>add_circle</mat-icon>
+          Add Another Outfit
         </button>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
 
-    <!-- Form Actions -->
-    <div class="form-actions">
-      <button
-        mat-stroked-button
-        type="button"
-        (click)="onCancel()">
-        Cancel
-      </button>
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="pollForm.invalid">
-        <mat-icon>how_to_vote</mat-icon>
-        Create Poll
-      </button>
+    <!-- Right Column: Configuration -->
+    <div class="config-section">
+      <h2 class="section-title" style="margin-bottom: 24px">Poll Configuration</h2>
+
+      <div class="form-group">
+        <label class="form-label">What's your question?</label>
+        <textarea
+          class="form-textarea"
+          formControlName="question"
+          placeholder="e.g., Which outfit should I wear for my weekend brunch date?"></textarea>
+        <mat-error *ngIf="pollForm.get('question')?.hasError('required')" class="form-error">
+          Question is required
+        </mat-error>
+        <mat-error *ngIf="pollForm.get('question')?.hasError('minlength')" class="form-error">
+          Question must be at least 3 characters
+        </mat-error>
+        <mat-error *ngIf="pollForm.get('question')?.hasError('maxlength')" class="form-error">
+          Question cannot exceed 500 characters
+        </mat-error>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Poll Duration</label>
+        <div class="select-wrapper">
+          <select class="form-select" formControlName="duration">
+            <option value="24h">24 Hours</option>
+            <option value="3d">3 Days</option>
+            <option value="7d">7 Days</option>
+          </select>
+          <mat-icon class="select-icon">arrow_drop_down</mat-icon>
+        </div>
+      </div>
+
+      <!-- Privacy Settings -->
+      <div class="form-group">
+        <label class="form-label">Privacy Settings</label>
+        <div class="privacy-options">
+          <!-- Public -->
+          <div
+            class="privacy-card"
+            [class.active]="privacySetting === 'public'"
+            (click)="setPrivacy('public')">
+            <div class="privacy-card-header">
+              <mat-icon>public</mat-icon>
+              Public
+            </div>
+            <p class="privacy-card-desc">
+              Anyone in the community feed can view and vote on this poll.
+            </p>
+            <mat-icon class="check-icon">check_circle</mat-icon>
+          </div>
+
+          <!-- Followers Only -->
+          <div
+            class="privacy-card"
+            [class.active]="privacySetting === 'followers'"
+            (click)="setPrivacy('followers')">
+            <div class="privacy-card-header">
+              <mat-icon>people</mat-icon>
+              Followers Only
+            </div>
+            <p class="privacy-card-desc">
+              Only people who follow you can view and participate.
+            </p>
+            <mat-icon class="check-icon">check_circle</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button
+          mat-stroked-button
+          color="primary"
+          type="button"
+          (click)="onCancel()"
+          class="btn btn-outline">
+          Cancel
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="pollForm.invalid"
+          class="btn btn-primary">
+          Preview &amp; Publish
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
     </div>
   </form>
 </div>

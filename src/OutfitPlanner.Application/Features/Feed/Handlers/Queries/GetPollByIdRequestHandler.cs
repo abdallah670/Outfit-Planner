@@ -15,6 +15,7 @@ namespace OutfitPlanner.Application.Features.Feed.Handlers.Queries;
 public class GetPollByIdRequestHandler : IRequestHandler<GetPollByIdRequest, ValidationPollDto>
 {
     private readonly IValidationPollRepository _validationPollRepository;
+    
     private readonly IMapper _mapper;
     private readonly ILogger<GetPollByIdRequestHandler> _logger;
 

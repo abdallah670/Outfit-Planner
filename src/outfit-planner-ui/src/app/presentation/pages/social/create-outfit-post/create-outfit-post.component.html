@@ -1,76 +1,234 @@
 <div class="create-outfit-post-page">
+  <!-- Header -->
   <div class="page-header">
-    <h1>Create Outfit Post</h1>
-    <p>Share your outfit with the community</p>
+    <h2 class="page-title">Share to Feed</h2>
+    <button mat-icon-button (click)="onCancel()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
 
-  <mat-card class="create-post-card" *ngIf="!(loading$ | async)">
-    <form [formGroup]="outfitPostForm" (ngSubmit)="onSubmit()">
-      <mat-card-content>
-        <!-- Outfit Selection -->
-        <div class="outfit-selection">
-          <h3>Select an Outfit</h3>
-          <div class="outfits-grid">
-            <div 
-              *ngFor="let outfit of userOutfits" 
-              class="outfit-item"
-              [class.selected]="selectedOutfit?.id === outfit.id"
-              (click)="selectOutfit(outfit)">
-              <img [src]="outfit.imageUrl" [alt]="outfit.name" class="outfit-image">
-              <div class="outfit-info">
-                <p class="outfit-name">{{ outfit.name }}</p>
-              </div>
-            </div>
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'select'"
+      (click)="setTab('select')">
+      <mat-icon>checkroom</mat-icon>
+      Select Existing
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'create'"
+      (click)="setTab('create')">
+      <mat-icon>add</mat-icon>
+      Create New
+    </button>
+  </div>
+
+  <!-- TAB 1: Select Existing Outfit -->
+  <div *ngIf="activeTab() === 'select'" class="tab-content">
+    <!-- Search -->
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search outfits..."
+        [value]="searchQuery()"
+        (input)="onSearchChange($any($event).target.value)">
+    </div>
+
+    <!-- Outfit Grid -->
+    <div class="outfits-grid">
+      <div
+        *ngFor="let outfit of filteredOutfits()"
+        class="outfit-card"
+        [class.selected]="isOutfitSelected()(outfit.id)"
+        (click)="selectOutfit(outfit.id)">
+        <div class="outfit-image">
+          <img
+            [src]="outfit.imageUrl || 'assets/placeholder.jpg'"
+            [alt]="outfit.name"
+            loading="lazy">
+          <div class="selection-indicator" *ngIf="isOutfitSelected()(outfit.id)">
+            <mat-icon>check_circle</mat-icon>
           </div>
-          
-          <mat-form-field appearance="outline" class="outfit-id-field" *ngIf="selectedOutfit">
-            <mat-label>Selected Outfit</mat-label>
-            <input matInput formControlName="outfitId" readonly>
-            <mat-icon matSuffix>check_circle</mat-icon>
-          </mat-form-field>
         </div>
+        <div class="outfit-info">
+          <span class="outfit-name">{{ outfit.name }}</span>
+          <span class="outfit-occasion" *ngIf="outfit.category">{{ outfit.category }}</span>
+        </div>
+      </div>
+    </div>
 
-        <!-- Caption -->
-        <mat-form-field appearance="outline" class="caption-field">
-          <mat-label>Caption (Optional)</mat-label>
-          <textarea 
-            matInput 
-            formControlName="caption" 
-            rows="4"
-            placeholder="Tell us about this outfit...">
-          </textarea>
-          <mat-hint align="end">
-            {{ getCaptionRemaining() }} characters remaining
-          </mat-hint>
-        </mat-form-field>
+    <!-- Empty State -->
+    <div *ngIf="filteredOutfits().length === 0" class="empty-state">
+      <mat-icon>checkroom</mat-icon>
+      <p>No outfits found</p>
+      <button mat-button color="primary" (click)="setTab('create')">
+        Create your first outfit
+      </button>
+    </div>
+  </div>
 
-        <!-- Visibility -->
-        <mat-form-field appearance="outline" class="visibility-field">
-          <mat-label>Visibility</mat-label>
-          <mat-select formControlName="visibility">
-            <mat-option *ngFor="let option of visibilityOptions" [value]="option.value">
-              {{ option.label }}
-            </mat-option>
-          </mat-select>
-          <mat-icon matSuffix>visibility</mat-icon>
-        </mat-form-field>
-      </mat-card-content>
+  <!-- TAB 2: Create New Outfit -->
+  <div *ngIf="activeTab() === 'create'" class="tab-content">
+    <!-- Create Mode Toggle -->
+    <div class="create-mode-toggle">
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="createMode() === 'photo'"
+        (click)="setCreateMode('photo')">
+        <mat-icon>photo_camera</mat-icon>
+        Upload Photo
+      </button>
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="createMode() === 'items'"
+        (click)="setCreateMode('items')">
+        <mat-icon>layers</mat-icon>
+        Build from Items
+      </button>
+    </div>
 
-      <mat-card-actions align="end">
-        <button mat-button type="button" (click)="onCancel()">
-          Cancel
-        </button>
-        <button 
-          mat-raised-button 
-          color="primary" 
-          type="submit"
-          [disabled]="outfitPostForm.invalid || !selectedOutfit">
-          <mat-icon>share</mat-icon>
-          Share Outfit
-        </button>
-      </mat-card-actions>
-    </form>
-  </mat-card>
+<!-- MODE 1: Photo Upload -->
+     <div *ngIf="createMode() === 'photo'" class="photo-upload-section">
+       <div
+         class="upload-area"
+         [class.has-preview]="photoPreviewUrl()"
+         (click)="onUploadAreaClick()">
+
+         <input
+           id="fileInput"
+           #fileInput
+           type="file"
+           accept="image/jpeg,image/png,image/webp"
+           (change)="onFileSelected($event)"
+           hidden>
+
+         <ng-container *ngIf="!photoPreviewUrl()">
+           <mat-icon>cloud_upload</mat-icon>
+           <p class="upload-text">Click to upload outfit photo</p>
+           <p class="upload-hint">JPEG, PNG or WebP (max 5MB)</p>
+         </ng-container>
+
+         <ng-container *ngIf="photoPreviewUrl()">
+           <img [src]="photoPreviewUrl()" alt="Outfit preview" class="preview-image">
+           <button
+             type="button"
+             class="remove-photo-btn"
+             (click)="$event.stopPropagation(); removePhoto()">
+             <mat-icon>close</mat-icon>
+           </button>
+         </ng-container>
+       </div>
+     </div>
+
+    <!-- MODE 2: Build from Items -->
+    <div *ngIf="createMode() === 'items'" class="items-section">
+      <p class="section-hint">Select clothing items to combine:</p>
+
+      <div class="clothing-items-grid">
+        <div
+          *ngFor="let item of mockClothingItems"
+          class="clothing-item"
+          [class.selected]="isItemSelected(item.id)"
+          (click)="toggleClothingItem(item.id)">
+          <img
+            [src]="item.imageUrl || 'assets/placeholder.jpg'"
+            [alt]="item.name"
+            loading="lazy">
+          <div class="item-overlay" *ngIf="isItemSelected(item.id)">
+            <mat-icon>check</mat-icon>
+          </div>
+          <span class="item-name">{{ item.name }}</span>
+          <span class="item-type">{{ item.type }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="mockClothingItems.length === 0" class="empty-items">
+        <mat-icon>wardrobe</mat-icon>
+        <p>No clothing items in your wardrobe</p>
+        <p class="hint">Add items to your wardrobe first</p>
+      </div>
+
+      <div class="selected-count" *ngIf="selectedClothingItems.length > 0">
+        {{ selectedClothingItems.length }} item(s) selected
+      </div>
+    </div>
+
+    <!-- Outfit Name (Create mode only) -->
+    <div class="form-section">
+      <label class="form-label">Outfit Name</label>
+      <input
+        class="form-input"
+        type="text"
+        placeholder="e.g., Weekend Casual"
+        minlength="2"
+        required>
+    </div>
+  </div>
+
+  <!-- Caption (always visible) -->
+  <div class="form-section">
+    <label class="form-label">Caption</label>
+    <div class="input-simulation textarea">
+      <span class="placeholder-text" *ngIf="!captionValue">Write a caption for your outfit...</span>
+      <span class="text-value">{{ captionValue }}</span>
+    </div>
+    <textarea
+      class="form-textarea"
+      [value]="captionValue"
+      (input)="captionValue = $any($event.target).value"
+      maxlength="500"
+      rows="3"
+      placeholder="Write a caption for your outfit...">
+    </textarea>
+    <div class="char-count">{{ captionValue.length }}/500</div>
+  </div>
+
+  <!-- Privacy -->
+  <div class="form-section">
+    <label class="form-label">Privacy</label>
+    <div class="privacy-select">
+      <div
+        class="privacy-option"
+        *ngFor="let option of visibilityOptions"
+        [class.active]="selectedVisibility === option.value"
+        (click)="selectedVisibility = option.value">
+        <span class="privacy-label">{{ option.label }}</span>
+        <mat-icon *ngIf="selectedVisibility === option.value" class="check-icon">check_circle</mat-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tag Friends -->
+  <div class="form-section">
+    <label class="form-label">Tag Friends</label>
+    <div class="tags-container">
+      <div class="tag-badge" *ngFor="let tag of tagFriends; let i = index">
+        <span>{{ tag }}</span>
+        <span class="tag-close" (click)="removeTag(i)">
+          <mat-icon>close</mat-icon>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button class="btn btn-outline" (click)="onCancel()">Cancel</button>
+    <button
+      class="btn btn-primary"
+      [disabled]="!canPost()"
+      (click)="onSubmit()">
+      <mat-icon>send</mat-icon>
+      Share Post
+    </button>
+  </div>
 
   <!-- Loading State -->
   <div *ngIf="loading$ | async" class="loading-container">

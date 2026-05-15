@@ -1,0 +1,44 @@
+<div class="voters-modal">
+  <!-- Header -->
+  <div class="voters-modal__header">
+    <h3>Voters</h3>
+    <button class="close-btn" (click)="closeModal()">
+      <iconify-icon icon="lucide:x" style="font-size: 20px;"></iconify-icon>
+    </button>
+  </div>
+
+  <!-- Voters List -->
+  <div class="voters-modal__content">
+    @if (loading) {
+      <div class="loading-state">
+        <iconify-icon icon="lucide:loader-2" class="spin-icon" style="font-size: 36px;"></iconify-icon>
+        <p>Loading voters...</p>
+      </div>
+    } @else if (voters.length === 0) {
+      <div class="empty-state">
+        <iconify-icon icon="lucide:users" style="font-size: 48px; opacity: 0.3;"></iconify-icon>
+        <p>No votes yet.</p>
+      </div>
+    } @else {
+      <div class="voters-list">
+        @for (voter of voters; track voter.voterId) {
+          <div class="voter-item">
+            <img [src]="voter.voterAvatarUrl || 'assets/default-avatar.png'" alt="Voter Avatar" class="voter-item__avatar" (click)="goToUserProfile(voter.voterId)" style="cursor: pointer;">
+            <div class="voter-item__info">
+              <span class="voter-item__name" (click)="goToUserProfile(voter.voterId)" style="cursor: pointer;">
+                {{ voter.voterName }}
+                @if (isOwnVote(voter.voterId)) {
+                  <span class="own-badge">You</span>
+                }
+              </span>
+              <span class="voter-item__meta">
+                <span class="voter-item__option-badge">Voted for {{ getOptionDisplayText(voter) }}</span>
+                <span class="voter-item__time">{{ formatTimeAgo(voter.votedAt) }}</span>
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -46,7 +46,7 @@ public class CreatePollPostCommandHandler : IRequestHandler<CreatePollPostComman
                 return response;
             }
 
-            if (request.OutfitIds == null || request.OutfitIds.Count < 2)
+             if (request.Options == null || request.Options.Count < 2)
             {
                 response.Success = false;
                 response.Message = "At least 2 outfit options are required";
@@ -57,26 +57,20 @@ public class CreatePollPostCommandHandler : IRequestHandler<CreatePollPostComman
             {
                 UserId = request.UserId,
                 Question = request.Question,
-                Context = "{}",
+                Context = request.Context,
                 ExpiresAt = request.ExpiresAt,
                 Status = PollStatus.Active,
                 Options = new List<PollOption>()
             };
 
-            for (int i = 0; i < request.OutfitIds.Count; i++)
+            for (int i = 0; i < request.Options.Count; i++)
             {
-                var outfit = await _outfitRepository.GetByIdAsync(request.OutfitIds[i]);
-                if (outfit == null)
-                {
-                    response.Success = false;
-                    response.Message = $"Outfit with ID {request.OutfitIds[i]} not found";
-                    return response;
-                }
-
+                var option = request.Options[i];
+                var outfit = await _outfitRepository.GetByIdAsync((Guid)option.OutfitId, cancellationToken);
                 poll.Options.Add(new PollOption
                 {
                     OutfitId = outfit.Id,
-                   
+                    Description = option.Description ?? outfit.Name,
                     DisplayOrder = i
                 });
             }

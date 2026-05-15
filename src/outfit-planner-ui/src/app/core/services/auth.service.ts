@@ -129,11 +129,22 @@ export class AuthService{
     console.log('[AuthService] isAuthenticated set to:', this.isAuthenticated());
   }
 
-  private parseRolesFromToken(token: string): string[] {
+  private decodeToken(token: string): any {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    } catch {
+      return null;
+    }
+  }
+
+  private parseRolesFromToken(token: string): string[] {
+    const payload = this.decodeToken(token);
+    if (!payload) return [];
+    
+    try {
       // ASP.NET Identity uses this claim type for roles
-      const roleClaim = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      const roleClaim = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload['role'];
       if (Array.isArray(roleClaim)) {
         return roleClaim;
       }
@@ -151,10 +162,28 @@ export class AuthService{
   private checkAuthStatus(): void {
     const token = this.cookieService.get('token');
     if (token) {
-      this.isAuthenticated.set(true);
-      // Parse roles from existing token
-      const roles = this.parseRolesFromToken(token);
-      this.userRoles.set(roles);
+      const payload = this.decodeToken(token);
+      if (payload) {
+        this.isAuthenticated.set(true);
+        const roles = this.parseRolesFromToken(token);
+        this.userRoles.set(roles);
+
+        // Map common JWT claims to our user object
+        const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload['sub'];
+        const userName = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || payload['unique_name'];
+        const email = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || payload['email'];
+
+        this.currentUser.set({
+          id: userId,
+          userName: userName,
+          email: email,
+          roles: roles,
+        });
+        
+        console.log('[AuthService] Restored session for:', userName);
+      } else {
+        this.logout();
+      }
     }
   }
 }
