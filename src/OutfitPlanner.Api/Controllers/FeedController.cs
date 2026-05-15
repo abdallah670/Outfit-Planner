@@ -37,17 +37,21 @@ public class FeedController : ControllerBase
         [FromQuery] int pageSize = 20,
         [FromQuery] string visibility = "Public",
         [FromQuery] string? sortBy = "recent",
-        [FromQuery] string? postType = null)
+        [FromQuery] string? postType = null,
+        [FromQuery] bool followingOnly = false)
+
     {
         var query = new GetFeedQuery 
         { 
-            UserId = null, 
+            UserId = GetUserId(), 
             Cursor = cursor, 
             PageSize = pageSize,
             SortBy = sortBy ?? "recent",
             Visibility = visibility,
-            PostType = postType 
+            PostType = postType,
+            FollowingOnly = followingOnly
         };
+
         
         var posts = await _mediator.Send(query);
         return Ok(posts);

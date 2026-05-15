@@ -21,10 +21,12 @@ export class FeedRepositoryImpl implements FeedRepository {
     pageSize?: number,
     visibility?: string,
     sortBy?: string,
-    postType?: string
+    postType?: string,
+    followingOnly?: boolean
   ): Observable<CursorPagedResult<FeedPost>> {
-    return this.feedDataSource.getFeedPosts(cursor, pageSize, visibility, sortBy, postType);
+    return this.feedDataSource.getFeedPosts(cursor, pageSize, visibility, sortBy, postType, followingOnly);
   }
+
  getUserFeed(
     userId: string,
     cursor?: string,

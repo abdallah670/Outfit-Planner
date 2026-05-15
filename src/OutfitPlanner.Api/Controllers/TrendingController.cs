@@ -5,6 +5,8 @@ using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Features.Feed.Requests.Queries;
 using OutfitPlanner.Application.Responses;
+using OutfitPlanner.Application.Common;
+
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -38,16 +40,18 @@ public class TrendingController : ControllerBase
     /// <param name="page">Page number (default: 1)</param>
     /// <param name="pageSize">Items per page (default: 20)</param>
     [HttpGet("outfits")]
-    public async Task<ActionResult<PagedResult<TrendingDataDto>>> GetTrendingOutfits(
-        [FromQuery] int page = 1,
+    public async Task<ActionResult<CursorPagination.CursorPagedResult<TrendingOutfitDto>>> GetTrendingOutfits(
+        [FromQuery] string? cursor = null,
         [FromQuery] int pageSize = 20)
     {
         var request = new GetTrendingOutfitsRequest
         {
-            Page = page,
-            PageSize = pageSize
+            Cursor = cursor,
+            PageSize = pageSize,
+            UserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty
         };
         var result = await _mediator.Send(request);
         return Ok(result);
     }
+
 }

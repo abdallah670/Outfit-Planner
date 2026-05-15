@@ -38,158 +38,64 @@
     </div>
   </div>
 
-  <!-- Trending section -->
-  @if (isTrending()) {
-  <app-trending-outfits></app-trending-outfits>
-  }
+  <!-- Content Area -->
+  <div class="feed-content">
+    <!-- Posts Tabs (All, Following, Trending) -->
+    <ng-container *ngIf="activeTab() === 'all' || activeTab() === 'following' || activeTab() === 'trending'">
+      <div class="posts-grid">
+        @for (post of posts(); track post.id) {
+          <app-post-item [post]="post" (postUpdated)="onPostUpdated($event)"></app-post-item>
+        } @empty {
+          <div class="empty-state" *ngIf="!loading()">
+            <iconify-icon icon="lucide:layout-grid" style="font-size: 48px"></iconify-icon>
+            <p>No posts found in this category.</p>
+          </div>
+        }
 
-  <!-- Posts Grid -->
-  @if (!isTrending()) {
-  <div class="posts-grid">
-    @for (post of displayPosts(); track post.id) {
-    <article class="post-card" (click)="viewPostDetail(post)">
-      <!-- Post header -->
-      <div class="post-header">
-        <div class="user-info">
-          <div class="user-avatar-wrap">
-            <img [routerLink]="['/profile', post.userId]" class="user-avatar"
-              [src]="post.userAvatarUrl || 'assets/default-avatar.png'"
-              alt="user"
-            />
+        @if (hasMore() && !loading()) {
+          <div class="load-more">
+            <button class="load-more__btn" (click)="loadMore()">Load More</button>
           </div>
-          <div [routerLink]="['/profile', post.userId]" class="user-meta">
-            <span class="user-name">{{ post.userName }}</span>
-            <span class="post-time">{{ getTimeAgo(post.createdAt) }}</span>
-          </div>
-        </div>
-        <div class="post-header-actions">
-          @if (post.postType === PostType.Poll) {
-          <span class="post-badge poll">
-            <iconify-icon icon="lucide:bar-chart-2" style="font-size:12px"></iconify-icon>
-            <span>Poll</span>
-          </span>
-          } @else {
-          <span class="post-badge outfit">
-            <iconify-icon icon="lucide:shirt" style="font-size:12px"></iconify-icon>
-            <span>Outfit</span>
-          </span>
-          }
-        
-        </div>
+        }
       </div>
+    </ng-container>
 
-      <!-- Post content -->
-      @if (post.postType === PostType.Poll && post.poll) {
-      <div class="post-content">
-        <p class="post-text">
-          <strong>{{ post.userName }}</strong> {{ post.caption }}
-        </p>
-        <div class="poll-container">
-          @for (option of post.poll.options; track option.id; let i = $index) {
-          <div
-            class="poll-option"
-            [class.winner]="isWinningOption(option, post.poll)"
-            (click)="onVoteOnPoll(post.pollId, option.id); $event.stopPropagation()"
-             >
-            <div class="poll-grid__option" [class.poll-grid__option--left]="i === 0" [class.poll-grid__option--right]="i === 1">
-                    @if (option.outfitThumbnail) {
-                      <img [src]="option.outfitThumbnail || '/assets/placeholder.jpg'" [alt]="getOptionLabel(i)" class="poll-grid__img">
-                    } @else {
-                      <div class="poll-grid__img poll-grid__img--placeholder">
-                        <iconify-icon icon="lucide:shirt" style="font-size: 24px"></iconify-icon>
-                      </div>
-                    }
-                    <button class="poll-grid__vote-btn"
-                            [class.poll-grid__vote-btn--voted]="post.poll.userVotedOptionId === option.id"
-                            (click)="onVoteOnPoll(post.pollId, option.id)">
-                      Vote {{ i === 0 ? 'A' : 'B' }} ({{ post.poll.totalVotes > 0 ? ((option.voteCount / post.poll.totalVotes * 100) | number:'1.0-0') : 0 }}%)
-                    </button>
-                </div>
-          
-            
-          <span class="poll-option-percent">{{ getVotePercent(option, post.poll) }}%</span>
+    <!-- User List Tabs (Followers, Following) -->
+    <ng-container *ngIf="activeTab() === 'followers' || activeTab() === 'following-list'">
+      <div class="user-list">
+        @for (user of userList(); track user.userId) {
+          <div class="user-list__item" [routerLink]="['/profile', user.userId]">
+            <img [src]="user.avatarUrl || 'assets/default-avatar.png'" class="user-list__avatar">
+            <div class="user-list__info">
+              <div class="user-list__name">{{ user.userName }}</div>
+              <div class="user-list__handle">@{{ user.userName | lowercase }}</div>
+            </div>
+            <button [hidden]="user.isOwner" class="user-list__follow-btn" 
+                    [class.user-list__follow-btn--following]="user.isFollowing"
+                    (click)="toggleUserFollow(user.userId, $event)">
+              {{ user.isFollowing ? 'Following' : 'Follow' }}
+            </button>
           </div>
-          }
-          <div class="poll-votes-total">{{ formatCount(post.poll.totalVotes) }} votes</div>
-        </div>
+        } @empty {
+          <div class="empty-state" *ngIf="!loading()">
+            <iconify-icon icon="lucide:users" style="font-size: 48px"></iconify-icon>
+            <p>No users found.</p>
+          </div>
+        }
+
+        @if (userListHasMore() && !loading()) {
+          <div class="load-more">
+            <button class="load-more__btn" (click)="loadMore()">Load More</button>
+          </div>
+        }
       </div>
-      <div class="post-footer">
-        <div class="post-actions">
-          <button class="action-btn">
-            <span class="action-icon">
-              <iconify-icon icon="lucide:users" style="font-size:18px"></iconify-icon>
-            </span>
-            {{ formatCount(post.poll.totalVotes) }} votes
-          </button>
-          <button class="action-btn" (click)="toggleComments(post.id); $event.stopPropagation()">
-            <span class="action-icon">
-              <iconify-icon icon="lucide:message-circle" style="font-size:18px"></iconify-icon>
-            </span>
-            {{ post.commentsCount || 0 }}
-          </button>
-        </div>
-        <button class="action-btn">
-          <span class="action-icon">
-            <iconify-icon icon="lucide:share-2" style="font-size:18px"></iconify-icon>
-          </span>
-        </button>
-      </div>
-      }
-      @else {
-      <div class="post-content">
-        <p class="post-text">{{ post.caption }}</p>
-        <div class="post-image">
-          <img
-            [src]="post.outfit?.imageUrl"
-            class="post-image-img"
-            alt="outfit"
-          />
-        </div>
-      </div>
-      <div class="post-footer">
-        <div class="post-actions">
-          <button
-            class="action-btn"
-            (click)="toggleReaction(post, $event)"
-            [class.active]="post.userReaction"
-          >
-            <span class="action-icon">
-              <iconify-icon icon="lucide:heart" style="font-size:18px"></iconify-icon>
-            </span>
-            {{ formatCount(post.likesCount) }}
-          </button>
-          <button class="action-btn" (click)="toggleComments(post.id); $event.stopPropagation()">
-            <span class="action-icon">
-              <iconify-icon icon="lucide:message-circle" style="font-size:18px"></iconify-icon>
-            </span>
-            {{ post.commentsCount }}
-          </button>
-          <button class="action-btn">
-            <span class="action-icon">
-              <iconify-icon icon="lucide:send" style="font-size:18px"></iconify-icon>
-            </span>
-          </button>
-        </div>
-        <button class="action-btn">
-          <span class="action-icon">
-            <iconify-icon icon="lucide:bookmark" style="font-size:18px"></iconify-icon>
-          </span>
-        </button>
-      </div>
-      }
-    </article>
-    }
+    </ng-container>
   </div>
-  }
 
-  <!-- Loader -->
+  <!-- Loading State -->
   @if (loading()) {
-  <div class="feed-page__spinner d-flex justify-content-center pb-20">
-    <div class="feed-page__spinner-ring">
-      <iconify-icon icon="lucide:loader-2" style="font-size: 24px"></iconify-icon>
+    <div class="feed-page__spinner">
+      <iconify-icon icon="lucide:loader-2" style="font-size: 32px" class="spin"></iconify-icon>
     </div>
-  </div>
   }
-
- 
 </div>

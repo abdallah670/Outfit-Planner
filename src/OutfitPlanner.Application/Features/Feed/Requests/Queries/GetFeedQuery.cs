@@ -16,4 +16,6 @@ public class GetFeedQuery : IRequest<CursorPagination.CursorPagedResult<FeedPost
     public string SortBy { get; set; } = "popular";
     public string Visibility { get; set; } = "Public";
     public string? PostType { get; set; }
+    public bool FollowingOnly { get; set; }
 }
+

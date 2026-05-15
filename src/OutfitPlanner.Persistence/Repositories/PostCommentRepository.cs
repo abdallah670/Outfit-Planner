@@ -50,6 +50,13 @@ public class PostCommentRepository : GenericRepository<PostComment>, IPostCommen
             .Include(c => c.User)
             .Include(c => c.Replies)
                 .ThenInclude(r => r.User)
+            .Include(c => c.Replies)
+                .ThenInclude(r => r.Replies)
+                    .ThenInclude(rr => rr.User)
+            .Include(c => c.Replies)
+                .ThenInclude(r => r.Replies)
+                    .ThenInclude(rr => rr.Replies)
+                        .ThenInclude(rrr => rrr.User)
             .Where(c => c.PostId == postId && c.ParentCommentId == null && !c.IsDeleted)
             .AsQueryable();
 

@@ -39,7 +39,9 @@ public class GetFeedQueryHandler : IRequestHandler<GetFeedQuery, CursorPaginatio
             request.PageSize,
             request.SortBy,
             visibility,
-            postType);
+            postType,
+            request.FollowingOnly);
+
 
         // Get user's follows
         var followedUserIds = (await _unitOfWork.Follows.FindAsync(f => f.FollowerId == request.UserId, cancellationToken))

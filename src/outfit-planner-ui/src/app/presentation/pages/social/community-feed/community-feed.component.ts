@@ -2,22 +2,17 @@ import { Component, OnInit, signal, computed, inject, ViewEncapsulation, CUSTOM_
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { FeedActions } from '../../../../core/state/feed/feed.actions';
-import { PollsActions } from '../../../../core/state/polls/polls.actions';
-import {
-  selectPosts,
-  selectNextCursor,
-  selectHasMore,
-  selectFeedLoading,
-} from '../../../../core/state/feed/feed.selectors';
-import { FeedPost, PostType, PostComment } from '../../../../domain/entities/feed.entity';
-import { CastVoteRequest, Poll, PollOption } from '../../../../domain/entities/poll.entity';
 import { MatIconModule } from '@angular/material/icon';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { TrendingOutfitsComponent } from '../trending-outfits/trending-outfits.component';
+import { FeedPost, PostType } from '../../../../domain/entities/feed.entity';
+import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
+import { TrendingUseCases } from '../../../../domain/usecases/trending.usecases';
+import { FollowUseCases } from '../../../../domain/usecases/follow.usecases';
+import { AuthService } from '../../../../core/services/auth.service';
+import { PostItemComponent } from '../../../components/shared/post-item/post-item.component';
+import { CursorPagedResult } from '../../../../domain/entities/response.entity';
+import { TrendingOutfit } from '../../../../domain/entities/outfit.entity';
 
-type FeedTab = 'all' | 'following' | 'trending' | 'my-outfits' | 'my-polls' | 'my-followers' | 'my-following';
+type FeedTab = 'all' | 'following' | 'trending' | 'followers' | 'following-list';
 
 interface FeedTabConfig {
   value: FeedTab;
@@ -34,172 +29,208 @@ interface FeedTabConfig {
     FormsModule,
     RouterModule,
     MatIconModule,
-    TrendingOutfitsComponent,
+    PostItemComponent,
   ],
   templateUrl: './community-feed.component.html',
   styleUrl: './community-feed.component.scss',
   encapsulation: ViewEncapsulation.Emulated,
 })
 export class CommunityFeedComponent implements OnInit {
-  private store = inject(Store);
+  private feedUseCases = inject(FeedUseCases);
+  private trendingUseCases = inject(TrendingUseCases);
+  private followUseCases = inject(FollowUseCases);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
-  readonly PostType = PostType;
-
   activeTab = signal<FeedTab>('all');
+  loading = signal(false);
+  
+  // Posts data
+  posts = signal<FeedPost[]>([]);
+  nextCursor = signal<string | null>(null);
+  hasMore = signal(false);
+  
+  // User lists data (for followers/following tabs)
+  userList = signal<any[]>([]);
+  userListCursor = signal<string | null>(null);
+  userListHasMore = signal(false);
 
-  // Feed tabs — populated from API / config
   feedTabs: FeedTabConfig[] = [
-    { value: 'all', label: 'All' },
-    { value: 'following', label: 'Following' },
-    { value: 'trending', label: 'Trending', icon: 'trending_up' },
-    { value: 'my-outfits', label: 'My Outfit Posts' },
-    { value: 'my-polls', label: 'My Polls' },
-    { value: 'my-followers', label: 'My Followers' },
-    { value: 'my-following', label: 'My Following' },
+    { value: 'all', label: 'All Posts', icon: 'layout-grid' },
+    { value: 'following', label: 'Following', icon: 'users' },
+    { value: 'trending', label: 'Trending', icon: 'trending-up' },
+    { value: 'followers', label: 'My Followers', icon: 'user-check' },
+    { value: 'following-list', label: 'My Following', icon: 'user-plus' },
   ];
 
-  // Feed posts
-  private allPostsSignal = toSignal(this.store.select(selectPosts), { initialValue: [] as FeedPost[] }) as () => FeedPost[];
-  loading = toSignal(this.store.select(selectFeedLoading), { initialValue: false });
-  nextCursor = toSignal(this.store.select(selectNextCursor), { initialValue: null as string | null });
-  hasMore = toSignal(this.store.select(selectHasMore), { initialValue: false });
-
-  userAvatar = signal<string>('');
-
-  displayPosts = computed((): FeedPost[] => {
-    return this.allPostsSignal();
-  });
-
-  isTrending = computed(() => this.activeTab() === 'trending');
-
   ngOnInit(): void {
-    this.store.dispatch(FeedActions.loadPosts({ pageSize: 20 }));
+    this.loadData(true);
   }
 
   setTab(tab: FeedTab): void {
+    if (this.activeTab() === tab) return;
     this.activeTab.set(tab);
-
-    // For trending tab, no need to load data here — TrendingOutfitsComponent handles it
-    if (tab === 'trending') {
-      return;
-    }
-
-    // For my-outfits and my-polls, send the postType filter to the backend
-    // NOTE: Must match C# PostType enum values: Poll = 0, Outfit = 1
-    const postType = tab === 'my-outfits' ? 'Outfit' : tab === 'my-polls' ? 'Poll' : undefined;
-    this.store.dispatch(FeedActions.loadPosts({ postType, pageSize: 20, cursor: undefined }));
+    this.loadData(true);
   }
 
-  viewPostDetail(post: FeedPost): void {
-    if (post.postType === PostType.Poll && post.pollId) {
-      this.router.navigate(['/social/polls', post.pollId]);
-    } else if (post.outfitId) {
-      this.router.navigate(['/outfits', post.outfitId]);
-    } else {
-      this.router.navigate(['/social/feed']);
-    }
-  }
+  loadData(reset = false): void {
+    const tab = this.activeTab();
+    this.loading.set(true);
 
-  toggleReaction(post: FeedPost, event: Event): void {
-    event.stopPropagation();
-    if (post.userReaction) {
-      this.store.dispatch(FeedActions.removeReaction({ postId: post.id }));
-    } else {
-      this.store.dispatch(FeedActions.addReaction({ postId: post.id }));
+    if (reset) {
+      this.posts.set([]);
+      this.userList.set([]);
+      this.nextCursor.set(null);
+      this.userListCursor.set(null);
+    }
+
+    if (tab === 'all') {
+      this.loadAllPosts(reset);
+    } else if (tab === 'following') {
+      this.loadFollowingPosts(reset);
+    } else if (tab === 'trending') {
+      this.loadTrendingPosts(reset);
+    } else if (tab === 'followers') {
+      this.loadFollowers(reset);
+    } else if (tab === 'following-list') {
+      this.loadFollowingList(reset);
     }
   }
 
-  onVoteOnPoll(pollId: string | undefined, optionId: string): void {
-    if (!pollId) return;
-    const request: CastVoteRequest = {
-      optionId: optionId
+  private loadAllPosts(reset: boolean): void {
+    this.feedUseCases.getFeedPosts(this.nextCursor() || undefined, 10).subscribe({
+      next: (result) => this.handlePostsResult(result, reset),
+      error: () => this.loading.set(false)
+    });
+  }
+
+  private loadFollowingPosts(reset: boolean): void {
+    // If backend supports filtering by "following", we can use it.
+    this.feedUseCases.getFeedPosts(this.nextCursor() || undefined, 10, 'Public', 'recent', 'All', true).subscribe({
+      next: (result) => this.handlePostsResult(result, reset),
+      error: () => this.loading.set(false)
+    });
+
+  }
+
+  private loadTrendingPosts(reset: boolean): void {
+    const cursor = reset ? undefined : (this.nextCursor() ?? undefined);
+    this.trendingUseCases.getTrendingOutfits(cursor, 10).subscribe({
+
+      next: (result) => {
+        const mappedPosts: FeedPost[] = result.items.map(item => this.mapTrendingToPost(item));
+        this.posts.update(current => reset ? mappedPosts : [...current, ...mappedPosts]);
+        this.nextCursor.set(result.nextCursor);
+        this.hasMore.set(result.hasMore);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+
+  private loadFollowers(reset: boolean): void {
+    const currentUserId = this.authService.currentUser()?.id;
+    if (!currentUserId) return;
+
+    this.followUseCases.getFollowers(currentUserId, this.userListCursor() || undefined, 10).subscribe({
+      next: (result) => this.handleUserListResult(result, reset),
+      error: () => this.loading.set(false)
+    });
+  }
+
+  private loadFollowingList(reset: boolean): void {
+    const currentUserId = this.authService.currentUser()?.id;
+    if (!currentUserId) return;
+
+    this.followUseCases.getFollowing(currentUserId, this.userListCursor() || undefined, 10).subscribe({
+      next: (result) => this.handleUserListResult(result, reset),
+      error: () => this.loading.set(false)
+    });
+  }
+
+  private handlePostsResult(result: CursorPagedResult<FeedPost>, reset: boolean): void {
+    this.posts.update(current => reset ? result.items : [...current, ...result.items]);
+    this.nextCursor.set(result.nextCursor);
+    this.hasMore.set(result.hasMore);
+    this.loading.set(false);
+  }
+
+  private handleUserListResult(result: CursorPagedResult<any>, reset: boolean): void {
+    this.userList.update(current => reset ? result.items : [...current, ...result.items]);
+    this.userListCursor.set(result.nextCursor);
+    this.userListHasMore.set(result.hasMore);
+    this.loading.set(false);
+  }
+
+  private mapTrendingToPost(item: TrendingOutfit): FeedPost {
+    return {
+      id: item.id,
+      userId: item.userId,
+      userName: item.userName,
+      userAvatarUrl: item.userAvatar,
+      createdAt: item.createdAt,
+      postType: PostType.Outfit,
+      caption: item.userName + "'s trending outfit",
+      likesCount: item.likes,
+      commentsCount: item.comments,
+      isLiked: item.isliked,
+      isOwner: item.isowner,
+      outfitId: item.id,
+      outfit: {
+        id: item.id,
+        userId: item.userId,
+        name: item.userName + "'s outfit",
+        imageUrl: item.imageUrl,
+        items: [],
+        occasion: 'Social' as any,
+        suitableWeather: {} as any,
+        season: 'AllSeason' as any,
+        comfortLevel: 0,
+        styleRating: 0,
+        createdAt: item.createdAt,
+        lastWorn: item.createdAt,
+        timesWorn: 0,
+        status: 'active' as any,
+        feedback: []
+      },
+      tags: [],
+      visibility: 0,
+    
     };
-    this.store.dispatch(PollsActions.vote({ pollId, request }));
-  }
-
-  onViewPollDetail(pollId: string | undefined): void {
-    if (!pollId) return;
-    this.router.navigate(['/social/polls', pollId]);
-  }
-
-  formatCount(count: number): string {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-    }
-    if (count >= 1000) {
-      return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
-    }
-    return count.toString();
-  }
-
-  getOptionLabel(index: number): string {
-    return String.fromCharCode(65 + index);
-  }
-
-  getVotePercent(option: PollOption, poll?: Poll): number {
-    if (!poll?.totalVotes || poll.totalVotes === 0) return 0;
-    return Math.round((option.voteCount / poll.totalVotes) * 100);
-  }
-
-  isWinningOption(option: PollOption, poll: Poll): boolean {
-    if (!poll.options || poll.options.length === 0) return false;
-    const maxVotes = Math.max(...poll.options.map(opt => opt.voteCount));
-    return option.voteCount === maxVotes && option.voteCount > 0;
-  }
-
-  getTimeAgo(date: Date | string | undefined): string {
-    if (!date) return '';
-    const now = new Date();
-    const then = new Date(date);
-    const diffMs = now.getTime() - then.getTime();
-    const diffSecs = Math.floor(diffMs / 1000);
-    const diffMins = Math.floor(diffSecs / 60);
-    const diffHrs = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHrs / 24);
-
-    if (diffSecs < 60) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHrs < 24) return `${diffHrs}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    if (diffDays < 30) {
-      const weeks = Math.floor(diffDays / 7);
-      return `${weeks}w ago`;
-    }
-    return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
-
-  // Comment UI state
-  expandedCommentPostId = signal<string | null>(null);
-  commentText = signal('');
-  commentsCache = signal<{ [postId: string]: { items: PostComment[]; nextCursor: string | null; hasMore: boolean } }>({});
-
-  toggleComments(postId: string): void {
-    if (this.expandedCommentPostId() === postId) {
-      this.expandedCommentPostId.set(null);
-    } else {
-      this.expandedCommentPostId.set(postId);
-      if (!this.commentsCache()[postId]) {
-        this.store.dispatch(FeedActions.loadComments({ postId, pageSize: 10 }));
-      }
-    }
-  }
-
-  submitComment(postId: string): void {
-    const text = this.commentText().trim();
-    if (!text) return;
-    this.store.dispatch(FeedActions.addComment({ postId, content: text }));
-    this.commentText.set('');
   }
 
   loadMore(): void {
-    if (this.hasMore() && this.nextCursor()) {
-      this.store.dispatch(FeedActions.loadPosts({ cursor: this.nextCursor() ?? undefined, pageSize: 20 }));
+    if (this.loading()) return;
+    this.loadData(false);
+  }
+
+  onPostUpdated(updatedPost: FeedPost): void {
+    this.posts.update(posts => posts.map(p => p.id === updatedPost.id ? updatedPost : p));
+  }
+
+  toggleUserFollow(userId: string, event: Event): void {
+    event.stopPropagation();
+    const user = this.userList().find(u => u.userId === userId);
+    if (!user) return;
+
+    if (user.isFollowing) {
+      this.followUseCases.unfollowUser(userId).subscribe({
+        next: () => this.updateUserInList(userId, { isFollowing: false })
+      });
+    } else {
+      this.followUseCases.followUser(userId).subscribe({
+        next: () => this.updateUserInList(userId, { isFollowing: true })
+      });
     }
   }
 
+  private updateUserInList(userId: string, changes: any): void {
+    this.userList.update(list => list.map(u => u.userId === userId ? { ...u, ...changes } : u));
+  }
+
   openCreatePost(): void {
-    this.router.navigate(['/social/create-outfit-post']);
+    this.router.navigate(['/social/create-post']);
   }
 
   openCreatePoll(): void {

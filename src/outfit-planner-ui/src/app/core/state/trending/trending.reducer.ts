@@ -4,14 +4,16 @@ import { TrendingOutfit } from '../../../domain/entities/outfit.entity';
 
 export interface TrendingState {
   outfits: TrendingOutfit[];
-  totalCount: number;
+  nextCursor: string | null;
+  hasMore: boolean;
   loading: boolean;
   error: string | null;
 }
 
 export const initialState: TrendingState = {
   outfits: [],
-  totalCount: 0,
+  nextCursor: null,
+  hasMore: false,
   loading: false,
   error: null,
 };
@@ -25,10 +27,11 @@ export const trendingFeature = createFeature({
       loading: true,
       error: null,
     })),
-    on(TrendingActions.loadTrendingSuccess, (state, { outfits, totalCount }) => ({
+    on(TrendingActions.loadTrendingSuccess, (state, { outfits, nextCursor, hasMore }) => ({
       ...state,
-      outfits,
-      totalCount,
+      outfits: state.nextCursor ? [...state.outfits, ...outfits] : outfits,
+      nextCursor: nextCursor || null,
+      hasMore,
       loading: false,
     })),
     on(TrendingActions.loadTrendingFailure, (state, { error }) => ({
@@ -44,7 +47,9 @@ export const {
   reducer,
   selectTrendingState,
   selectOutfits,
-  selectTotalCount,
+  selectNextCursor,
+  selectHasMore,
   selectLoading,
   selectError,
 } = trendingFeature;
+

@@ -1,116 +1,120 @@
 <div class="desktop-container">
   <!-- Header -->
   <header class="page-header">
-    <button class="back-btn" (click)="onBack()">
-      <iconify-icon icon="lucide:arrow-left" style="font-size: 20px"></iconify-icon>
+    <button class="back-btn" (click)="onBack()" title="Go Back">
+      <iconify-icon icon="lucide:arrow-left" style="font-size: 22px"></iconify-icon>
     </button>
     <h1 class="page-title">Poll Details</h1>
   </header>
 
   @if (pollPost(); as post) {
     @if (post.poll; as p) {
-  <div class="main-layout">
-    <!-- Left Column: Poll -->
-    <div class="poll-section">
-      <!-- Author -->
-      <div class="poll-author">
-        <img
-          [src]="pollAuthorAvatar"
-          alt="Author"
-          class="author-avatar"
-          (click)="goToUserProfile(post.userId)"
-          style="cursor: pointer;"
-        />
-        <div class="author-info">
-          <span class="author-name"  style="cursor: pointer;"(click)="goToUserProfile(post.userId)">{{ pollAuthorName }} </span>
-          <span class="poll-time">Posted {{ getTimeAgo(p.createdAt) }} • Outfit Advice</span>
-        </div>
-      </div>
-
-      <!-- Question -->
-      <h2 class="poll-question">{{ p.question }}</h2>
-
-      <!-- Options -->
-      <div class="poll-options">
-        @for (option of p.options; track option.id; let i = $index) {
-        <div
-          class="poll-option-card"
-          [class.winner]="isWinner(p, option.id)"
-        >
-          <div class="option-image-wrapper">
+      <div class="main-layout">
+        <!-- Left Column: Poll Section -->
+        <div class="poll-section">
+          <!-- Author -->
+          <div class="poll-author">
             <img
-              [src]="option.outfitThumbnail || 'assets/placeholder.jpg'"
-              [alt]="getLetter(i)"
-              class="option-image"
+              [src]="pollAuthorAvatar"
+              alt="Author"
+              class="author-avatar"
+              (click)="goToUserProfile(post.userId)"
+              style="cursor: pointer;"
             />
-          </div>
-          <div class="option-content">
-            <div class="option-header">
-              <span class="option-title">{{ option.description || 'Option ' + getLetter(i) }}</span>
+            <div class="author-info">
+              <span class="author-name" style="cursor: pointer;" (click)="goToUserProfile(post.userId)">{{ pollAuthorName }}</span>
+              <span class="poll-time">Posted {{ getTimeAgo(p.createdAt) }} • Style Advice</span>
             </div>
-            <button
-              class="vote-btn"
-              [class.voted]="userVotedOptionId === option.id"
-              (click)="toggleVote(post, option.id, $event)"
-              [disabled]="p.status !== 'active'"
-            >
-              @if (userVotedOptionId === option.id) {
-                <iconify-icon icon="lucide:check-circle-2" style="font-size: 18px"></iconify-icon>
-                <span>You Voted {{ getPercentage(p, option.id) }}%</span>
-              } @else {
-                <span>Vote {{ getPercentage(p, option.id) }}%</span>
-              }
+          </div>
+
+          <!-- Question -->
+          <h2 class="poll-question">{{ p.question }}</h2>
+
+          <!-- Options Grid -->
+          <div class="poll-options">
+            @for (option of p.options; track option.id; let i = $index) {
+              <div class="poll-option-card" [class.winner]="isWinner(p, option.id)">
+                <div class="option-image-wrapper">
+                  <img
+                    [src]="option.outfitThumbnail || 'assets/placeholder.jpg'"
+                    [alt]="getLetter(i)"
+                    class="option-image"
+                  />
+                </div>
+                <div class="option-content">
+                  <div class="option-header">
+                    <span class="option-title">{{ option.description || 'Option ' + getLetter(i) }}</span>
+                  </div>
+                  <button
+                    class="vote-btn"
+                    [class.voted]="userVotedOptionId === option.id"
+                    (click)="toggleVote(post, option.id, $event)"
+                    [disabled]="p.status !== 'active' || submittingVote()"
+                  >
+                    @if (userVotedOptionId === option.id) {
+                      <iconify-icon icon="lucide:check-circle-2" style="font-size: 18px"></iconify-icon>
+                      <span>Voted • {{ getPercentage(p, option.id) }}%</span>
+                    } @else {
+                      <span>Vote • {{ getPercentage(p, option.id) }}%</span>
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Poll Summary -->
+          <div class="poll-summary">
+            <div class="stats-group">
+              <div class="summary-item">
+                <iconify-icon icon="lucide:users" style="font-size: 18px"></iconify-icon>
+                {{ formatCount(p.totalVotes) }} votes
+              </div>
+              <div class="summary-item" [class.active]="p.status === 'active'">
+                <iconify-icon
+                  [icon]="p.status === 'active' ? 'lucide:clock' : 'lucide:check-circle'"
+                  style="font-size: 18px"
+                ></iconify-icon>
+                {{ getTimeLeft(p.expiresAt) }}
+              </div>
+            </div>
+            
+            <button class="share-btn" (click)="sharePoll()">
+              <iconify-icon icon="lucide:share-2" style="font-size: 18px"></iconify-icon>
+              <span>Share</span>
             </button>
           </div>
         </div>
-        }
-      </div>
 
-      <!-- Summary -->
-      <div class="poll-summary">
-        <div class="summary-item">
-          <iconify-icon icon="lucide:bar-chart-2" style="font-size: 18px"></iconify-icon>
-          {{ formatCount(p.totalVotes) }} Total Votes
+        <!-- Right Column: Comments (Using the shared component) -->
+        <div class="comments-section">
+          <app-comments-modal 
+            [postId]="post.id" 
+            [isInline]="true"
+            [onCommentAdded]="handleCommentAdded"
+            [onCommentDeleted]="handleCommentDeleted"
+          ></app-comments-modal>
         </div>
-        <div
-          class="summary-item"
-          [class.active]="p.status === 'active'"
-        >
-          <iconify-icon
-            [icon]="p.status === 'active' ? 'lucide:clock' : 'lucide:check-circle'"
-            style="font-size: 18px"
-          ></iconify-icon>
-          {{ getTimeLeft(p.expiresAt) }}
-        </div>
-        <div style="flex: 1"></div>
-        <button class="back-btn share-btn" (click)="sharePoll()">
-          <iconify-icon icon="lucide:share-2" style="font-size: 16px; margin-right: 6px"></iconify-icon>
-          Share Poll
+      </div>
+    }
+  } @else {
+    @if (loading()) {
+      <div class="loading-overlay">
+        <iconify-icon icon="lucide:loader-2" class="spin-icon" style="font-size: 48px; color: #fab4c6;"></iconify-icon>
+        <p>Gathering style feedback...</p>
+      </div>
+    } @else {
+      <div class="loading-overlay">
+        <iconify-icon icon="lucide:alert-circle" style="font-size: 48px; color: #e53e3e;"></iconify-icon>
+        <p>We couldn't find this poll. It might have been removed.</p>
+        <button class="back-btn" (click)="onBack()" style="margin-top: 16px; width: auto; padding: 0 20px;">
+          Go Back
         </button>
       </div>
-    </div>
-
-    <!-- Right Column: Comments -->
-    <div class="comments-section">
-      <app-comments-modal 
-        [postId]="post.id" 
-        [isInline]="true"
-        [onCommentAdded]="handleCommentAdded"
-        [onCommentDeleted]="handleCommentDeleted"
-      ></app-comments-modal>
-    </div>
-  </div>
-      }
-    } @else {
-      @if (loading()) {
-      <div class="loading-overlay">
-        <iconify-icon icon="lucide:loader-2" class="spin-icon" style="font-size: 48px"></iconify-icon>
-        <p>Loading poll details...</p>
-      </div>
-      }
     }
+  }
 
   @if (submittingVote()) {
-  <div class="toast">Casting your vote...</div>
+    <div class="toast">Recording your vote...</div>
   }
 </div>
