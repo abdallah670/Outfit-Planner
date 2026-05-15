@@ -26,10 +26,10 @@ public class CreatePollCommandValidator : AbstractValidator<CreatePollPostComman
             .GreaterThan(DateTimeOffset.UtcNow)
             .WithMessage("Expiration date must be in the future");
 
-        RuleFor(x => x.OutfitIds)
+        RuleFor(x => x.Options)
             .NotNull()
-            .WithMessage("Outfit options are required")
+            .WithMessage("Options are required")
             .Must(x => x != null && x.Count >= 2 && x.Count <= 4)
-            .WithMessage("Between 2 and 4 outfit options are required");
+            .WithMessage("Between 2 and 4 options are required");
     }
 }

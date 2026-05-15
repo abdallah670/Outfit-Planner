@@ -42,5 +42,27 @@ public class VoteRepository : GenericRepository<Vote>, IVoteRepository
             await RemoveAsync(vote);
         }
     }
-    
+
+    public async Task<IEnumerable<(Vote Vote, string VoterName, string? VoterAvatarUrl)>> GetVotersWithDetailsAsync(Guid pollId, Guid? optionId = null)
+    {
+        var query = _dbSet
+            .Where(v => v.PollId == pollId)
+            .Include(v => v.Voter)
+            .Include(v => v.Option)
+                .ThenInclude(o => o.Outfit)
+            .AsQueryable();
+
+        if (optionId.HasValue)
+        {
+            query = query.Where(v => v.OptionId == optionId.Value);
+        }
+
+        var votes = await query.ToListAsync();
+
+        return votes.Select(v => (
+            Vote: v,
+            VoterName: v.Voter?.Name ?? "Unknown",
+            VoterAvatarUrl: v.Voter?.ProfilePictureUrl
+        ));
+    }
 }

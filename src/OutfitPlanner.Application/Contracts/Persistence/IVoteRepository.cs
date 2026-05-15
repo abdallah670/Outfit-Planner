@@ -14,4 +14,8 @@ public interface IVoteRepository : IGenericRepository<Vote>
     /// Much more efficient than loading all votes into memory.
     /// </summary>
     Task<bool> HasUserVotedAsync(Guid pollId, string userId);
+    /// <summary>
+    /// Gets voters with user details (name, avatar) for a poll or specific option
+    /// </summary>
+    Task<IEnumerable<(Vote Vote, string VoterName, string? VoterAvatarUrl)>> GetVotersWithDetailsAsync(Guid pollId, Guid? optionId = null);
 }

@@ -1,0 +1,739 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Create Poll - Desktop</title>
+      <style id="theme-styles">
+        :root {
+          --background: #fdf2f8;
+          --foreground: #1f2937;
+          --card: #ffffff;
+          --card-foreground: #1f2937;
+          --primary: #db2777;
+          --primary-foreground: #ffffff;
+          --secondary: #fce7f3;
+          --secondary-foreground: #be185d;
+          --muted: #f3f4f6;
+          --muted-foreground: #6b7280;
+          --accent: #fbcfe8;
+          --accent-foreground: #831843;
+          --destructive: #ef4444;
+          --destructive-foreground: #ffffff;
+          --border: #e5e7eb;
+          --input: #ffffff;
+          --ring: #db2777;
+          --radius-sm: 4px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
+          --font-family-body:
+            system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            sans-serif;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        .export-wrapper {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family-body);
+          background-color: var(--background);
+          color: var(--foreground);
+          min-height: 100vh;
+          -webkit-font-smoothing: antialiased;
+        }
+      </style>
+      <style id="layout-styles">
+        .desktop-container {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 40px 32px 80px 32px;
+        }
+
+        /* Header */
+        .page-header {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 40px;
+        }
+
+        .back-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: var(--radius-md);
+          background: var(--card);
+          border: 1px solid var(--border);
+          color: var(--foreground);
+          cursor: pointer;
+        }
+
+        .page-title {
+          font-size: 24px;
+          font-weight: 700;
+          margin: 0;
+          color: var(--foreground);
+        }
+
+        /* Stepper */
+        .wizard-stepper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 40px;
+          position: relative;
+          max-width: 700px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .wizard-stepper::before {
+          content: "";
+          position: absolute;
+          top: 16px;
+          left: 32px;
+          right: 32px;
+          height: 2px;
+          background: var(--border);
+          z-index: 1;
+        }
+
+        .wizard-stepper::after {
+          content: "";
+          position: absolute;
+          top: 16px;
+          left: 32px;
+          width: 50%;
+          height: 2px;
+          background: var(--primary);
+          z-index: 1;
+        }
+
+        .step {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          background: var(--background);
+          padding: 0 16px;
+        }
+
+        .step-circle {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 14px;
+          background: var(--card);
+          border: 2px solid var(--border);
+          color: var(--muted-foreground);
+        }
+
+        .step.completed .step-circle {
+          background: var(--primary);
+          border-color: var(--primary);
+          color: var(--primary-foreground);
+        }
+
+        .step.active .step-circle {
+          border-color: var(--primary);
+          color: var(--primary);
+        }
+
+        .step-label {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--muted-foreground);
+        }
+
+        .step.active .step-label {
+          color: var(--foreground);
+          font-weight: 600;
+        }
+
+        .step.completed .step-label {
+          color: var(--foreground);
+          font-weight: 500;
+        }
+
+        /* Builder Layout */
+        .builder-layout {
+          display: grid;
+          grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
+          gap: 32px;
+          align-items: start;
+        }
+
+        /* Left Column: Options */
+        .options-section {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .section-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: var(--foreground);
+          margin: 0;
+        }
+
+        .options-list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .option-card {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 16px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .drag-handle {
+          color: var(--muted-foreground);
+          cursor: grab;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px;
+        }
+
+        .option-image-wrapper {
+          width: 80px;
+          height: 80px;
+          border-radius: var(--radius-md);
+          overflow: hidden;
+          border: 1px solid var(--border);
+          flex-shrink: 0;
+        }
+
+        .option-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .option-details {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .option-label {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--muted-foreground);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 4px;
+          display: block;
+        }
+
+        .option-name {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--foreground);
+          margin: 0 0 4px 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .option-meta {
+          font-size: 13px;
+          color: var(--muted-foreground);
+          margin: 0;
+        }
+
+        .option-actions {
+          display: flex;
+          gap: 8px;
+        }
+
+        .icon-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: var(--radius-sm);
+          border: 1px solid transparent;
+          background: transparent;
+          color: var(--muted-foreground);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+
+        .icon-btn.destructive {
+          color: var(--destructive);
+          background: #fef2f2;
+        }
+
+        .add-option-btn {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          height: 100px;
+          border: 2px dashed var(--border);
+          border-radius: var(--radius-lg);
+          background: transparent;
+          color: var(--muted-foreground);
+          font-weight: 600;
+          font-size: 14px;
+          cursor: pointer;
+        }
+
+        /* Right Column: Configuration */
+        .config-section {
+          background: var(--card);
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border);
+          padding: 32px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .form-group {
+          margin-bottom: 24px;
+        }
+
+        .form-label {
+          display: block;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--foreground);
+          margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          background: var(--input);
+          color: var(--foreground);
+          font-size: 14px;
+          font-family: inherit;
+        }
+
+        .form-textarea {
+          min-height: 120px;
+          resize: vertical;
+        }
+
+        .select-wrapper {
+          position: relative;
+        }
+
+        .select-icon {
+          position: absolute;
+          right: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          color: var(--muted-foreground);
+        }
+
+        .form-select {
+          appearance: none;
+          padding-right: 40px;
+        }
+
+        /* Privacy Cards */
+        .privacy-options {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+
+        .privacy-card {
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          padding: 16px;
+          cursor: pointer;
+          position: relative;
+        }
+
+        .privacy-card.active {
+          border-color: var(--primary);
+          background: var(--secondary);
+        }
+
+        .privacy-card-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--foreground);
+        }
+
+        .privacy-card.active .privacy-card-header {
+          color: var(--secondary-foreground);
+        }
+
+        .privacy-card-desc {
+          font-size: 12px;
+          color: var(--muted-foreground);
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        .privacy-card.active .privacy-card-desc {
+          color: var(--secondary-foreground);
+          opacity: 0.8;
+        }
+
+        .check-icon {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          color: var(--primary);
+          display: none;
+        }
+
+        .privacy-card.active .check-icon {
+          display: block;
+        }
+
+        /* Actions */
+        .action-buttons {
+          display: flex;
+          justify-content: flex-end;
+          gap: 16px;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid var(--border);
+        }
+
+        .btn {
+          padding: 12px 24px;
+          border-radius: var(--radius-md);
+          font-weight: 600;
+          font-size: 15px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .btn-outline {
+          background: transparent;
+          border: 1px solid var(--border);
+          color: var(--foreground);
+        }
+
+        .btn-primary {
+          background: var(--primary);
+          border: 1px solid var(--primary);
+          color: var(--primary-foreground);
+        }
+      </style>
+      <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    </head>
+    <body>
+      <div class="desktop-container">
+        <!-- Header -->
+        <header class="page-header">
+          <button class="back-btn" data-media-type="banani-button">
+            <iconify-icon
+              icon="lucide:arrow-left"
+              style="font-size: 20px"
+            ></iconify-icon>
+          </button>
+          <h1 class="page-title">Create Poll</h1>
+        </header>
+
+        <!-- Stepper -->
+        <div class="wizard-stepper">
+          <div class="step completed">
+            <div class="step-circle">
+              <iconify-icon
+                icon="lucide:check"
+                style="font-size: 16px"
+              ></iconify-icon>
+            </div>
+            <span class="step-label">Select Outfits</span>
+          </div>
+          <div class="step active">
+            <div class="step-circle">2</div>
+            <span class="step-label">Configure Poll</span>
+          </div>
+          <div class="step">
+            <div class="step-circle">3</div>
+            <span class="step-label">Preview &amp; Publish</span>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="builder-layout">
+          <!-- Left Column: Selected Options List -->
+          <div class="options-section">
+            <div class="section-header">
+              <h2 class="section-title">Poll Options (2/4)</h2>
+            </div>
+
+            <div class="options-list">
+              <!-- Option 1 -->
+              <div class="option-card">
+                <div class="drag-handle">
+                  <iconify-icon
+                    icon="lucide:grip-vertical"
+                    style="font-size: 20px"
+                  ></iconify-icon>
+                </div>
+                <div class="option-image-wrapper">
+                  <img
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/37757801-5b42-4f2a-8558-e34d09d56e44.jpg"
+                    alt="Blue Floral Sundress"
+                    class="option-image"
+                    data-aspect-ratio="1:1"
+                    data-query="blue floral sundress flat lay"
+                  />
+                </div>
+                <div class="option-details">
+                  <span class="option-label">Option A</span>
+                  <h3 class="option-name">Blue Floral Sundress</h3>
+                  <p class="option-meta">Dresses • Spring Collection</p>
+                </div>
+                <div class="option-actions">
+                  <button class="icon-btn" data-media-type="banani-button">
+                    <iconify-icon
+                      icon="lucide:pencil"
+                      style="font-size: 18px"
+                    ></iconify-icon>
+                  </button>
+                  <button
+                    class="icon-btn destructive"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:trash-2"
+                      style="font-size: 18px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Option 2 -->
+              <div class="option-card">
+                <div class="drag-handle">
+                  <iconify-icon
+                    icon="lucide:grip-vertical"
+                    style="font-size: 20px"
+                  ></iconify-icon>
+                </div>
+                <div class="option-image-wrapper">
+                  <img
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/99562bb0-7da6-44d7-9636-3a50f9b07f2d.jpg"
+                    alt="Pink Wrap Dress"
+                    class="option-image"
+                    data-aspect-ratio="1:1"
+                    data-query="pink wrap dress flat lay"
+                  />
+                </div>
+                <div class="option-details">
+                  <span class="option-label">Option B</span>
+                  <h3 class="option-name">Pink Wrap Dress</h3>
+                  <p class="option-meta">Dresses • Elegant Casual</p>
+                </div>
+                <div class="option-actions">
+                  <button class="icon-btn" data-media-type="banani-button">
+                    <iconify-icon
+                      icon="lucide:pencil"
+                      style="font-size: 18px"
+                    ></iconify-icon>
+                  </button>
+                  <button
+                    class="icon-btn destructive"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:trash-2"
+                      style="font-size: 18px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Add Option Button -->
+              <button class="add-option-btn" data-media-type="banani-button">
+                <iconify-icon
+                  icon="lucide:plus-circle"
+                  style="font-size: 24px"
+                ></iconify-icon>
+                Add Another Outfit
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Configuration Form -->
+          <div class="config-section">
+            <h2 class="section-title" style="margin-bottom: 24px">
+              Poll Configuration
+            </h2>
+
+            <div class="form-group">
+              <label class="form-label">What's your question?</label>
+              <textarea
+                class="form-textarea"
+                placeholder="e.g., Which outfit should I wear for my weekend brunch date?"
+              >
+Which dress should I wear to a garden wedding this weekend? The venue is mostly grass! 🌸</textarea
+              >
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Poll Duration</label>
+              <div class="select-wrapper">
+                <select class="form-select">
+                  <option>24 Hours</option>
+                  <option selected="">3 Days</option>
+                  <option>7 Days</option>
+                </select>
+                <iconify-icon
+                  icon="lucide:chevron-down"
+                  class="select-icon"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Privacy Settings</label>
+              <div class="privacy-options">
+                <!-- Public -->
+                <div
+                  class="privacy-card active"
+                  data-media-type="banani-button"
+                >
+                  <div class="privacy-card-header">
+                    <iconify-icon
+                      icon="lucide:globe"
+                      style="font-size: 18px"
+                    ></iconify-icon>
+                    Public
+                  </div>
+                  <p class="privacy-card-desc">
+                    Anyone in the community feed can view and vote on this poll.
+                  </p>
+                  <iconify-icon
+                    icon="lucide:check-circle-2"
+                    class="check-icon"
+                    style="font-size: 20px"
+                  ></iconify-icon>
+                </div>
+
+                <!-- Followers Only -->
+                <div class="privacy-card" data-media-type="banani-button">
+                  <div class="privacy-card-header">
+                    <iconify-icon
+                      icon="lucide:users"
+                      style="font-size: 18px"
+                    ></iconify-icon>
+                    Followers Only
+                  </div>
+                  <p class="privacy-card-desc">
+                    Only people who follow you can view and participate.
+                  </p>
+                  <iconify-icon
+                    icon="lucide:check-circle-2"
+                    class="check-icon"
+                    style="font-size: 20px"
+                  ></iconify-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-buttons">
+              <button class="btn btn-outline" data-media-type="banani-button">
+                Cancel
+              </button>
+              <button class="btn btn-primary" data-media-type="banani-button">
+                Preview &amp; Publish
+                <iconify-icon
+                  icon="lucide:arrow-right"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+  <style>
+    :root {
+      --background: #fff9fb;
+      --foreground: #1f2937;
+      --border: #00000014;
+      --input: #ffffff;
+      --primary: #ff6fa8;
+      --primary-foreground: #ffffff;
+      --secondary: #fff0f6;
+      --secondary-foreground: #7b2a4a;
+      --muted: #f3f4f6;
+      --muted-foreground: #9ca3af;
+      --success: #10b981;
+      --success-foreground: #ffffff;
+      --accent: #ffd6e8;
+      --accent-foreground: #7b2a4a;
+      --destructive: #ef4444;
+      --destructive-foreground: #ffffff;
+      --warning: #f59e0b;
+      --warning-foreground: #1f2937;
+      --card: #ffffff;
+      --card-foreground: #111827;
+      --sidebar: #fff4f7;
+      --sidebar-foreground: #5b2d3a;
+      --sidebar-primary: #ffdfeb;
+      --sidebar-primary-foreground: #7b2a4a;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --font-family-body: Inter;
+    }
+  </style>
+</div>

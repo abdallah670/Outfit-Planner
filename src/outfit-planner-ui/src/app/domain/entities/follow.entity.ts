@@ -10,6 +10,7 @@ export interface Follower {
   userAvatarUrl: string;
   createdAt: Date;
   isFollowing: boolean;
+  isOwner: boolean;
 }
 
 export interface Following {
@@ -19,6 +20,7 @@ export interface Following {
   userAvatarUrl: string;
   createdAt: Date;
   isFollowing: boolean;
+  isOwner: boolean;
 }
 export interface FollowStats {
   followersCount: number;

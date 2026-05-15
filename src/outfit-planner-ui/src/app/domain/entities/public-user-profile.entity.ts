@@ -15,7 +15,8 @@ export interface PublicUserProfile {
   totalWears: number;
   followersCount: number;
   followingCount: number;
-  isfollowing: boolean;
+  isFollowing: boolean;
+  isOwner: boolean;
   
 
   // Style profile (optional)

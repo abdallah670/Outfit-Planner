@@ -80,7 +80,7 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
                 response.Errors.Add("Option not found in this poll");
                 return response;
             }
-
+            var hasliked=false;
             // 3. Check user  already voted other options to toggle to current option
             var hasVoted = await _voteRepository.GetUserVote(request.UserId, request.PollId);
             if (hasVoted != null)
@@ -89,7 +89,9 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
                 {
                     // Remove the prev vote
                     await _voteRepository.RemoveAsync(hasVoted);
-                  
+                    poll.TotalVotes--;
+                    //remove user reaction for feed post
+                    hasliked=true;    
                 }
             }
 
@@ -111,21 +113,26 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
                 response.Errors.Add("Feed post not found");
                 return response;
             }
+            // Only add reaction if user hasn't liked the post before, otherwise just update the vote and keep the reaction
             var reaction = new PostReaction
             {
                 PostId = feedPost.Id,
                 UserId = request.UserId,
                 ReactionType = ReactionType.Heart
             };
+            
             // 6. Save vote
             await _voteRepository.AddAsync(vote);
+            if(!hasliked)
             await _unitOfWork.PostReactions.AddAsync(reaction);
-            
             poll.TotalVotes++;
             await _validationPollRepository.UpdateAsync(poll);
-            
-            feedPost.LikesCount++;
-            await _unitOfWork.FeedPosts.UpdateAsync(feedPost);
+            if(!hasliked)
+            {
+                feedPost.LikesCount++;
+                await _unitOfWork.FeedPosts.UpdateAsync(feedPost);
+            }
+          
 
             await _unitOfWork.SaveChangesAsync();
             response.Id = vote.Id;

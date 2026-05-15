@@ -345,31 +345,31 @@ namespace OutfitPlanner.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Follows",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FollowerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FollowingId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Follows", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Follows_AspNetUsers_FollowerId",
-                        column: x => x.FollowerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Follows_AspNetUsers_FollowingId",
-                        column: x => x.FollowingId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
+             migrationBuilder.CreateTable(
+                 name: "Follows",
+                 columns: table => new
+                 {
+                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                     FollowerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                     FollowedId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                 },
+                 constraints: table =>
+                 {
+                     table.PrimaryKey("PK_Follows", x => x.Id);
+                     table.ForeignKey(
+                         name: "FK_Follows_AspNetUsers_FollowerId",
+                         column: x => x.FollowerId,
+                         principalTable: "AspNetUsers",
+                         principalColumn: "Id",
+                         onDelete: ReferentialAction.NoAction);
+                     table.ForeignKey(
+                         name: "FK_Follows_AspNetUsers_FollowedId",
+                         column: x => x.FollowedId,
+                         principalTable: "AspNetUsers",
+                         principalColumn: "Id",
+                         onDelete: ReferentialAction.NoAction);
+                 });
 
             migrationBuilder.CreateTable(
                 name: "Outfits",
@@ -924,21 +924,21 @@ namespace OutfitPlanner.Persistence.Migrations
                 table: "FeedPosts",
                 column: "UserId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Follows_FollowerId",
-                table: "Follows",
-                column: "FollowerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Follows_FollowerId_FollowingId",
-                table: "Follows",
-                columns: new[] { "FollowerId", "FollowedId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Follows_FollowingId",
-                table: "Follows",
-                column: "FollowedId");
+             migrationBuilder.CreateIndex(
+                 name: "IX_Follows_FollowerId",
+                 table: "Follows",
+                 column: "FollowerId");
+ 
+             migrationBuilder.CreateIndex(
+                 name: "IX_Follows_FollowerId_FollowedId",
+                 table: "Follows",
+                 columns: new[] { "FollowerId", "FollowedId" },
+                 unique: true);
+ 
+             migrationBuilder.CreateIndex(
+                 name: "IX_Follows_FollowedId",
+                 table: "Follows",
+                 column: "FollowedId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_CreatedAt",

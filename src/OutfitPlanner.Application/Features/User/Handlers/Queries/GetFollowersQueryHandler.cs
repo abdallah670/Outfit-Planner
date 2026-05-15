@@ -25,7 +25,8 @@ public class GetFollowersQueryHandler : IRequestHandler<GetFollowersQuery, Curso
             request.UserId,
             request.Cursor,
             request.PageSize);
-        var followedUserIds = (await _followRepository.FindAsync(f => f.FollowerId == request.UserId, cancellationToken))
+        //find users followed by requester
+        var followedUserIds = (await _followRepository.FindAsync(f => f.FollowerId == request.RequesterId, cancellationToken))
                        .Select(f => f.FollowedId)
                        .ToList();
 
@@ -36,7 +37,8 @@ public class GetFollowersQueryHandler : IRequestHandler<GetFollowersQuery, Curso
             UserName = f.Follower?.UserName ?? "Unknown",
             AvatarUrl = f.Follower?.ProfilePictureUrl,
             CreatedAt = f.CreatedAt.DateTime,
-            IsFollowing = followedUserIds.Contains(f.FollowerId)
+            IsFollowing = followedUserIds.Contains(f.FollowerId),
+            IsOwner = f.FollowerId == request.RequesterId
         }).ToList();
 
         return new CursorPagination.CursorPagedResult<FollowerDto>

@@ -24,6 +24,7 @@ public class GetFeedQueryHandler : IRequestHandler<GetFeedQuery, CursorPaginatio
         IMapper mapper)
     {
         _feedPostRepository = feedPostRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -55,32 +56,47 @@ public class GetFeedQueryHandler : IRequestHandler<GetFeedQuery, CursorPaginatio
         var likedPostIds = (await _unitOfWork.PostReactions.FindAsync(r => r.UserId == request.UserId, cancellationToken))
             .Select(r => r.PostId)
             .ToList();
-
-        // Map and enrich posts with user context
-        var dtos = result.Items.Select(post =>
-        {
-            var dto = _mapper.Map<FeedPostDto>(post);
-            dto.IsOwner = post.User.Id == request.UserId;
-
-            // Check if user voted on this poll
-            if (post.PollId.HasValue && votesByPollId.TryGetValue(post.PollId.Value, out var vote) && vote != null)
+          var dtos = _mapper.Map<List<FeedPostDto>>(result.Items);
+         // Enrich DTOs with viewer context
+            for (int i = 0; i < result.Items.Count && i < dtos.Count; i++)
             {
-                dto.HasVoted = true;
-                // Store the option ID as the user's vote
-                dto.UserVote = vote.Option.Id.ToString();
+                var entity = result.Items[i];
+                var dto = dtos[i];
+
+                // Check if viewer reacted to this post
+                var viewerReaction = entity.Reactions?.FirstOrDefault(r => r.UserId == request.UserId);
+                if (viewerReaction != null)
+                {
+                    dto.UserReaction = viewerReaction.ReactionType.ToString();
+                }
+
+                // Check if viewer voted on this poll
+                if (entity.PollId.HasValue && votesByPollId.TryGetValue(entity.PollId.Value, out var vote) && vote != null)
+                {
+                    dto.HasVoted = true;
+                    dto.Poll.UserVotedOptionId = vote.Option.Id;
+                }
+                if (dto.PostType == PostType.Poll)
+                {
+                    //get votecounts for each option
+                    var options = await _unitOfWork.PollOptions.FindAsync(o => o.Poll.Id == entity.PollId, cancellationToken);
+                    foreach (var option in options)
+                    {
+                        var optionDto = dto.Poll?.Options.FirstOrDefault(o => o.Id == option.Id);
+                        if (optionDto != null)
+                        {
+                            optionDto.VoteCount = await _unitOfWork.Votes.CountAsync(v => v.OptionId == option.Id, cancellationToken);
+                            
+                        }
+                    }
+                    dto.Poll.TotalVotes = result.Items[i].Poll?.TotalVotes ?? 0;
+                   
+                }
+
+                dto.IsFollowing = followedUserIds.Contains(entity.User?.Id);
+                dto.IsLiked = likedPostIds.Contains(entity.Id);
             }
-            else
-            {
-                dto.HasVoted = false;
-                dto.UserVote = null;
-            }
-
-            dto.IsFollowing = followedUserIds.Contains(post.User.Id);
-            dto.IsLiked = likedPostIds.Contains(post.Id);
-
-            return dto;
-        }).ToList();
-
+        
         return new CursorPagination.CursorPagedResult<FeedPostDto>
         {
             Items = dtos,

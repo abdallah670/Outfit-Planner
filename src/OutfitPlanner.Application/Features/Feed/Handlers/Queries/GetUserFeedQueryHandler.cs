@@ -73,10 +73,24 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
                 if (entity.PollId.HasValue && viewerVotesByPollId.TryGetValue(entity.PollId.Value, out var vote) && vote != null)
                 {
                     dto.HasVoted = true;
-                    dto.UserVote = vote.Option.Id.ToString();
+                    dto.Poll.UserVotedOptionId = vote.Option.Id;
+                }
+                if (dto.PostType == PostType.Poll)
+                {
+                    //get votecounts for each option
+                    var options = await _unitOfWork.PollOptions.FindAsync(o => o.Poll.Id == entity.PollId, cancellationToken);
+                    foreach (var option in options)
+                    {
+                        var optionDto = dto.Poll?.Options.FirstOrDefault(o => o.Id == option.Id);
+                        if (optionDto != null)
+                        {
+                            optionDto.VoteCount = await _unitOfWork.Votes.CountAsync(v => v.OptionId == option.Id, cancellationToken);
+                        }
+                    }
+                    dto.Poll.TotalVotes = result.Items[i].Poll?.TotalVotes ?? 0;
                 }
 
-                dto.IsFollowing = viewerFollowedUserIds.Contains(entity.User.Id);
+                dto.IsFollowing = viewerFollowedUserIds.Contains(entity.User?.Id);
                 dto.IsLiked = viewerLikedPostIds.Contains(entity.Id);
             }
         }

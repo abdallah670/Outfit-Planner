@@ -1,3 +1,5 @@
+import { Visibility } from "./feed.entity";
+
 /**
  * Represents a validation poll for outfit feedback
  */
@@ -24,6 +26,7 @@ export interface PollOption {
   displayOrder: number;
   voteCount: number;
   outfitThumbnail?: string;
+  description?: string;
 }
 
 /**
@@ -44,6 +47,7 @@ export interface CreatePollRequest {
   question: string;
   context?: string;
   expiresAt: Date;
+  visibility: Visibility;
   options: CreatePollOptionRequest[];
 }
 
@@ -63,6 +67,7 @@ export interface UpdatePollRequest {
 export interface CreatePollOptionRequest {
   outfitId?: string;
   displayOrder?: number;
+  description?: string;
 }
 
 /**
@@ -85,15 +90,25 @@ export interface RecentPollWithCommentsDto {
   poll: Poll;
   comments: any[]; 
 }
+export interface VoterInfo {
+  voterId: string;
+  voterName: string;
+  voterAvatarUrl: string;
+  votedAt: Date;
+  optionId: string;
+  optionDescription?: string;
+  optionDisplayOrder: number;
+}
 
 /**
  * Helper to map PollOption from ValidationPoll to local interface
  */
-export function mapPollOptionToDisplayOption(option: PollOption): { id: string; imageUrl: string; votes: number } {
+export function mapPollOptionToDisplayOption(option: PollOption): { id: string; imageUrl: string; votes: number; description: string } {
   return {
     id: option.id,
     imageUrl: option.outfitThumbnail || '',
     votes: option.voteCount,
+    description: option.description || ''
   };
 }
 

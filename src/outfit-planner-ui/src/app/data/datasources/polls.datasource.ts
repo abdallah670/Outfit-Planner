@@ -80,8 +80,10 @@ export class PollsDataSource {
   }
 
   removeVote(optionId:string): Observable<void> {
-   return this.http.delete<void>(`${this.apiUrl}/vote`, { body: optionId });
-
+   return this.http.delete<void>(`${this.apiUrl}/vote`, { 
+     body: JSON.stringify(optionId),
+     headers: { 'Content-Type': 'application/json' }
+   });
   }
 
   updatePoll(pollId: string, request: UpdatePollRequest): Observable<Poll> {
@@ -143,12 +145,12 @@ export class PollsDataSource {
       id: dto.id,
       pollId: dto.pollId,
       outfitId: dto.outfitId,
-    
       displayOrder: dto.displayOrder,
       voteCount: dto.voteCount,
       outfitThumbnail: dto.outfitThumbnail && !dto.outfitThumbnail.startsWith('http') 
         ? `${resourceUrl}${dto.outfitThumbnail}` 
         : dto.outfitThumbnail,
+      description: dto.description || '',
     };
   }
 }

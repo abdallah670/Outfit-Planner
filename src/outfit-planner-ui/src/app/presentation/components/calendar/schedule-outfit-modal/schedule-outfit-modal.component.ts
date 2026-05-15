@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, signal, computed } from '@angular/core';
+import { Component, Inject, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -30,6 +30,7 @@ type OccasionTypeValue = typeof OCCASION_TYPES[number];
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
+import { OutfitsUseCases } from '../../../../domain/usecases/outfit.usecases';
 
 export interface ScheduleOutfitModalData {
   date: Date;
@@ -62,7 +63,8 @@ export class ScheduleOutfitModalComponent implements OnInit {
   scheduleForm!: FormGroup;
   createOutfitForm!: FormGroup;
   occasions = [...OCCASION_TYPES];
-  
+  outfitsUseCases = inject(OutfitsUseCases);
+  selectedoutfitId = signal<string | null>(null);
   // Tab management
   activeTab = signal<'existing' | 'create'>('existing');
   createMode = signal<CreateMode>('photo');
@@ -270,12 +272,9 @@ export class ScheduleOutfitModalComponent implements OnInit {
       if (formValue.season) {
         formData.append('season', formValue.season);
       }
-
+     
       const response = await firstValueFrom(
-        this.http.post<{ id: string; name: string; imageUrl: string }>(
-          `${environment.baseUrl}/outfits/with-photo`,
-          formData
-        )
+        this.outfitsUseCases.createOutfitWithImage(this.selectedFile()!)
       );
 
       // Now schedule the newly created outfit

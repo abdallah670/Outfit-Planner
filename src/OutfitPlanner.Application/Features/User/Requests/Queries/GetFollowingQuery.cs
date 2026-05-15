@@ -9,6 +9,7 @@ namespace OutfitPlanner.Application.Features.Feed.Requests.Queries;
 public class GetFollowingQuery : IRequest<CursorPagination.CursorPagedResult<FollowingDto>>
 {
     public string UserId { get; set; } = string.Empty;
+    
     public string? Cursor { get; set; }
     public int PageSize { get; set; } = 20;
     public string? RequesterId { get; set; }
@@ -24,4 +25,6 @@ public class FollowingDto
     public string? AvatarUrl { get; set; }
     public DateTime CreatedAt { get; set; }
     public bool IsFollowing { get; set; } = false;
+    public bool IsOwner { get; set; } = false;
+
 }

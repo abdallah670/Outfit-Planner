@@ -28,7 +28,7 @@ public class FeedController : ControllerBase
 
     private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-   /// <summary>
+    /// <summary>
     /// Get Posts
     /// </summary>
     [HttpGet]
@@ -113,10 +113,10 @@ public class FeedController : ControllerBase
     /// Get a specific post by ID
     /// </summary>
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<FeedPostDto>> GetPostById(Guid id)
+    public async Task<ActionResult<GetFeedPostByIdDto?>> GetPostById(Guid id)
     {
         var userId = GetUserId();
-        var query = new GetFeedPostByIdQuery { PostId = id, UserId = userId };
+        var query = new GetFeedPostByIdQuery { PostId = id, RequesterId = userId };
         var post = await _mediator.Send(query);
         
         if (post == null)
@@ -248,5 +248,25 @@ public class FeedController : ControllerBase
         return NoContent();
     }
 
-    
+    /// <summary>
+    /// Update a comment on a post
+    /// </summary>
+    [HttpPut("comments/{commentId:guid}")]
+    public async Task<ActionResult<BaseCommandResponse>> UpdateComment(Guid commentId, [FromBody] CreateCommentDto request)
+    {
+        var userId = GetUserId();
+        var command = new UpdatePostCommentCommand
+        {
+            CommentId = commentId,
+            UserId = userId,
+            Content = request.Content
+        };
+        
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return BadRequest(response);
+            
+        return Ok(response);
+    }
 }

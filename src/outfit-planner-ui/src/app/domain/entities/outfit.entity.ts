@@ -106,14 +106,13 @@ export interface TrendingOutfit {
   id: string;
   userId: string;
   userName: string;
-
   userAvatar: string;
   imageUrl: string;
   likes: number;
   comments: number;
   trendingScore: number;
   createdAt: Date;
-   isfollowing?:boolean;
+  isfollowing?:boolean;
   isowner?:boolean;
   isliked:boolean;
 

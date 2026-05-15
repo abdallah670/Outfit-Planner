@@ -26,7 +26,7 @@ public class PollOption : BaseEntity
     public Guid? OutfitId { get; set; }
     public Outfit? Outfit { get; set; }
     public int DisplayOrder { get; set; }
-    
+    public string Description { get; set; } = string.Empty;
     public ICollection<Vote> Votes { get; set; } = new List<Vote>();
 }
 
