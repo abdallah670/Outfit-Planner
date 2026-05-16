@@ -12,9 +12,16 @@ export enum PostType {
 }
 
 export enum Visibility {
-  Public = 0,
-  FriendsOnly = 1,
-  Private = 2,
+  Private = 0,
+  Followers = 1,
+  Public = 2,
+}
+
+
+export interface TaggedUser {
+  userId: string;
+  userName: string;
+  profilePictureUrl?: string;
 }
 
 export interface FeedPost {
@@ -29,6 +36,7 @@ export interface FeedPost {
   poll?: Poll;
   caption?: string;
   tags?: string[];
+  taggedUsers?: TaggedUser[];
   visibility: Visibility;
   likesCount: number;
   commentsCount: number;
@@ -58,6 +66,7 @@ export interface PostComment {
   isDeleted: boolean;
   parentCommentId?: string;
   replies?: PostComment[];
+  totalReplies?: number;
 }
 /**
  * likes

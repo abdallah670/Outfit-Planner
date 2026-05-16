@@ -35,6 +35,8 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
             Visibility.Public,
             null);
 
+
+
         var dtos = _mapper.Map<List<FeedPostDto>>(result.Items);
 
         // Enrich DTOs with viewer-specific data if a viewer is provided
@@ -48,8 +50,9 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
             // Get viewer's votes
             var viewerVotes = await _unitOfWork.Votes.FindAsync(v => v.VoterId == request.ViewerUserId, cancellationToken);
             var viewerVotesByPollId = viewerVotes
-                .GroupBy(vote => vote.Option.PollId)
+                .GroupBy(vote => vote.PollId)
                 .ToDictionary(g => g.Key, g => g.FirstOrDefault());
+
 
             // Get viewer's liked posts
             var viewerLikedPostIds = (await _unitOfWork.PostReactions.FindAsync(r => r.UserId == request.ViewerUserId, cancellationToken))
@@ -70,15 +73,21 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
                 }
 
                 // Check if viewer voted on this poll
-                if (entity.PollId.HasValue && viewerVotesByPollId.TryGetValue(entity.PollId.Value, out var vote) && vote != null)
+                if (entity.PollId.HasValue)
                 {
-                    dto.HasVoted = true;
-                    dto.Poll.UserVotedOptionId = vote.Option.Id;
+                    if (viewerVotesByPollId.TryGetValue(entity.PollId.Value, out var vote) && vote != null)
+                    {
+                        dto.HasVoted = true;
+                        dto.Poll.UserVotedOptionId = vote.OptionId;
+
+                    }
                 }
+
                 if (dto.PostType == PostType.Poll)
                 {
                     //get votecounts for each option
-                    var options = await _unitOfWork.PollOptions.FindAsync(o => o.Poll.Id == entity.PollId, cancellationToken);
+                    var options = await _unitOfWork.PollOptions.FindAsync(o => o.PollId == entity.PollId, cancellationToken);
+
                     foreach (var option in options)
                     {
                         var optionDto = dto.Poll?.Options.FirstOrDefault(o => o.Id == option.Id);
@@ -92,6 +101,22 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
 
                 dto.IsFollowing = viewerFollowedUserIds.Contains(entity.User?.Id);
                 dto.IsLiked = viewerLikedPostIds.Contains(entity.Id);
+            }
+        }
+        // Get all unique tagged usernames from all posts
+        var allTaggedUsernames = dtos.SelectMany(p => p.Tags).Distinct().ToList();
+        if (allTaggedUsernames.Any())
+        {
+            var taggedUsers = await _unitOfWork.Users.GetTaggedUsersAsync(allTaggedUsernames);
+            var taggedUsersDict = taggedUsers.ToDictionary(u => u.UserName, u => _mapper.Map<TaggedUserDto>(u));
+
+            foreach (var post in dtos)
+            {
+                post.TaggedUsers = post.Tags
+                    .Select(tag => taggedUsersDict.TryGetValue(tag, out var userDto) ? userDto : null)
+                    .Where(u => u != null)
+                    .Cast<TaggedUserDto>()
+                    .ToList();
             }
         }
 

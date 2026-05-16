@@ -662,7 +662,8 @@ public class UserController : ControllerBase
      public async Task<ActionResult<CursorPagination.CursorPagedResult<FollowerDto>>> GetFollowers(
          string userId,
          [FromQuery] string? cursor = null,
-         [FromQuery] int pageSize = 20)
+         [FromQuery] int pageSize = 20,
+         [FromQuery] string? searchQuery = null)
      {
         var currentUserId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
          var query = new GetFollowersQuery
@@ -670,7 +671,8 @@ public class UserController : ControllerBase
              UserId = userId,
              Cursor = cursor,
              PageSize = pageSize,
-             RequesterId = currentUserId
+             RequesterId = currentUserId,
+             SearchQuery = searchQuery
          };
          
          var result = await _mediator.Send(query);
@@ -685,7 +687,8 @@ public class UserController : ControllerBase
      public async Task<ActionResult<CursorPagination.CursorPagedResult<FollowingDto>>> GetFollowing(
          string userId,
          [FromQuery] string? cursor = null,
-         [FromQuery] int pageSize = 20)
+         [FromQuery] int pageSize = 20,
+         [FromQuery] string? searchQuery = null)
      {
         var currentUserId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
          var query = new GetFollowingQuery
@@ -693,6 +696,7 @@ public class UserController : ControllerBase
              UserId = userId,
              Cursor = cursor,
              PageSize = pageSize,
+             SearchQuery = searchQuery,
              RequesterId = currentUserId
          };
          

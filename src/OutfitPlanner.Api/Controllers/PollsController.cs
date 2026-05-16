@@ -74,7 +74,8 @@ public class PollsController : ControllerBase
             Options = request.Options,
             Context = request.Context,
             ExpiresAt = request.ExpiresAt,
-            Visibility = request.Visibility
+            Visibility = request.Visibility,
+            Tags = request.Tags
         };
         
         var response = await _mediator.Send(command);
@@ -99,7 +100,10 @@ public class PollsController : ControllerBase
             UserId = userId,
             Question = request.Question,
             ExpiresAt = request.ExpiresAt,
-            Visibility = request.Visibility
+            Visibility = request.Visibility,
+            Tags = request.Tags,
+            Options = request.Options,
+            Context = request.Context
         };
         
         var response = await _mediator.Send(command);

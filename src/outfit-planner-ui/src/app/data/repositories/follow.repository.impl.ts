@@ -23,12 +23,12 @@ export class FollowRepositoryImpl implements FollowRepository {
     return this.followDataSource.isFollowing(userId);
   }
 
-  getFollowers(userId: string, cursor?: string, pageSize?: number): Observable<CursorPagedResult<Follower>> {
-    return this.followDataSource.getFollowers(userId, cursor, pageSize);
+  getFollowers(userId: string, cursor?: string, pageSize?: number,searchQuery?: string): Observable<CursorPagedResult<Follower>> {
+    return this.followDataSource.getFollowers(userId, cursor, pageSize,searchQuery);
   }
 
-  getFollowing(userId: string, cursor?: string, pageSize?: number): Observable<CursorPagedResult<Following>> {
-    return this.followDataSource.getFollowing(userId, cursor, pageSize);
+  getFollowing(userId: string, cursor?: string, pageSize?: number,searchQuery?: string): Observable<CursorPagedResult<Following>> {
+    return this.followDataSource.getFollowing(userId, cursor, pageSize,searchQuery);
   }
 
   getFollowStats(userId: string): Observable<FollowStats> {

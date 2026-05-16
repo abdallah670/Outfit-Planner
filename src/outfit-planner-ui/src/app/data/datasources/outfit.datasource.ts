@@ -42,9 +42,14 @@ export class OutfitDataSource {
   deleteOutfit(id: string): Observable<boolean> {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' }).pipe(map(() => true));
   }
-  createOutfitWithImage(imageFile: File): Observable<Outfit> {
+  createOutfitWithImage(imageFile: File, details?: { name: string; occasion?: string; season?: string }): Observable<Outfit> {
     const formData = new FormData();
-    formData.append('image', imageFile);
+    formData.append('Photo', imageFile);
+    if (details) {
+      formData.append('Name', details.name);
+      if (details.occasion) formData.append('Occasion', details.occasion);
+      if (details.season) formData.append('Season', details.season);
+    }
     return this.http.post<Outfit>(`${this.apiUrl}/with-photo`, formData).pipe(map((o: Outfit) => this.fixOutfitUrls(o)));
   }
 

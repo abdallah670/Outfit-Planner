@@ -200,7 +200,7 @@ export class CreatePollComponent implements OnInit {
         question: formValue.question,
         expiresAt: this.getexpirationDate(),
         context: '',
-        visibility: this.privacySetting === 'public' ? Visibility.Public : this.privacySetting === 'followers' ? Visibility.FriendsOnly : Visibility.Private,
+        visibility: this.privacySetting === 'public' ? Visibility.Public : this.privacySetting === 'followers' ? Visibility.Followers : Visibility.Private,
         options: formValue.options.map((opt: PollOptionForm, index: number) => ({
           description: opt.description,
           outfitId: outfitIds[index],

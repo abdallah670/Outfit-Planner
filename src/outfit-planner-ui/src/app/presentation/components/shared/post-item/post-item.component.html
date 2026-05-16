@@ -6,27 +6,28 @@
         <img [src]="post.userAvatarUrl || 'assets/default-avatar.png'" class="post-card__avatar-img">
       </div>
       <div class="post-card__meta">
-        <span class="post-card__username" (click)="goToUserProfile(post.userId, $event)" style="cursor: pointer;">{{ post.userName }}</span>
+        <span class="post-card__username" (click)="goToUserProfile(post.userId, $event)" style="cursor: pointer;">{{
+          post.userName }}</span>
         <span class="post-card__time">{{ getTimeAgo(post.createdAt) }}</span>
       </div>
     </div>
 
     @if (post.postType === PostType.Poll && post.poll) {
-      <div class="post-card__badge">
-        <iconify-icon icon="lucide:bar-chart-2" style="font-size: 14px"></iconify-icon>
-        <span>Poll</span>
-        <span class="badge-divider"></span>
-        <span class="status-label" [class.status-label--active]="post.poll.status === 'active'" 
-              [class.status-label--closed]="post.poll.status === 'closed'" 
-              [class.status-label--expired]="post.poll.status === 'expired'">
-          {{ post.poll.status }}
-        </span>
-      </div>
-    } @else {
-      <span class="post-card__badge">
-        <iconify-icon icon="lucide:shirt" style="font-size: 12px"></iconify-icon>
-        <span>Outfit</span>
+    <div class="post-card__badge">
+      <iconify-icon icon="lucide:bar-chart-2" style="font-size: 14px"></iconify-icon>
+      <span>Poll</span>
+      <span class="badge-divider"></span>
+      <span class="status-label" [class.status-label--active]="post.poll.status === 'active'"
+        [class.status-label--closed]="post.poll.status === 'closed'"
+        [class.status-label--expired]="post.poll.status === 'expired'">
+        {{ post.poll.status }}
       </span>
+    </div>
+    } @else {
+    <span class="post-card__badge">
+      <iconify-icon icon="lucide:shirt" style="font-size: 12px"></iconify-icon>
+      <span>Outfit</span>
+    </span>
     }
   </div>
 
@@ -35,81 +36,87 @@
     {{ post.poll ? post.poll.question : post.caption }}
   </div>
 
-  <!-- Tags -->
-  @if (post.tags && post.tags.length > 0) {
-    <div class="post-card__tags">
-      @for (tag of post.tags; track tag) {
-        <span class="post-card__tag">#{{ tag }}</span>
-      }
+  <!-- Tags & Mentions -->
+  @if ((post.tags && post.tags.length > 0) || (post.taggedUsers && post.taggedUsers.length > 0)) {
+  <div class="post-card__mentions">
+    @if (post.taggedUsers && post.taggedUsers.length > 0) {
+    @for (user of post.taggedUsers; track user.userId) {
+    <div class="post-card__tag post-card__tag--user" (click)="goToUserProfile(user.userId, $event)">
+
+      <span>@{{ user.userName }}</span>
     </div>
+    }
+    }
+    
+  </div>
   }
 
   <!-- Outfit Media -->
   @if (post.postType === PostType.Outfit && post.outfit) {
-    <div class="post-card__media">
-      <img [src]="post.outfit.imageUrl || 'assets/placeholder-outfit.jpg'" [alt]="post.outfit.name">
-    </div>
+  <div class="post-card__media">
+    <img [src]="post.outfit.imageUrl || 'assets/placeholder-outfit.jpg'" [alt]="post.outfit.name">
+  </div>
   }
 
   <!-- Poll Content -->
   @if (post.postType === PostType.Poll && post.poll) {
-    <div class="poll-options">
-      @for (option of post.poll.options; track option.id; let i = $index) {
-        <div class="poll-option-card" [class.winner]="isWinner(option.id)">
-          <div class="option-image-wrapper">
-            @if (option.outfitThumbnail) {
-              <img [src]="option.outfitThumbnail" [alt]="'Option ' + getOptionLabel(i)" class="option-image">
-            } @else {
-              <div class="option-image option-image--placeholder">
-                <iconify-icon icon="lucide:shirt" style="font-size: 24px"></iconify-icon>
-              </div>
-            }
-          </div>
-          <div class="option-content">
-            <div class="option-header">
-              <span class="option-title">{{ option.description || 'Option ' + getOptionLabel(i) }}</span>
-              <span class="option-percent">{{ getVotePercentage(option) }}</span>
-            </div>
-            <button class="vote-btn" [class.voted]="post.poll.userVotedOptionId === option.id"
-                    (click)="toggleVote(option.id, $event)"
-                    [disabled]="post.poll.status !== 'active'">
-              @if (post.poll.userVotedOptionId === option.id) {
-                <iconify-icon icon="lucide:check-circle-2" style="font-size: 18px"></iconify-icon>
-                <span>Voted</span>
-              } @else {
-                <span>Vote</span>
-              }
-            </button>
-          </div>
+  <div class="poll-options">
+    @for (option of post.poll.options; track option.id; let i = $index) {
+    <div class="poll-option-card" [class.winner]="isWinner(option.id)">
+      <div class="option-image-wrapper">
+        @if (option.outfitThumbnail) {
+        <img [src]="option.outfitThumbnail" [alt]="'Option ' + getOptionLabel(i)" class="option-image">
+        } @else {
+        <div class="option-image option-image--placeholder">
+          <iconify-icon icon="lucide:shirt" style="font-size: 24px"></iconify-icon>
         </div>
-      }
+        }
+      </div>
+      <div class="option-content">
+        <div class="option-header">
+          <span class="option-title">{{ option.description || 'Option ' + getOptionLabel(i) }}</span>
+          <span class="option-percent">{{ getVotePercentage(option) }}</span>
+        </div>
+        <button class="vote-btn" [class.voted]="post.poll.userVotedOptionId === option.id"
+          (click)="toggleVote(option.id, $event)" [disabled]="post.poll.status !== 'active'">
+          @if (post.poll.userVotedOptionId === option.id) {
+          <iconify-icon icon="lucide:check-circle-2" style="font-size: 18px"></iconify-icon>
+          <span>Voted</span>
+          } @else {
+          <span>Vote</span>
+          }
+        </button>
+      </div>
     </div>
+    }
+  </div>
   }
 
   <!-- Post Actions -->
   <div class="post-card__actions">
     @if (post.poll) {
-      <div class="post-card__action-group" (click)="openVotersModal($event)">
-        <iconify-icon icon="lucide:users" style="font-size: 18px"></iconify-icon>
-        <span class="post-card__action-count">{{ post.poll.totalVotes }} votes</span>
-      </div>
-      <button class="post-card__action-btn" (click)="openCommentsModal($event)">
-        <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
-        <span>{{ post.commentsCount }}</span>
-      </button>
-      <button class="post-card__action-btn post-card__action-btn--end" (click)="viewPostDetail()">
-        <iconify-icon icon="lucide:external-link" style="font-size: 18px"></iconify-icon>
-        <span>Details</span>
-      </button>
+    <div class="post-card__action-group" (click)="openVotersModal($event)">
+      <iconify-icon icon="lucide:users" style="font-size: 18px"></iconify-icon>
+      <span class="post-card__action-count">{{ post.poll.totalVotes }} votes</span>
+    </div>
+    <button class="post-card__action-btn" (click)="openCommentsModal($event)">
+      <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
+      <span>{{ post.commentsCount }}</span>
+    </button>
+    <button class="post-card__action-btn post-card__action-btn--end" (click)="viewPostDetail()">
+      <iconify-icon icon="lucide:external-link" style="font-size: 18px"></iconify-icon>
+      <span>Details</span>
+    </button>
     } @else {
-      <button class="post-card__action-btn" [class.post-card__action-btn--active]="post.isLiked" (click)="toggleReaction($event)">
-        <iconify-icon [icon]="post.isLiked ? 'lucide:heart-off' : 'lucide:heart'" style="font-size: 20px"></iconify-icon>
-        <span>{{ post.likesCount }}</span>
-      </button>
-      <button class="post-card__action-btn" (click)="openCommentsModal($event)">
-        <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
-        <span>{{ post.commentsCount }}</span>
-      </button>
+    <button class="post-card__action-btn" [class.post-card__action-btn--active]="post.isLiked"
+      (click)="toggleReaction($event)">
+      <iconify-icon [icon]="post.isLiked ? 'lucide:heart-off' : 'lucide:heart'" style="font-size: 20px"></iconify-icon>
+      <span>{{ post.likesCount }}</span>
+    </button>
+    <button class="post-card__action-btn" (click)="openCommentsModal($event)">
+      <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
+      <span>{{ post.commentsCount }}</span>
+    </button>
     }
   </div>
 </article>

@@ -14,10 +14,12 @@ public interface IFeedPostRepository : IGenericRepository<FeedPost>
         string? userId, 
         string? cursor, 
         int pageSize, 
-        string sortBy, 
+        string? sortBy, 
         Visibility visibility,
         PostType? postType,
         bool followingOnly = false);
+
+
 
     
     Task<FeedPost?> GetByIdWithDetailsAsync(Guid id);

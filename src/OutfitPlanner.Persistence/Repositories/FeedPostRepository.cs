@@ -20,7 +20,7 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
         string? userId, 
         string? cursor, 
         int pageSize, 
-        string sortBy, 
+        string? sortBy, 
         Visibility visibility,
         PostType? postType,
         bool followingOnly = false)
@@ -35,7 +35,6 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
                 .ThenInclude(p => p!.Options)
                     .ThenInclude(o => o.Votes)
             .Include(p => p.Reactions)
-            .Where(p => p.Visibility == visibility)
             .AsQueryable();
 
         if (followingOnly && !string.IsNullOrEmpty(userId))
@@ -44,19 +43,43 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
                 .Where(f => f.FollowerId == userId)
                 .Select(f => f.FollowedId);
                 
-            query = query.Where(p => followedUserIds.Contains(p.UserId));
+            query = query.Where(p => followedUserIds.Contains(p.UserId) && 
+                (p.Visibility == Visibility.Public || p.Visibility == Visibility.Followers));
         }
+        else
+        {
+            // Global Feed (All Tab)
+            if (!string.IsNullOrEmpty(userId))
+            {
+                // If viewer is provided, show:
+                // 1. All Public posts
+                // 2. Followers posts from users the viewer follows
+                // 3. The viewer's own posts (any visibility)
+                var followedUserIds = _context.Follows
+                    .Where(f => f.FollowerId == userId)
+                    .Select(f => f.FollowedId);
+
+                query = query.Where(p => p.Visibility == Visibility.Public || 
+                                        (p.Visibility == Visibility.Followers && followedUserIds.Contains(p.UserId)) ||
+                                        p.UserId == userId);
+            }
+            else
+            {
+                // Anonymous viewer: only Public posts
+                query = query.Where(p => p.Visibility == Visibility.Public);
+            }
+        }
+
+
+
 
         if (postType.HasValue)
         {
             query = query.Where(p => p.PostType == postType.Value);
         }
         
-        // If not followingOnly, we still might want to filter by a specific user (e.g. for profile feed)
-        if (!followingOnly && !string.IsNullOrEmpty(userId))
-        {
-            query = query.Where(p => p.UserId == userId);
-        }
+
+
 
 
         // Apply cursor filter if provided

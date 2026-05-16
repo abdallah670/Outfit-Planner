@@ -1,0 +1,122 @@
+<div class="desktop-container">
+  <!-- Header -->
+  <header class="page-header">
+    <button class="back-btn" (click)="onBack()" title="Go Back">
+      <iconify-icon icon="lucide:arrow-left" style="font-size: 22px"></iconify-icon>
+    </button>
+    <h1 class="page-title">Outfit Details</h1>
+  </header>
+
+  @if (outfitPost(); as post) {
+    <div class="main-layout">
+      <!-- Left Column: Outfit Section -->
+      <div class="outfit-section">
+        <!-- Author -->
+        <div class="outfit-author">
+          <img
+            [src]="authorAvatar"
+            alt="Author"
+            class="author-avatar"
+            (click)="goToUserProfile(post.userId)"
+            style="cursor: pointer;"
+          />
+          <div class="author-info">
+            <span class="author-name" style="cursor: pointer;" (click)="goToUserProfile(post.userId)">{{ authorName }}</span>
+            <span class="outfit-time">Posted {{ getTimeAgo(post.createdAt) }}</span>
+          </div>
+        </div>
+
+        <!-- Caption -->
+        @if (post.caption) {
+          <p class="outfit-caption">{{ post.caption }}</p>
+        }
+
+        <!-- Tags -->
+        @if (post.tags && post.tags.length > 0) {
+          <div class="outfit-tags">
+            @for (tag of post.tags; track tag) {
+              <span class="tag">#{{ tag }}</span>
+            }
+          </div>
+        }
+
+        <!-- Image -->
+        @if (post.outfit) {
+          <div class="outfit-image-wrapper">
+            <img [src]="post.outfit.imageUrl || 'assets/placeholder-outfit.jpg'" [alt]="post.outfit.name" class="outfit-image">
+          </div>
+          
+          <!-- Outfit Items (if any) -->
+          @if (post.outfit.items && post.outfit.items.length > 0) {
+            <div class="outfit-items">
+              <h3 class="items-title">Items in this outfit</h3>
+              <div class="items-grid">
+                @for (item of post.outfit.items; track item.id) {
+                  <div class="outfit-item">
+                    <div class="item-img-wrap">
+                      <img [src]="item.clothingItemImageUrl || 'assets/placeholder.jpg'" [alt]="item.clothingItemName">
+                    </div>
+                    <span class="item-name">{{ item.clothingItemName || 'Custom Item' }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+
+        <!-- Outfit Summary / Actions -->
+        <div class="outfit-summary">
+          <div class="stats-group">
+            <button class="action-btn" [class.liked]="post.isLiked" (click)="toggleReaction()">
+              <iconify-icon [icon]="post.isLiked ? 'lucide:heart-off' : 'lucide:heart'" style="font-size: 18px"></iconify-icon>
+              <span>{{ post.likesCount }}</span>
+            </button>
+            <div class="action-btn">
+              <iconify-icon icon="lucide:message-circle" style="font-size: 18px"></iconify-icon>
+              <span>{{ post.commentsCount }}</span>
+            </div>
+          </div>
+          
+          <div class="secondary-actions">
+            @if (post.isOwner) {
+              <button class="edit-btn" (click)="onEdit()" title="Edit Post">
+                <iconify-icon icon="lucide:edit" style="font-size: 18px"></iconify-icon>
+                <span>Edit</span>
+              </button>
+            }
+            
+            <button class="share-btn" (click)="sharePost()">
+              <iconify-icon icon="lucide:share-2" style="font-size: 18px"></iconify-icon>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Comments -->
+      <div class="comments-section">
+        <app-comments-modal 
+          [postId]="post.id" 
+          [isInline]="true"
+          [onCommentAdded]="handleCommentAdded"
+          [onCommentDeleted]="handleCommentDeleted"
+        ></app-comments-modal>
+      </div>
+    </div>
+  } @else {
+    @if (loading()) {
+      <div class="loading-overlay">
+        <iconify-icon icon="lucide:loader-2" class="spin-icon" style="font-size: 48px; color: #fab4c6;"></iconify-icon>
+        <p>Loading outfit details...</p>
+      </div>
+    } @else {
+      <div class="loading-overlay">
+        <iconify-icon icon="lucide:alert-circle" style="font-size: 48px; color: #e53e3e;"></iconify-icon>
+        <p>We couldn't find this post. It might have been removed.</p>
+        <button class="back-btn" (click)="onBack()" style="margin-top: 16px; width: auto; padding: 0 20px;">
+          Go Back
+        </button>
+      </div>
+    }
+  }
+</div>

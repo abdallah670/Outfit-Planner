@@ -13,6 +13,7 @@ public class GetFollowingQuery : IRequest<CursorPagination.CursorPagedResult<Fol
     public string? Cursor { get; set; }
     public int PageSize { get; set; } = 20;
     public string? RequesterId { get; set; }
+     public string? SearchQuery { get; set; }
 }
 
 /// <summary>

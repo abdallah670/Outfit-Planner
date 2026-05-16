@@ -45,7 +45,8 @@ public class CreateOutfitPostCommandHandler : IRequestHandler<CreateOutfitPostCo
             Tags = request.Tags,
             Visibility = request.Visibility,
             LikesCount = 0,
-            CommentsCount = 0
+            CommentsCount = 0,
+            
         };
 
         await _feedPostRepository.AddAsync(feedPost);

@@ -9,4 +9,6 @@ public class UpdateOutfitPostDto
 {
     public string? Caption { get; set; }
     public Visibility Visibility { get; set; }
+    public List<string> Tags { get; set; }
+    public Guid OutfitId { get; set; }
 }

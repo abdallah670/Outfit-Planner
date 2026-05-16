@@ -704,7 +704,7 @@ public class DataSeeder
                 Id = Guid.NewGuid(),
                 OutfitId = outfits[i].Id,
                 PollId = poll?.Id ?? Guid.Empty,
-                VoteCount = random.Next(10, 200),
+             
                
                 TrendingScore = random.Next(50, 100) / 10.0m,
                 RankPosition = i + 1,

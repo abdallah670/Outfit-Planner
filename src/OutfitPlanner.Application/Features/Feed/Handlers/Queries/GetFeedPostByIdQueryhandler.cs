@@ -31,11 +31,19 @@ public class GetFeedPostByIdQueryHandler : IRequestHandler<GetFeedPostByIdQuery,
                 // If found by PollId, we still want the full details
                 post = await _unitOfWork.FeedPosts.GetByIdWithDetailsAsync(post.Id);
             }
+            else
+            {
+                // Try searching by OutfitId
+                post = await _unitOfWork.FeedPosts.GetByOutfitIdAsync(request.PostId);
+                if (post != null)
+                {
+                    post = await _unitOfWork.FeedPosts.GetByIdWithDetailsAsync(post.Id);
+                }
+            }
         }
 
         if (post == null) return null;
-
-
+        
         var postDto =new GetFeedPostByIdDto
         {
             Id = post.Id,
@@ -51,6 +59,7 @@ public class GetFeedPostByIdQueryHandler : IRequestHandler<GetFeedPostByIdQuery,
             Visibility = post.Visibility,
             LikesCount = post.LikesCount,
             CommentsCount = post.CommentsCount,
+            Tags = post.Tags,
             CreatedAt = post.CreatedAt
         };
         if (postDto.Poll != null)
@@ -94,6 +103,13 @@ public class GetFeedPostByIdQueryHandler : IRequestHandler<GetFeedPostByIdQuery,
         {
             var IsLiked = await _unitOfWork.PostReactions.HasReactionAsync(request.PostId, request.RequesterId);
             postDto.IsLiked = IsLiked;
+        }
+
+        // Get tagged users
+        if (post.Tags != null && post.Tags.Any())
+        {
+            var taggedUsers = await _unitOfWork.Users.GetTaggedUsersAsync(post.Tags);
+            postDto.TaggedUsers = _mapper.Map<List<TaggedUserDto>>(taggedUsers);
         }
         
        // Load comments

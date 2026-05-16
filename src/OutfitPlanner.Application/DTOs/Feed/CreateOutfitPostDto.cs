@@ -8,4 +8,7 @@ public class CreateOutfitPostDto
     public Guid OutfitId { get; set; }
     public string? Caption { get; set; }
     public Visibility Visibility { get; set; } = Visibility.Public;
+    public List<string> Tags { get; set; }   
 }
+
+   

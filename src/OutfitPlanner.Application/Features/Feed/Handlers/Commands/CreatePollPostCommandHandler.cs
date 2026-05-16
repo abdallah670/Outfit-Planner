@@ -88,7 +88,7 @@ public class CreatePollPostCommandHandler : IRequestHandler<CreatePollPostComman
                 Visibility = request.Visibility,
                 LikesCount = 0,
                 CommentsCount = 0,
-                CreatedAt = DateTimeOffset.UtcNow
+                CreatedAt = DateTimeOffset.UtcNow,
             };
 
             await _unitOfWork.FeedPosts.AddAsync(feedPost);

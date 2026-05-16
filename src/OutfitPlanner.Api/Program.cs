@@ -187,12 +187,13 @@ if (!hasGoogleOAuth && !hasFacebookOAuth)
 
 var app = builder.Build();
 
+// Apply CORS before logging and exceptions to ensure headers are present on error responses
+app.UseCors("AllowAll");
+
 // Add Request Logging Middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 
-// Apply CORS before HTTPS redirection to handle preflight requests properly
-app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
