@@ -10,7 +10,8 @@ public enum ClothingType
     Accessory,
     Undergarment,
     Swimwear,
-    Activewear
+    Activewear,
+    Other
 }
 
 public enum OccasionType
@@ -22,7 +23,8 @@ public enum OccasionType
     Social,
     Work,
     Date,
-    Travel
+    Travel,
+    Other
 }
 
 public enum Season
@@ -44,7 +46,7 @@ public enum StylePreference
     Athleisure,
     Eclectic,
     Vintage,
-    
+    Other
 }
 
 public enum PrivacyLevel
@@ -61,20 +63,8 @@ public enum ItemRole
     Accent
 }
 
-public enum PollStatus
-{
-    Active,
-    Closed,
-    Expired,
-    Featured
-}
 
-public enum OutfitStatus
-{
-    Active,
-    Archived,
-    Deleted
-}
+
 
 public enum FabricType
 {
@@ -100,7 +90,8 @@ public enum CalendarEventType
     Party,
     Sport,
     Travel,
-    Appointment
+    Appointment,
+    Other
 }
 public enum RecurrenceType
 {
@@ -128,6 +119,12 @@ public enum ReactionType{
     Wow,
     Sad,
     Angry
+}
+public enum PollStatus
+{
+    Active,
+    Closed,
+    Expired
 }
 
 public enum UserRole

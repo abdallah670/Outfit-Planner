@@ -20,6 +20,7 @@ public class PostComment : BaseEntity
     public string Content { get; set; } = string.Empty;
     
     public bool IsDeleted { get; set; }
+    public int TotalReplies { get; set; }
     
     public ICollection<PostComment> Replies { get; set; } = new List<PostComment>();
 }

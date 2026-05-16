@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { FeedPost, PostType } from '../../../../domain/entities/feed.entity';
+import { FeedPost, PostType, Visibility } from '../../../../domain/entities/feed.entity';
+
 import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
 import { TrendingUseCases } from '../../../../domain/usecases/trending.usecases';
 import { FollowUseCases } from '../../../../domain/usecases/follow.usecases';
@@ -195,7 +196,8 @@ export class CommunityFeedComponent implements OnInit {
         feedback: []
       },
       tags: [],
-      visibility: 0,
+      visibility: Visibility.Public,
+
     
     };
   }

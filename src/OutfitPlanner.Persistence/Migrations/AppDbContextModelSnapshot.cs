@@ -828,6 +828,9 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("TotalReplies")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -979,9 +982,6 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<decimal>("TrendingScore")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("VoteCount")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

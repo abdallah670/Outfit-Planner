@@ -4,17 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CommandResponse } from '../../domain/entities/response.entity';
 import { FeedPost } from '../../domain/entities/feed.entity';
+import { CreateOutfitPostRequest, UpdateOutfitPostRequest } from '../../domain/entities/outfitpost.entity';
 
-export interface CreateOutfitPostRequest {
-  outfitId: string;
-  caption?: string;
-  visibility: number;
-}
-
-export interface UpdateOutfitPostRequest {
-  caption?: string;
-  visibility: number;
-}
 
 @Injectable({
   providedIn: 'root',

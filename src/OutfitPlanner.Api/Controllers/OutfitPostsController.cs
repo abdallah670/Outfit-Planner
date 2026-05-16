@@ -40,7 +40,8 @@ public class OutfitPostsController : ControllerBase
             UserId = userId,
             OutfitId = request.OutfitId,
             Caption = request.Caption,
-            Visibility = request.Visibility
+            Visibility = request.Visibility,
+            Tags = request.Tags
         };
         
         var response = await _mediator.Send(command);
@@ -80,7 +81,8 @@ public class OutfitPostsController : ControllerBase
             PostId = id,
             UserId = userId,
             Caption = request.Caption,
-            Visibility = request.Visibility
+            Visibility = request.Visibility,
+            Tags = request.Tags
         };
         
         var response = await _mediator.Send(command);

@@ -1,15 +1,17 @@
 /**
  * Outfit post entity
  */
-export interface OutfitPost {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar: string;
+
+export interface CreateOutfitPostRequest {
   outfitId: string;
-  outfitName: string;
-  outfitImageUrl: string;
-  likes: number;
-  comments: number;
-  createdAt: Date;
+  caption?: string;
+  tags?: string[];
+  visibility: number;
+}
+
+export interface UpdateOutfitPostRequest {
+  outfitId?: string;
+  caption?: string;
+  visibility: number;
+  tags?: string[];
 }

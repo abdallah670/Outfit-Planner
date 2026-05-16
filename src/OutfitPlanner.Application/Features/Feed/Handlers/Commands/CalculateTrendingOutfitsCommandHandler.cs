@@ -54,9 +54,8 @@ public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateT
                     OutfitId = feedPost.OutfitId ?? Guid.Empty,
                     PollId = feedPost.PollId,
                     TrendingScore = score,
-                    VoteCount = feedPost.Reactions.Count,  // Reactions include likes and votes
-                    LikesCount = feedPost.Reactions.Count,
-                    CommentsCount = feedPost.Comments.Count,
+                    LikesCount = feedPost.LikesCount,
+                    CommentsCount = feedPost.CommentsCount,
                     Date = date,
                     RankPosition = 0
                 });
@@ -91,8 +90,8 @@ public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateT
     {
         // Unified engagement scoring for both outfit and poll posts
         // Votes on polls create PostReactions, so they're counted in Reactions.Count
-        var reactionCount = feedPost.Reactions?.Count ?? 0;  // Likes or votes
-        var CommentsCount = feedPost.Comments?.Count ?? 0;
+        var reactionCount = feedPost.LikesCount;  // Likes or votes
+        var CommentsCount = feedPost.CommentsCount;  // Comments count
         
         // Scoring weights:
         // - Reactions (likes/votes): 5 points each

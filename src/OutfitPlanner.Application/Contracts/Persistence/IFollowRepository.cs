@@ -15,10 +15,10 @@ public interface IFollowRepository : IGenericRepository<Follow>
     /// <summary>
     /// Get followers with cursor-based pagination
     /// </summary>
-    Task<CursorPagination.CursorPagedResult<Follow>> GetFollowersCursorAsync(string userId, string? cursor, int pageSize);
+    Task<CursorPagination.CursorPagedResult<Follow>> GetFollowersCursorAsync(string userId, string? cursor, int pageSize, string? searchQuery = null);
     
     /// <summary>
     /// Get following with cursor-based pagination
     /// </summary>
-    Task<CursorPagination.CursorPagedResult<Follow>> GetFollowingCursorAsync(string userId, string? cursor, int pageSize);
+    Task<CursorPagination.CursorPagedResult<Follow>> GetFollowingCursorAsync(string userId, string? cursor, int pageSize, string? searchQuery = null);
 }

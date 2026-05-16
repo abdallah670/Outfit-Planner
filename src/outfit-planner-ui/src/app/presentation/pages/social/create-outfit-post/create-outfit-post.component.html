@@ -1,238 +1,142 @@
 <div class="create-outfit-post-page">
-  <!-- Header -->
-  <div class="page-header">
-    <h2 class="page-title">Share to Feed</h2>
-    <button mat-icon-button (click)="onCancel()" aria-label="Close">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-
-  <!-- Tab Navigation -->
-  <div class="tab-nav">
-    <button
-      type="button"
-      class="tab-btn"
-      [class.active]="activeTab() === 'select'"
-      (click)="setTab('select')">
-      <mat-icon>checkroom</mat-icon>
-      Select Existing
-    </button>
-    <button
-      type="button"
-      class="tab-btn"
-      [class.active]="activeTab() === 'create'"
-      (click)="setTab('create')">
-      <mat-icon>add</mat-icon>
-      Create New
-    </button>
-  </div>
-
-  <!-- TAB 1: Select Existing Outfit -->
-  <div *ngIf="activeTab() === 'select'" class="tab-content">
-    <!-- Search -->
-    <div class="search-box">
-      <mat-icon>search</mat-icon>
-      <input
-        type="text"
-        placeholder="Search outfits..."
-        [value]="searchQuery()"
-        (input)="onSearchChange($any($event).target.value)">
-    </div>
-
-    <!-- Outfit Grid -->
-    <div class="outfits-grid">
-      <div
-        *ngFor="let outfit of filteredOutfits()"
-        class="outfit-card"
-        [class.selected]="isOutfitSelected()(outfit.id)"
-        (click)="selectOutfit(outfit.id)">
-        <div class="outfit-image">
-          <img
-            [src]="outfit.imageUrl || 'assets/placeholder.jpg'"
-            [alt]="outfit.name"
-            loading="lazy">
-          <div class="selection-indicator" *ngIf="isOutfitSelected()(outfit.id)">
-            <mat-icon>check_circle</mat-icon>
-          </div>
-        </div>
-        <div class="outfit-info">
-          <span class="outfit-name">{{ outfit.name }}</span>
-          <span class="outfit-occasion" *ngIf="outfit.category">{{ outfit.category }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="filteredOutfits().length === 0" class="empty-state">
-      <mat-icon>checkroom</mat-icon>
-      <p>No outfits found</p>
-      <button mat-button color="primary" (click)="setTab('create')">
-        Create your first outfit
-      </button>
-    </div>
-  </div>
-
-  <!-- TAB 2: Create New Outfit -->
-  <div *ngIf="activeTab() === 'create'" class="tab-content">
-    <!-- Create Mode Toggle -->
-    <div class="create-mode-toggle">
-      <button
-        type="button"
-        class="mode-btn"
-        [class.active]="createMode() === 'photo'"
-        (click)="setCreateMode('photo')">
-        <mat-icon>photo_camera</mat-icon>
-        Upload Photo
-      </button>
-      <button
-        type="button"
-        class="mode-btn"
-        [class.active]="createMode() === 'items'"
-        (click)="setCreateMode('items')">
-        <mat-icon>layers</mat-icon>
-        Build from Items
-      </button>
-    </div>
-
-<!-- MODE 1: Photo Upload -->
-     <div *ngIf="createMode() === 'photo'" class="photo-upload-section">
-       <div
-         class="upload-area"
-         [class.has-preview]="photoPreviewUrl()"
-         (click)="onUploadAreaClick()">
-
-         <input
-           id="fileInput"
-           #fileInput
-           type="file"
-           accept="image/jpeg,image/png,image/webp"
-           (change)="onFileSelected($event)"
-           hidden>
-
-         <ng-container *ngIf="!photoPreviewUrl()">
-           <mat-icon>cloud_upload</mat-icon>
-           <p class="upload-text">Click to upload outfit photo</p>
-           <p class="upload-hint">JPEG, PNG or WebP (max 5MB)</p>
-         </ng-container>
-
-         <ng-container *ngIf="photoPreviewUrl()">
-           <img [src]="photoPreviewUrl()" alt="Outfit preview" class="preview-image">
-           <button
-             type="button"
-             class="remove-photo-btn"
-             (click)="$event.stopPropagation(); removePhoto()">
-             <mat-icon>close</mat-icon>
-           </button>
-         </ng-container>
-       </div>
-     </div>
-
-    <!-- MODE 2: Build from Items -->
-    <div *ngIf="createMode() === 'items'" class="items-section">
-      <p class="section-hint">Select clothing items to combine:</p>
-
-      <div class="clothing-items-grid">
-        <div
-          *ngFor="let item of mockClothingItems"
-          class="clothing-item"
-          [class.selected]="isItemSelected(item.id)"
-          (click)="toggleClothingItem(item.id)">
-          <img
-            [src]="item.imageUrl || 'assets/placeholder.jpg'"
-            [alt]="item.name"
-            loading="lazy">
-          <div class="item-overlay" *ngIf="isItemSelected(item.id)">
-            <mat-icon>check</mat-icon>
-          </div>
-          <span class="item-name">{{ item.name }}</span>
-          <span class="item-type">{{ item.type }}</span>
-        </div>
-      </div>
-
-      <div *ngIf="mockClothingItems.length === 0" class="empty-items">
-        <mat-icon>wardrobe</mat-icon>
-        <p>No clothing items in your wardrobe</p>
-        <p class="hint">Add items to your wardrobe first</p>
-      </div>
-
-      <div class="selected-count" *ngIf="selectedClothingItems.length > 0">
-        {{ selectedClothingItems.length }} item(s) selected
-      </div>
-    </div>
-
-    <!-- Outfit Name (Create mode only) -->
-    <div class="form-section">
-      <label class="form-label">Outfit Name</label>
-      <input
-        class="form-input"
-        type="text"
-        placeholder="e.g., Weekend Casual"
-        minlength="2"
-        required>
-    </div>
-  </div>
-
-  <!-- Caption (always visible) -->
-  <div class="form-section">
-    <label class="form-label">Caption</label>
-    <div class="input-simulation textarea">
-      <span class="placeholder-text" *ngIf="!captionValue">Write a caption for your outfit...</span>
-      <span class="text-value">{{ captionValue }}</span>
-    </div>
-    <textarea
-      class="form-textarea"
-      [value]="captionValue"
-      (input)="captionValue = $any($event.target).value"
-      maxlength="500"
-      rows="3"
-      placeholder="Write a caption for your outfit...">
-    </textarea>
-    <div class="char-count">{{ captionValue.length }}/500</div>
-  </div>
-
-  <!-- Privacy -->
-  <div class="form-section">
-    <label class="form-label">Privacy</label>
-    <div class="privacy-select">
-      <div
-        class="privacy-option"
-        *ngFor="let option of visibilityOptions"
-        [class.active]="selectedVisibility === option.value"
-        (click)="selectedVisibility = option.value">
-        <span class="privacy-label">{{ option.label }}</span>
-        <mat-icon *ngIf="selectedVisibility === option.value" class="check-icon">check_circle</mat-icon>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tag Friends -->
-  <div class="form-section">
-    <label class="form-label">Tag Friends</label>
-    <div class="tags-container">
-      <div class="tag-badge" *ngFor="let tag of tagFriends; let i = index">
-        <span>{{ tag }}</span>
-        <span class="tag-close" (click)="removeTag(i)">
+  <div class="content-wrapper">
+    <!-- Left Column: Creation Controls -->
+    <div class="creation-controls" [formGroup]="outfitPostForm">
+      <header class="section-header">
+        <h2 class="section-title">{{ isEditMode() ? 'Edit Outfit Post' : 'Share to Feed' }}</h2>
+        <button mat-icon-button (click)="onCancel()" aria-label="Close">
           <mat-icon>close</mat-icon>
-        </span>
+        </button>
+      </header>
+
+      <!-- Photo Upload -->
+      <div class="photo-upload-section">
+        <div class="upload-area" [class.has-preview]="photoPreviewUrl()"
+          (click)="!photoPreviewUrl() && fileInput.click()">
+          <input id="fileInput" #fileInput type="file" accept="image/jpeg,image/png,image/webp"
+            (change)="onFileSelected($event)" hidden>
+          <ng-container *ngIf="!photoPreviewUrl()">
+            <mat-icon>cloud_upload</mat-icon>
+            <p class="upload-text">Click to upload outfit photo</p>
+            <p class="upload-hint">JPEG, PNG or WebP (max 5MB)</p>
+          </ng-container>
+
+          <ng-container *ngIf="photoPreviewUrl()">
+            <img [src]="photoPreviewUrl()" alt="Outfit preview" class="preview-image">
+            <button type="button" class="remove-photo-btn" (click)="$event.stopPropagation(); removePhoto()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Common Fields -->
+      <div class="form-section">
+        <label class="form-label">Caption</label>
+        <textarea class="form-textarea" formControlName="caption" maxlength="500"
+          placeholder="Share the story behind this look...">
+        </textarea>
+      </div>
+
+      <div class="form-section">
+        <label class="form-label">Tag Followers</label>
+        <div class="tag-input-container">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" class="form-input" placeholder="Search followers..." [value]="tagSearchQuery()"
+            (input)="onTagSearchChange($any($event).target.value)" />
+        </div>
+
+        <!-- Tag search dropdown -->
+        <div class="tag-dropdown" *ngIf="showTagDropdown() && filteredFollowers().length > 0">
+          <div *ngFor="let follower of filteredFollowers()" class="tag-option" (click)="tagUser(follower)">
+            <img [src]="follower.userAvatarUrl || 'assets/default-avatar.png'" [alt]="follower.userName"
+              class="follower-avatar">
+            <span class="follower-name">{{ follower.userName }}</span>
+          </div>
+        </div>
+
+        <!-- Selected tags -->
+        <div class="tagged-users-container" *ngIf="taggedUsers().length > 0">
+          <div *ngFor="let user of taggedUsers()" class="user-tag">
+            <span>{{ user.userName }}</span>
+            <mat-icon class="remove-tag" (click)="removeTag(user.userId)">close</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label class="form-label">Visibility</label>
+        <div class="privacy-select">
+          <div *ngFor="let option of visibilityOptions" class="privacy-option"
+            [class.active]="outfitPostForm.get('visibility')?.value === option.value"
+            (click)="outfitPostForm.get('visibility')?.setValue(option.value)">
+            <span>{{ option.label }}</span>
+            <mat-icon *ngIf="outfitPostForm.get('visibility')?.value === option.value">check_circle</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-outline" (click)="onCancel()">Cancel</button>
+        <button class="btn btn-primary" [disabled]="!canPost()" (click)="onSubmit()">
+          <mat-icon>{{ isEditMode() ? 'save' : 'send' }}</mat-icon>
+          {{ isEditMode() ? 'Update Post' : 'Share Post' }}
+        </button>
       </div>
     </div>
-  </div>
 
-  <!-- Action Buttons -->
-  <div class="action-buttons">
-    <button class="btn btn-outline" (click)="onCancel()">Cancel</button>
-    <button
-      class="btn btn-primary"
-      [disabled]="!canPost()"
-      (click)="onSubmit()">
-      <mat-icon>send</mat-icon>
-      Share Post
-    </button>
-  </div>
+    <!-- Right Column: Live Preview -->
+    <div class="post-preview-panel">
+      <div class="preview-card">
+        <div class="preview-header">
+          <span class="preview-label">LIVE PREVIEW</span>
+        </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading$ | async" class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-    <p>Creating your post...</p>
+        <div class="preview-content">
+          <div class="preview-image-wrapper">
+            @if (photoPreviewUrl()) {
+            <img [src]="photoPreviewUrl()" class="main-preview-img">
+            } @else {
+            <div class="empty-preview">
+              <mat-icon>image</mat-icon>
+              <p>Upload a photo to preview</p>
+            </div>
+            }
+          </div>
+
+          <div class="preview-info">
+            <div class="preview-author">
+              <div class="avatar">
+                <img [src]="currentUser()?.avatarUrl || 'assets/default-avatar.png'" alt="">
+              </div>
+              <div class="author-details">
+                <span class="author-name">{{ currentUser()?.userName }}</span>
+                <span class="post-meta">Just now • {{ outfitPostForm.get('visibility')?.value === 2 ? 'Public' :
+                  (outfitPostForm.get('visibility')?.value === 1 ? 'Followers' : 'Private') }}</span>
+              </div>
+            </div>
+
+          
+
+            <p class="preview-caption" [class.empty]="!outfitPostForm.get('caption')?.value">
+              {{ outfitPostForm.get('caption')?.value || 'Your caption will appear here...' }}
+            </p>
+            <div class="tags-container">
+              @for (tag of taggedUsers(); track tag.userId) {
+              <span class="tag">@{{ tag.userName }}</span>
+              }
+            </div>
+
+          </div>
+        </div>
+
+        <div class="preview-footer">
+          <div class="interaction-mock">
+            <mat-icon>favorite_border</mat-icon>
+            <mat-icon>chat_bubble_outline</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

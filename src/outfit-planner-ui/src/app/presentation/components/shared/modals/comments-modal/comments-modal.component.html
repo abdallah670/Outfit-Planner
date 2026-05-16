@@ -93,7 +93,7 @@
                 <div class="replies-container">
                   <button class="toggle-replies-btn" (click)="toggleShowReplies(comment.id)">
                     <iconify-icon [icon]="areRepliesExpanded(comment.id) ? 'lucide:chevron-up' : 'lucide:chevron-down'" style="font-size: 14px"></iconify-icon>
-                    <span>{{ areRepliesExpanded(comment.id) ? 'Hide' : 'Show' }} {{ comment.replies.length }} {{ comment.replies.length === 1 ? 'reply' : 'replies' }}</span>
+                    <span>{{ areRepliesExpanded(comment.id) ? 'Hide' : 'Show' }} {{ comment.totalReplies }} {{ comment.totalReplies === 1 ? 'reply' : 'replies' }}</span>
                   </button>
 
                   @if (areRepliesExpanded(comment.id)) {

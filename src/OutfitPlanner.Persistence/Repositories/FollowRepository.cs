@@ -56,12 +56,20 @@ public class FollowRepository : GenericRepository<Follow>, IFollowRepository
             .CountAsync(f => f.FollowerId == userId);
     }
 
-    public async Task<CursorPagination.CursorPagedResult<Follow>> GetFollowersCursorAsync(string userId, string? cursor, int pageSize)
+    public async Task<CursorPagination.CursorPagedResult<Follow>> GetFollowersCursorAsync(string userId, string? cursor, int pageSize, string? searchQuery = null)
     {
         var query = _dbSet
             .Include(f => f.Follower)
             .Where(f => f.FollowedId == userId)
             .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            var searchLower = searchQuery.ToLower();
+            query = query.Where(f => f.Follower != null && 
+                (f.Follower.UserName!.ToLower().Contains(searchLower) || 
+                 f.Follower.Name!.ToLower().Contains(searchLower)));
+        }
 
         // Apply cursor filter if provided
         if (!string.IsNullOrEmpty(cursor))
@@ -103,12 +111,19 @@ public class FollowRepository : GenericRepository<Follow>, IFollowRepository
         };
     }
 
-    public async Task<CursorPagination.CursorPagedResult<Follow>> GetFollowingCursorAsync(string userId, string? cursor, int pageSize)
+    public async Task<CursorPagination.CursorPagedResult<Follow>> GetFollowingCursorAsync(string userId, string? cursor, int pageSize, string? searchQuery = null)
     {
         var query = _dbSet
             .Include(f => f.Followed)
             .Where(f => f.FollowerId == userId)
             .AsQueryable();
+         if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            var searchLower = searchQuery.ToLower();
+            query = query.Where(f => f.Followed != null && 
+                (f.Followed.UserName!.ToLower().Contains(searchLower) || 
+                 f.Followed.Name!.ToLower().Contains(searchLower)));
+        }
 
         // Apply cursor filter if provided
         if (!string.IsNullOrEmpty(cursor))

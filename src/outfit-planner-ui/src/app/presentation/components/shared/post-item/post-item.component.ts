@@ -141,10 +141,10 @@ export class PostItemComponent {
   }
 
   viewPostDetail(): void {
-    if (this.post.postType === PostType.Poll && this.post.pollId) {
-      this.router.navigate(['/social/polls', this.post.pollId]);
-    } else if (this.post.outfitId) {
-      this.router.navigate(['/outfits', this.post.outfitId]);
+    if (this.post.postType === PostType.Poll) {
+      this.router.navigate(['/social/polls', this.post.id]);
+    } else {
+      this.router.navigate(['/social/posts', this.post.id]);
     }
   }
 

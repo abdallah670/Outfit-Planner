@@ -32,6 +32,8 @@ public class FeedController : ControllerBase
     /// Get Posts
     /// </summary>
     [HttpGet]
+    [AllowAnonymous]
+
     public async Task<ActionResult<CursorPagination.CursorPagedResult<FeedPostDto>>> GetFeedPosts(
         [FromQuery] string? cursor = null,
         [FromQuery] int pageSize = 20,
@@ -43,7 +45,7 @@ public class FeedController : ControllerBase
     {
         var query = new GetFeedQuery 
         { 
-            UserId = GetUserId(), 
+            UserId = User.Identity?.IsAuthenticated == true ? GetUserId() : null, 
             Cursor = cursor, 
             PageSize = pageSize,
             SortBy = sortBy ?? "recent",
@@ -51,6 +53,8 @@ public class FeedController : ControllerBase
             PostType = postType,
             FollowingOnly = followingOnly
         };
+
+
 
         
         var posts = await _mediator.Send(query);

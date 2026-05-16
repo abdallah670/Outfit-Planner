@@ -229,7 +229,6 @@ public class MappingProfile : Profile
             .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Outfit.UserId))
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
             .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.Outfit.User.ProfilePictureUrl))
-            .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.VoteCount))
             .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.CommentsCount))
             .ForMember(d => d.TrendingScore, opt => opt.MapFrom(s => s.TrendingScore))
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.Date));
@@ -264,7 +263,14 @@ CreateMap<PostComment, PostCommentDto>()
     .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Name))
     .ForMember(d => d.UserAvatarUrl, opt => opt.MapFrom(s => s.User.ProfilePictureUrl))
     .ForMember(d => d.Replies, opt => opt.MapFrom(s => s.Replies)).
-    ForMember(d=>d.ParentCommentId, opt => opt.MapFrom(s => s.ParentCommentId.HasValue ? s.ParentCommentId.Value.ToString() : null));
+    ForMember(d=>d.ParentCommentId, opt => opt.MapFrom(s => s.ParentCommentId.HasValue ? s.ParentCommentId.Value.ToString() : null))
+    .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.CreatedAt))
+    .ForMember(d => d.TotalReplies, opt => opt.MapFrom(s => s.TotalReplies));
+
+CreateMap<User, TaggedUserDto>()
+    .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Id))
+    .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.UserName))
+    .ForMember(d => d.ProfilePictureUrl, opt => opt.MapFrom(s => s.ProfilePictureUrl));
      } 
 }
 

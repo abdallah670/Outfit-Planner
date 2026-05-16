@@ -24,18 +24,24 @@ export class FollowDataSource {
     return this.http.get<boolean>(`${this.apiUrl}/${userId}/isfollowing`);
   }
 
-  getFollowers(userId: string, cursor?: string, pageSize: number = 20): Observable<CursorPagedResult<Follower>> {
+  getFollowers(userId: string, cursor?: string, pageSize: number = 20,searchQuery?: string): Observable<CursorPagedResult<Follower>> {
     let params = new HttpParams().set('pageSize', pageSize.toString());
     if (cursor) {
       params = params.set('cursor', cursor);
     }
+    if (searchQuery) {
+      params = params.set('searchQuery', searchQuery);
+    }
     return this.http.get<CursorPagedResult<Follower>>(`${this.apiUrl}/${userId}/followers`, { params });
   }
 
-  getFollowing(userId: string, cursor?: string, pageSize: number = 20): Observable<CursorPagedResult<Following>> {
+  getFollowing(userId: string, cursor?: string, pageSize: number = 20,searchQuery?: string): Observable<CursorPagedResult<Following>> {
     let params = new HttpParams().set('pageSize', pageSize.toString());
     if (cursor) {
       params = params.set('cursor', cursor);
+    }
+    if (searchQuery) {
+      params = params.set('searchQuery', searchQuery);
     }
     return this.http.get<CursorPagedResult<Following>>(`${this.apiUrl}/${userId}/following`, { params });
   }

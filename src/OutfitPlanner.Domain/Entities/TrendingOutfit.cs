@@ -11,7 +11,7 @@ public class TrendingOutfit : BaseEntity
     public Guid? PollId { get; set; }
     public ValidationPoll? Poll { get; set; }
     
-    public int VoteCount { get; set; }
+    
     public int LikesCount { get; set; }
     public int CommentsCount { get; set; }
     public decimal TrendingScore { get; set; }

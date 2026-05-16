@@ -27,6 +27,7 @@ import { PublicProfileComponent } from './presentation/pages/public-profile/publ
 import { MyPollsComponent } from './presentation/pages/social/my-polls/my-polls.component';
 import { EditPollComponent } from './presentation/pages/social/edit-poll/edit-poll.component';
 import { CreateOutfitPostComponent } from './presentation/pages/social/create-outfit-post/create-outfit-post.component';
+import { OutfitPostDetailComponent } from './presentation/pages/social/outfit-post-detail/outfit-post-detail.component';
 
 import { AdminLayoutComponent } from './presentation/layouts/admin-layout/admin-layout.component';
 import { AdminDashboardComponent } from './presentation/pages/admin/dashboard/admin-dashboard.component';
@@ -69,6 +70,8 @@ export const routes: Routes = [
   { path: 'social/polls/:id/edit', component: EditPollComponent, canActivate: [authGuard] },
   { path: 'social/my-polls', component: MyPollsComponent, canActivate: [authGuard] },
   { path: 'social/create-post', component: CreateOutfitPostComponent, canActivate: [authGuard] },
+  { path: 'social/posts/:id', component: OutfitPostDetailComponent, canActivate: [authGuard] },
+  { path: 'social/posts/:id/edit', component: CreateOutfitPostComponent, canActivate: [authGuard] },
 
   { path: 'search', component: GlobalSearchComponent, canActivate: [authGuard] },
   { path: 'notifications', component: NotificationsCenterComponent },

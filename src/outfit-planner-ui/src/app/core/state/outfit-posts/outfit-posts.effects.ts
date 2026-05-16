@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { OutfitPostsActions } from './outfit-posts.actions';
 import { catchError, map, mergeMap, of, Observable, tap } from 'rxjs';
-import { OutfitPostsUseCases } from '../../../domain/usecases/outfit-posts.usecases';
+import { OutfitPostUseCases } from '../../../domain/usecases/outfit-posts.usecases';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FeedPost, PostType } from '../../../domain/entities/feed.entity';
 import { CommandResponse } from '../../../domain/entities/response.entity';
@@ -11,7 +11,7 @@ import { CommandResponse } from '../../../domain/entities/response.entity';
 @Injectable()
 export class OutfitPostsEffects {
   private actions$ = inject(Actions);
-  private outfitPostsUseCases = inject(OutfitPostsUseCases);
+  private outfitPostsUseCases = inject(OutfitPostUseCases);
   private snackBar = inject(MatSnackBar);
 
   createOutfitPost$ = createEffect(() =>
