@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, inject, signal, CUSTOM_ELEMENTS_SCHEMA, HostListener, ViewContainerRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
@@ -9,6 +9,8 @@ import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CursorPagedResult } from '../../../../domain/entities/response.entity';
 import { CommentsModalComponent } from '../../../components/shared/modals/comments-modal/comments-modal.component';
+import Swal from 'sweetalert2';
+import { VotersModalComponent } from '../../../components/shared/modals/voters-modal/voters-modal.component';
 
 @Component({
   selector: 'app-poll-detail',
@@ -19,6 +21,7 @@ import { CommentsModalComponent } from '../../../components/shared/modals/commen
     FormsModule,
     RouterModule,
     CommentsModalComponent,
+    VotersModalComponent,
   ],
   templateUrl: './poll-detail.component.html',
   styleUrls: ['./poll-detail.component.scss'],
@@ -34,6 +37,7 @@ export class PollDetailComponent implements OnInit {
   pollPost = signal<FeedPostWithComments | null>(null);
   postloading = false;
   loading = signal(true);
+  viewContainerRef = inject(ViewContainerRef);
 
   // Populated from FeedPost
   get poll(): Poll | null {
@@ -218,6 +222,23 @@ export class PollDetailComponent implements OnInit {
     return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
+  openVotersModal(event: Event): void {
+    event.stopPropagation();
+    if (!this.pollPost() || !this.pollPost()!.pollId) return;
+    const componentRef = this.viewContainerRef.createComponent(VotersModalComponent);
+    componentRef.instance.pollId = this.pollPost()!.pollId!;
+
+    const element = (componentRef.hostView as any).rootNodes[0] as HTMLElement;
+    Swal.fire({
+      html: element,
+      width: 500,
+      showConfirmButton: false,
+      background: 'transparent',
+      backdrop: true,
+      didOpen: () => componentRef.changeDetectorRef.detectChanges(),
+      willClose: () => componentRef.destroy()
+    });
+  }
   formatTimeAgo(date: Date): string {
     return this.getTimeAgo(date);
   }
@@ -245,6 +266,67 @@ export class PollDetailComponent implements OnInit {
 
   goToUserProfile(userId: string): void {
     this.router.navigate(['/profile', userId]);
+  }
+
+  isOwner(): boolean {
+    const post = this.pollPost();
+    if (!post) return false;
+    return post.userId === this.authService.currentUser()?.id;
+  }
+
+  showMenu = false;
+
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+  }
+
+  @HostListener('document:click')
+  closeMenu(): void {
+    this.showMenu = false;
+  }
+
+  editPost(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = false;
+    const post = this.pollPost();
+    if (post) {
+      this.router.navigate(['/social/polls', post.id, 'edit']);
+    }
+  }
+
+  deletePost(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = false;
+    const post = this.pollPost();
+    if (!post) return;
+
+    Swal.fire({
+      title: 'Delete Poll',
+      text: 'Are you sure you want to delete this poll?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+      confirmButtonColor: '#fab4c6',
+      cancelButtonColor: '#2d3748'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.feedUseCases.deletePost(post.id).subscribe({
+          next: () => {
+            Swal.fire('Deleted!', 'Your poll has been deleted.', 'success').then(() => {
+              this.router.navigate(['/social/feed']);
+            });
+          },
+          error: (error) => {
+            Swal.fire('Error!', error.message, 'error');
+          }
+        });
+      }
+    });
+  }
+  searchByTag(userId: string): void {
+    this.router.navigate(['/profile'], { queryParams: { q: userId } });
   }
 
   ngOnDestroy(): void {

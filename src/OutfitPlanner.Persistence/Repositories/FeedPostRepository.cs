@@ -148,17 +148,62 @@ public class FeedPostRepository : GenericRepository<FeedPost>, IFeedPostReposito
             .FirstOrDefaultAsync(p => p.PollId == pollId);
     }
 
-    public async Task<List<FeedPost>> GetUserPostsAsync(string userId, int page, int pageSize)
+    public async Task<CursorPagination.CursorPagedResult<FeedPost>> GetUserPostsAsync(string userId, string? cursor, int pageSize, PostType? postType = null)
     {
-        return await _dbSet
+        var query = _dbSet
             .Include(p => p.User)
             .Include(p => p.Outfit)
             .Include(p => p.Poll)
-            .Where(p => p.UserId == userId)
-            .OrderByDescending(p => p.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+                .ThenInclude(p => p!.Options)
+                    .ThenInclude(o => o.Outfit)
+            .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
+            .Include(p => p.Reactions)
+            .Where(p => p.UserId == userId);
+
+        if (postType.HasValue)
+        {
+            query = query.Where(p => p.PostType == postType.Value);
+        }
+
+        // Apply cursor filter if provided
+        if (!string.IsNullOrEmpty(cursor))
+        {
+            var cursorData = CursorPagination.DecodeCursor(cursor);
+            if (cursorData != null)
+            {
+                query = query.Where(p => p.CreatedAt < cursorData.CreatedAt || 
+                                        (p.CreatedAt == cursorData.CreatedAt && p.Id.CompareTo(cursorData.Id) < 0));
+            }
+        }
+
+        // Order by CreatedAt descending (consistent with cursor)
+        var orderedQuery = query.OrderByDescending(p => p.CreatedAt).ThenByDescending(p => p.Id);
+
+        // Take one extra to check if there's more
+        var posts = await orderedQuery
+            .Take(pageSize + 1)
             .ToListAsync();
+
+        // Check if there's more data
+        var hasMore = posts.Count > pageSize;
+        var items = hasMore ? posts.Take(pageSize).ToList() : posts;
+
+        // Generate next cursor
+        string? nextCursor = null;
+        if (hasMore && items.Any())
+        {
+            var lastItem = items.Last();
+            nextCursor = CursorPagination.CreateCursor(lastItem.CreatedAt, lastItem.Id);
+        }
+
+        return new CursorPagination.CursorPagedResult<FeedPost>
+        {
+            Items = items,
+            NextCursor = nextCursor,
+            HasMore = hasMore,
+            PageSize = pageSize
+        };
     }
 
 

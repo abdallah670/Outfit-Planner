@@ -43,6 +43,14 @@ export class FeedUseCases {
     return this.feedRepository.getUserFeed(userId, cursor, pageSize, postType);
   }
 
+  getMyPosts(
+    cursor?: string,
+    pageSize?: number,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>> {
+    return this.feedRepository.getMyPosts(cursor, pageSize, postType);
+  }
+
 
   getPostById(id: string): Observable<FeedPost> {
     return this.feedRepository.getPostById(id);

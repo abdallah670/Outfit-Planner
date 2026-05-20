@@ -10,10 +10,6 @@
          <mat-icon>edit</mat-icon>
          Edit Outfit
        </button>
-       <button mat-flat-button class="action-btn share-btn" (click)="onShareToFeed($any(outfit).id)">
-         <mat-icon>share</mat-icon>
-         Share to Feed
-       </button>
        <button
          mat-icon-button
          class="action-btn wear-btn"
@@ -98,31 +94,31 @@
           <button mat-stroked-button (click)="onEdit($any(outfit).id)">Add Items</button>
         </div>
       </ng-template>
-    <section class="community-feedback">
+    <section *ngIf="$any(outfit).feedPostId" class="community-feedback">
       <div class="section-header">
         <h2>Community Love</h2>
-        <span class="trending-badge">Trending #1</span>
+        <span class="trending-badge" *ngIf="$any(outfit).rank > 0">Trending #{{ $any(outfit).rank }}</span>
       </div>
       
       <div class="feedback-stats">
         <div class="stat-card">
           <mat-icon>favorite</mat-icon>
           <div class="stat-info">
-            <span class="value">1.2k</span>
+            <span class="value">{{ outfit.likesCount || 0 }}</span>
             <span class="label">Reactions</span>
           </div>
         </div>
         <div class="stat-card">
           <mat-icon>comment</mat-icon>
           <div class="stat-info">
-            <span class="value">84</span>
+            <span class="value">{{ outfit.commentsCount || 0 }}</span>
             <span class="label">Comments</span>
           </div>
         </div>
         <div class="stat-card highlight">
           <mat-icon>stars</mat-icon>
           <div class="stat-info">
-            <span class="value">98%</span>
+            <span class="value">{{outfit.score}}</span>
             <span class="label">Score</span>
           </div>
         </div>
@@ -130,7 +126,7 @@
       
       <div class="community-action">
         <p>This outfit is turning heads in the community feed!</p>
-        <button mat-flat-button [routerLink]="['/social']">Join the Validation</button>
+        <button mat-flat-button [routerLink]="outfit.postType === 'Poll' ? ['/social/polls', outfit.feedPostId] : ['/social/posts', outfit.feedPostId]">Join the Validation</button>
       </div>
     </section>
   </main>

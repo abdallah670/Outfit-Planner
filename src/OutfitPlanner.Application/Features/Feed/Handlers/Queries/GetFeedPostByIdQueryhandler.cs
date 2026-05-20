@@ -77,25 +77,26 @@ public class GetFeedPostByIdQueryHandler : IRequestHandler<GetFeedPostByIdQuery,
             postDto.IsFollowing = IsFollwed;
         }
         // Get user's votes with option details
-        if(post.PollId.HasValue && !string.IsNullOrEmpty(request.RequesterId)&&!postDto.IsOwner)
-        {  //user has only one vote per poll, so we can directly query for it
-            var userVote = await _unitOfWork.Votes.GetUserVote(request.RequesterId, post.PollId.Value);
-
-            if (userVote != null)
+        if (post.PollId.HasValue && postDto.Poll != null)
+        {
+            if (!string.IsNullOrEmpty(request.RequesterId))
             {
-                postDto.HasVoted = true;
-                postDto.Poll.UserVotedOptionId = userVote.OptionId;
-            }
-            //get options with vote counts
-            foreach (var option in postDto.Poll.Options)
-            {
-                var optionDto = postDto.Poll.Options.FirstOrDefault(o => o.Id == option.Id);
-                if (optionDto != null)
+                // user has only one vote per poll, so we can directly query for it
+                var userVote = await _unitOfWork.Votes.GetUserVote(request.RequesterId, post.PollId.Value);
+                if (userVote != null)
                 {
-                    optionDto.VoteCount = await _unitOfWork.Votes.CountAsync(v => v.OptionId == option.Id, cancellationToken);
+                    postDto.HasVoted = true;
+                    postDto.Poll.UserVotedOptionId = userVote.OptionId;
                 }
             }
-            
+
+            // Always get options with vote counts so they render correctly for everyone (owner and visitors alike!)
+            foreach (var option in postDto.Poll.Options)
+            {
+                option.VoteCount = await _unitOfWork.Votes.CountAsync(v => v.OptionId == option.Id, cancellationToken);
+            }
+            //total Votes count 
+            postDto.Poll.TotalVotes = postDto.Poll.Options.Sum(option => option.VoteCount);
         }
       
         // Get user's liked posts

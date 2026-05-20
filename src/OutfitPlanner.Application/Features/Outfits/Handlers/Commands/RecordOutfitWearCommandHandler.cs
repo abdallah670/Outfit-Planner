@@ -71,6 +71,8 @@ public class RecordOutfitWearCommandHandler : IRequestHandler<RecordOutfitWearCo
                     await _unitOfWork.WearEvents.AddAsync(itemWearEvent);
                 }
             }
+            //update last wore 
+        
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

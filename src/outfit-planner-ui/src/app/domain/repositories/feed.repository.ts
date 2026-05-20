@@ -18,8 +18,14 @@ export interface FeedRepository {
     followingOnly?: boolean
   ): Observable<CursorPagedResult<FeedPost>>;
 
- getUserFeed(
+  getUserFeed(
     userId: string,
+    cursor?: string,
+    pageSize?: number,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>>;
+
+  getMyPosts(
     cursor?: string,
     pageSize?: number,
     postType?: string

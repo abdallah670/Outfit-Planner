@@ -20,6 +20,11 @@ export class Register {
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
+  showPassword = signal(false);
+
+  togglePassword(): void {
+    this.showPassword.update(value => !value);
+  }
 
   registerForm = this.fb.nonNullable.group({
     firstName: ['', [Validators.required]],
@@ -53,17 +58,17 @@ export class Register {
     this.errorMessage.set(null);
 
     this.authService.register(this.registerForm.getRawValue()).subscribe({
-      next: () => {
+      next: (response) => {
         Swal.fire({
           icon: 'success',
           title: 'Account Created!',
-          text: 'Welcome to your new style sanctuary.',
-          timer: 2000,
+          text: 'Welcome! Please verify your email to activate your account.',
+          timer: 3000,
           showConfirmButton: false,
           position: 'top-end',
           toast: true,
         });
-        this.router.navigate(['/']);
+        this.router.navigate(['/verify-email'], { queryParams: { email: response.email || this.registerForm.value.email } });
       },
       error: (err: any) => {
         this.isLoading.set(false);

@@ -91,7 +91,7 @@ public class PollsController : ControllerBase
     /// Update an existing poll
     /// </summary>
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<BaseCommandResponse>> UpdatePoll(Guid id, [FromBody] UpdatePollPostDto request)
+    public async Task<ActionResult<ValidationPollDto>> UpdatePoll(Guid id, [FromBody] UpdatePollPostDto request)
     {
         var userId = GetUserId();
         var command = new UpdatePollPostCommand
@@ -111,7 +111,9 @@ public class PollsController : ControllerBase
         if (!response.Success)
             return BadRequest(response);
             
-        return Ok(response);
+        var query = new GetPollByIdRequest { Id = id };
+        var updatedPoll = await _mediator.Send(query);
+        return Ok(updatedPoll);
     }
 
     /// <summary>

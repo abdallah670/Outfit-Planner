@@ -228,6 +228,10 @@ export class PublicProfileComponent implements OnInit {
     this.activityPosts.update(posts => posts.map(p => p.id === updatedPost.id ? updatedPost : p));
   }
 
+  onPostDeleted(postId: string): void {
+    this.activityPosts.update(posts => posts.filter(p => p.id !== postId));
+  }
+
   toggleUserFollow(userId: string, event: Event, listType: 'followers' | 'following'): void {
     event.stopPropagation();
     const list = listType === 'followers' ? this.followersList : this.followingList;

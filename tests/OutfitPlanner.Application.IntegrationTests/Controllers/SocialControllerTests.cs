@@ -146,12 +146,12 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
     {
         await LoginTestUser();
 
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Which outfit looks better for a date?",
             Context = "Looking for suggestions for Friday night",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
                 new() { DisplayOrder = 1 },
                 new() {  DisplayOrder = 2 }
@@ -171,11 +171,11 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
     {
         await LoginTestUser();
 
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Which outfit looks better?",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
                 new() { DisplayOrder = 1 }
             }
@@ -190,11 +190,11 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
     {
         await LoginTestUser();
 
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Which outfit looks better?",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(-1), // Already expired
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
                 new() { DisplayOrder = 1 },
                 new() { DisplayOrder = 2 }
@@ -268,11 +268,11 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         await LoginTestUser();
 
         // Create an expired poll
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Expired Poll Test",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(-1), // Already expired
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
                 new() { DisplayOrder = 1 },
                 new() { DisplayOrder = 2 }
@@ -362,12 +362,12 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         await LoginTestUser();
 
         // Step 1: Create a poll
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Lifecycle Test Poll",
             Context = "Testing the full poll lifecycle",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
                 new() { DisplayOrder = 1 },
                 new() { DisplayOrder = 2 }
@@ -432,11 +432,11 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
 
     private async Task<Guid> CreateTestPoll(string question)
     {
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = question,
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
                 new() { DisplayOrder = 1 },
                 new() { DisplayOrder = 2 }

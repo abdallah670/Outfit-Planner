@@ -146,9 +146,6 @@ public class OutfitsController : ControllerBase
         { 
             UserId = userId, 
             Name = request.Name,
-            Occasion = request.Occasion,
-            Season = request.Season,
-            WeatherCondition = request.WeatherCondition,
             Photo = request.Photo
         };
         

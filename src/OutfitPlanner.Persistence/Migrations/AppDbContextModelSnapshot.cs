@@ -1074,7 +1074,6 @@ namespace OutfitPlanner.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Role")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")

@@ -1,4 +1,4 @@
-import { Visibility } from "./feed.entity";
+import { Visibility, TaggedUser } from "./feed.entity";
 
 /**
  * Represents a validation poll for outfit feedback
@@ -14,6 +14,8 @@ export interface Poll {
   totalVotes: number;
   userVotedOptionId?: string;
   createdAt: Date;
+  tags?: string[];
+  taggedUsers?: TaggedUser[];
 }
 
 /**
@@ -49,6 +51,7 @@ export interface CreatePollRequest {
   expiresAt: Date;
   visibility: Visibility;
   options: CreatePollOptionRequest[];
+  tags?: string[];
 }
 
 /**
@@ -59,6 +62,7 @@ export interface UpdatePollRequest {
   context?: string;
   expiresAt?: string;
   options?: CreatePollOptionRequest[];
+  tags?: string[];
 }
 
 /**

@@ -14,7 +14,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne()
             .HasForeignKey<UserStyleProfile>(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.Property(u => u.Role).IsRequired().HasConversion<string>();
+        builder.Property(u => u.Role).HasConversion<string>();
 
         builder.HasOne(u => u.Preferences)
             .WithOne()

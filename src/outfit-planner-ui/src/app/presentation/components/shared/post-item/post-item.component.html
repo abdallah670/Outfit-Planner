@@ -12,23 +12,49 @@
       </div>
     </div>
 
-    @if (post.postType === PostType.Poll && post.poll) {
-    <div class="post-card__badge">
-      <iconify-icon icon="lucide:bar-chart-2" style="font-size: 14px"></iconify-icon>
-      <span>Poll</span>
-      <span class="badge-divider"></span>
-      <span class="status-label" [class.status-label--active]="post.poll.status === 'active'"
-        [class.status-label--closed]="post.poll.status === 'closed'"
-        [class.status-label--expired]="post.poll.status === 'expired'">
-        {{ post.poll.status }}
+    <div class="post-card__header-right" style="display: flex; align-items: center; gap: 0.75rem;">
+      @if (post.postType === PostType.Poll && post.poll) {
+      <div class="post-card__badge">
+        <iconify-icon icon="lucide:bar-chart-2" style="font-size: 14px"></iconify-icon>
+        <span>Poll</span>
+        <span class="badge-divider"></span>
+        <span class="status-label" [class.status-label--active]="post.poll.status === 'active'"
+          [class.status-label--closed]="post.poll.status === 'closed'"
+          [class.status-label--expired]="post.poll.status === 'expired'">
+          {{ post.poll.status }}
+        </span>
+      </div>
+      } @else {
+      <span class="post-card__badge">
+        <iconify-icon icon="lucide:shirt" style="font-size: 12px"></iconify-icon>
+        <span>Outfit</span>
       </span>
+      }
+
+      @if (isOwner(post)) {
+      <div class="post-menu-container" (click)="$event.stopPropagation()" style="position: relative; display: inline-block;">
+        <button class="post-menu-btn" (click)="toggleMenu($event)" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: #718096; border-radius: 50%; width: 32px; height: 32px; transition: background-color 0.2s;">
+          <iconify-icon icon="lucide:more-vertical" style="font-size: 20px;"></iconify-icon>
+        </button>
+        @if (showMenu) {
+        <div class="post-dropdown-menu" style="position: absolute; right: 0; top: 36px; background-color: #ffffff; border: 1px solid #edf2f7; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); z-index: 50; min-width: 140px; padding: 6px 0; overflow: hidden; display: flex; flex-direction: column;">
+          <button class="post-dropdown-item" (click)="viewPostDetail(); $event.stopPropagation();" style="background: none; border: none; width: 100%; text-align: left; padding: 8px 16px; font-size: 14px; color: #2d3748; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background-color 0.2s;">
+            <iconify-icon icon="lucide:eye" style="font-size: 16px; color: #718096;"></iconify-icon>
+            <span>View Details</span>
+          </button>
+          <button class="post-dropdown-item" (click)="editPost($event)" style="background: none; border: none; width: 100%; text-align: left; padding: 8px 16px; font-size: 14px; color: #2d3748; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background-color 0.2s;">
+            <iconify-icon icon="lucide:edit" style="font-size: 16px; color: #718096;"></iconify-icon>
+            <span>Edit</span>
+          </button>
+          <button class="post-dropdown-item post-dropdown-item--danger" (click)="deletePost(); $event.stopPropagation();" style="background: none; border: none; width: 100%; text-align: left; padding: 8px 16px; font-size: 14px; color: #e53e3e; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background-color 0.2s;">
+            <iconify-icon icon="lucide:trash-2" style="font-size: 16px; color: #e53e3e;"></iconify-icon>
+            <span>Delete</span>
+          </button>
+        </div>
+        }
+      </div>
+      }
     </div>
-    } @else {
-    <span class="post-card__badge">
-      <iconify-icon icon="lucide:shirt" style="font-size: 12px"></iconify-icon>
-      <span>Outfit</span>
-    </span>
-    }
   </div>
 
   <!-- Caption -->

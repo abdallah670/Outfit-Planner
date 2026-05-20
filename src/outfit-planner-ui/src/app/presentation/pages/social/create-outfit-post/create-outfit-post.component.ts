@@ -47,7 +47,7 @@ export class CreateOutfitPostComponent implements OnInit {
   private fb = inject(FormBuilder);
   private store = inject(Store);
   private router = inject(Router);
-  private outfitsUseCases= inject(OutfitsUseCases);
+  private outfitsUseCases = inject(OutfitsUseCases);
   private outfitPostUseCases = inject(OutfitPostUseCases);
   private followUseCases = inject(FollowUseCases);
   private authService = inject(AuthService);
@@ -131,7 +131,7 @@ export class CreateOutfitPostComponent implements OnInit {
           visibility: post.visibility,
           // We don't have outfitName/occasion/season here, but we could if needed
         });
-        
+
         if (post.outfit?.imageUrl) {
           this.photoPreviewUrl.set(post.outfit.imageUrl);
         }
@@ -149,7 +149,7 @@ export class CreateOutfitPostComponent implements OnInit {
     });
   }
 
- 
+
   private initForm(): void {
     this.outfitPostForm = this.fb.group({
       outfitName: ['My Awesome Outfit', [Validators.required, Validators.maxLength(100)]],
@@ -173,7 +173,7 @@ export class CreateOutfitPostComponent implements OnInit {
     });
   }
 
- 
+
 
 
   // Photo upload handling
@@ -222,8 +222,24 @@ export class CreateOutfitPostComponent implements OnInit {
     }
 
     if (this.isEditMode()) {
-       this.dispatchUpdatePost();
-       return;
+      if (this.selectedFile()) {
+        this.isUploading.set(true);
+        this.outfitsUseCases.createOutfitWithImage(this.selectedFile()!).subscribe({
+          next: (outfit) => {
+            this.isUploading.set(false);
+            this.currentOutfitId.set(outfit.id);
+            this.dispatchUpdatePost();
+          },
+          error: (err) => {
+            this.isUploading.set(false);
+            console.error('Failed to upload new outfit photo:', err);
+            Swal.fire('Error', 'Failed to upload new outfit photo. Please try again.', 'error');
+          }
+        });
+      } else {
+        this.dispatchUpdatePost();
+      }
+      return;
     }
 
     if (this.selectedFile()) {
@@ -281,9 +297,9 @@ export class CreateOutfitPostComponent implements OnInit {
       outfitId: outfitId,
       caption: this.outfitPostForm.value.caption || '',
       visibility: this.outfitPostForm.value.visibility || Visibility.Public,
-      tags:this.taggedUsers().map(u => u.userName),
+      tags: this.taggedUsers().map(u => u.userName),
     };
-   
+
     this.outfitPostUseCases.createOutfitPost(dto).subscribe({
       next: (response) => {
         console.log('Post created successfully:', response);
@@ -292,17 +308,17 @@ export class CreateOutfitPostComponent implements OnInit {
           title: 'Success!',
           text: 'Your outfit post has been shared.',
           icon: 'success',
-            timer: 2000,
+          timer: 2000,
           showConfirmButton: false,
         }).then(() => {
           this.router.navigate(['/social/posts', response.id]);
         });
       },
-        error: (err) => {
-          this.isUploading.set(false);
-          console.error('Failed to create outfit from photo:', err);
-          Swal.fire('Error', 'Failed to upload outfit photo. Please try again.', 'error');
-        }
+      error: (err) => {
+        this.isUploading.set(false);
+        console.error('Failed to create outfit post:', err);
+        Swal.fire('Error', 'Failed to share outfit post. Please try again.', 'error');
+      }
     });
   }
 

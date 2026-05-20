@@ -112,6 +112,48 @@ $shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   }
 }
 
+.sub-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  grid-column: 1 / -1;
+  background: rgba(250, 180, 198, 0.03);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(250, 180, 198, 0.1);
+  width: max-content;
+}
+
+.sub-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $color-muted;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $color-foreground;
+    background: rgba(250, 180, 198, 0.05);
+  }
+
+  &.active {
+    background: rgba(250, 180, 198, 0.1);
+    color: $color-primary;
+    border-color: rgba(250, 180, 198, 0.2);
+  }
+
+  iconify-icon {
+    font-size: 15px;
+  }
+}
+
 .posts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));

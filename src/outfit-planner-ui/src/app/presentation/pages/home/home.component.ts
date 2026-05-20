@@ -45,7 +45,6 @@ import { TrendingOutfit } from '../../../domain/entities/outfit.entity';
 export class HomeComponent implements OnInit {
   private store = inject(Store);
   failedImages = new Set<string>();
-
   items: Signal<ClothingItem[]> = toSignal(this.store.select(selectAllItems), {
     initialValue: [] as ClothingItem[],
   });
@@ -110,7 +109,7 @@ export class HomeComponent implements OnInit {
     this.loadTodaysPick();
     
     // Load trending outfits - only 3 for home page
-    this.store.dispatch(TrendingActions.loadTrending({ pageSize: 3 }));
+    this.store.dispatch(TrendingActions.loadTrending({ pageSize:4  }));
 
   }
 

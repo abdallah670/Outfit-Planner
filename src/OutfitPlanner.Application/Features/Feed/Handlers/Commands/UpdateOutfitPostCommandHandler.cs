@@ -50,6 +50,10 @@ public class UpdateOutfitPostCommandHandler : IRequestHandler<UpdateOutfitPostCo
         if (request.Caption != null)
             post.Caption = request.Caption;
         
+        if (request.OutfitId != Guid.Empty)
+            post.OutfitId = request.OutfitId;
+
+        post.Tags = request.Tags ?? new List<string>();
         post.Visibility = request.Visibility;
         post.UpdatedAt = DateTimeOffset.UtcNow;
 

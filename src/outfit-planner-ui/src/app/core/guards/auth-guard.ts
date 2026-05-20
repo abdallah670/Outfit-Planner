@@ -21,6 +21,20 @@ export const authGuard: CanActivateFn = (route, state) => {
     return false;
   }
 
+  // Check if email is confirmed
+  const isEmailConfirmed = authService.isEmailConfirmed();
+  if (!isEmailConfirmed) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Email Verification Required',
+      text: 'Please verify your email address to continue using the application.',
+      confirmButtonColor: '#3085d6',
+    });
+    const email = authService.currentUser()?.email || '';
+    router.navigate(['/verify-email'], { queryParams: { email: email } });
+    return false;
+  }
+
   // Check if user has at least Planner role for regular content access
   const isPlanner = authService.isPlanner();
   const isAdmin = authService.isAdmin();

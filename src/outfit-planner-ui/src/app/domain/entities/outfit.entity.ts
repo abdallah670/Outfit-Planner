@@ -7,13 +7,17 @@ export interface Outfit {
   occasion: OccasionType;
   suitableWeather: WeatherCondition;
   season: Season;
-  comfortLevel: number;
-  styleRating: number;
   createdAt: Date;
   lastWorn: Date;
   timesWorn: number;
   status: OutfitStatus;
   feedback: OutfitFeedback[];
+  commentsCount?: number;
+  likesCount? : number;
+  rank?:number;
+  feedPostId?:string;
+  postType?:string;
+  score?:number;
 }
 
 export interface OutfitItem {

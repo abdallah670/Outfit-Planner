@@ -25,6 +25,6 @@ public interface IFeedPostRepository : IGenericRepository<FeedPost>
     Task<FeedPost?> GetByIdWithDetailsAsync(Guid id);
     Task<FeedPost?> GetByOutfitIdAsync(Guid outfitId);
     Task<FeedPost?> GetByPollIdAsync(Guid pollId);
-    Task<List<FeedPost>> GetUserPostsAsync(string userId, int page, int pageSize);
+    Task<CursorPagination.CursorPagedResult<FeedPost>> GetUserPostsAsync(string userId, string? cursor, int pageSize, PostType? postType = null);
     
 }

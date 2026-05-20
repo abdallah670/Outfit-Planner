@@ -19,4 +19,7 @@ public class ValidationPollDto
     public int TotalVotes { get; set; }
     public Guid? UserVotedOptionId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+    
+    public List<string> Tags { get; set; } = new();
+    public List<TaggedUserDto> TaggedUsers { get; set; } = new();
 }
