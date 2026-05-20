@@ -48,6 +48,12 @@ public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfile
             user.Name = request.Request.Name;
         }
         
+        // Update bio
+        if (request.Request.Bio != null)
+        {
+            user.Bio = request.Request.Bio;
+        }
+        
         var result = await _userManager.UpdateAsync(user);
         
         if (!result.Succeeded)

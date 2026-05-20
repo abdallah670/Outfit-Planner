@@ -1,5 +1,6 @@
 using MediatR;
 using OutfitPlanner.Application.Common;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.Features.Feed.Requests.Queries;
 
@@ -12,6 +13,7 @@ public class GetFollowersQueryHandler : IRequestHandler<GetFollowersQuery, Curso
 {
     private readonly IFollowRepository _followRepository;
 
+
     public GetFollowersQueryHandler(IFollowRepository followRepository)
     {
         _followRepository = followRepository;
@@ -22,14 +24,22 @@ public class GetFollowersQueryHandler : IRequestHandler<GetFollowersQuery, Curso
         var result = await _followRepository.GetFollowersCursorAsync(
             request.UserId,
             request.Cursor,
-            request.PageSize);
+            request.PageSize,
+            request.SearchQuery);
+        //find users followed by requester
+        var followedUserIds = (await _followRepository.FindAsync(f => f.FollowerId == request.RequesterId, cancellationToken))
+                       .Select(f => f.FollowedId)
+                       .ToList();
+
 
         var dtos = result.Items.Select(f => new FollowerDto
         {
             UserId = f.FollowerId,
             UserName = f.Follower?.UserName ?? "Unknown",
             AvatarUrl = f.Follower?.ProfilePictureUrl,
-            CreatedAt = f.CreatedAt.DateTime
+            CreatedAt = f.CreatedAt.DateTime,
+            IsFollowing = followedUserIds.Contains(f.FollowerId),
+            IsOwner = f.FollowerId == request.RequesterId
         }).ToList();
 
         return new CursorPagination.CursorPagedResult<FollowerDto>

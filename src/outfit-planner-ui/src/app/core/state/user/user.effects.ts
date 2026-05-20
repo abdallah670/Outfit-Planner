@@ -465,7 +465,31 @@ export const loadUserProfile$ = createEffect(
       ofType(UserActions.loadUserProfile),
       exhaustMap(({ userId }) =>
         userRepository.getPublicProfile(userId).pipe(
-          map((user: PublicUserProfile) => UserActions.loadUserProfileSuccess({ user })),
+          map((publicUser: PublicUserProfile) => {
+            // Map PublicUserProfile to UserProfile
+            const userProfile: UserProfile = {
+              id: publicUser.id,
+              name: publicUser.name,
+              email: '',
+              username: publicUser.username || '',
+              profilePictureUrl: publicUser.profilePictureUrl,
+              bio: publicUser.bio,
+              createdAt: new Date(publicUser.createdAt).toISOString(),
+              wardrobeItemCount: publicUser.wardrobeItemCount,
+              outfitCount: publicUser.outfitCount,
+              totalWears: publicUser.totalWears,
+              
+              styleProfile: publicUser.styleProfile ? {
+                style: publicUser.styleProfile.style as any,
+                preferredColors: publicUser.styleProfile.preferredColors,
+                fitPreferences: publicUser.styleProfile.fitPreferences || '',
+                comfortPriority: publicUser.styleProfile.comfortPriority,
+                acceptsTrends: publicUser.styleProfile.acceptsTrends,
+                customRules: [],
+              } : undefined,
+            };
+            return UserActions.loadUserProfileSuccess({ user: userProfile });
+          }),
           catchError((error) =>
             of(
               UserActions.loadUserProfileFailure({

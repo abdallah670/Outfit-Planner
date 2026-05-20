@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable, tap, catchError, of } from 'rxjs';
@@ -8,6 +8,10 @@ import {
   AuthResponse,
   RegistrationRequest,
   RegistrationResponse,
+  VerifyEmailRequest,
+  ResendVerificationRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
 } from '../../data/models/auth.model';
 
 @Injectable({
@@ -22,6 +26,13 @@ export class AuthService{
   // Signals for reactive state
   currentUser = signal<any>(null);
   isAuthenticated = signal<boolean>(false);
+  userRoles = signal<string[]>([]);
+
+  // Computed role checks
+  isAdmin = computed(() => this.userRoles().includes('Admin'));
+  isPlanner = computed(() => this.userRoles().includes('Planner'));
+  hasRole = (role: string) => computed(() => this.userRoles().includes(role));
+  isEmailConfirmed = computed(() => this.currentUser()?.emailConfirmed ?? false);
 
   constructor() {
     this.checkAuthStatus();
@@ -35,16 +46,37 @@ export class AuthService{
 
   register(request: RegistrationRequest): Observable<RegistrationResponse> {
     return this.http.post<RegistrationResponse>(`${this.apiUrl}/register`, request).pipe(
-      tap((response: RegistrationResponse) =>
-        this.handleAuthentication({
-          id: response.userId,
-          userName: response.userName,
-          email: response.email,
-          token: response.token,
-          refreshToken: response.refreshToken,
-        }),
-      ),
+      tap((response: RegistrationResponse) => {
+        // Only authenticate if email verification is not required
+        if (!response.requiresEmailVerification && response.token) {
+          this.handleAuthentication({
+            id: response.userId,
+            userName: response.userName,
+            email: response.email,
+            token: response.token,
+            refreshToken: response.refreshToken || '',
+          });
+        }
+      }),
     );
+  }
+
+  // Email verification methods
+  verifyEmail(request: VerifyEmailRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-email`, request);
+  }
+
+  resendVerificationEmail(request: ResendVerificationRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/resend-verification`, request);
+  }
+
+  // Password reset methods
+  forgotPassword(request: ForgotPasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, request);
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, request);
   }
 
   logout(): void {
@@ -52,6 +84,7 @@ export class AuthService{
     this.cookieService.delete('refreshToken', '/');
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
+    this.userRoles.set([]);
   }
 
   refreshToken(): Observable<AuthResponse> {
@@ -82,13 +115,48 @@ export class AuthService{
     console.log('[AuthService] Token stored in cookies:', response.token.substring(0, 20) + '...');
     console.log('[AuthService] Refresh token stored:', response.refreshToken ? 'Yes' : 'No');
 
+    // Parse roles from JWT token
+    const roles = this.parseRolesFromToken(response.token);
+    this.userRoles.set(roles);
+    console.log('[AuthService] User roles:', roles);
+
+    const payload = this.decodeToken(response.token);
+    const emailConfirmed = payload ? (payload['email_confirmed'] === 'true' || payload['email_confirmed'] === true) : false;
+
     this.currentUser.set({
       id: response.id,
       userName: response.userName,
       email: response.email,
+      roles: roles,
+      emailConfirmed: emailConfirmed
     });
     this.isAuthenticated.set(true);
     console.log('[AuthService] isAuthenticated set to:', this.isAuthenticated());
+  }
+
+  private decodeToken(token: string): any {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    } catch {
+      return null;
+    }
+  }
+
+  private parseRolesFromToken(token: string): string[] {
+    const payload = this.decodeToken(token);
+    if (!payload) return [];
+    
+    try {
+      // ASP.NET Identity uses this claim type for roles
+      const roleClaim = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload['role'];
+      if (Array.isArray(roleClaim)) {
+        return roleClaim;
+      }
+      return roleClaim ? [roleClaim] : [];
+    } catch {
+      return [];
+    }
   }
 
   // Handle OAuth social login callback
@@ -99,8 +167,30 @@ export class AuthService{
   private checkAuthStatus(): void {
     const token = this.cookieService.get('token');
     if (token) {
-      this.isAuthenticated.set(true);
-      // Optional: Logic to fetch user profile using the token
+      const payload = this.decodeToken(token);
+      if (payload) {
+        this.isAuthenticated.set(true);
+        const roles = this.parseRolesFromToken(token);
+        this.userRoles.set(roles);
+
+        // Map common JWT claims to our user object
+        const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload['sub'];
+        const userName = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || payload['unique_name'];
+        const email = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || payload['email'];
+        const emailConfirmed = payload['email_confirmed'] === 'true' || payload['email_confirmed'] === true;
+
+        this.currentUser.set({
+          id: userId,
+          userName: userName,
+          email: email,
+          roles: roles,
+          emailConfirmed: emailConfirmed
+        });
+        
+        console.log('[AuthService] Restored session for:', userName);
+      } else {
+        this.logout();
+      }
     }
   }
 }

@@ -1,222 +1,181 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, CUSTOM_ELEMENTS_SCHEMA, HostListener, ViewContainerRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { Store } from '@ngrx/store';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { PollsActions } from '../../../../core/state/polls/polls.actions';
-import { selectSelectedPoll, selectPollsLoading } from '../../../../core/state/polls/polls.selectors';
-import { Poll, PollOption, CastVoteRequest, PollStatus } from '../../../../domain/entities/poll.entity';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { Poll, PollOption, PollStatus, getTimeLeft } from '../../../../domain/entities/poll.entity';
+import { FeedPost, FeedPostWithComments, PostComment } from '../../../../domain/entities/feed.entity';
+import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
+import { AuthService } from '../../../../core/services/auth.service';
+import { CursorPagedResult } from '../../../../domain/entities/response.entity';
+import { CommentsModalComponent } from '../../../components/shared/modals/comments-modal/comments-modal.component';
+import Swal from 'sweetalert2';
+import { VotersModalComponent } from '../../../components/shared/modals/voters-modal/voters-modal.component';
 
 @Component({
   selector: 'app-poll-detail',
   standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
-    MatIconModule,
-    MatButtonModule,
-    MatCardModule,
-    MatProgressBarModule,
+    CommentsModalComponent,
+    VotersModalComponent,
   ],
-  template: `
-    <div class="poll-detail-page" *ngIf="poll() as p">
-      <header class="detail-header">
-        <button mat-icon-button routerLink="/social/feed">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1>Poll Details</h1>
-      </header>
-
-      <mat-card class="main-card">
-        <mat-card-header>
-          <mat-card-title>{{ p.question }}</mat-card-title>
-          <mat-card-subtitle>
-            {{ p.totalVotes }} total votes • Expires {{ p.expiresAt | date:'medium' }}
-          </mat-card-subtitle>
-        </mat-card-header>
-
-        <mat-card-content>
-          <div class="options-grid">
-            <div class="option-item" *ngFor="let option of p.options; let i = index">
-              <div class="option-image">
-                <img [src]="option.outfitThumbnail || 'assets/placeholder.jpg'" alt="Option Image">
-                <span class="option-letter">{{ getLetter(i) }}</span>
-              </div>
-              <div class="option-info">
-                <p class="description">{{ option.description }}</p>
-                
-                <!-- Progress Bar for results (shown if expired or voted) -->
-                <div class="results-container" *ngIf="p.status !== PollStatus.Active || hasVoted()">
-                  <div class="progress-wrapper">
-                    <mat-progress-bar 
-                      mode="determinate" 
-                      [value]="getPercentage(p, option.id)"
-                      [color]="isWinner(p, option.id) ? 'accent' : 'primary'">
-                    </mat-progress-bar>
-                    <span class="percentage">{{ getPercentage(p, option.id) }}%</span>
-                  </div>
-                  <span class="votes-text">{{ option.voteCount }} votes</span>
-                </div>
-
-                <button 
-                  mat-raised-button 
-                  color="primary" 
-                  *ngIf="p.status === PollStatus.Active && !hasVoted()"
-                  (click)="vote(p.id, option.id)">
-                  Vote {{ getLetter(i) }}
-                </button>
-              </div>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-
-    <div class="loading-overlay" *ngIf="loading()">
-      <mat-icon class="spin">refresh</mat-icon>
-      <p>Loading poll details...</p>
-    </div>
-  `,
-  styles: [`
-    .poll-detail-page {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    .detail-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .detail-header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-    .main-card {
-      border-radius: 16px;
-      overflow: hidden;
-    }
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    .option-item {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      background: #f9f9f9;
-      padding: 1rem;
-      border-radius: 12px;
-      border: 1px solid #eee;
-    }
-    .option-image {
-      position: relative;
-      height: 300px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .option-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .option-letter {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-    .option-info {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .description {
-      margin: 0;
-      font-weight: 500;
-    }
-    .results-container {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .progress-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .percentage {
-      font-weight: bold;
-      min-width: 40px;
-    }
-    .votes-text {
-      font-size: 0.8rem;
-      color: #777;
-    }
-    .loading-overlay {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 60vh;
-    }
-    .spin {
-      animation: spin 1s linear infinite;
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  `],
+  templateUrl: './poll-detail.component.html',
+  styleUrls: ['./poll-detail.component.scss'],
 })
 export class PollDetailComponent implements OnInit {
-  private store = inject(Store);
   private route = inject(ActivatedRoute);
+  private feedUseCases = inject(FeedUseCases);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private subscriptions = new Subscription();
 
-  poll = toSignal(this.store.select(selectSelectedPoll)) as () => Poll | null;
-  loading = toSignal(this.store.select(selectPollsLoading), { initialValue: false });
+  // Poll data
+  pollPost = signal<FeedPostWithComments | null>(null);
+  postloading = false;
+  loading = signal(true);
+  viewContainerRef = inject(ViewContainerRef);
 
-  PollStatus = PollStatus;
-  hasVoted = signal(false);
+  // Populated from FeedPost
+  get poll(): Poll | null {
+    return this.pollPost()?.poll ?? null;
+  }
+
+  // Author info
+  pollAuthorName = 'User';
+  pollAuthorAvatar = 'assets/default-avatar.png';
+
+  // Voting state
+  userVotedOptionId: string | null = null;
+  submittingVote = signal(false);
+
+  // Current user
+  currentUser: any = null;
+  currentUserAvatar = 'assets/default-avatar.png';
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.store.dispatch(PollsActions.loadPollById({ id }));
+    if (!id) return;
+
+    // Load current user info
+    this.currentUser = this.authService.currentUser();
+    if (this.currentUser) {
+      this.currentUserAvatar = this.currentUser.avatarUrl || 'assets/default-avatar.png';
+    }
+
+    this.loading.set(true);
+    console.log('Fetching post with ID:', id);
+
+    this.subscriptions.add(
+      this.feedUseCases.getPostById(id).subscribe({
+        next: (post) => {
+          console.log('Received post:', post);
+          if (post.poll) {
+
+            this.pollPost.set(post as FeedPostWithComments);
+
+            // Extract author info directly from the FeedPost
+            if (this.currentUser && post.userId === this.currentUser.id) {
+              this.pollAuthorName = this.currentUser.userName || 'You';
+              this.pollAuthorAvatar = this.currentUser.avatarUrl || 'assets/default-avatar.png';
+            } else {
+              this.pollAuthorName = post.userName || 'User';
+              this.pollAuthorAvatar = post.userAvatarUrl || 'assets/default-avatar.png';
+            }
+
+            // Track user's voted option from nested poll entity
+            if (post.poll.userVotedOptionId) {
+              this.userVotedOptionId = post.poll.userVotedOptionId;
+            }
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
+      })
+    );
+  }
+
+  handleCommentAdded = (postId: string): void => {
+    if (this.pollPost() && this.pollPost()!.id === postId) {
+      this.pollPost.update(post => {
+        if (post) post.commentsCount++;
+        return post;
+      });
+    }
+  }
+
+  handleCommentDeleted = (postId: string): void => {
+    if (this.pollPost() && this.pollPost()!.id === postId) {
+      this.pollPost.update(post => {
+        if (post && post.commentsCount > 0) post.commentsCount--;
+        return post;
+      });
+    }
+  }
+
+  // Voting
+  toggleVote(pollPost: FeedPost, optionId: string, event: Event): void {
+    event.stopPropagation();
+    if (!pollPost.poll) return;
+
+    const poll = pollPost.poll;
+    if (poll.status !== 'active' || this.submittingVote()) return;
+
+    this.submittingVote.set(true);
+
+    if (poll.userVotedOptionId === optionId) {
+      // Remove vote
+      this.subscriptions.add(
+        this.feedUseCases.removeVote(optionId).subscribe({
+          next: () => {
+            poll.userVotedOptionId = undefined;
+            poll.totalVotes--;
+            const option = poll.options.find(o => o.id === optionId);
+            if (option) option.voteCount--;
+            this.userVotedOptionId = null;
+            this.submittingVote.set(false);
+          },
+          error: (err) => {
+            console.error('Failed to remove vote', err);
+            this.submittingVote.set(false);
+          }
+        })
+      );
+    } else {
+      // Cast new vote
+      this.subscriptions.add(
+        this.feedUseCases.voteOnPoll(poll.id, optionId).subscribe({
+          next: () => {
+            // If they voted previously, decrement the old option
+            if (poll.userVotedOptionId) {
+              const oldOption = poll.options.find(o => o.id === poll.userVotedOptionId);
+              if (oldOption) oldOption.voteCount--;
+            } else {
+              poll.totalVotes++; // Only increment total if they haven't voted before
+            }
+            
+            poll.userVotedOptionId = optionId;
+            const option = poll.options.find(o => o.id === optionId);
+            if (option) option.voteCount++;
+            this.userVotedOptionId = optionId;
+            this.submittingVote.set(false);
+          },
+          error: (err) => {
+            console.error('Failed to vote', err);
+            this.submittingVote.set(false);
+          }
+        })
+      );
     }
   }
 
   getLetter(index: number): string {
     return String.fromCharCode(65 + index);
-  }
-
-  vote(pollId: string, optionId: string): void {
-    const request: CastVoteRequest = {
-      optionId,
-      rating: 5,
-      isAnonymous: false
-    };
-    this.store.dispatch(PollsActions.vote({ pollId, request }));
-    this.hasVoted.set(true);
   }
 
   getPercentage(poll: Poll, optionId: string): number {
@@ -230,5 +189,147 @@ export class PollDetailComponent implements OnInit {
     const maxVotes = Math.max(...poll.options.map((o: PollOption) => o.voteCount));
     const optionSource = poll.options.find((o: PollOption) => o.id === optionId);
     return optionSource ? optionSource.voteCount === maxVotes : false;
+  }
+
+  formatCount(count: number): string {
+    if (count >= 1000000) {
+      return (count / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (count >= 1000) {
+      return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+    }
+    return count.toString();
+  }
+
+  getTimeAgo(date: Date | string | undefined): string {
+    if (!date) return '';
+    const now = new Date();
+    const then = new Date(date);
+    const diffMs = now.getTime() - then.getTime();
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+    const diffHrs = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHrs / 24);
+
+    if (diffSecs < 60) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHrs < 24) return `${diffHrs}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffDays < 30) {
+      const weeks = Math.floor(diffDays / 7);
+      return `${weeks}w ago`;
+    }
+    return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  openVotersModal(event: Event): void {
+    event.stopPropagation();
+    if (!this.pollPost() || !this.pollPost()!.pollId) return;
+    const componentRef = this.viewContainerRef.createComponent(VotersModalComponent);
+    componentRef.instance.pollId = this.pollPost()!.pollId!;
+
+    const element = (componentRef.hostView as any).rootNodes[0] as HTMLElement;
+    Swal.fire({
+      html: element,
+      width: 500,
+      showConfirmButton: false,
+      background: 'transparent',
+      backdrop: true,
+      didOpen: () => componentRef.changeDetectorRef.detectChanges(),
+      willClose: () => componentRef.destroy()
+    });
+  }
+  formatTimeAgo(date: Date): string {
+    return this.getTimeAgo(date);
+  }
+
+  // Re-exported from poll.entity for template
+  getTimeLeft = getTimeLeft;
+
+  sharePoll(): void {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({
+        title: 'Outfit Poll',
+        text: 'Check out this outfit poll!',
+        url,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        console.log('Link copied to clipboard');
+      }).catch(() => {});
+    }
+  }
+  onBack(): void {
+    window.history.back();
+  }
+
+  goToUserProfile(userId: string): void {
+    this.router.navigate(['/profile', userId]);
+  }
+
+  isOwner(): boolean {
+    const post = this.pollPost();
+    if (!post) return false;
+    return post.userId === this.authService.currentUser()?.id;
+  }
+
+  showMenu = false;
+
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+  }
+
+  @HostListener('document:click')
+  closeMenu(): void {
+    this.showMenu = false;
+  }
+
+  editPost(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = false;
+    const post = this.pollPost();
+    if (post) {
+      this.router.navigate(['/social/polls', post.id, 'edit']);
+    }
+  }
+
+  deletePost(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = false;
+    const post = this.pollPost();
+    if (!post) return;
+
+    Swal.fire({
+      title: 'Delete Poll',
+      text: 'Are you sure you want to delete this poll?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+      confirmButtonColor: '#fab4c6',
+      cancelButtonColor: '#2d3748'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.feedUseCases.deletePost(post.id).subscribe({
+          next: () => {
+            Swal.fire('Deleted!', 'Your poll has been deleted.', 'success').then(() => {
+              this.router.navigate(['/social/feed']);
+            });
+          },
+          error: (error) => {
+            Swal.fire('Error!', error.message, 'error');
+          }
+        });
+      }
+    });
+  }
+  searchByTag(userId: string): void {
+    this.router.navigate(['/profile'], { queryParams: { q: userId } });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

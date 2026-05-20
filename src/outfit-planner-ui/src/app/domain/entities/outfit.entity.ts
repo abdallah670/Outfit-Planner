@@ -7,13 +7,17 @@ export interface Outfit {
   occasion: OccasionType;
   suitableWeather: WeatherCondition;
   season: Season;
-  comfortLevel: number;
-  styleRating: number;
   createdAt: Date;
   lastWorn: Date;
   timesWorn: number;
   status: OutfitStatus;
   feedback: OutfitFeedback[];
+  commentsCount?: number;
+  likesCount? : number;
+  rank?:number;
+  feedPostId?:string;
+  postType?:string;
+  score?:number;
 }
 
 export interface OutfitItem {
@@ -110,8 +114,10 @@ export interface TrendingOutfit {
   imageUrl: string;
   likes: number;
   comments: number;
-  occasion: string;
   trendingScore: number;
-  voteId: string;
   createdAt: Date;
+  isfollowing?:boolean;
+  isowner?:boolean;
+  isliked:boolean;
+
 }

@@ -54,7 +54,7 @@ export class MyOutfitPostsComponent implements OnInit {
           case 'public':
             return post.visibility === Visibility.Public;
           case 'friends':
-            return post.visibility === Visibility.FriendsOnly;
+            return post.visibility === Visibility.Followers;
           case 'private':
             return post.visibility === Visibility.Private;
           default:
@@ -66,7 +66,7 @@ export class MyOutfitPostsComponent implements OnInit {
     // Apply sort
     return filtered.sort((a: FeedPost, b: FeedPost) => {
       if (this.activeSort() === 'most-liked') {
-        return b.likeCount - a.likeCount;
+        return b.likesCount - a.likesCount;
       } else {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
@@ -81,7 +81,7 @@ export class MyOutfitPostsComponent implements OnInit {
     switch (visibility) {
       case Visibility.Public:
         return 'Public';
-      case Visibility.FriendsOnly:
+      case Visibility.Followers:
         return 'Friends Only';
       case Visibility.Private:
         return 'Private';
@@ -94,7 +94,7 @@ export class MyOutfitPostsComponent implements OnInit {
     switch (visibility) {
       case Visibility.Public:
         return 'primary';
-      case Visibility.FriendsOnly:
+      case Visibility.Followers:
         return 'accent';
       case Visibility.Private:
         return 'warn';

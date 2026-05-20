@@ -15,15 +15,18 @@ public class DataSeeder
 {
     private readonly AppDbContext _context;
     private readonly UserManager<User> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ILogger<DataSeeder> _logger;
 
     public DataSeeder(
         AppDbContext context,
         UserManager<User> userManager,
+        RoleManager<IdentityRole> roleManager,
         ILogger<DataSeeder> logger)
     {
         _context = context;
         _userManager = userManager;
+        _roleManager = roleManager;
         _logger = logger;
     }
 
@@ -79,14 +82,17 @@ public class DataSeeder
             return;
         }
 
+        // Create roles if they don't exist
+        await SeedRolesAsync();
+
         var users = new List<User>
         {
-            new User { UserName = "admin", Email = "admin@example.com", Name = "Admin" },
-            new User { UserName = "StyleMaven92", Email = "stylemaven92@example.com", Name = "Style Maven 92" },
-            new User { UserName = "Fashionista_A", Email = "alex@example.com", Name = "Alex Fashion" },
-            new User { UserName = "ChicExplorer", Email = "chic@example.com", Name = "Chic Explorer" },
-            new User { UserName = "TrendSetter", Email = "trend@example.com", Name = "Trend Setter" },
-            new User { UserName = "UrbanVibes", Email = "urban@example.com", Name = "Urban Vibes" }
+            new User { UserName = "admin", Email = "admin@example.com", Name = "Admin", Role = OutfitPlanner.Domain.Enums.UserRole.Admin },
+            new User { UserName = "StyleMaven92", Email = "stylemaven92@example.com", Name = "Style Maven 92", Role = OutfitPlanner.Domain.Enums.UserRole.Planner },
+            new User { UserName = "Fashionista_A", Email = "alex@example.com", Name = "Alex Fashion", Role = OutfitPlanner.Domain.Enums.UserRole.Planner },
+            new User { UserName = "ChicExplorer", Email = "chic@example.com", Name = "Chic Explorer", Role = OutfitPlanner.Domain.Enums.UserRole.Planner },
+            new User { UserName = "TrendSetter", Email = "trend@example.com", Name = "Trend Setter", Role = OutfitPlanner.Domain.Enums.UserRole.Planner },
+            new User { UserName = "UrbanVibes", Email = "urban@example.com", Name = "Urban Vibes", Role = OutfitPlanner.Domain.Enums.UserRole.Planner }
         };
 
         var password = "Password123!";
@@ -97,6 +103,15 @@ public class DataSeeder
             if (result.Succeeded)
             {
                 _logger.LogInformation("Created user: {UserName}", user.UserName);
+                // Assign specific role to user
+                if (user.Role == OutfitPlanner.Domain.Enums.UserRole.Admin)
+                {
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                }
+                else if (user.Role == OutfitPlanner.Domain.Enums.UserRole.Planner)
+                {
+                    await _userManager.AddToRoleAsync(user, "Planner");
+                }
             }
             else
             {
@@ -105,6 +120,36 @@ public class DataSeeder
         }
 
         _logger.LogInformation("Seeded {Count} users", users.Count);
+    }
+
+    private async Task SeedRolesAsync()
+    {
+        // Check if roles already exist
+        if (await _roleManager.Roles.AnyAsync())
+        {
+            _logger.LogInformation("Roles already exist, skipping role seeding.");
+            return;
+        }
+
+        var roles = new[] { "Admin", "Planner" };
+
+        foreach (var role in roles)
+        {
+            if (!await _roleManager.RoleExistsAsync(role))
+            {
+                var result = await _roleManager.CreateAsync(new IdentityRole(role));
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("Created role: {RoleName}", role);
+                }
+                else
+                {
+                    _logger.LogError("Failed to create role {RoleName}: {Errors}", role, string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+        }
+
+        _logger.LogInformation("Seeded roles successfully!");
     }
 
     private async Task SeedClothingItemsAsync()
@@ -221,9 +266,7 @@ public class DataSeeder
                 Season = (Season)(i % 5),
                 WeatherCondition = GetWeatherCondition(i),
                 ComfortRating = random.Next(3, 6),
-                StyleRating = random.Next(3, 6),
                 TimesWorn = random.Next(0, 10),
-                Status = OutfitStatus.Active,
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 30)),
                 ImageUrl = $"/uploads/outfit-images/outfit-seed-{i + 1}.jpg"
             };
@@ -354,7 +397,6 @@ public class DataSeeder
                     Id = Guid.NewGuid(),
                     PollId = poll.Id,
                     OutfitId = outfits[(i + j) % outfits.Count].Id,
-                    Description = $"Option {j + 1}",
                     DisplayOrder = j,
                     CreatedAt = DateTimeOffset.UtcNow
                 };
@@ -371,8 +413,6 @@ public class DataSeeder
                         PollId = poll.Id,
                         OptionId = option.Id,
                         VoterId = availableUsers[v].Id,
-                        Rating = random.Next(1, 6),
-                        IsAnonymous = random.Next(2) == 0,
                         CreatedAt = DateTimeOffset.UtcNow.AddHours(-random.Next(1, 48))
                     });
                 }
@@ -456,8 +496,8 @@ public class DataSeeder
                 OutfitId = outfit.Id,
                 Caption = outfitCaptions[i % outfitCaptions.Length],
                 Visibility = Visibility.Public,
-                LikeCount = random.Next(5, 50),
-                CommentCount = random.Next(0, 10),
+                LikesCount = random.Next(5, 50),
+                CommentsCount = random.Next(0, 10),
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 14))
             };
             feedPosts.Add(post);
@@ -478,9 +518,9 @@ public class DataSeeder
             }
 
             // Add some comments
-            var commentCount = random.Next(0, 4);
-            var commenters = users.OrderBy(x => random.Next()).Take(commentCount).ToList();
-            for (int c = 0; c < commentCount; c++)
+            var CommentsCount = random.Next(0, 4);
+            var commenters = users.OrderBy(x => random.Next()).Take(CommentsCount).ToList();
+            for (int c = 0; c < CommentsCount && c < commenters.Count; c++)
             {
                 var commenter = commenters[c];
                 var comment = new PostComment
@@ -509,8 +549,8 @@ public class DataSeeder
                 PollId = poll.Id,
                 Caption = pollCaptions[i % pollCaptions.Length],
                 Visibility = Visibility.Public,
-                LikeCount = random.Next(3, 30),
-                CommentCount = random.Next(1, 8),
+                LikesCount = random.Next(3, 30),
+                CommentsCount = random.Next(1, 8),
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 10))
             };
             feedPosts.Add(post);
@@ -531,8 +571,8 @@ public class DataSeeder
             }
 
             // Add comments asking for votes
-            var commentCount = random.Next(1, 3);
-            for (int c = 0; c < commentCount; c++)
+            var CommentsCount = random.Next(1, 3);
+            for (int c = 0; c < CommentsCount; c++)
             {
                 var commenter = users[random.Next(users.Count)];
                 comments.Add(new PostComment
@@ -551,7 +591,7 @@ public class DataSeeder
         await _context.PostReactions.AddRangeAsync(reactions);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Seeded {Count} feed posts, {CommentCount} comments, {ReactionCount} reactions",
+        _logger.LogInformation("Seeded {Count} feed posts, {CommentsCount} comments, {ReactionCount} reactions",
             feedPosts.Count, comments.Count, reactions.Count);
     }
 
@@ -581,7 +621,7 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(),
                 FollowerId = users[i].Id,
-                FollowingId = users[0].Id,
+                FollowedId = users[0].Id,
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 30))
             });
         }
@@ -595,14 +635,14 @@ public class DataSeeder
                 {
                     Id = Guid.NewGuid(),
                     FollowerId = users[i].Id,
-                    FollowingId = users[j].Id,
+                    FollowedId = users[j].Id,
                     CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 20))
                 });
                 follows.Add(new Follow
                 {
                     Id = Guid.NewGuid(),
                     FollowerId = users[j].Id,
-                    FollowingId = users[i].Id,
+                    FollowedId = users[i].Id,
                     CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 20))
                 });
             }
@@ -617,7 +657,7 @@ public class DataSeeder
             {
                 // Check if this follow relationship already exists
                 var existingFollow = follows.FirstOrDefault(f => 
-                    f.FollowerId == follower.Id && f.FollowingId == following.Id);
+                    f.FollowerId == follower.Id && f.FollowedId == following.Id);
                 
                 if (existingFollow == null)
                 {
@@ -625,7 +665,7 @@ public class DataSeeder
                     {
                         Id = Guid.NewGuid(),
                         FollowerId = follower.Id,
-                        FollowingId = following.Id,
+                        FollowedId = following.Id,
                         CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 15))
                     });
                 }
@@ -664,8 +704,8 @@ public class DataSeeder
                 Id = Guid.NewGuid(),
                 OutfitId = outfits[i].Id,
                 PollId = poll?.Id ?? Guid.Empty,
-                VoteCount = random.Next(10, 200),
-                ReactionCount = random.Next(5, 100),
+             
+               
                 TrendingScore = random.Next(50, 100) / 10.0m,
                 RankPosition = i + 1,
                 Date = DateTime.UtcNow.Date,

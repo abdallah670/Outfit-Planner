@@ -1,45 +1,27 @@
-<div
-  class="export-wrapper"
-  style="
+<div class="export-wrapper" style="
     width: 1440px;
     min-height: 812px;
     position: relative;
     font-family: var(--font-family-body);
     background-color: var(--background);
-  "
->
+  ">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+    rel="stylesheet" />
   <html>
-    <head>
-      <style>
-        /*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
-        @layer properties;
+
+  <head>
+    <style>
+      /*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
+      @layer properties;
+      @layer theme, base, components, utilities;
+
+      @layer theme {
+
         :root,
         :root {
-          --color-background: #fafafb;
-          --color-foreground: #2d3748;
-          --color-border: #edf2f7;
-          --color-primary: #fab4c6;
-          --color-secondary: #f3f4f6;
-          --color-muted: #f7fafc;
-          --color-muted-foreground: #718096;
-          --radius-md: 12px;
-          --radius-lg: 20px;
-          --radius-xl: 32px;
-          --font-body: Nunito;
-          --font-headings: Nunito;
-          --text-xs: 12px;
-          --text-sm: 14px;
-          --text-base: 16px;
-          --text-lg: 18px;
-          --text-xl: 20px;
-          --text-2xl: 24px;
-          --text-3xl: 30px;
           --font-sans:
             ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
             "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -50,12 +32,21 @@
           --color-white: #fff;
           --spacing: 0.25rem;
           --container-sm: 24rem;
+          --container-lg: 32rem;
+          --container-2xl: 42rem;
+          --text-xs: 12px;
           --text-xs--line-height: calc(1 / 0.75);
+          --text-sm: 14px;
           --text-sm--line-height: calc(1.25 / 0.875);
+          --text-base: 16px;
           --text-base--line-height: calc(1.5 / 1);
+          --text-lg: 18px;
           --text-lg--line-height: calc(1.75 / 1.125);
+          --text-xl: 20px;
           --text-xl--line-height: calc(1.75 / 1.25);
+          --text-2xl: 24px;
           --text-2xl--line-height: calc(2 / 1.5);
+          --text-3xl: 30px;
           --text-3xl--line-height: calc(2.25 / 1.875);
           --font-weight-medium: 500;
           --font-weight-semibold: 600;
@@ -64,35 +55,50 @@
           --tracking-wider: 0.05em;
           --leading-tight: 1.25;
           --leading-relaxed: 1.625;
+          --radius-md: 12px;
+          --radius-lg: 20px;
+          --radius-xl: 32px;
           --radius-2xl: 1rem;
           --radius-3xl: 1.5rem;
+          --animate-spin: spin 1s linear infinite;
           --blur-sm: 8px;
           --blur-md: 12px;
           --default-transition-duration: 150ms;
           --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
           --default-font-family: var(--font-sans);
           --default-mono-font-family: var(--font-mono);
+          --color-background: #fafafb;
+          --color-foreground: #2d3748;
+          --color-border: #edf2f7;
+          --color-primary: #fab4c6;
+          --color-primary-foreground: #1a202c;
+          --color-secondary: #f3f4f6;
+          --color-muted: #f7fafc;
+          --color-muted-foreground: #718096;
+          --font-body: Nunito;
+          --font-headings: Nunito;
         }
-        @layer theme, base, components, utilities;
-        @layer theme;
-        @layer base {
-          *,
-          ::after,
-          ::before,
-          ::backdrop,
-          ::file-selector-button {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            border: 0 solid;
-          }
-          html,
-          :root {
-            line-height: 1.5;
-            -webkit-text-size-adjust: 100%;
-            tab-size: 4;
-            font-family: var(
-              --default-font-family,
+      }
+
+      @layer base {
+
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          border: 0 solid;
+        }
+
+        html,
+        :root {
+          line-height: 1.5;
+          -webkit-text-size-adjust: 100%;
+          tab-size: 4;
+          font-family: var(--default-font-family,
               ui-sans-serif,
               system-ui,
               sans-serif,
@@ -101,46 +107,49 @@
               "Segoe UI Symbol",
               "Noto Color Emoji"
             );
-            font-feature-settings: var(--default-font-feature-settings, normal);
-            font-variation-settings: var(
-              --default-font-variation-settings,
-              normal
-            );
-            -webkit-tap-highlight-color: transparent;
-          }
-          hr {
-            height: 0;
-            color: inherit;
-            border-top-width: 1px;
-          }
-          abbr:where([title]) {
-            -webkit-text-decoration: underline dotted;
-            text-decoration: underline dotted;
-          }
-          h1,
-          h2,
-          h3,
-          h4,
-          h5,
-          h6 {
-            font-size: inherit;
-            font-weight: inherit;
-          }
-          a {
-            color: inherit;
-            -webkit-text-decoration: inherit;
-            text-decoration: inherit;
-          }
-          b,
-          strong {
-            font-weight: bolder;
-          }
-          code,
-          kbd,
-          samp,
-          pre {
-            font-family: var(
-              --default-mono-font-family,
+          font-feature-settings: var(--default-font-feature-settings, normal);
+          font-variation-settings: var(--default-font-variation-settings,
+              normal);
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        hr {
+          height: 0;
+          color: inherit;
+          border-top-width: 1px;
+        }
+
+        abbr:where([title]) {
+          -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          font-size: inherit;
+          font-weight: inherit;
+        }
+
+        a {
+          color: inherit;
+          -webkit-text-decoration: inherit;
+          text-decoration: inherit;
+        }
+
+        b,
+        strong {
+          font-weight: bolder;
+        }
+
+        code,
+        kbd,
+        samp,
+        pre {
+          font-family: var(--default-mono-font-family,
               ui-monospace,
               SFMono-Regular,
               Menlo,
@@ -148,1729 +157,1765 @@
               Consolas,
               "Liberation Mono",
               "Courier New",
-              monospace
-            );
-            font-feature-settings: var(
-              --default-mono-font-feature-settings,
-              normal
-            );
-            font-variation-settings: var(
-              --default-mono-font-variation-settings,
-              normal
-            );
-            font-size: 1em;
-          }
-          small {
-            font-size: 80%;
-          }
-          sub,
-          sup {
-            font-size: 75%;
-            line-height: 0;
-            position: relative;
-            vertical-align: baseline;
-          }
-          sub {
-            bottom: -0.25em;
-          }
-          sup {
-            top: -0.5em;
-          }
-          table {
-            text-indent: 0;
-            border-color: inherit;
-            border-collapse: collapse;
-          }
-          :-moz-focusring {
-            outline: auto;
-          }
-          progress {
-            vertical-align: baseline;
-          }
-          summary {
-            display: list-item;
-          }
-          ol,
-          ul,
-          menu {
-            list-style: none;
-          }
-          img,
-          svg,
-          video,
-          canvas,
-          audio,
-          iframe,
-          embed,
-          object {
-            display: block;
-            vertical-align: middle;
-          }
-          img,
-          video {
-            max-width: 100%;
-            height: auto;
-          }
-          button,
-          input,
-          select,
-          optgroup,
-          textarea,
-          ::file-selector-button {
-            font: inherit;
-            font-feature-settings: inherit;
-            font-variation-settings: inherit;
-            letter-spacing: inherit;
-            color: inherit;
-            border-radius: 0;
-            background-color: transparent;
-            opacity: 1;
-          }
-          :where(select:is([multiple], [size])) optgroup {
-            font-weight: bolder;
-          }
-          :where(select:is([multiple], [size])) optgroup option {
-            padding-inline-start: 20px;
-          }
-          ::file-selector-button {
-            margin-inline-end: 4px;
-          }
+              monospace);
+          font-feature-settings: var(--default-mono-font-feature-settings,
+              normal);
+          font-variation-settings: var(--default-mono-font-variation-settings,
+              normal);
+          font-size: 1em;
+        }
+
+        small {
+          font-size: 80%;
+        }
+
+        sub,
+        sup {
+          font-size: 75%;
+          line-height: 0;
+          position: relative;
+          vertical-align: baseline;
+        }
+
+        sub {
+          bottom: -0.25em;
+        }
+
+        sup {
+          top: -0.5em;
+        }
+
+        table {
+          text-indent: 0;
+          border-color: inherit;
+          border-collapse: collapse;
+        }
+
+        :-moz-focusring {
+          outline: auto;
+        }
+
+        progress {
+          vertical-align: baseline;
+        }
+
+        summary {
+          display: list-item;
+        }
+
+        ol,
+        ul,
+        menu {
+          list-style: none;
+        }
+
+        img,
+        svg,
+        video,
+        canvas,
+        audio,
+        iframe,
+        embed,
+        object {
+          display: block;
+          vertical-align: middle;
+        }
+
+        img,
+        video {
+          max-width: 100%;
+          height: auto;
+        }
+
+        button,
+        input,
+        select,
+        optgroup,
+        textarea,
+        ::file-selector-button {
+          font: inherit;
+          font-feature-settings: inherit;
+          font-variation-settings: inherit;
+          letter-spacing: inherit;
+          color: inherit;
+          border-radius: 0;
+          background-color: transparent;
+          opacity: 1;
+        }
+
+        :where(select:is([multiple], [size])) optgroup {
+          font-weight: bolder;
+        }
+
+        :where(select:is([multiple], [size])) optgroup option {
+          padding-inline-start: 20px;
+        }
+
+        ::file-selector-button {
+          margin-inline-end: 4px;
+        }
+
+        ::placeholder {
+          opacity: 1;
+        }
+
+        @supports (not (-webkit-appearance: -apple-pay-button)) or (contain-intrinsic-size: 1px) {
           ::placeholder {
-            opacity: 1;
-          }
-          @supports (not (-webkit-appearance: -apple-pay-button)) or
-            (contain-intrinsic-size: 1px) {
-            ::placeholder {
-              color: currentcolor;
-              @supports (color: color-mix(in lab, red, red)) {
-                color: color-mix(in oklab, currentcolor 50%, transparent);
-              }
+            color: currentcolor;
+
+            @supports (color: color-mix(in lab, red, red)) {
+              color: color-mix(in oklab, currentcolor 50%, transparent);
             }
           }
-          textarea {
-            resize: vertical;
-          }
-          ::-webkit-search-decoration {
-            -webkit-appearance: none;
-          }
-          ::-webkit-date-and-time-value {
-            min-height: 1lh;
-            text-align: inherit;
-          }
-          ::-webkit-datetime-edit {
-            display: inline-flex;
-          }
-          ::-webkit-datetime-edit-fields-wrapper {
-            padding: 0;
-          }
-          ::-webkit-datetime-edit,
-          ::-webkit-datetime-edit-year-field,
-          ::-webkit-datetime-edit-month-field,
-          ::-webkit-datetime-edit-day-field,
-          ::-webkit-datetime-edit-hour-field,
-          ::-webkit-datetime-edit-minute-field,
-          ::-webkit-datetime-edit-second-field,
-          ::-webkit-datetime-edit-millisecond-field,
-          ::-webkit-datetime-edit-meridiem-field {
-            padding-block: 0;
-          }
-          ::-webkit-calendar-picker-indicator {
-            line-height: 1;
-          }
-          :-moz-ui-invalid {
-            box-shadow: none;
-          }
-          button,
-          input:where([type="button"], [type="reset"], [type="submit"]),
-          ::file-selector-button {
-            appearance: button;
-          }
-          ::-webkit-inner-spin-button,
-          ::-webkit-outer-spin-button {
-            height: auto;
-          }
-          [hidden]:where(:not([hidden="until-found"])) {
-            display: none !important;
+        }
+
+        textarea {
+          resize: vertical;
+        }
+
+        ::-webkit-search-decoration {
+          -webkit-appearance: none;
+        }
+
+        ::-webkit-date-and-time-value {
+          min-height: 1lh;
+          text-align: inherit;
+        }
+
+        ::-webkit-datetime-edit {
+          display: inline-flex;
+        }
+
+        ::-webkit-datetime-edit-fields-wrapper {
+          padding: 0;
+        }
+
+        ::-webkit-datetime-edit,
+        ::-webkit-datetime-edit-year-field,
+        ::-webkit-datetime-edit-month-field,
+        ::-webkit-datetime-edit-day-field,
+        ::-webkit-datetime-edit-hour-field,
+        ::-webkit-datetime-edit-minute-field,
+        ::-webkit-datetime-edit-second-field,
+        ::-webkit-datetime-edit-millisecond-field,
+        ::-webkit-datetime-edit-meridiem-field {
+          padding-block: 0;
+        }
+
+        ::-webkit-calendar-picker-indicator {
+          line-height: 1;
+        }
+
+        :-moz-ui-invalid {
+          box-shadow: none;
+        }
+
+        button,
+        input:where([type="button"], [type="reset"], [type="submit"]),
+        ::file-selector-button {
+          appearance: button;
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+          height: auto;
+        }
+
+        [hidden]:where(:not([hidden="until-found"])) {
+          display: none !important;
+        }
+      }
+
+      @layer utilities {
+        .absolute {
+          position: absolute;
+        }
+
+        .relative {
+          position: relative;
+        }
+
+        .-top-1 {
+          top: calc(var(--spacing) * -1);
+        }
+
+        .top-4 {
+          top: calc(var(--spacing) * 4);
+        }
+
+        .-right-1 {
+          right: calc(var(--spacing) * -1);
+        }
+
+        .right-0 {
+          right: calc(var(--spacing) * 0);
+        }
+
+        .right-4 {
+          right: calc(var(--spacing) * 4);
+        }
+
+        .bottom-0 {
+          bottom: calc(var(--spacing) * 0);
+        }
+
+        .bottom-3 {
+          bottom: calc(var(--spacing) * 3);
+        }
+
+        .left-0 {
+          left: calc(var(--spacing) * 0);
+        }
+
+        .left-1\/2 {
+          left: calc(1 / 2 * 100%);
+        }
+
+        .mx-auto {
+          margin-inline: auto;
+        }
+
+        .mt-1 {
+          margin-top: calc(var(--spacing) * 1);
+        }
+
+        .mt-2 {
+          margin-top: calc(var(--spacing) * 2);
+        }
+
+        .mt-3 {
+          margin-top: calc(var(--spacing) * 3);
+        }
+
+        .mt-6 {
+          margin-top: calc(var(--spacing) * 6);
+        }
+
+        .mt-8 {
+          margin-top: calc(var(--spacing) * 8);
+        }
+
+        .mt-12 {
+          margin-top: calc(var(--spacing) * 12);
+        }
+
+        .mr-1 {
+          margin-right: calc(var(--spacing) * 1);
+        }
+
+        .mr-2 {
+          margin-right: calc(var(--spacing) * 2);
+        }
+
+        .mb-1 {
+          margin-bottom: calc(var(--spacing) * 1);
+        }
+
+        .mb-3 {
+          margin-bottom: calc(var(--spacing) * 3);
+        }
+
+        .mb-4 {
+          margin-bottom: calc(var(--spacing) * 4);
+        }
+
+        .mb-5 {
+          margin-bottom: calc(var(--spacing) * 5);
+        }
+
+        .mb-6 {
+          margin-bottom: calc(var(--spacing) * 6);
+        }
+
+        .mb-8 {
+          margin-bottom: calc(var(--spacing) * 8);
+        }
+
+        .mb-10 {
+          margin-bottom: calc(var(--spacing) * 10);
+        }
+
+        .ml-auto {
+          margin-left: auto;
+        }
+
+        .block {
+          display: block;
+        }
+
+        .flex {
+          display: flex;
+        }
+
+        .grid {
+          display: grid;
+        }
+
+        .hidden {
+          display: none;
+        }
+
+        .aspect-\[3\/4\] {
+          aspect-ratio: 3/4;
+        }
+
+        .aspect-\[4\/5\] {
+          aspect-ratio: 4/5;
+        }
+
+        .size-\[14px\] {
+          width: 14px;
+          height: 14px;
+        }
+
+        .size-\[16px\] {
+          width: 16px;
+          height: 16px;
+        }
+
+        .size-\[18px\] {
+          width: 18px;
+          height: 18px;
+        }
+
+        .size-\[20px\] {
+          width: 20px;
+          height: 20px;
+        }
+
+        .size-\[22px\] {
+          width: 22px;
+          height: 22px;
+        }
+
+        .size-\[24px\] {
+          width: 24px;
+          height: 24px;
+        }
+
+        .size-\[28px\] {
+          width: 28px;
+          height: 28px;
+        }
+
+        .h-3 {
+          height: calc(var(--spacing) * 3);
+        }
+
+        .h-9 {
+          height: calc(var(--spacing) * 9);
+        }
+
+        .h-10 {
+          height: calc(var(--spacing) * 10);
+        }
+
+        .h-11 {
+          height: calc(var(--spacing) * 11);
+        }
+
+        .h-12 {
+          height: calc(var(--spacing) * 12);
+        }
+
+        .h-20 {
+          height: calc(var(--spacing) * 20);
+        }
+
+        .h-24 {
+          height: calc(var(--spacing) * 24);
+        }
+
+        .h-28 {
+          height: calc(var(--spacing) * 28);
+        }
+
+        .h-\[38px\] {
+          height: 38px;
+        }
+
+        .h-\[160px\] {
+          height: 160px;
+        }
+
+        .h-full {
+          height: 100%;
+        }
+
+        .min-h-\[1000px\] {
+          min-height: 1000px;
+        }
+
+        .w-3 {
+          width: calc(var(--spacing) * 3);
+        }
+
+        .w-9 {
+          width: calc(var(--spacing) * 9);
+        }
+
+        .w-10 {
+          width: calc(var(--spacing) * 10);
+        }
+
+        .w-11 {
+          width: calc(var(--spacing) * 11);
+        }
+
+        .w-12 {
+          width: calc(var(--spacing) * 12);
+        }
+
+        .w-28 {
+          width: calc(var(--spacing) * 28);
+        }
+
+        .w-\[160px\] {
+          width: 160px;
+        }
+
+        .w-full {
+          width: 100%;
+        }
+
+        .w-px {
+          width: 1px;
+        }
+
+        .max-w-2xl {
+          max-width: var(--container-2xl);
+        }
+
+        .max-w-\[400px\] {
+          max-width: 400px;
+        }
+
+        .max-w-\[600px\] {
+          max-width: 600px;
+        }
+
+        .max-w-\[1200px\] {
+          max-width: 1200px;
+        }
+
+        .max-w-lg {
+          max-width: var(--container-lg);
+        }
+
+        .max-w-sm {
+          max-width: var(--container-sm);
+        }
+
+        .min-w-\[120px\] {
+          min-width: 120px;
+        }
+
+        .flex-1 {
+          flex: 1;
+        }
+
+        .shrink-0 {
+          flex-shrink: 0;
+        }
+
+        .-translate-x-1\/2 {
+          --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
+          translate: var(--tw-translate-x) var(--tw-translate-y);
+        }
+
+        .translate-y-full {
+          --tw-translate-y: 100%;
+          translate: var(--tw-translate-x) var(--tw-translate-y);
+        }
+
+        .animate-spin {
+          animation: var(--animate-spin);
+        }
+
+        .cursor-pointer {
+          cursor: pointer;
+        }
+
+        .grid-cols-1 {
+          grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        .flex-col {
+          flex-direction: column;
+        }
+
+        .flex-wrap {
+          flex-wrap: wrap;
+        }
+
+        .items-center {
+          align-items: center;
+        }
+
+        .items-start {
+          align-items: flex-start;
+        }
+
+        .justify-between {
+          justify-content: space-between;
+        }
+
+        .justify-center {
+          justify-content: center;
+        }
+
+        .gap-1 {
+          gap: calc(var(--spacing) * 1);
+        }
+
+        .gap-1\.5 {
+          gap: calc(var(--spacing) * 1.5);
+        }
+
+        .gap-2 {
+          gap: calc(var(--spacing) * 2);
+        }
+
+        .gap-3 {
+          gap: calc(var(--spacing) * 3);
+        }
+
+        .gap-4 {
+          gap: calc(var(--spacing) * 4);
+        }
+
+        .gap-5 {
+          gap: calc(var(--spacing) * 5);
+        }
+
+        .gap-6 {
+          gap: calc(var(--spacing) * 6);
+        }
+
+        .gap-8 {
+          gap: calc(var(--spacing) * 8);
+        }
+
+        .gap-10 {
+          gap: calc(var(--spacing) * 10);
+        }
+
+        .gap-12 {
+          gap: calc(var(--spacing) * 12);
+        }
+
+        .self-center {
+          align-self: center;
+        }
+
+        .overflow-hidden {
+          overflow: hidden;
+        }
+
+        .overflow-x-auto {
+          overflow-x: auto;
+        }
+
+        .rounded-2xl {
+          border-radius: var(--radius-2xl);
+        }
+
+        .rounded-3xl {
+          border-radius: var(--radius-3xl);
+        }
+
+        .rounded-\[32px\] {
+          border-radius: 32px;
+        }
+
+        .rounded-\[40px\] {
+          border-radius: 40px;
+        }
+
+        .rounded-full {
+          border-radius: calc(infinity * 1px);
+        }
+
+        .rounded-lg {
+          border-radius: var(--radius-lg);
+        }
+
+        .rounded-md {
+          border-radius: var(--radius-md);
+        }
+
+        .rounded-xl {
+          border-radius: var(--radius-xl);
+        }
+
+        .rounded-l-lg {
+          border-top-left-radius: var(--radius-lg);
+          border-bottom-left-radius: var(--radius-lg);
+        }
+
+        .rounded-r-lg {
+          border-top-right-radius: var(--radius-lg);
+          border-bottom-right-radius: var(--radius-lg);
+        }
+
+        .border {
+          border-style: var(--tw-border-style);
+          border-width: 1px;
+        }
+
+        .border-2 {
+          border-style: var(--tw-border-style);
+          border-width: 2px;
+        }
+
+        .border-4 {
+          border-style: var(--tw-border-style);
+          border-width: 4px;
+        }
+
+        .border-b {
+          border-bottom-style: var(--tw-border-style);
+          border-bottom-width: 1px;
+        }
+
+        .border-b-2 {
+          border-bottom-style: var(--tw-border-style);
+          border-bottom-width: 2px;
+        }
+
+        .border-\[\#e6f0f9\] {
+          border-color: #e6f0f9;
+        }
+
+        .border-background {
+          border-color: var(--color-background);
+        }
+
+        .border-border {
+          border-color: var(--color-border);
+        }
+
+        .border-primary {
+          border-color: var(--color-primary);
+        }
+
+        .border-transparent {
+          border-color: transparent;
+        }
+
+        .bg-\[\#fafafb\] {
+          background-color: #fafafb;
+        }
+
+        .bg-background {
+          background-color: var(--color-background);
+        }
+
+        .bg-border {
+          background-color: var(--color-border);
+        }
+
+        .bg-muted {
+          background-color: var(--color-muted);
+        }
+
+        .bg-primary {
+          background-color: var(--color-primary);
+        }
+
+        .bg-primary\/10 {
+          background-color: color-mix(in srgb, #fab4c6 10%, transparent);
+
+          @supports (color: color-mix(in lab, red, red)) {
+            background-color: color-mix(in oklab,
+                var(--color-primary) 10%,
+                transparent);
           }
         }
-        @layer utilities {
-          .absolute {
-            position: absolute;
-          }
-          .relative {
-            position: relative;
-          }
-          .-top-1 {
-            top: calc(var(--spacing) * -1);
-          }
-          .top-4 {
-            top: calc(var(--spacing) * 4);
-          }
-          .-right-1 {
-            right: calc(var(--spacing) * -1);
-          }
-          .right-0 {
-            right: calc(var(--spacing) * 0);
-          }
-          .right-4 {
-            right: calc(var(--spacing) * 4);
-          }
-          .bottom-0 {
-            bottom: calc(var(--spacing) * 0);
-          }
-          .left-0 {
-            left: calc(var(--spacing) * 0);
-          }
-          .mx-auto {
-            margin-inline: auto;
-          }
-          .mt-1 {
-            margin-top: calc(var(--spacing) * 1);
-          }
-          .mt-2 {
-            margin-top: calc(var(--spacing) * 2);
-          }
-          .mt-3 {
-            margin-top: calc(var(--spacing) * 3);
-          }
-          .mt-6 {
-            margin-top: calc(var(--spacing) * 6);
-          }
-          .mt-8 {
-            margin-top: calc(var(--spacing) * 8);
-          }
-          .mt-12 {
-            margin-top: calc(var(--spacing) * 12);
-          }
-          .mr-2 {
-            margin-right: calc(var(--spacing) * 2);
-          }
-          .mb-1 {
-            margin-bottom: calc(var(--spacing) * 1);
-          }
-          .mb-3 {
-            margin-bottom: calc(var(--spacing) * 3);
-          }
-          .mb-4 {
-            margin-bottom: calc(var(--spacing) * 4);
-          }
-          .mb-5 {
-            margin-bottom: calc(var(--spacing) * 5);
-          }
-          .mb-6 {
-            margin-bottom: calc(var(--spacing) * 6);
-          }
-          .mb-8 {
-            margin-bottom: calc(var(--spacing) * 8);
-          }
-          .mb-10 {
-            margin-bottom: calc(var(--spacing) * 10);
-          }
-          .block {
-            display: block;
-          }
-          .flex {
-            display: flex;
-          }
-          .grid {
-            display: grid;
-          }
-          .hidden {
-            display: none;
-          }
-          .aspect-\[3\/4\] {
-            aspect-ratio: 3/4;
-          }
-          .aspect-\[4\/5\] {
-            aspect-ratio: 4/5;
-          }
-          .size-\[14px\] {
-            width: 14px;
-            height: 14px;
-          }
-          .size-\[16px\] {
-            width: 16px;
-            height: 16px;
-          }
-          .size-\[18px\] {
-            width: 18px;
-            height: 18px;
-          }
-          .size-\[20px\] {
-            width: 20px;
-            height: 20px;
-          }
-          .size-\[28px\] {
-            width: 28px;
-            height: 28px;
-          }
-          .h-3 {
-            height: calc(var(--spacing) * 3);
-          }
-          .h-9 {
-            height: calc(var(--spacing) * 9);
-          }
-          .h-10 {
-            height: calc(var(--spacing) * 10);
-          }
-          .h-11 {
-            height: calc(var(--spacing) * 11);
-          }
-          .h-12 {
-            height: calc(var(--spacing) * 12);
-          }
-          .h-20 {
-            height: calc(var(--spacing) * 20);
-          }
-          .h-24 {
-            height: calc(var(--spacing) * 24);
-          }
-          .h-28 {
-            height: calc(var(--spacing) * 28);
-          }
-          .h-\[38px\] {
-            height: 38px;
-          }
-          .h-\[160px\] {
-            height: 160px;
-          }
-          .h-full {
-            height: 100%;
-          }
-          .min-h-\[1000px\] {
-            min-height: 1000px;
-          }
-          .w-3 {
-            width: calc(var(--spacing) * 3);
-          }
-          .w-9 {
-            width: calc(var(--spacing) * 9);
-          }
-          .w-10 {
-            width: calc(var(--spacing) * 10);
-          }
-          .w-11 {
-            width: calc(var(--spacing) * 11);
-          }
-          .w-28 {
-            width: calc(var(--spacing) * 28);
-          }
-          .w-\[160px\] {
-            width: 160px;
-          }
-          .w-full {
-            width: 100%;
-          }
-          .w-px {
-            width: 1px;
-          }
-          .max-w-\[400px\] {
-            max-width: 400px;
-          }
-          .max-w-\[600px\] {
-            max-width: 600px;
-          }
-          .max-w-\[1200px\] {
-            max-width: 1200px;
-          }
-          .max-w-sm {
-            max-width: var(--container-sm);
-          }
-          .min-w-\[120px\] {
-            min-width: 120px;
-          }
-          .shrink-0 {
-            flex-shrink: 0;
-          }
-          .translate-y-full {
-            --tw-translate-y: 100%;
-            translate: var(--tw-translate-x) var(--tw-translate-y);
-          }
-          .cursor-pointer {
-            cursor: pointer;
-          }
-          .grid-cols-1 {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-          }
-          .flex-col {
-            flex-direction: column;
-          }
-          .flex-wrap {
-            flex-wrap: wrap;
-          }
-          .items-center {
+
+        .bg-red-500 {
+          background-color: var(--color-red-500);
+        }
+
+        .bg-secondary {
+          background-color: var(--color-secondary);
+        }
+
+        .bg-white {
+          background-color: var(--color-white);
+        }
+
+        .bg-white\/90 {
+          background-color: color-mix(in srgb, #fff 90%, transparent);
+
+          @supports (color: color-mix(in lab, red, red)) {
+            background-color: color-mix(in oklab,
+                var(--color-white) 90%,
+                transparent);
+          }
+        }
+
+        .bg-white\/95 {
+          background-color: color-mix(in srgb, #fff 95%, transparent);
+
+          @supports (color: color-mix(in lab, red, red)) {
+            background-color: color-mix(in oklab,
+                var(--color-white) 95%,
+                transparent);
+          }
+        }
+
+        .fill-primary {
+          fill: var(--color-primary);
+        }
+
+        .fill-primary-foreground {
+          fill: var(--color-primary-foreground);
+        }
+
+        .object-cover {
+          object-fit: cover;
+        }
+
+        .p-4 {
+          padding: calc(var(--spacing) * 4);
+        }
+
+        .p-8 {
+          padding: calc(var(--spacing) * 8);
+        }
+
+        .px-2 {
+          padding-inline: calc(var(--spacing) * 2);
+        }
+
+        .px-2\.5 {
+          padding-inline: calc(var(--spacing) * 2.5);
+        }
+
+        .px-3 {
+          padding-inline: calc(var(--spacing) * 3);
+        }
+
+        .px-4 {
+          padding-inline: calc(var(--spacing) * 4);
+        }
+
+        .px-5 {
+          padding-inline: calc(var(--spacing) * 5);
+        }
+
+        .px-6 {
+          padding-inline: calc(var(--spacing) * 6);
+        }
+
+        .px-8 {
+          padding-inline: calc(var(--spacing) * 8);
+        }
+
+        .py-1 {
+          padding-block: calc(var(--spacing) * 1);
+        }
+
+        .py-1\.5 {
+          padding-block: calc(var(--spacing) * 1.5);
+        }
+
+        .py-2 {
+          padding-block: calc(var(--spacing) * 2);
+        }
+
+        .py-4 {
+          padding-block: calc(var(--spacing) * 4);
+        }
+
+        .pt-1 {
+          padding-top: calc(var(--spacing) * 1);
+        }
+
+        .pt-2 {
+          padding-top: calc(var(--spacing) * 2);
+        }
+
+        .pt-6 {
+          padding-top: calc(var(--spacing) * 6);
+        }
+
+        .pt-10 {
+          padding-top: calc(var(--spacing) * 10);
+        }
+
+        .pb-3 {
+          padding-bottom: calc(var(--spacing) * 3);
+        }
+
+        .pb-4 {
+          padding-bottom: calc(var(--spacing) * 4);
+        }
+
+        .pb-20 {
+          padding-bottom: calc(var(--spacing) * 20);
+        }
+
+        .text-center {
+          text-align: center;
+        }
+
+        .font-body {
+          font-family: var(--font-body);
+        }
+
+        .font-headings {
+          font-family: var(--font-headings);
+        }
+
+        .text-2xl {
+          font-size: var(--text-2xl);
+          line-height: var(--tw-leading, var(--text-2xl--line-height));
+        }
+
+        .text-3xl {
+          font-size: var(--text-3xl);
+          line-height: var(--tw-leading, var(--text-3xl--line-height));
+        }
+
+        .text-base {
+          font-size: var(--text-base);
+          line-height: var(--tw-leading, var(--text-base--line-height));
+        }
+
+        .text-lg {
+          font-size: var(--text-lg);
+          line-height: var(--tw-leading, var(--text-lg--line-height));
+        }
+
+        .text-sm {
+          font-size: var(--text-sm);
+          line-height: var(--tw-leading, var(--text-sm--line-height));
+        }
+
+        .text-xl {
+          font-size: var(--text-xl);
+          line-height: var(--tw-leading, var(--text-xl--line-height));
+        }
+
+        .text-xs {
+          font-size: var(--text-xs);
+          line-height: var(--tw-leading, var(--text-xs--line-height));
+        }
+
+        .text-\[12px\] {
+          font-size: 12px;
+        }
+
+        .text-\[13px\] {
+          font-size: 13px;
+        }
+
+        .text-\[14px\] {
+          font-size: 14px;
+        }
+
+        .text-\[15px\] {
+          font-size: 15px;
+        }
+
+        .text-\[16px\] {
+          font-size: 16px;
+        }
+
+        .text-\[28px\] {
+          font-size: 28px;
+        }
+
+        .text-\[32px\] {
+          font-size: 32px;
+        }
+
+        .leading-none {
+          --tw-leading: 1;
+          line-height: 1;
+        }
+
+        .leading-relaxed {
+          --tw-leading: var(--leading-relaxed);
+          line-height: var(--leading-relaxed);
+        }
+
+        .leading-tight {
+          --tw-leading: var(--leading-tight);
+          line-height: var(--leading-tight);
+        }
+
+        .font-black {
+          --tw-font-weight: var(--font-weight-black);
+          font-weight: var(--font-weight-black);
+        }
+
+        .font-bold {
+          --tw-font-weight: var(--font-weight-bold);
+          font-weight: var(--font-weight-bold);
+        }
+
+        .font-medium {
+          --tw-font-weight: var(--font-weight-medium);
+          font-weight: var(--font-weight-medium);
+        }
+
+        .font-semibold {
+          --tw-font-weight: var(--font-weight-semibold);
+          font-weight: var(--font-weight-semibold);
+        }
+
+        .tracking-wider {
+          --tw-tracking: var(--tracking-wider);
+          letter-spacing: var(--tracking-wider);
+        }
+
+        .whitespace-nowrap {
+          white-space: nowrap;
+        }
+
+        .text-foreground {
+          color: var(--color-foreground);
+        }
+
+        .text-muted-foreground {
+          color: var(--color-muted-foreground);
+        }
+
+        .text-primary {
+          color: var(--color-primary);
+        }
+
+        .text-primary-foreground {
+          color: var(--color-primary-foreground);
+        }
+
+        .text-white {
+          color: var(--color-white);
+        }
+
+        .uppercase {
+          text-transform: uppercase;
+        }
+
+        .opacity-0 {
+          opacity: 0%;
+        }
+
+        .shadow-md {
+          --tw-shadow:
+            0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
+            0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+          box-shadow:
+            var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+            var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+            var(--tw-shadow);
+        }
+
+        .shadow-sm {
+          --tw-shadow:
+            0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
+            0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+          box-shadow:
+            var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+            var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+            var(--tw-shadow);
+        }
+
+        .backdrop-blur-md {
+          --tw-backdrop-blur: blur(var(--blur-md));
+          -webkit-backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, );
+          backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, );
+        }
+
+        .backdrop-blur-sm {
+          --tw-backdrop-blur: blur(var(--blur-sm));
+          -webkit-backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, );
+          backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, );
+        }
+
+        .transition-all {
+          transition-property: all;
+          transition-timing-function: var(--tw-ease,
+              var(--default-transition-timing-function));
+          transition-duration: var(--tw-duration,
+              var(--default-transition-duration));
+        }
+
+        .transition-colors {
+          transition-property:
+            color, background-color, border-color, outline-color,
+            text-decoration-color, fill, stroke, --tw-gradient-from,
+            --tw-gradient-via, --tw-gradient-to;
+          transition-timing-function: var(--tw-ease,
+              var(--default-transition-timing-function));
+          transition-duration: var(--tw-duration,
+              var(--default-transition-duration));
+        }
+
+        .transition-opacity {
+          transition-property: opacity;
+          transition-timing-function: var(--tw-ease,
+              var(--default-transition-timing-function));
+          transition-duration: var(--tw-duration,
+              var(--default-transition-duration));
+        }
+
+        .transition-transform {
+          transition-property: transform, translate, scale, rotate;
+          transition-timing-function: var(--tw-ease,
+              var(--default-transition-timing-function));
+          transition-duration: var(--tw-duration,
+              var(--default-transition-duration));
+        }
+
+        .group-hover\:translate-y-0 {
+          &:is(:where(.group):hover *) {
+            @media (hover: hover) {
+              --tw-translate-y: calc(var(--spacing) * 0);
+              translate: var(--tw-translate-x) var(--tw-translate-y);
+            }
+          }
+        }
+
+        .group-hover\:text-primary {
+          &:is(:where(.group):hover *) {
+            @media (hover: hover) {
+              color: var(--color-primary);
+            }
+          }
+        }
+
+        .group-hover\:opacity-100 {
+          &:is(:where(.group):hover *) {
+            @media (hover: hover) {
+              opacity: 100%;
+            }
+          }
+        }
+
+        .hover\:-translate-y-1 {
+          &:hover {
+            @media (hover: hover) {
+              --tw-translate-y: calc(var(--spacing) * -1);
+              translate: var(--tw-translate-x) var(--tw-translate-y);
+            }
+          }
+        }
+
+        .hover\:-translate-y-2 {
+          &:hover {
+            @media (hover: hover) {
+              --tw-translate-y: calc(var(--spacing) * -2);
+              translate: var(--tw-translate-x) var(--tw-translate-y);
+            }
+          }
+        }
+
+        .hover\:scale-105 {
+          &:hover {
+            @media (hover: hover) {
+              --tw-scale-x: 105%;
+              --tw-scale-y: 105%;
+              --tw-scale-z: 105%;
+              scale: var(--tw-scale-x) var(--tw-scale-y);
+            }
+          }
+        }
+
+        .hover\:scale-110 {
+          &:hover {
+            @media (hover: hover) {
+              --tw-scale-x: 110%;
+              --tw-scale-y: 110%;
+              --tw-scale-z: 110%;
+              scale: var(--tw-scale-x) var(--tw-scale-y);
+            }
+          }
+        }
+
+        .hover\:bg-border {
+          &:hover {
+            @media (hover: hover) {
+              background-color: var(--color-border);
+            }
+          }
+        }
+
+        .hover\:bg-muted {
+          &:hover {
+            @media (hover: hover) {
+              background-color: var(--color-muted);
+            }
+          }
+        }
+
+        .hover\:text-foreground {
+          &:hover {
+            @media (hover: hover) {
+              color: var(--color-foreground);
+            }
+          }
+        }
+
+        .hover\:underline {
+          &:hover {
+            @media (hover: hover) {
+              text-decoration-line: underline;
+            }
+          }
+        }
+
+        .hover\:shadow-md {
+          &:hover {
+            @media (hover: hover) {
+              --tw-shadow:
+                0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
+                0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+              box-shadow:
+                var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+                var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+                var(--tw-shadow);
+            }
+          }
+        }
+
+        .hover\:shadow-xl {
+          &:hover {
+            @media (hover: hover) {
+              --tw-shadow:
+                0 20px 25px -5px var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
+                0 8px 10px -6px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+              box-shadow:
+                var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+                var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+                var(--tw-shadow);
+            }
+          }
+        }
+
+        .sm\:grid-cols-2 {
+          @media (width >=40rem) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        .sm\:flex-row {
+          @media (width >=40rem) {
+            flex-direction: row;
+          }
+        }
+
+        .sm\:items-center {
+          @media (width >=40rem) {
             align-items: center;
           }
-          .items-start {
+        }
+
+        .sm\:items-start {
+          @media (width >=40rem) {
             align-items: flex-start;
           }
-          .justify-between {
-            justify-content: space-between;
-          }
-          .justify-center {
-            justify-content: center;
-          }
-          .gap-1 {
-            gap: calc(var(--spacing) * 1);
-          }
-          .gap-1\.5 {
-            gap: calc(var(--spacing) * 1.5);
-          }
-          .gap-2 {
-            gap: calc(var(--spacing) * 2);
-          }
-          .gap-3 {
-            gap: calc(var(--spacing) * 3);
-          }
-          .gap-4 {
-            gap: calc(var(--spacing) * 4);
-          }
-          .gap-6 {
-            gap: calc(var(--spacing) * 6);
-          }
-          .gap-8 {
-            gap: calc(var(--spacing) * 8);
-          }
-          .gap-10 {
+        }
+
+        .sm\:gap-10 {
+          @media (width >=40rem) {
             gap: calc(var(--spacing) * 10);
           }
-          .self-center {
-            align-self: center;
-          }
-          .overflow-hidden {
-            overflow: hidden;
-          }
-          .overflow-x-auto {
-            overflow-x: auto;
-          }
-          .rounded-2xl {
-            border-radius: var(--radius-2xl);
-          }
-          .rounded-3xl {
-            border-radius: var(--radius-3xl);
-          }
-          .rounded-\[32px\] {
-            border-radius: 32px;
-          }
-          .rounded-\[40px\] {
-            border-radius: 40px;
-          }
-          .rounded-full {
-            border-radius: calc(infinity * 1px);
-          }
-          .rounded-lg {
-            border-radius: var(--radius-lg);
-          }
-          .rounded-md {
-            border-radius: var(--radius-md);
-          }
-          .rounded-xl {
-            border-radius: var(--radius-xl);
-          }
-          .border {
-            border-style: var(--tw-border-style);
-            border-width: 1px;
-          }
-          .border-2 {
-            border-style: var(--tw-border-style);
-            border-width: 2px;
-          }
-          .border-4 {
-            border-style: var(--tw-border-style);
-            border-width: 4px;
-          }
-          .border-b {
-            border-bottom-style: var(--tw-border-style);
-            border-bottom-width: 1px;
-          }
-          .border-b-2 {
-            border-bottom-style: var(--tw-border-style);
-            border-bottom-width: 2px;
-          }
-          .border-\[\#e6f0f9\] {
-            border-color: #e6f0f9;
-          }
-          .border-background {
-            border-color: var(--color-background);
-          }
-          .border-border {
-            border-color: var(--color-border);
-          }
-          .border-primary {
-            border-color: var(--color-primary);
-          }
-          .border-transparent {
-            border-color: transparent;
-          }
-          .bg-\[\#fafafb\] {
-            background-color: #fafafb;
-          }
-          .bg-background {
-            background-color: var(--color-background);
-          }
-          .bg-border {
-            background-color: var(--color-border);
-          }
-          .bg-muted {
-            background-color: var(--color-muted);
-          }
-          .bg-primary {
-            background-color: var(--color-primary);
-          }
-          .bg-red-500 {
-            background-color: var(--color-red-500);
-          }
-          .bg-secondary {
-            background-color: var(--color-secondary);
-          }
-          .bg-white {
-            background-color: var(--color-white);
-          }
-          .bg-white\/90 {
-            background-color: color-mix(in srgb, #fff 90%, transparent);
-            @supports (color: color-mix(in lab, red, red)) {
-              background-color: color-mix(
-                in oklab,
-                var(--color-white) 90%,
-                transparent
-              );
-            }
-          }
-          .bg-white\/95 {
-            background-color: color-mix(in srgb, #fff 95%, transparent);
-            @supports (color: color-mix(in lab, red, red)) {
-              background-color: color-mix(
-                in oklab,
-                var(--color-white) 95%,
-                transparent
-              );
-            }
-          }
-          .object-cover {
-            object-fit: cover;
-          }
-          .p-4 {
-            padding: calc(var(--spacing) * 4);
-          }
-          .p-8 {
-            padding: calc(var(--spacing) * 8);
-          }
-          .px-3 {
-            padding-inline: calc(var(--spacing) * 3);
-          }
-          .px-4 {
-            padding-inline: calc(var(--spacing) * 4);
-          }
-          .px-6 {
-            padding-inline: calc(var(--spacing) * 6);
-          }
-          .px-8 {
-            padding-inline: calc(var(--spacing) * 8);
-          }
-          .py-1 {
-            padding-block: calc(var(--spacing) * 1);
-          }
-          .py-4 {
-            padding-block: calc(var(--spacing) * 4);
-          }
-          .pt-1 {
-            padding-top: calc(var(--spacing) * 1);
-          }
-          .pt-2 {
-            padding-top: calc(var(--spacing) * 2);
-          }
-          .pt-6 {
-            padding-top: calc(var(--spacing) * 6);
-          }
-          .pb-20 {
-            padding-bottom: calc(var(--spacing) * 20);
-          }
-          .text-center {
-            text-align: center;
-          }
-          .font-body {
-            font-family: var(--font-body);
-          }
-          .font-headings {
-            font-family: var(--font-headings);
-          }
-          .text-2xl {
-            font-size: var(--text-2xl);
-            line-height: var(--tw-leading, var(--text-2xl--line-height));
-          }
-          .text-3xl {
-            font-size: var(--text-3xl);
-            line-height: var(--tw-leading, var(--text-3xl--line-height));
-          }
-          .text-base {
-            font-size: var(--text-base);
-            line-height: var(--tw-leading, var(--text-base--line-height));
-          }
-          .text-lg {
-            font-size: var(--text-lg);
-            line-height: var(--tw-leading, var(--text-lg--line-height));
-          }
-          .text-sm {
-            font-size: var(--text-sm);
-            line-height: var(--tw-leading, var(--text-sm--line-height));
-          }
-          .text-xl {
-            font-size: var(--text-xl);
-            line-height: var(--tw-leading, var(--text-xl--line-height));
-          }
-          .text-xs {
-            font-size: var(--text-xs);
-            line-height: var(--tw-leading, var(--text-xs--line-height));
-          }
-          .text-\[13px\] {
-            font-size: 13px;
-          }
-          .text-\[14px\] {
-            font-size: 14px;
-          }
-          .text-\[15px\] {
-            font-size: 15px;
-          }
-          .text-\[28px\] {
-            font-size: 28px;
-          }
-          .leading-none {
-            --tw-leading: 1;
-            line-height: 1;
-          }
-          .leading-relaxed {
-            --tw-leading: var(--leading-relaxed);
-            line-height: var(--leading-relaxed);
-          }
-          .leading-tight {
-            --tw-leading: var(--leading-tight);
-            line-height: var(--leading-tight);
-          }
-          .font-black {
-            --tw-font-weight: var(--font-weight-black);
-            font-weight: var(--font-weight-black);
-          }
-          .font-bold {
-            --tw-font-weight: var(--font-weight-bold);
-            font-weight: var(--font-weight-bold);
-          }
-          .font-medium {
-            --tw-font-weight: var(--font-weight-medium);
-            font-weight: var(--font-weight-medium);
-          }
-          .font-semibold {
-            --tw-font-weight: var(--font-weight-semibold);
-            font-weight: var(--font-weight-semibold);
-          }
-          .tracking-wider {
-            --tw-tracking: var(--tracking-wider);
-            letter-spacing: var(--tracking-wider);
-          }
-          .whitespace-nowrap {
-            white-space: nowrap;
-          }
-          .text-foreground {
-            color: var(--color-foreground);
-          }
-          .text-muted-foreground {
-            color: var(--color-muted-foreground);
-          }
-          .text-primary {
-            color: var(--color-primary);
-          }
-          .text-white {
-            color: var(--color-white);
-          }
-          .uppercase {
-            text-transform: uppercase;
-          }
-          .opacity-0 {
-            opacity: 0%;
-          }
-          .shadow-md {
-            --tw-shadow:
-              0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
-              0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
-            box-shadow:
-              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
-              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
-              var(--tw-shadow);
-          }
-          .shadow-sm {
-            --tw-shadow:
-              0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
-              0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
-            box-shadow:
-              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
-              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
-              var(--tw-shadow);
-          }
-          .backdrop-blur-md {
-            --tw-backdrop-blur: blur(var(--blur-md));
-            -webkit-backdrop-filter: var(--tw-backdrop-blur,)
-              var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,)
-              var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
-              var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,)
-              var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-            backdrop-filter: var(--tw-backdrop-blur,)
-              var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,)
-              var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
-              var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,)
-              var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-          }
-          .backdrop-blur-sm {
-            --tw-backdrop-blur: blur(var(--blur-sm));
-            -webkit-backdrop-filter: var(--tw-backdrop-blur,)
-              var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,)
-              var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
-              var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,)
-              var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-            backdrop-filter: var(--tw-backdrop-blur,)
-              var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,)
-              var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
-              var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,)
-              var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-          }
-          .transition-all {
-            transition-property: all;
-            transition-timing-function: var(
-              --tw-ease,
-              var(--default-transition-timing-function)
-            );
-            transition-duration: var(
-              --tw-duration,
-              var(--default-transition-duration)
-            );
-          }
-          .transition-colors {
-            transition-property:
-              color, background-color, border-color, outline-color,
-              text-decoration-color, fill, stroke, --tw-gradient-from,
-              --tw-gradient-via, --tw-gradient-to;
-            transition-timing-function: var(
-              --tw-ease,
-              var(--default-transition-timing-function)
-            );
-            transition-duration: var(
-              --tw-duration,
-              var(--default-transition-duration)
-            );
-          }
-          .transition-opacity {
-            transition-property: opacity;
-            transition-timing-function: var(
-              --tw-ease,
-              var(--default-transition-timing-function)
-            );
-            transition-duration: var(
-              --tw-duration,
-              var(--default-transition-duration)
-            );
-          }
-          .transition-transform {
-            transition-property: transform, translate, scale, rotate;
-            transition-timing-function: var(
-              --tw-ease,
-              var(--default-transition-timing-function)
-            );
-            transition-duration: var(
-              --tw-duration,
-              var(--default-transition-duration)
-            );
-          }
-          .group-hover\:translate-y-0 {
-            &:is(:where(.group):hover *) {
-              @media (hover: hover) {
-                --tw-translate-y: calc(var(--spacing) * 0);
-                translate: var(--tw-translate-x) var(--tw-translate-y);
-              }
-            }
-          }
-          .group-hover\:text-primary {
-            &:is(:where(.group):hover *) {
-              @media (hover: hover) {
-                color: var(--color-primary);
-              }
-            }
-          }
-          .group-hover\:opacity-100 {
-            &:is(:where(.group):hover *) {
-              @media (hover: hover) {
-                opacity: 100%;
-              }
-            }
-          }
-          .hover\:-translate-y-1 {
-            &:hover {
-              @media (hover: hover) {
-                --tw-translate-y: calc(var(--spacing) * -1);
-                translate: var(--tw-translate-x) var(--tw-translate-y);
-              }
-            }
-          }
-          .hover\:-translate-y-2 {
-            &:hover {
-              @media (hover: hover) {
-                --tw-translate-y: calc(var(--spacing) * -2);
-                translate: var(--tw-translate-x) var(--tw-translate-y);
-              }
-            }
-          }
-          .hover\:scale-105 {
-            &:hover {
-              @media (hover: hover) {
-                --tw-scale-x: 105%;
-                --tw-scale-y: 105%;
-                --tw-scale-z: 105%;
-                scale: var(--tw-scale-x) var(--tw-scale-y);
-              }
-            }
-          }
-          .hover\:scale-110 {
-            &:hover {
-              @media (hover: hover) {
-                --tw-scale-x: 110%;
-                --tw-scale-y: 110%;
-                --tw-scale-z: 110%;
-                scale: var(--tw-scale-x) var(--tw-scale-y);
-              }
-            }
-          }
-          .hover\:bg-border {
-            &:hover {
-              @media (hover: hover) {
-                background-color: var(--color-border);
-              }
-            }
-          }
-          .hover\:bg-muted {
-            &:hover {
-              @media (hover: hover) {
-                background-color: var(--color-muted);
-              }
-            }
-          }
-          .hover\:text-foreground {
-            &:hover {
-              @media (hover: hover) {
-                color: var(--color-foreground);
-              }
-            }
-          }
-          .hover\:underline {
-            &:hover {
-              @media (hover: hover) {
-                text-decoration-line: underline;
-              }
-            }
-          }
-          .hover\:opacity-90 {
-            &:hover {
-              @media (hover: hover) {
-                opacity: 90%;
-              }
-            }
-          }
-          .hover\:shadow-md {
-            &:hover {
-              @media (hover: hover) {
-                --tw-shadow:
-                  0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
-                  0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
-                box-shadow:
-                  var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
-                  var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
-                  var(--tw-shadow);
-              }
-            }
-          }
-          .hover\:shadow-xl {
-            &:hover {
-              @media (hover: hover) {
-                --tw-shadow:
-                  0 20px 25px -5px var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
-                  0 8px 10px -6px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
-                box-shadow:
-                  var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
-                  var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
-                  var(--tw-shadow);
-              }
-            }
-          }
-          .sm\:grid-cols-2 {
-            @media (width >= 40rem) {
-              grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-          }
-          .sm\:flex-row {
-            @media (width >= 40rem) {
-              flex-direction: row;
-            }
-          }
-          .sm\:items-center {
-            @media (width >= 40rem) {
-              align-items: center;
-            }
-          }
-          .sm\:items-start {
-            @media (width >= 40rem) {
-              align-items: flex-start;
-            }
-          }
-          .sm\:gap-10 {
-            @media (width >= 40rem) {
-              gap: calc(var(--spacing) * 10);
-            }
-          }
-          .sm\:text-left {
-            @media (width >= 40rem) {
-              text-align: left;
-            }
-          }
-          .md\:grid-cols-3 {
-            @media (width >= 48rem) {
-              grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-          }
-          .md\:flex-row {
-            @media (width >= 48rem) {
-              flex-direction: row;
-            }
-          }
-          .md\:items-start {
-            @media (width >= 48rem) {
-              align-items: flex-start;
-            }
-          }
-          .lg\:mt-0 {
-            @media (width >= 64rem) {
-              margin-top: calc(var(--spacing) * 0);
-            }
-          }
-          .lg\:flex {
-            @media (width >= 64rem) {
-              display: flex;
-            }
-          }
-          .lg\:w-auto {
-            @media (width >= 64rem) {
-              width: auto;
-            }
-          }
-          .lg\:grid-cols-3 {
-            @media (width >= 64rem) {
-              grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-          }
-          .lg\:flex-row {
-            @media (width >= 64rem) {
-              flex-direction: row;
-            }
-          }
-          .lg\:items-center {
-            @media (width >= 64rem) {
-              align-items: center;
-            }
-          }
-          .lg\:gap-12 {
-            @media (width >= 64rem) {
-              gap: calc(var(--spacing) * 12);
-            }
-          }
-          .lg\:self-start {
-            @media (width >= 64rem) {
-              align-self: flex-start;
-            }
+        }
+
+        .sm\:text-left {
+          @media (width >=40rem) {
+            text-align: left;
           }
         }
-        @property --tw-translate-x {
-          syntax: "*";
-          inherits: false;
-          initial-value: 0;
-        }
-        @property --tw-translate-y {
-          syntax: "*";
-          inherits: false;
-          initial-value: 0;
-        }
-        @property --tw-translate-z {
-          syntax: "*";
-          inherits: false;
-          initial-value: 0;
-        }
-        @property --tw-border-style {
-          syntax: "*";
-          inherits: false;
-          initial-value: solid;
-        }
-        @property --tw-leading {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-font-weight {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-tracking {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-shadow {
-          syntax: "*";
-          inherits: false;
-          initial-value: 0 0 #0000;
-        }
-        @property --tw-shadow-color {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-shadow-alpha {
-          syntax: "<percentage>";
-          inherits: false;
-          initial-value: 100%;
-        }
-        @property --tw-inset-shadow {
-          syntax: "*";
-          inherits: false;
-          initial-value: 0 0 #0000;
-        }
-        @property --tw-inset-shadow-color {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-inset-shadow-alpha {
-          syntax: "<percentage>";
-          inherits: false;
-          initial-value: 100%;
-        }
-        @property --tw-ring-color {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-ring-shadow {
-          syntax: "*";
-          inherits: false;
-          initial-value: 0 0 #0000;
-        }
-        @property --tw-inset-ring-color {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-inset-ring-shadow {
-          syntax: "*";
-          inherits: false;
-          initial-value: 0 0 #0000;
-        }
-        @property --tw-ring-inset {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-ring-offset-width {
-          syntax: "<length>";
-          inherits: false;
-          initial-value: 0px;
-        }
-        @property --tw-ring-offset-color {
-          syntax: "*";
-          inherits: false;
-          initial-value: #fff;
-        }
-        @property --tw-ring-offset-shadow {
-          syntax: "*";
-          inherits: false;
-          initial-value: 0 0 #0000;
-        }
-        @property --tw-backdrop-blur {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-backdrop-brightness {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-backdrop-contrast {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-backdrop-grayscale {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-backdrop-hue-rotate {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-backdrop-invert {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-backdrop-opacity {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-backdrop-saturate {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-backdrop-sepia {
-          syntax: "*";
-          inherits: false;
-        }
-        @property --tw-scale-x {
-          syntax: "*";
-          inherits: false;
-          initial-value: 1;
-        }
-        @property --tw-scale-y {
-          syntax: "*";
-          inherits: false;
-          initial-value: 1;
-        }
-        @property --tw-scale-z {
-          syntax: "*";
-          inherits: false;
-          initial-value: 1;
-        }
-        @layer properties {
-          @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or
-            ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
-            *,
-            ::before,
-            ::after,
-            ::backdrop {
-              --tw-translate-x: 0;
-              --tw-translate-y: 0;
-              --tw-translate-z: 0;
-              --tw-border-style: solid;
-              --tw-leading: initial;
-              --tw-font-weight: initial;
-              --tw-tracking: initial;
-              --tw-shadow: 0 0 #0000;
-              --tw-shadow-color: initial;
-              --tw-shadow-alpha: 100%;
-              --tw-inset-shadow: 0 0 #0000;
-              --tw-inset-shadow-color: initial;
-              --tw-inset-shadow-alpha: 100%;
-              --tw-ring-color: initial;
-              --tw-ring-shadow: 0 0 #0000;
-              --tw-inset-ring-color: initial;
-              --tw-inset-ring-shadow: 0 0 #0000;
-              --tw-ring-inset: initial;
-              --tw-ring-offset-width: 0px;
-              --tw-ring-offset-color: #fff;
-              --tw-ring-offset-shadow: 0 0 #0000;
-              --tw-backdrop-blur: initial;
-              --tw-backdrop-brightness: initial;
-              --tw-backdrop-contrast: initial;
-              --tw-backdrop-grayscale: initial;
-              --tw-backdrop-hue-rotate: initial;
-              --tw-backdrop-invert: initial;
-              --tw-backdrop-opacity: initial;
-              --tw-backdrop-saturate: initial;
-              --tw-backdrop-sepia: initial;
-              --tw-scale-x: 1;
-              --tw-scale-y: 1;
-              --tw-scale-z: 1;
-            }
+
+        .md\:grid-cols-2 {
+          @media (width >=48rem) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
         }
-      </style>
-      <link
-        rel="preload"
-        as="image"
-        href="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/European/3"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="/api/flow-image/3%3A4%0Aman%20wearing%20casual%20minimalist%20everyday%20outfit%2C%20linen%20beige%20shirt%2C%20grey%20straight%20leg%20trousers%2C%20clean%20studio%20lighting"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="/api/flow-image/3%3A4%0Awoman%20wearing%20green%20tailored%20blazer%20over%20white%20blouse%2C%20dark%20grey%20trousers%2C%20business%20casual%2C%20bright%20office%20background"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="/api/flow-image/3%3A4%0Awoman%20in%20elegant%20dark%20green%20velvet%20evening%20dress%20with%20high%20slit%2C%20elegant%20high%20fashion%20lighting"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="/api/flow-image/3%3A4%0Awoman%20wearing%20sporty%20white%20tracksuit%2C%20black%20fanny%20pack%2C%20sunglasses%2C%20concrete%20background"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="/api/flow-image/3%3A4%0Awoman%20wearing%20chic%20beige%20trench%20coat%2C%20black%20slip%20dress%20beneath%2C%20burgundy%20boots%2C%20gallery%20background"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="/api/flow-image/3%3A4%0Awoman%20walking%20in%20airport%20wearing%20comfortable%20travel%20outfit%2C%20grey%20sweater%2C%20beige%20linen%20pants%2C%20large%20tote%20bag"
-      />
-    </head>
-    <body>
-      <div
-        class="flex min-h-[1000px] w-full flex-col bg-[#fafafb] font-body text-foreground"
-      >
-        <div class="flex h-20 w-full items-center bg-background px-8">
-          <div class="flex w-full items-center justify-between">
-            <div class="flex items-center gap-3">
-              <iconify-icon
-                icon="lucide:shirt"
-                class="block text-primary size-[28px]"
-                style="font-size: 28px"
-              ></iconify-icon>
-              <div class="text-xl font-bold font-headings text-foreground">
-                <span data-file="/components/Navbar.jsx" data-idx="0"
-                  >Outfit Planner</span
-                >
-              </div>
-            </div>
-            <div
-              class="hidden items-center gap-8 text-sm font-semibold text-muted-foreground lg:flex"
-            >
-              <a class="hover:text-foreground" data-media-type="banani-button"
-                ><span data-file="/components/Navbar.jsx" data-idx="1"
-                  >My Wardrobe</span
-                ></a
-              ><a class="hover:text-foreground" data-media-type="banani-button"
-                ><span data-file="/components/Navbar.jsx" data-idx="2"
-                  >Plan Outfits</span
-                ></a
-              ><a class="hover:text-foreground" data-media-type="banani-button"
-                ><span data-file="/components/Navbar.jsx" data-idx="3"
-                  >Calendar</span
-                ></a
-              ><a class="text-foreground" data-media-type="banani-button"
-                ><span data-file="/components/Navbar.jsx" data-idx="4"
-                  >Social</span
-                ></a
-              ><a class="hover:text-foreground" data-media-type="banani-button"
-                ><span data-file="/components/Navbar.jsx" data-idx="5"
-                  >Settings</span
-                ></a
-              >
-            </div>
-            <div class="flex items-center gap-6 text-muted-foreground">
-              <iconify-icon
-                icon="lucide:search"
-                class="block size-[20px]"
-                style="font-size: 20px"
-              ></iconify-icon>
-              <div class="relative">
-                <iconify-icon
-                  icon="lucide:bell"
-                  class="block size-[20px]"
-                  style="font-size: 20px"
-                ></iconify-icon>
-                <div
-                  class="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-500 border-2 border-background"
-                ></div>
-              </div>
-              <div
-                class="h-9 w-9 overflow-hidden rounded-full border-2 border-background shadow-sm"
-              >
-                <img
-                  src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/European/3"
-                  class="h-full w-full"
-                />
-              </div>
+
+        .md\:grid-cols-3 {
+          @media (width >=48rem) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+
+        .md\:flex-row {
+          @media (width >=48rem) {
+            flex-direction: row;
+          }
+        }
+
+        .md\:items-start {
+          @media (width >=48rem) {
+            align-items: flex-start;
+          }
+        }
+
+        .lg\:mt-0 {
+          @media (width >=64rem) {
+            margin-top: calc(var(--spacing) * 0);
+          }
+        }
+
+        .lg\:flex {
+          @media (width >=64rem) {
+            display: flex;
+          }
+        }
+
+        .lg\:w-auto {
+          @media (width >=64rem) {
+            width: auto;
+          }
+        }
+
+        .lg\:grid-cols-3 {
+          @media (width >=64rem) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+
+        .lg\:flex-row {
+          @media (width >=64rem) {
+            flex-direction: row;
+          }
+        }
+
+        .lg\:items-center {
+          @media (width >=64rem) {
+            align-items: center;
+          }
+        }
+
+        .lg\:gap-12 {
+          @media (width >=64rem) {
+            gap: calc(var(--spacing) * 12);
+          }
+        }
+
+        .lg\:self-start {
+          @media (width >=64rem) {
+            align-self: flex-start;
+          }
+        }
+      }
+
+      @property --tw-translate-x {
+        syntax: "*";
+        inherits: false;
+        initial-value: 0;
+      }
+
+      @property --tw-translate-y {
+        syntax: "*";
+        inherits: false;
+        initial-value: 0;
+      }
+
+      @property --tw-translate-z {
+        syntax: "*";
+        inherits: false;
+        initial-value: 0;
+      }
+
+      @property --tw-border-style {
+        syntax: "*";
+        inherits: false;
+        initial-value: solid;
+      }
+
+      @property --tw-leading {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-font-weight {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-tracking {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-shadow {
+        syntax: "*";
+        inherits: false;
+        initial-value: 0 0 #0000;
+      }
+
+      @property --tw-shadow-color {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-shadow-alpha {
+        syntax: "<percentage>";
+        inherits: false;
+        initial-value: 100%;
+      }
+
+      @property --tw-inset-shadow {
+        syntax: "*";
+        inherits: false;
+        initial-value: 0 0 #0000;
+      }
+
+      @property --tw-inset-shadow-color {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-inset-shadow-alpha {
+        syntax: "<percentage>";
+        inherits: false;
+        initial-value: 100%;
+      }
+
+      @property --tw-ring-color {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-ring-shadow {
+        syntax: "*";
+        inherits: false;
+        initial-value: 0 0 #0000;
+      }
+
+      @property --tw-inset-ring-color {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-inset-ring-shadow {
+        syntax: "*";
+        inherits: false;
+        initial-value: 0 0 #0000;
+      }
+
+      @property --tw-ring-inset {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-ring-offset-width {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+      }
+
+      @property --tw-ring-offset-color {
+        syntax: "*";
+        inherits: false;
+        initial-value: #fff;
+      }
+
+      @property --tw-ring-offset-shadow {
+        syntax: "*";
+        inherits: false;
+        initial-value: 0 0 #0000;
+      }
+
+      @property --tw-backdrop-blur {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-backdrop-brightness {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-backdrop-contrast {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-backdrop-grayscale {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-backdrop-hue-rotate {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-backdrop-invert {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-backdrop-opacity {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-backdrop-saturate {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-backdrop-sepia {
+        syntax: "*";
+        inherits: false;
+      }
+
+      @property --tw-scale-x {
+        syntax: "*";
+        inherits: false;
+        initial-value: 1;
+      }
+
+      @property --tw-scale-y {
+        syntax: "*";
+        inherits: false;
+        initial-value: 1;
+      }
+
+      @property --tw-scale-z {
+        syntax: "*";
+        inherits: false;
+        initial-value: 1;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @layer properties {
+        @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+
+          *,
+          ::before,
+          ::after,
+          ::backdrop {
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-translate-z: 0;
+            --tw-border-style: solid;
+            --tw-leading: initial;
+            --tw-font-weight: initial;
+            --tw-tracking: initial;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-color: initial;
+            --tw-shadow-alpha: 100%;
+            --tw-inset-shadow: 0 0 #0000;
+            --tw-inset-shadow-color: initial;
+            --tw-inset-shadow-alpha: 100%;
+            --tw-ring-color: initial;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-inset-ring-color: initial;
+            --tw-inset-ring-shadow: 0 0 #0000;
+            --tw-ring-inset: initial;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-backdrop-blur: initial;
+            --tw-backdrop-brightness: initial;
+            --tw-backdrop-contrast: initial;
+            --tw-backdrop-grayscale: initial;
+            --tw-backdrop-hue-rotate: initial;
+            --tw-backdrop-invert: initial;
+            --tw-backdrop-opacity: initial;
+            --tw-backdrop-saturate: initial;
+            --tw-backdrop-sepia: initial;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-scale-z: 1;
+          }
+        }
+      }
+    </style>
+    <link rel="preload" as="image"
+      href="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/European/3" />
+    <link rel="preload" as="image"
+      href="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3" />
+    <link rel="preload" as="image"
+      href="/api/flow-image/4%3A5%0Aman%20wearing%20casual%20minimalist%20everyday%20outfit%2C%20linen%20beige%20shirt%2C%20grey%20straight%20leg%20trousers%2C%20clean%20studio%20lighting" />
+    <link rel="preload" as="image"
+      href="/api/flow-image/3%3A4%0Awoman%20wearing%20green%20tailored%20blazer%20over%20white%20blouse%2C%20dark%20grey%20trousers%2C%20business%20casual%2C%20bright%20office%20background" />
+    <link rel="preload" as="image"
+      href="/api/flow-image/3%3A4%0Awoman%20wearing%20chic%20beige%20trench%20coat%2C%20black%20slip%20dress%20beneath%2C%20burgundy%20boots%2C%20gallery%20background" />
+    <link rel="preload" as="image"
+      href="/api/flow-image/4%3A5%0Awoman%20in%20elegant%20dark%20green%20velvet%20evening%20dress%20with%20high%20slit%2C%20elegant%20high%20fashion%20lighting" />
+  </head>
+
+  <body>
+    <div class="flex min-h-[1000px] w-full flex-col bg-[#fafafb] font-body text-foreground">
+      <div class="flex h-20 w-full items-center bg-background px-8">
+        <div class="flex w-full items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:shirt" class="block text-primary size-[28px]"
+              style="font-size: 28px"></iconify-icon>
+            <div class="text-xl font-bold font-headings text-foreground">
+              <span data-file="/components/Navbar.jsx" data-idx="0">Outfit Planner</span>
             </div>
           </div>
-        </div>
-        <div class="mx-auto flex w-full max-w-[1200px] flex-col px-6 pb-20">
-          <div class="mt-8 flex w-full">
-            <button
-              class="flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-border text-foreground hover:bg-muted shadow-sm transition-colors"
-              data-media-type="banani-button"
-            >
-              <iconify-icon
-                icon="lucide:arrow-left"
-                class="block size-[20px]"
-                style="font-size: 20px"
-              ></iconify-icon>
-            </button>
+          <div class="hidden items-center gap-8 text-sm font-semibold text-muted-foreground lg:flex">
+            <a class="hover:text-foreground" data-media-type="banani-button"><span data-file="/components/Navbar.jsx"
+                data-idx="1">My Wardrobe</span></a><a class="hover:text-foreground"
+              data-media-type="banani-button"><span data-file="/components/Navbar.jsx" data-idx="2">Plan
+                Outfits</span></a><a class="hover:text-foreground" data-media-type="banani-button"><span
+                data-file="/components/Navbar.jsx" data-idx="3">Calendar</span></a><a class="text-foreground"
+              data-media-type="banani-button"><span data-file="/components/Navbar.jsx" data-idx="4">Social</span></a><a
+              class="hover:text-foreground" data-media-type="banani-button"><span data-file="/components/Navbar.jsx"
+                data-idx="5">Settings</span></a>
           </div>
-          <div
-            class="mt-8 flex w-full flex-col lg:flex-row items-center lg:items-center justify-between gap-8 rounded-xl bg-white p-8 border border-border shadow-sm"
-          >
-            <div
-              class="flex flex-col sm:flex-row items-center sm:items-start gap-8 w-full lg:w-auto"
-            >
-              <div
-                class="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border-4 border-[#e6f0f9]"
-              >
-                <img
-                  src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
-                  class="h-full w-full object-cover"
-                />
-              </div>
-              <div class="flex flex-col items-center sm:items-start pt-1">
-                <h1
-                  class="text-[28px] font-bold font-headings text-foreground leading-tight"
-                >
-                  <span data-file="/screens/new_screen1.jsx" data-idx="0"
-                    >Emily Chen</span
-                  >
-                </h1>
-                <span class="text-[15px] text-muted-foreground mt-1 mb-3"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="1"
-                    >@emily_styles</span
-                  ></span
-                >
-                <p
-                  class="text-[15px] text-foreground mb-5 text-center sm:text-left max-w-[400px] leading-relaxed"
-                >
-                  <span data-file="/screens/new_screen1.jsx" data-idx="2"
-                    >Minimalist fashion lover. Mixing neutral colors &amp;
-                    timeless pieces. 👛✨</span
-                  >
-                </p>
-                <button
-                  class="flex h-[38px] items-center justify-center gap-2 rounded-md bg-primary px-6 text-[14px] font-semibold text-white shadow-sm hover:opacity-90 transition-opacity"
-                  data-media-type="banani-button"
-                >
-                  <iconify-icon
-                    icon="lucide:user-plus"
-                    class="block size-[16px]"
-                    style="font-size: 16px"
-                  ></iconify-icon
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="3"
-                    >Follow</span
-                  >
-                </button>
-              </div>
+          <div class="flex items-center gap-6 text-muted-foreground">
+            <iconify-icon icon="lucide:search" class="block size-[20px]" style="font-size: 20px"></iconify-icon>
+            <div class="relative">
+              <iconify-icon icon="lucide:bell" class="block size-[20px]" style="font-size: 20px"></iconify-icon>
+              <div class="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-500 border-2 border-background"></div>
             </div>
-            <div
-              class="flex items-center gap-6 sm:gap-10 mt-6 lg:mt-0 px-4 self-center lg:self-start pt-6"
-            >
-              <div class="flex flex-col items-center">
-                <span
-                  class="text-[28px] font-black text-foreground leading-none"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="4"
-                    >38</span
-                  ></span
-                ><span class="text-[13px] text-muted-foreground mt-2"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="5"
-                    >Outfits</span
-                  ></span
-                >
-              </div>
-              <div class="h-10 w-px bg-border"></div>
-              <div class="flex flex-col items-center">
-                <span
-                  class="text-[28px] font-black text-foreground leading-none"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="6"
-                    >142</span
-                  ></span
-                ><span class="text-[13px] text-muted-foreground mt-2"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="7"
-                    >Items</span
-                  ></span
-                >
-              </div>
-              <div class="h-10 w-px bg-border"></div>
-              <div class="flex flex-col items-center">
-                <span
-                  class="text-[28px] font-black text-foreground leading-none"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="8"
-                    >1.2k</span
-                  ></span
-                ><span class="text-[13px] text-muted-foreground mt-2"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="9"
-                    >Followers</span
-                  ></span
-                >
-              </div>
-              <div class="h-10 w-px bg-border"></div>
-              <div class="flex flex-col items-center">
-                <span
-                  class="text-[28px] font-black text-foreground leading-none"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="10"
-                    >450</span
-                  ></span
-                ><span class="text-[13px] text-muted-foreground mt-2"
-                  ><span data-file="/screens/new_screen1.jsx" data-idx="11"
-                    >Following</span
-                  ></span
-                >
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex w-full items-center gap-8 border-b border-border text-sm font-bold text-muted-foreground mt-8 mb-6 overflow-x-auto"
-          >
-            <button
-              class="flex h-12 items-center justify-center whitespace-nowrap transition-colors border-b-2 border-primary text-primary"
-              data-media-type="banani-button"
-            >
-              <span data-file="/components/TabNav.jsx" data-idx="0"
-                >Outfits (38)</span
-              ></button
-            ><button
-              class="flex h-12 items-center justify-center whitespace-nowrap transition-colors border-b-2 border-transparent hover:text-foreground"
-              data-media-type="banani-button"
-            >
-              <span data-file="/components/TabNav.jsx" data-idx="1"
-                >Activity</span
-              ></button
-            ><button
-              class="flex h-12 items-center justify-center whitespace-nowrap transition-colors border-b-2 border-transparent hover:text-foreground"
-              data-media-type="banani-button"
-            >
-              <span data-file="/components/TabNav.jsx" data-idx="2"
-                >Followers</span
-              ></button
-            ><button
-              class="flex h-12 items-center justify-center whitespace-nowrap transition-colors border-b-2 border-transparent hover:text-foreground"
-              data-media-type="banani-button"
-            >
-              <span data-file="/components/TabNav.jsx" data-idx="3"
-                >Following</span
-              >
-            </button>
-          </div>
-          <div
-            class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"
-          >
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="man wearing casual minimalist everyday outfit, linen beige shirt, grey straight leg trousers, clean studio lighting"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/7b61b915-4cfc-4635-8382-cea237a1689d.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
-                >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="0"
-                    >Casual</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="1"
-                    >Weekend Coffee Run</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span data-file="/components/OutfitGridV2.jsx" data-idx="2"
-                      >Spring • 3 items</span
-                    ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="3"
-                        >245</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman wearing green tailored blazer over white blouse, dark grey trousers, business casual, bright office background"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/c155cf0d-02e1-41d8-8dbe-91cc957aeacb.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
-                >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="4"
-                    >Business Casual</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="5"
-                    >Office Meeting Look</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span data-file="/components/OutfitGridV2.jsx" data-idx="6"
-                      >Fall • 4 items</span
-                    ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="7"
-                        >182</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman in elegant dark green velvet evening dress with high slit, elegant high fashion lighting"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/0d6cd192-bdd4-415a-bfb7-966c4ebc2717.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
-                >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="8"
-                    >Evening</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="9"
-                    >Dinner Date</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span
-                      data-file="/components/OutfitGridV2.jsx"
-                      data-idx="10"
-                      >Summer • 2 items</span
-                    ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="11"
-                        >310</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman wearing sporty white tracksuit, black fanny pack, sunglasses, concrete background"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/3bb129bd-5087-4b27-9422-bfa904d68d91.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
-                >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="12"
-                    >Sporty</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="13"
-                    >Sunday Errands</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span
-                      data-file="/components/OutfitGridV2.jsx"
-                      data-idx="14"
-                      >Spring • 3 items</span
-                    ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="15"
-                        >124</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman wearing chic beige trench coat, black slip dress beneath, burgundy boots, gallery background"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/fc9d1233-9605-4f8f-8ca7-ef8f62980c4a.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
-                >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="16"
-                    >Formal</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="17"
-                    >Gallery Opening</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span
-                      data-file="/components/OutfitGridV2.jsx"
-                      data-idx="18"
-                      >Winter • 4 items</span
-                    ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="19"
-                        >456</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="group flex flex-col overflow-hidden rounded-xl bg-white border border-border shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer"
-              data-media-type="banani-button"
-            >
-              <div
-                class="relative aspect-[3/4] w-full overflow-hidden bg-muted"
-              >
-                <img
-                  data-query="woman walking in airport wearing comfortable travel outfit, grey sweater, beige linen pants, large tote bag"
-                  data-aspect-ratio="3:4"
-                  style="aspect-ratio: 3/4"
-                  src="https://storage.googleapis.com/banani-generated-images/generated-images/8423842d-740f-4d0b-9b3f-e0c23c58f836.jpg"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-foreground shadow-sm backdrop-blur-sm"
-                >
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="20"
-                    >Travel</span
-                  >
-                </div>
-              </div>
-              <div class="flex flex-col p-4 bg-white">
-                <h3 class="text-[15px] font-bold text-foreground mb-1">
-                  <span data-file="/components/OutfitGridV2.jsx" data-idx="21"
-                    >Airport Look</span
-                  >
-                </h3>
-                <div class="flex items-center justify-between mt-1">
-                  <span class="text-[13px] text-muted-foreground"
-                    ><span
-                      data-file="/components/OutfitGridV2.jsx"
-                      data-idx="22"
-                      >Fall • 5 items</span
-                    ></span
-                  >
-                  <div
-                    class="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-primary"
-                  >
-                    <iconify-icon
-                      icon="lucide:heart"
-                      class="block size-[14px]"
-                      style="font-size: 14px"
-                    ></iconify-icon
-                    ><span class="text-[13px]"
-                      ><span
-                        data-file="/components/OutfitGridV2.jsx"
-                        data-idx="23"
-                        >289</span
-                      ></span
-                    >
-                  </div>
-                </div>
-              </div>
+            <div class="h-9 w-9 overflow-hidden rounded-full border-2 border-background shadow-sm">
+              <img src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/European/3"
+                class="h-full w-full" />
             </div>
           </div>
         </div>
       </div>
-    </body>
+      <div class="mx-auto flex w-full max-w-[1200px] flex-col px-6 pb-20">
+        <div class="mt-8 flex w-full">
+          <button
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-border text-foreground shadow-sm"
+            data-media-type="banani-button">
+            <iconify-icon icon="lucide:arrow-left" class="block size-[20px]" style="font-size: 20px"></iconify-icon>
+          </button>
+        </div>
+        <div
+          class="mt-8 flex w-full flex-col lg:flex-row items-center lg:items-center justify-between gap-8 rounded-xl bg-white p-8 border border-border shadow-sm">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-8 w-full lg:w-auto">
+            <div class="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border-4 border-[#e6f0f9]">
+              <img src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
+                class="h-full w-full object-cover" />
+            </div>
+            <div class="flex flex-col items-center sm:items-start pt-1">
+              <h1 class="text-[28px] font-bold font-headings text-foreground leading-tight">
+                <span data-file="/screens/new_screen1.jsx" data-idx="0">Emily Chen</span>
+              </h1>
+              <span class="text-[15px] text-muted-foreground mt-1 mb-3"><span data-file="/screens/new_screen1.jsx"
+                  data-idx="1">@emily_styles</span></span>
+              <p class="text-[15px] text-foreground mb-5 text-center sm:text-left max-w-[400px] leading-relaxed">
+                <span data-file="/screens/new_screen1.jsx" data-idx="2">Minimalist fashion lover. Mixing neutral colors
+                  &amp;
+                  timeless pieces. 👛✨</span>
+              </p>
+              <button
+                class="flex h-[38px] items-center justify-center gap-2 rounded-md bg-primary px-6 text-[14px] font-semibold text-white shadow-sm"
+                data-media-type="banani-button">
+                <iconify-icon icon="lucide:user-plus" class="block size-[16px]"
+                  style="font-size: 16px"></iconify-icon><span data-file="/screens/new_screen1.jsx"
+                  data-idx="3">Follow</span>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 sm:gap-10 mt-6 lg:mt-0 px-4 self-center lg:self-start pt-6">
+            <div class="flex flex-col items-center">
+              <span class="text-[28px] font-black text-foreground leading-none"><span
+                  data-file="/screens/new_screen1.jsx" data-idx="4">38</span></span><span
+                class="text-[13px] text-muted-foreground mt-2"><span data-file="/screens/new_screen1.jsx"
+                  data-idx="5">Outfits</span></span>
+            </div>
+            <div class="h-10 w-px bg-border"></div>
+            <div class="flex flex-col items-center">
+              <span class="text-[28px] font-black text-foreground leading-none"><span
+                  data-file="/screens/new_screen1.jsx" data-idx="6">142</span></span><span
+                class="text-[13px] text-muted-foreground mt-2"><span data-file="/screens/new_screen1.jsx"
+                  data-idx="7">Items</span></span>
+            </div>
+            <div class="h-10 w-px bg-border"></div>
+            <div class="flex flex-col items-center">
+              <span class="text-[28px] font-black text-foreground leading-none"><span
+                  data-file="/screens/new_screen1.jsx" data-idx="8">1.2k</span></span><span
+                class="text-[13px] text-muted-foreground mt-2"><span data-file="/screens/new_screen1.jsx"
+                  data-idx="9">Followers</span></span>
+            </div>
+            <div class="h-10 w-px bg-border"></div>
+            <div class="flex flex-col items-center">
+              <span class="text-[28px] font-black text-foreground leading-none"><span
+                  data-file="/screens/new_screen1.jsx" data-idx="10">450</span></span><span
+                class="text-[13px] text-muted-foreground mt-2"><span data-file="/screens/new_screen1.jsx"
+                  data-idx="11">Following</span></span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex w-full items-center gap-8 border-b border-border text-sm font-bold text-muted-foreground mt-8 mb-6 overflow-x-auto">
+          <button class="flex h-12 items-center justify-center whitespace-nowrap border-b-2 border-primary text-primary"
+            data-media-type="banani-button">
+            <span data-file="/components/TabNav.jsx" data-idx="0">Activity</span></button><button
+            class="flex h-12 items-center justify-center whitespace-nowrap border-b-2 border-transparent"
+            data-media-type="banani-button">
+            <span data-file="/components/TabNav.jsx" data-idx="1">Followers</span></button><button
+            class="flex h-12 items-center justify-center whitespace-nowrap border-b-2 border-transparent"
+            data-media-type="banani-button">
+            <span data-file="/components/TabNav.jsx" data-idx="2">Following</span>
+          </button>
+        </div>
+        <div class="flex flex-col gap-8 w-full max-w-2xl mx-auto pb-20">
+          <div class="flex flex-col rounded-xl bg-white border border-border shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between p-4">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 overflow-hidden rounded-full border border-border">
+                  <img src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
+                    class="h-full w-full object-cover" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-foreground"><span data-file="/components/ActivityFeed.jsx"
+                      data-idx="0">Emily Chen</span></span><span class="text-xs text-muted-foreground"><span
+                      data-file="/components/ActivityFeed.jsx" data-idx="1">2 hours ago</span></span>
+                </div>
+              </div>
+              <button class="text-muted-foreground" data-media-type="banani-button">
+                <iconify-icon icon="lucide:more-horizontal" class="block size-[20px]"
+                  style="font-size: 20px"></iconify-icon>
+              </button>
+            </div>
+            <div class="px-4 pb-3 text-sm text-foreground">
+              <span data-file="/components/ActivityFeed.jsx" data-idx="2">Loving this casual look for the weekend! The
+                linen shirt is a
+                game changer. ☕</span>
+            </div>
+            <div class="relative aspect-[4/5] w-full bg-muted">
+              <img
+                data-query="man wearing casual minimalist everyday outfit, linen beige shirt, grey straight leg trousers, clean studio lighting"
+                data-aspect-ratio="4:5" style="aspect-ratio: 4/5"
+                src="https://storage.googleapis.com/banani-generated-images/generated-images/e38adde2-7cdf-4105-8566-4d5dddb13fa5.jpg"
+                class="w-full h-full object-cover" />
+            </div>
+            <div class="flex items-center gap-6 p-4">
+              <button class="flex items-center gap-2 text-primary" data-media-type="banani-button">
+                <iconify-icon icon="lucide:heart" class="block size-[20px]" style="font-size: 20px"></iconify-icon><span
+                  class="text-sm font-semibold"><span data-file="/components/ActivityFeed.jsx"
+                    data-idx="3">245</span></span></button><button class="flex items-center gap-2 text-muted-foreground"
+                data-media-type="banani-button">
+                <iconify-icon icon="lucide:message-circle" class="block size-[20px]"
+                  style="font-size: 20px"></iconify-icon><span class="text-sm font-semibold"><span
+                    data-file="/components/ActivityFeed.jsx" data-idx="4">18</span></span></button><button
+                class="flex items-center gap-2 text-muted-foreground ml-auto" data-media-type="banani-button">
+                <iconify-icon icon="lucide:bookmark" class="block size-[20px]" style="font-size: 20px"></iconify-icon>
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col rounded-xl bg-white border border-border shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between p-4">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 overflow-hidden rounded-full border border-border">
+                  <img src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
+                    class="h-full w-full object-cover" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-foreground"><span data-file="/components/ActivityFeed.jsx"
+                      data-idx="5">Emily Chen</span></span><span class="text-xs text-muted-foreground"><span
+                      data-file="/components/ActivityFeed.jsx" data-idx="6">5 hours ago</span></span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
+                <iconify-icon icon="lucide:bar-chart-2" class="block size-[14px]"
+                  style="font-size: 14px"></iconify-icon><span data-file="/components/ActivityFeed.jsx"
+                  data-idx="7">Poll</span>
+              </div>
+            </div>
+            <div class="px-4 pb-3 text-sm text-foreground font-medium">
+              <span data-file="/components/ActivityFeed.jsx" data-idx="8">Help me choose an outfit for my office meeting
+                tomorrow!
+                Option A or B? 👔</span>
+            </div>
+            <div class="flex w-full gap-1 px-4 pb-4">
+              <div class="relative flex-1 aspect-[3/4] rounded-l-lg overflow-hidden border border-border">
+                <img
+                  data-query="woman wearing green tailored blazer over white blouse, dark grey trousers, business casual, bright office background"
+                  data-aspect-ratio="3:4" style="aspect-ratio: 3/4"
+                  src="https://storage.googleapis.com/banani-generated-images/generated-images/c155cf0d-02e1-41d8-8dbe-91cc957aeacb.jpg"
+                  class="w-full h-full object-cover" /><button
+                  class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 px-6 py-2 rounded-full font-bold text-sm shadow-sm text-foreground"
+                  data-media-type="banani-button">
+                  <span data-file="/components/ActivityFeed.jsx" data-idx="9">Vote A (64%)</span>
+                </button>
+              </div>
+              <div class="relative flex-1 aspect-[3/4] rounded-r-lg overflow-hidden border border-border">
+                <img
+                  data-query="woman wearing chic beige trench coat, black slip dress beneath, burgundy boots, gallery background"
+                  data-aspect-ratio="3:4" style="aspect-ratio: 3/4"
+                  src="https://storage.googleapis.com/banani-generated-images/generated-images/fc9d1233-9605-4f8f-8ca7-ef8f62980c4a.jpg"
+                  class="w-full h-full object-cover" /><button
+                  class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 px-6 py-2 rounded-full font-bold text-sm shadow-sm text-foreground"
+                  data-media-type="banani-button">
+                  <span data-file="/components/ActivityFeed.jsx" data-idx="10">Vote B (36%)</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-6 px-4 pb-4">
+              <div class="flex items-center gap-2 text-muted-foreground">
+                <iconify-icon icon="lucide:users" class="block size-[18px]" style="font-size: 18px"></iconify-icon><span
+                  class="text-sm font-medium"><span data-file="/components/ActivityFeed.jsx" data-idx="11">1,204
+                    votes</span></span>
+              </div>
+              <button class="flex items-center gap-2 text-muted-foreground ml-auto" data-media-type="banani-button">
+                <iconify-icon icon="lucide:message-circle" class="block size-[20px]"
+                  style="font-size: 20px"></iconify-icon><span class="text-sm font-semibold"><span
+                    data-file="/components/ActivityFeed.jsx" data-idx="12">42</span></span>
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col rounded-xl bg-white border border-border shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between p-4">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 overflow-hidden rounded-full border border-border">
+                  <img src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/3"
+                    class="h-full w-full object-cover" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-foreground"><span data-file="/components/ActivityFeed.jsx"
+                      data-idx="13">Emily Chen</span></span><span class="text-xs text-muted-foreground"><span
+                      data-file="/components/ActivityFeed.jsx" data-idx="14">Yesterday</span></span>
+                </div>
+              </div>
+              <button class="text-muted-foreground" data-media-type="banani-button">
+                <iconify-icon icon="lucide:more-horizontal" class="block size-[20px]"
+                  style="font-size: 20px"></iconify-icon>
+              </button>
+            </div>
+            <div class="px-4 pb-3 text-sm text-foreground">
+              <span data-file="/components/ActivityFeed.jsx" data-idx="15">Ready for dinner ✨ Obsessed with this velvet
+                dress.</span>
+            </div>
+            <div class="relative aspect-[4/5] w-full bg-muted">
+              <img
+                data-query="woman in elegant dark green velvet evening dress with high slit, elegant high fashion lighting"
+                data-aspect-ratio="4:5" style="aspect-ratio: 4/5"
+                src="https://storage.googleapis.com/banani-generated-images/generated-images/4507894e-7faa-4e81-b14a-623e4260414d.jpg"
+                class="w-full h-full object-cover" />
+            </div>
+            <div class="flex items-center gap-6 p-4">
+              <button class="flex items-center gap-2 text-muted-foreground" data-media-type="banani-button">
+                <iconify-icon icon="lucide:heart" class="block size-[20px]" style="font-size: 20px"></iconify-icon><span
+                  class="text-sm font-semibold"><span data-file="/components/ActivityFeed.jsx"
+                    data-idx="16">310</span></span></button><button
+                class="flex items-center gap-2 text-muted-foreground" data-media-type="banani-button">
+                <iconify-icon icon="lucide:message-circle" class="block size-[20px]"
+                  style="font-size: 20px"></iconify-icon><span class="text-sm font-semibold"><span
+                    data-file="/components/ActivityFeed.jsx" data-idx="17">24</span></span></button><button
+                class="flex items-center gap-2 text-muted-foreground ml-auto" data-media-type="banani-button">
+                <iconify-icon icon="lucide:bookmark" class="block size-[20px]" style="font-size: 20px"></iconify-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
   </html>
   <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 </div>

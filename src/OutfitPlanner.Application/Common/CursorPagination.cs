@@ -22,6 +22,17 @@ public static class CursorPagination
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
     }
 
+    public static string CreateTrendingCursor(decimal score, Guid id)
+    {
+        var cursorData = new TrendingCursorData
+        {
+            Score = score,
+            Id = id
+        };
+        var json = JsonSerializer.Serialize(cursorData);
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+    }
+
     /// <summary>
     /// Decodes a cursor string back to CreatedAt and Id
     /// </summary>
@@ -34,6 +45,22 @@ public static class CursorPagination
         {
             var json = Encoding.UTF8.GetString(Convert.FromBase64String(cursor));
             return JsonSerializer.Deserialize<CursorData>(json);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public static TrendingCursorData? DecodeTrendingCursor(string? cursor)
+    {
+        if (string.IsNullOrEmpty(cursor))
+            return null;
+
+        try
+        {
+            var json = Encoding.UTF8.GetString(Convert.FromBase64String(cursor));
+            return JsonSerializer.Deserialize<TrendingCursorData>(json);
         }
         catch
         {
@@ -61,3 +88,10 @@ public class CursorData
     public DateTimeOffset CreatedAt { get; set; }
     public Guid Id { get; set; }
 }
+
+public class TrendingCursorData
+{
+    public decimal Score { get; set; }
+    public Guid Id { get; set; }
+}
+

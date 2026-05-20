@@ -1,0 +1,154 @@
+<div class="desktop-container">
+  <!-- Header -->
+  <header class="page-header">
+    <button class="back-btn" (click)="onBack()" title="Go Back">
+      <iconify-icon icon="lucide:arrow-left" style="font-size: 22px"></iconify-icon>
+    </button>
+    <h1 class="page-title">Poll Details</h1>
+  </header>
+
+  @if (pollPost(); as post) {
+    @if (post.poll; as p) {
+      <div class="main-layout">
+        <!-- Left Column: Poll Section -->
+        <div class="poll-section">
+          <!-- Author -->
+          <div class="poll-author" style="display: flex; align-items: center; width: 100%;">
+            <img
+              [src]="pollAuthorAvatar"
+              alt="Author"
+              class="author-avatar"
+              (click)="goToUserProfile(post.userId)"
+              style="cursor: pointer;"
+            />
+            <div class="author-info">
+              <span class="author-name" style="cursor: pointer;" (click)="goToUserProfile(post.userId)">{{ pollAuthorName }}</span>
+              <span class="poll-time">Posted {{ getTimeAgo(p.createdAt) }} • Style Advice</span>
+            </div>
+
+            @if (isOwner()) {
+            <div class="post-menu-container" (click)="$event.stopPropagation()" style="position: relative; display: inline-block; margin-left: auto;">
+              <button class="post-menu-btn" (click)="toggleMenu($event)" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: #718096; border-radius: 50%; width: 36px; height: 36px; transition: background-color 0.2s;">
+                <iconify-icon icon="lucide:more-vertical" style="font-size: 22px;"></iconify-icon>
+              </button>
+              @if (showMenu) {
+              <div class="post-dropdown-menu" style="position: absolute; right: 0; top: 40px; background-color: #ffffff; border: 1px solid #edf2f7; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); z-index: 50; min-width: 140px; padding: 6px 0; overflow: hidden; display: flex; flex-direction: column;">
+                <button class="post-dropdown-item" (click)="editPost($event)" style="background: none; border: none; width: 100%; text-align: left; padding: 10px 16px; font-size: 14px; color: #2d3748; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background-color 0.2s;">
+                  <iconify-icon icon="lucide:edit" style="font-size: 16px; color: #718096;"></iconify-icon>
+                  <span>Edit</span>
+                </button>
+                <button class="post-dropdown-item post-dropdown-item--danger" (click)="deletePost($event)" style="background: none; border: none; width: 100%; text-align: left; padding: 10px 16px; font-size: 14px; color: #e53e3e; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background-color 0.2s;">
+                  <iconify-icon icon="lucide:trash-2" style="font-size: 16px; color: #e53e3e;"></iconify-icon>
+                  <span>Delete</span>
+                </button>
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Question -->
+          <h2 class="poll-question">{{ p.question }}</h2>
+          <!-- Tags -->
+          @if (post.taggedUsers && post.taggedUsers.length > 0) {
+          <div class="post-card__mentions">
+            @for (tag of post.taggedUsers; track tag.userId) {
+              <span 
+                class="post-card__tag post-card__tag--user"
+                (click)="goToUserProfile(tag.userId)"
+                title="View {{ tag.userName }}'s profile"
+              >
+                <iconify-icon icon="lucide:at-sign" style="font-size: 14px"></iconify-icon>
+                {{ tag.userName }}
+              </span>
+            }
+          </div>
+          }
+          <!-- Options Grid -->
+          <div class="poll-options">
+            @for (option of p.options; track option.id; let i = $index) {
+              <div class="poll-option-card" [class.winner]="isWinner(p, option.id)">
+                <div class="option-image-wrapper">
+                  <img
+                    [src]="option.outfitThumbnail || 'assets/placeholder.jpg'"
+                    [alt]="getLetter(i)"
+                    class="option-image"
+                  />
+                </div>
+                <div class="option-content">
+                  <div class="option-header">
+                    <span class="option-title">{{ option.description || 'Option ' + getLetter(i) }}</span>
+                  </div>
+                  <button
+                    class="vote-btn"
+                    [class.voted]="userVotedOptionId === option.id"
+                    (click)="toggleVote(post, option.id, $event)"
+                    [disabled]="p.status !== 'active' || submittingVote()"
+                  >
+                    @if (userVotedOptionId === option.id) {
+                      <iconify-icon icon="lucide:check-circle-2" style="font-size: 18px"></iconify-icon>
+                      <span>Voted • {{ getPercentage(p, option.id) }}%</span>
+                    } @else {
+                      <span>Vote • {{ getPercentage(p, option.id) }}%</span>
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Poll Summary -->
+          <div class="poll-summary">
+            <div class="stats-group">
+              <div (click)="openVotersModal($event)" style="cursor: pointer;" class="summary-item">
+                <iconify-icon icon="lucide:users" style="font-size: 18px"></iconify-icon>
+                {{ formatCount(p.totalVotes) }} votes
+              </div>
+              <div class="summary-item" [class.active]="p.status === 'active'">
+                <iconify-icon
+                  [icon]="p.status === 'active' ? 'lucide:clock' : 'lucide:check-circle'"
+                  style="font-size: 18px"
+                ></iconify-icon>
+                {{ getTimeLeft(p.expiresAt) }}
+              </div>
+            </div>
+            
+            <button class="share-btn" (click)="sharePoll()">
+              <iconify-icon icon="lucide:share-2" style="font-size: 18px"></iconify-icon>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Comments (Using the shared component) -->
+        <div class="comments-section">
+          <app-comments-modal 
+            [postId]="post.id" 
+            [isInline]="true"
+            [onCommentAdded]="handleCommentAdded"
+            [onCommentDeleted]="handleCommentDeleted"
+          ></app-comments-modal>
+        </div>
+      </div>
+    }
+  } @else {
+    @if (loading()) {
+      <div class="loading-overlay">
+        <iconify-icon icon="lucide:loader-2" class="spin-icon" style="font-size: 48px; color: #fab4c6;"></iconify-icon>
+        <p>Gathering style feedback...</p>
+      </div>
+    } @else {
+      <div class="loading-overlay">
+        <iconify-icon icon="lucide:alert-circle" style="font-size: 48px; color: #e53e3e;"></iconify-icon>
+        <p>We couldn't find this poll. It might have been removed.</p>
+        <button class="back-btn" (click)="onBack()" style="margin-top: 16px; width: auto; padding: 0 20px;">
+          Go Back
+        </button>
+      </div>
+    }
+  }
+
+  @if (submittingVote()) {
+    <div class="toast">Recording your vote...</div>
+  }
+</div>

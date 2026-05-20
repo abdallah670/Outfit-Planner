@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 using OutfitPlanner.Application.Features.Outfits.Requests.Queries;
-using OutfitPlanner.Application.Features.Users.Requests.Queries;
+using OutfitPlanner.Application.Features.User.Requests.Queries;
 
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Contracts.Infrastructure;
@@ -51,7 +51,7 @@ public class OutfitsController : ControllerBase
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(List<OutfitDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<OutfitDto>>> GetAll()
+    public async Task<ActionResult<List<OutfitDto>>> GetAllOutfits()
     {
         var userId = GetUserId();
         var outfits = await _mediator.Send(new GetOutfitsRequest { UserId = userId });
@@ -63,7 +63,7 @@ public class OutfitsController : ControllerBase
     /// </summary>
     [HttpGet("filtered")]
     [ProducesResponseType(typeof(PagedResult<OutfitDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<PagedResult<OutfitDto>>> GetFiltered(
+    public async Task<ActionResult<PagedResult<OutfitDto>>> GetFilteredOutfits(
         [FromQuery] string? occasion,
         [FromQuery] string? season,
         [FromQuery] string? search,
@@ -91,7 +91,7 @@ public class OutfitsController : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(OutfitDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<OutfitDto>> GetById(Guid id)
+    public async Task<ActionResult<OutfitDto>> GetOutfitById(Guid id)
     {
         var userId = GetUserId();
         var outfit = await _mediator.Send(new GetOutfitByIdRequest { Id = id, UserId = userId });
@@ -108,7 +108,7 @@ public class OutfitsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(OutfitDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<OutfitDto>> Create([FromBody] CreateOutfitDto request)
+    public async Task<ActionResult<OutfitDto>> CreateOutfit([FromBody] CreateOutfitDto request)
     {
         var userId = GetUserId();
         var command = new CreateOutfitCommand { UserId = userId, Request = request };
@@ -118,7 +118,7 @@ public class OutfitsController : ControllerBase
             return BadRequest("Failed to create outfit");
 
         _logger.LogInformation("User {UserId} created outfit {OutfitId}", userId, response.Id);
-        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+        return CreatedAtAction(nameof(GetOutfitById), new { id = response.Id }, response);
     }
 
     /// <summary>
@@ -128,15 +128,11 @@ public class OutfitsController : ControllerBase
     [ProducesResponseType(typeof(CreateOutfitWithPhotoResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CreateOutfitWithPhotoResponseDto>> CreateWithPhoto(
-        [FromForm] string name,
-        [FromForm] string? occasion,
-        [FromForm] string? season,
-        [FromForm] string? weatherCondition,
-        [FromForm] IFormFile photo)
+        [FromForm] CreateOutfitWithPhotoDto request)
     {
         var userId = GetUserId();
         
-        if (photo == null || photo.Length == 0)
+        if (request.Photo == null || request.Photo.Length == 0)
         {
             return BadRequest(new BaseCommandResponse 
             { 
@@ -149,11 +145,8 @@ public class OutfitsController : ControllerBase
         var command = new CreateOutfitWithPhotoCommand 
         { 
             UserId = userId, 
-            Name = name,
-            Occasion = occasion,
-            Season = season,
-            WeatherCondition = weatherCondition,
-            Photo = photo
+            Name = request.Name,
+            Photo = request.Photo
         };
         
         var response = await _mediator.Send(command);
@@ -166,7 +159,7 @@ public class OutfitsController : ControllerBase
             });
 
         _logger.LogInformation("User {UserId} created outfit {OutfitId} with photo", userId, response.Id);
-        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+        return CreatedAtAction(nameof(GetOutfitById), new { id = response.Id }, response);
     }
 
     /// <summary>
@@ -176,7 +169,7 @@ public class OutfitsController : ControllerBase
     [ProducesResponseType(typeof(OutfitDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(BaseCommandResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<OutfitDto>> Update(Guid id, [FromBody] UpdateOutfitDto request)
+    public async Task<ActionResult<OutfitDto>> UpdateOutfit(Guid id, [FromBody] UpdateOutfitDto request)
     {
         var userId = GetUserId();
         var command = new UpdateOutfitCommand { Id = id, UserId = userId, Request = request };
@@ -192,7 +185,7 @@ public class OutfitsController : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Delete(Guid id)
+    public async Task<ActionResult> DeleteOutfit(Guid id)
     {
         var userId = GetUserId();
         var command = new DeleteOutfitCommand { Id = id, UserId = userId };
@@ -215,7 +208,7 @@ public class OutfitsController : ControllerBase
     [ProducesResponseType(typeof(OutfitDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<OutfitDto>> RecordWear(Guid id, [FromBody] RecordOutfitWearDto dto)
+    public async Task<ActionResult<OutfitDto>> RecordOutfitWear(Guid id, [FromBody] RecordOutfitWearDto dto)
     {
         var userId = GetUserId();
         var command = new RecordOutfitWearCommand 
@@ -288,7 +281,6 @@ public class OutfitsController : ControllerBase
     /// <summary>
     /// Generates outfit suggestions based on criteria
     /// </summary>
-    [HttpPost("generate")]
     [HttpPost("suggestions")]
     [ProducesResponseType(typeof(List<OutfitDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<OutfitDto>>> GenerateSuggestions([FromBody] OutfitSuggestionsDto dto)

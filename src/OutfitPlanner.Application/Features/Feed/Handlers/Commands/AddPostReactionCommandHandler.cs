@@ -1,4 +1,5 @@
 using MediatR;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Responses;
@@ -11,13 +12,16 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
 {
     private readonly IFeedPostRepository _feedPostRepository;
     private readonly IPostReactionRepository _reactionRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public AddPostReactionCommandHandler(
         IFeedPostRepository feedPostRepository,
-        IPostReactionRepository reactionRepository)
+        IPostReactionRepository reactionRepository,
+        IUnitOfWork unitOfWork)
     {
         _feedPostRepository = feedPostRepository;
         _reactionRepository = reactionRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<BaseCommandResponse> Handle(AddPostReactionCommand request, CancellationToken cancellationToken)
@@ -49,8 +53,21 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
 
         await _reactionRepository.AddAsync(reaction);
 
-        post.LikeCount++;
+        post.LikesCount++;
         await _feedPostRepository.UpdateAsync(post);
+
+        // Update Outfit if linked
+        if (post.OutfitId.HasValue)
+        {
+            var outfit = await _unitOfWork.Repository<Outfit>().GetByIdAsync(post.OutfitId.Value);
+            if (outfit != null)
+            {
+                outfit.LikesCount++;
+                await _unitOfWork.Repository<Outfit>().UpdateAsync(outfit);
+            }
+        }
+
+        await _unitOfWork.SaveChangesAsync();
 
         response.Success = true;
         response.Message = "Reaction added successfully";
@@ -63,13 +80,16 @@ public class RemovePostReactionCommandHandler : IRequestHandler<RemovePostReacti
 {
     private readonly IFeedPostRepository _feedPostRepository;
     private readonly IPostReactionRepository _reactionRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public RemovePostReactionCommandHandler(
         IFeedPostRepository feedPostRepository,
-        IPostReactionRepository reactionRepository)
+        IPostReactionRepository reactionRepository,
+        IUnitOfWork unitOfWork)
     {
         _feedPostRepository = feedPostRepository;
         _reactionRepository = reactionRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<BaseCommandResponse> Handle(RemovePostReactionCommand request, CancellationToken cancellationToken)
@@ -87,11 +107,27 @@ public class RemovePostReactionCommandHandler : IRequestHandler<RemovePostReacti
         await _reactionRepository.RemoveAsync(reaction);
 
         var post = await _feedPostRepository.GetByIdAsync(request.PostId);
-        if (post != null && post.LikeCount > 0)
+        if (post != null)
         {
-            post.LikeCount--;
-            await _feedPostRepository.UpdateAsync(post);
+            if (post.LikesCount > 0)
+            {
+                post.LikesCount--;
+                await _feedPostRepository.UpdateAsync(post);
+            }
+
+            // Update Outfit if linked
+            if (post.OutfitId.HasValue)
+            {
+                var outfit = await _unitOfWork.Repository<Outfit>().GetByIdAsync(post.OutfitId.Value);
+                if (outfit != null && outfit.LikesCount > 0)
+                {
+                    outfit.LikesCount--;
+                    await _unitOfWork.Repository<Outfit>().UpdateAsync(outfit);
+                }
+            }
         }
+
+        await _unitOfWork.SaveChangesAsync();
 
         response.Success = true;
         response.Message = "Reaction removed successfully";

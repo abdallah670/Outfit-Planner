@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OutfitPostsRepository, OUTFIT_POSTS_REPOSITORY } from '../../domain/repositories/outfit-posts.repository';
-import { OutfitPostsDataSource, CreateOutfitPostRequest, UpdateOutfitPostRequest } from '../datasources/outfit-posts.datasource';
+import { OutfitPostsDataSource } from '../datasources/outfit-posts.datasource';
 import { CommandResponse } from '../../domain/entities/response.entity';
 import { FeedPost } from '../../domain/entities/feed.entity';
+import { CreateOutfitPostRequest, UpdateOutfitPostRequest } from '../../domain/entities/outfitpost.entity';
 
 @Injectable({
   providedIn: 'root',

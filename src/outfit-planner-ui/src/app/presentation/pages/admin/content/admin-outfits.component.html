@@ -1,0 +1,164 @@
+<div class="admin-outfits-container">
+  <div class="page-header">
+    <h2>Outfits Management</h2>
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchFilter" placeholder="Search outfits...">
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="statusFilter">
+          <mat-option value="">All Status</mat-option>
+          <mat-option value="0">Pending</mat-option>
+          <mat-option value="1">Approved</mat-option>
+          <mat-option value="2">Rejected</mat-option>
+          <mat-option value="3">Featured</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" (click)="applyFilter()">
+        <mat-icon>search</mat-icon>
+        Search
+      </button>
+      
+      <button mat-button (click)="bulkApprove()" [disabled]="selectedOutfits.size === 0">
+        <mat-icon>check_circle</mat-icon>
+        Approve Selected
+      </button>
+      
+      <button mat-button (click)="bulkReject()" [disabled]="selectedOutfits.size === 0">
+        <mat-icon>cancel</mat-icon>
+        Reject Selected
+      </button>
+      
+      <button mat-button (click)="bulkFeature()" [disabled]="selectedOutfits.size === 0">
+        <mat-icon>star</mat-icon>
+        Feature Selected
+      </button>
+      
+      <button mat-button color="accent" (click)="bulkDelete()" [disabled]="selectedOutfits.size === 0">
+        <mat-icon>delete</mat-icon>
+        Delete Selected
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    @if (loading$ | async) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading outfits...</p>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="outfits" class="outfits-table">
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="toggleAllOutfits()" [checked]="isAllSelected()"></mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let outfit">
+            <mat-checkbox (change)="toggleOutfitSelection(outfit.id)" [checked]="selectedOutfits.has(outfit.id)"></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let outfit"> {{outfit.id.substring(0, 8)}}... </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let outfit"> 
+            <div class="outfit-info">
+              <strong>{{outfit.name}}</strong>
+              <div class="outfit-description">{{outfit.description.substring(0, 100)}}...</div>
+              <div class="outfit-tags">
+                @for (tag of outfit.tags; track $index) {
+                  <span class="tag">{{tag}}</span>
+                }
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Author Column -->
+        <ng-container matColumnDef="userName">
+          <th mat-header-cell *matHeaderCellDef> Author </th>
+          <td mat-cell *matCellDef="let outfit"> {{outfit.userName}} </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let outfit">
+            <span class="status-badge" [class]="getStatusClass(outfit)">
+              {{getStatusText(outfit)}}
+              @if (outfit.isFeatured) {
+                <mat-icon class="featured-icon">star</mat-icon>
+              }
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Engagement Column -->
+        <ng-container matColumnDef="engagement">
+          <th mat-header-cell *matHeaderCellDef> Engagement </th>
+          <td mat-cell *matCellDef="let outfit">
+            <div class="engagement-stats">
+              <span><mat-icon>favorite</mat-icon> {{outfit.likesCount}}</span>
+              <span><mat-icon>comment</mat-icon> {{outfit.commentsCount}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef> Created </th>
+          <td mat-cell *matCellDef="let outfit"> {{outfit.createdAt | date:'medium'}} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let outfit">
+            <button mat-icon-button (click)="approveOutfit(outfit.id)" [disabled]="outfit.isApproved"
+                    matTooltip="Approve">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+            <button mat-icon-button (click)="rejectOutfit(outfit.id)" 
+                    matTooltip="Reject">
+              <mat-icon>cancel</mat-icon>
+            </button>
+            <button mat-icon-button (click)="featureOutfit(outfit.id)" [disabled]="outfit.isFeatured"
+                    matTooltip="Feature">
+              <mat-icon>star</mat-icon>
+            </button>
+            <button mat-icon-button (click)="unfeatureOutfit(outfit.id)" [disabled]="!outfit.isFeatured"
+                    matTooltip="Unfeature">
+              <mat-icon>star_border</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteOutfit(outfit.id)" color="warn"
+                    matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="totalOutfits"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  </div>
+</div>

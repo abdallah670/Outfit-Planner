@@ -80,15 +80,19 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
                 response.Errors.Add("Option not found in this poll");
                 return response;
             }
-
-            // 3. Check user hasn't already voted on this poll (efficient server-side check)
-            var hasVoted = await _voteRepository.HasUserVotedAsync(request.PollId, request.UserId);
-            if (hasVoted)
+            var hasliked=false;
+            // 3. Check user  already voted other options to toggle to current option
+            var hasVoted = await _voteRepository.GetUserVote(request.UserId, request.PollId);
+            if (hasVoted != null)
             {
-                response.Success = false;
-                response.Message = "You have already voted on this poll";
-                response.Errors.Add("You have already voted on this poll");
-                return response;
+                if(hasVoted.OptionId != request.Request.OptionId)
+                {
+                    // Remove the prev vote
+                    await _voteRepository.RemoveAsync(hasVoted);
+                    poll.TotalVotes--;
+                    //remove user reaction for feed post
+                    hasliked=true;    
+                }
             }
 
             // 4. Create vote entity
@@ -97,11 +101,11 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
                 PollId = request.PollId,
                 OptionId = request.Request.OptionId,
                 VoterId = request.UserId,
-                Rating = request.Request.Rating,
-                IsAnonymous = request.Request.IsAnonymous
+               
+               
             };
             // 5. Create a reaction for feed post
-            var feedPost = await _unitOfWork.FeedPosts.GetByIdAsync(request.PollId);
+            var feedPost = await _unitOfWork.FeedPosts.GetByPollIdAsync(request.PollId);
             if (feedPost == null)
             {
                 response.Success = false;
@@ -109,15 +113,27 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
                 response.Errors.Add("Feed post not found");
                 return response;
             }
+            // Only add reaction if user hasn't liked the post before, otherwise just update the vote and keep the reaction
             var reaction = new PostReaction
             {
-                PostId = request.PollId,
+                PostId = feedPost.Id,
                 UserId = request.UserId,
-                ReactionType = ReactionType.Like
+                ReactionType = ReactionType.Heart
             };
+            
             // 6. Save vote
             await _voteRepository.AddAsync(vote);
+            if(!hasliked)
             await _unitOfWork.PostReactions.AddAsync(reaction);
+            poll.TotalVotes++;
+            await _validationPollRepository.UpdateAsync(poll);
+            if(!hasliked)
+            {
+                feedPost.LikesCount++;
+                await _unitOfWork.FeedPosts.UpdateAsync(feedPost);
+            }
+          
+
             await _unitOfWork.SaveChangesAsync();
             response.Id = vote.Id;
             response.Success = true;
@@ -138,3 +154,88 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
         return response;
     }
 }
+//Uncast vote for the same option
+
+public class UnVoteOnPollCommandhandler : IRequestHandler<UnVoteOnPollCommand, BaseCommandResponse>
+{
+    private readonly IValidationPollRepository _validationPollRepository;
+    private readonly IPollOptionRepository _pollOptionRepository;
+    private readonly IVoteRepository _voteRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+    private readonly ILogger<UnVoteOnPollCommandhandler> _logger;
+
+    public UnVoteOnPollCommandhandler(
+        IValidationPollRepository validationPollRepository,
+        IPollOptionRepository pollOptionRepository,
+        IVoteRepository voteRepository,
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        ILogger<UnVoteOnPollCommandhandler> logger)
+    {
+        _validationPollRepository = validationPollRepository;
+        _pollOptionRepository = pollOptionRepository;
+        _voteRepository = voteRepository;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+        _logger = logger;
+    }
+
+    public async Task<BaseCommandResponse> Handle(UnVoteOnPollCommand request, CancellationToken cancellationToken)
+    {
+        var response = new BaseCommandResponse();
+
+        try
+    {
+        //check option existed and user voted 
+        var option = await _pollOptionRepository.GetByIdAsync(request.Request.OptionId);
+        if (option == null)
+        {
+            response.Success = false;
+            response.Message = "Option not found";
+            response.Errors.Add("Option not found");
+            return response;
+        }
+        var vote = await _voteRepository.GetUserVoteByOptionId(request.UserId, request.Request.OptionId);
+        if (vote == null)
+        {
+            response.Success = false;
+            response.Message = "Vote not found";
+            response.Errors.Add("Vote not found");
+            return response;
+        }
+        //remove user vote by option id
+        await _voteRepository.DeleteVoteAsync(request.UserId, request.Request.OptionId);
+        var pollId = option.PollId;
+        var poll = await _validationPollRepository.GetByIdAsync(pollId);
+        if (poll != null)
+        {
+            poll.TotalVotes--;
+            await _validationPollRepository.UpdateAsync(poll);
+        }
+        //remove user reaction for feed post
+        var feedPost = await _unitOfWork.FeedPosts.GetByPollIdAsync(pollId);
+        if (feedPost != null)
+        {
+            var reaction = await _unitOfWork.PostReactions.GetUserReaction(request.UserId, feedPost.Id);
+            if (reaction != null)
+            {
+                await _unitOfWork.PostReactions.RemoveAsync(reaction);
+            }
+            feedPost.LikesCount--;
+            await _unitOfWork.FeedPosts.UpdateAsync(feedPost);
+        }
+        
+        response.Success = true;
+        response.Message = "Vote uncast successfully";
+    }
+    catch (Exception ex)
+    {
+        response.Success = false;
+        response.Message = "Error uncasting vote";
+        response.Errors.Add(ex.Message);
+    }
+
+    return response;
+     }
+};

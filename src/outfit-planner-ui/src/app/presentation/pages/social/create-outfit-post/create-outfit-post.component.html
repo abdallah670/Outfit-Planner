@@ -1,80 +1,137 @@
 <div class="create-outfit-post-page">
-  <div class="page-header">
-    <h1>Create Outfit Post</h1>
-    <p>Share your outfit with the community</p>
-  </div>
+  <div class="content-wrapper">
+    <!-- Left Column: Creation Controls -->
+    <div class="creation-controls" [formGroup]="outfitPostForm">
+      <header class="section-header">
+        <h2 class="section-title">{{ isEditMode() ? 'Edit Outfit Post' : 'Share to Feed' }}</h2>
+        <button mat-icon-button (click)="onCancel()" aria-label="Close">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
 
-  <mat-card class="create-post-card" *ngIf="!loading$ | async">
-    <form [formGroup]="outfitPostForm" (ngSubmit)="onSubmit()">
-      <mat-card-content>
-        <!-- Outfit Selection -->
-        <div class="outfit-selection">
-          <h3>Select an Outfit</h3>
-          <div class="outfits-grid">
-            <div 
-              *ngFor="let outfit of userOutfits" 
-              class="outfit-item"
-              [class.selected]="selectedOutfit?.id === outfit.id"
-              (click)="selectOutfit(outfit)">
-              <img [src]="outfit.imageUrl" [alt]="outfit.name" class="outfit-image">
-              <div class="outfit-info">
-                <p class="outfit-name">{{ outfit.name }}</p>
-              </div>
-            </div>
-          </div>
-          
-          <mat-form-field appearance="outline" class="outfit-id-field" *ngIf="selectedOutfit">
-            <mat-label>Selected Outfit</mat-label>
-            <input matInput formControlName="outfitId" readonly>
-            <mat-icon matSuffix>check_circle</mat-icon>
-          </mat-form-field>
+      <!-- Photo Upload -->
+      <div class="photo-upload-section">
+        <div class="upload-area" [class.has-preview]="photoPreviewUrl()"
+          (click)="!photoPreviewUrl() && fileInput.click()">
+          <input id="fileInput" #fileInput type="file" accept="image/jpeg,image/png,image/webp"
+            (change)="onFileSelected($event)" hidden>
+          <ng-container *ngIf="!photoPreviewUrl()">
+            <mat-icon>cloud_upload</mat-icon>
+            <p class="upload-text">Click to upload outfit photo</p>
+            <p class="upload-hint">JPEG, PNG or WebP (max 5MB)</p>
+          </ng-container>
+
+          <ng-container *ngIf="photoPreviewUrl()">
+            <img [src]="photoPreviewUrl()" alt="Outfit preview" class="preview-image">
+            <button type="button" class="remove-photo-btn" (click)="$event.stopPropagation(); removePhoto()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Common Fields -->
+      <div class="form-section">
+        <label class="form-label">Caption</label>
+        <textarea class="form-textarea" formControlName="caption" maxlength="500"
+          placeholder="Share the story behind this look...">
+        </textarea>
+      </div>
+
+      <div class="form-section">
+        <label class="form-label">Tag Followers</label>
+        <div class="tag-input-container">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" class="form-input" placeholder="Search followers..." [value]="tagSearchQuery()"
+            (input)="onTagSearchChange($any($event).target.value)" />
         </div>
 
-        <!-- Caption -->
-        <mat-form-field appearance="outline" class="caption-field">
-          <mat-label>Caption (Optional)</mat-label>
-          <textarea 
-            matInput 
-            formControlName="caption" 
-            rows="4"
-            placeholder="Tell us about this outfit...">
-          </textarea>
-          <mat-hint align="end">
-            {{ getCaptionRemaining() }} characters remaining
-          </mat-hint>
-        </mat-form-field>
+        <!-- Tag search dropdown -->
+        <div class="tag-dropdown" *ngIf="showTagDropdown() && filteredFollowers().length > 0">
+          <div *ngFor="let follower of filteredFollowers()" class="tag-option" (click)="tagUser(follower)">
+            <img [src]="follower.userAvatarUrl || 'assets/default-avatar.png'" [alt]="follower.userName"
+              class="follower-avatar">
+            <span class="follower-name">{{ follower.userName }}</span>
+          </div>
+        </div>
 
-        <!-- Visibility -->
-        <mat-form-field appearance="outline" class="visibility-field">
-          <mat-label>Visibility</mat-label>
-          <mat-select formControlName="visibility">
-            <mat-option *ngFor="let option of visibilityOptions" [value]="option.value">
-              {{ option.label }}
-            </mat-option>
-          </mat-select>
-          <mat-icon matSuffix>visibility</mat-icon>
-        </mat-form-field>
-      </mat-card-content>
+        <!-- Selected tags -->
+        <div class="tagged-users-container" *ngIf="taggedUsers().length > 0">
+          <div *ngFor="let user of taggedUsers()" class="user-tag">
+            <span>{{ user.userName }}</span>
+            <mat-icon class="remove-tag" (click)="removeTag(user.userId)">close</mat-icon>
+          </div>
+        </div>
+      </div>
 
-      <mat-card-actions align="end">
-        <button mat-button type="button" (click)="onCancel()">
-          Cancel
+      <div class="form-section">
+        <label class="form-label">Visibility</label>
+        <div class="privacy-select">
+          <div *ngFor="let option of visibilityOptions" class="privacy-option"
+            [class.active]="outfitPostForm.get('visibility')?.value === option.value"
+            (click)="outfitPostForm.get('visibility')?.setValue(option.value)">
+            <span>{{ option.label }}</span>
+            <mat-icon *ngIf="outfitPostForm.get('visibility')?.value === option.value">check_circle</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-outline" (click)="onCancel()">Cancel</button>
+        <button class="btn btn-primary" [disabled]="!canPost()" (click)="onSubmit()">
+          <mat-icon>{{ isEditMode() ? 'save' : 'send' }}</mat-icon>
+          {{ isEditMode() ? 'Update Post' : 'Share Post' }}
         </button>
-        <button 
-          mat-raised-button 
-          color="primary" 
-          type="submit"
-          [disabled]="outfitPostForm.invalid || !selectedOutfit">
-          <mat-icon>share</mat-icon>
-          Share Outfit
-        </button>
-      </mat-card-actions>
-    </form>
-  </mat-card>
+      </div>
+    </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading$ | async" class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-    <p>Creating your post...</p>
+    <!-- Right Column: Live Preview -->
+    <div class="post-preview-panel">
+      <div class="preview-card">
+        <div class="preview-header">
+          <span class="preview-label">LIVE PREVIEW</span>
+        </div>
+
+        <div class="preview-content">
+          <div class="preview-image-wrapper">
+            @if (photoPreviewUrl()) {
+            <img [src]="photoPreviewUrl()" class="main-preview-img">
+            } @else {
+            <div class="empty-preview">
+              <mat-icon>image</mat-icon>
+              <p>Upload a photo to preview</p>
+            </div>
+            }
+          </div>
+
+          <div class="preview-info">
+            <div class="preview-author">
+              <div class="avatar">
+                <img [src]="currentUser()?.avatarUrl || 'assets/default-avatar.png'" alt="">
+              </div>
+              <div class="author-details">
+                <span class="author-name">{{ currentUser()?.userName }}</span>
+                <span class="post-meta">Just now • {{ outfitPostForm.get('visibility')?.value === 2 ? 'Public' :
+                  (outfitPostForm.get('visibility')?.value === 1 ? 'Followers' : 'Private') }}</span>
+              </div>
+            </div>
+
+          
+
+            <p class="preview-caption" [class.empty]="!outfitPostForm.get('caption')?.value">
+              {{ outfitPostForm.get('caption')?.value || 'Your caption will appear here...' }}
+            </p>
+            <div class="tags-container">
+              @for (tag of taggedUsers(); track tag.userId) {
+              <span class="tag">@{{ tag.userName }}</span>
+              }
+            </div>
+
+          </div>
+        </div>
+
+       
+      </div>
+    </div>
   </div>
 </div>

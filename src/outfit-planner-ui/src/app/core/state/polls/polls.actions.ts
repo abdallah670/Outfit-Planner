@@ -4,9 +4,9 @@ import { Poll, CreatePollRequest, UpdatePollRequest, CastVoteRequest } from '../
 export const PollsActions = createActionGroup({
   source: 'polls',
   events: {
-    'Load Polls': emptyProps(),
-    'Load Polls Success': props<{ polls: Poll[] }>(),
-    'Load Polls Failure': props<{ error: string }>(),
+    // 'Load Polls': emptyProps(),
+    // 'Load Polls Success': props<{ polls: Poll[] }>(),
+    // 'Load Polls Failure': props<{ error: string }>(),
 
     'Load Poll By Id': props<{ id: string }>(),
     'Load Poll By Id Success': props<{ poll: Poll }>(),

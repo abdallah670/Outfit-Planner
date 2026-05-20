@@ -41,7 +41,8 @@ public class FeedPostConfiguration : IEntityTypeConfiguration<FeedPost>
             
         builder.HasIndex(x => x.UserId);
         builder.HasIndex(x => x.CreatedAt);
-        builder.HasIndex(x => x.LikeCount);
+        builder.HasIndex(x => x.LikesCount);
+        builder.HasIndex(x => x.CommentsCount);
     }
 }
 
@@ -131,7 +132,7 @@ public class FollowConfiguration : IEntityTypeConfiguration<Follow>
         builder.Property(x => x.FollowerId)
             .IsRequired();
             
-        builder.Property(x => x.FollowingId)
+        builder.Property(x => x.FollowedId)
             .IsRequired();
             
         builder.Property(x => x.CreatedAt)
@@ -142,16 +143,16 @@ public class FollowConfiguration : IEntityTypeConfiguration<Follow>
             .HasForeignKey(x => x.FollowerId)
             .OnDelete(DeleteBehavior.NoAction);
             
-        builder.HasOne(x => x.Following)
+        builder.HasOne(x => x.Followed)
             .WithMany()
-            .HasForeignKey(x => x.FollowingId)
+            .HasForeignKey(x => x.FollowedId)
             .OnDelete(DeleteBehavior.NoAction);
             
         // Prevent duplicate follows
-        builder.HasIndex(x => new { x.FollowerId, x.FollowingId })
+        builder.HasIndex(x => new { x.FollowerId, x.FollowedId })
             .IsUnique();
             
         builder.HasIndex(x => x.FollowerId);
-        builder.HasIndex(x => x.FollowingId);
+        builder.HasIndex(x => x.FollowedId);
     }
 }

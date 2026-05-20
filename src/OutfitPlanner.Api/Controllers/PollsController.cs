@@ -3,14 +3,15 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.DTOs.Feed;
-
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Features.Feed.Requests.Queries;
-
-
 using OutfitPlanner.Application.Responses;
+using OutfitPlanner.Domain.Enums;
+using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -21,11 +22,13 @@ public class PollsController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<PollsController> _logger;
+    private readonly IVoteRepository _voteRepository;
 
-    public PollsController(IMediator mediator, ILogger<PollsController> logger)
+    public PollsController(IMediator mediator, ILogger<PollsController> logger, IVoteRepository voteRepository)
     {
         _mediator = mediator;
         _logger = logger;
+        _voteRepository = voteRepository;
     }
 
     private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -33,7 +36,7 @@ public class PollsController : ControllerBase
     /// <summary>
     /// Get all polls created by the current user
     /// </summary>
-    [HttpGet]
+    [HttpGet("my-polls")]
     public async Task<ActionResult<List<ValidationPollDto>>> GetMyPolls([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
         var userId = GetUserId();
@@ -68,9 +71,11 @@ public class PollsController : ControllerBase
         {
             UserId = userId,
             Question = request.Question,
-            OutfitIds = request.OutfitIds,
+            Options = request.Options,
+            Context = request.Context,
             ExpiresAt = request.ExpiresAt,
-            Visibility = request.Visibility
+            Visibility = request.Visibility,
+            Tags = request.Tags
         };
         
         var response = await _mediator.Send(command);
@@ -86,7 +91,7 @@ public class PollsController : ControllerBase
     /// Update an existing poll
     /// </summary>
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<BaseCommandResponse>> UpdatePoll(Guid id, [FromBody] UpdatePollPostDto request)
+    public async Task<ActionResult<ValidationPollDto>> UpdatePoll(Guid id, [FromBody] UpdatePollPostDto request)
     {
         var userId = GetUserId();
         var command = new UpdatePollPostCommand
@@ -95,7 +100,10 @@ public class PollsController : ControllerBase
             UserId = userId,
             Question = request.Question,
             ExpiresAt = request.ExpiresAt,
-            Visibility = request.Visibility
+            Visibility = request.Visibility,
+            Tags = request.Tags,
+            Options = request.Options,
+            Context = request.Context
         };
         
         var response = await _mediator.Send(command);
@@ -103,7 +111,9 @@ public class PollsController : ControllerBase
         if (!response.Success)
             return BadRequest(response);
             
-        return Ok(response);
+        var query = new GetPollByIdRequest { Id = id };
+        var updatedPoll = await _mediator.Send(query);
+        return Ok(updatedPoll);
     }
 
     /// <summary>
@@ -144,6 +154,20 @@ public class PollsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpDelete("vote")]
+    public async Task<ActionResult<BaseCommandResponse>> UnVoteOnPoll([FromBody]Guid optionId)
+    {
+        var userId = GetUserId();
+        var uncastVoteRequest = new unCastVoteDto { OptionId = optionId };
+        var command = new UnVoteOnPollCommand {   UserId = userId, Request = uncastVoteRequest };
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return NotFound(response.Message);
+            
+        return NoContent();
+    }
+
     /// <summary>
     /// Close a poll (stop accepting votes)
     /// </summary>
@@ -178,6 +202,37 @@ public class PollsController : ControllerBase
         };
         
         var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Get voters for a poll, optionally filtered by option
+    /// </summary>
+    [HttpGet("{pollId:guid}/voters")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<object>>> GetPollVoters(Guid pollId, [FromQuery] Guid? optionId = null)
+    {
+        var query = new GetPollVotersQuery
+        {
+            PollId = pollId,
+            OptionId = optionId
+        };
+
+        var voters = await _mediator.Send(query);
+
+        var result = voters.Select(v => new
+        {
+            voterId = v.Vote.VoterId,
+            voterName = v.VoterName,
+            voterAvatarUrl = v.VoterAvatarUrl,
+            votedAt = v.Vote.CreatedAt,
+            optionId = v.Vote.OptionId,
+            optionDescription = !string.IsNullOrEmpty(v.Vote.Option.Description)
+                ? v.Vote.Option.Description
+                : (v.Vote.Option.Outfit?.Name ?? string.Empty),
+            optionDisplayOrder = v.Vote.Option.DisplayOrder
+        });
+
         return Ok(result);
     }
     

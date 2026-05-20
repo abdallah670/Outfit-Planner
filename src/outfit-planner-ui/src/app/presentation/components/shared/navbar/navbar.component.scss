@@ -4,8 +4,8 @@
   align-items: center;
   padding: 0 40px;
   height: 80px;
-  background: white;
-  border-bottom: 1px solid #f3f4f6;
+  background: var(--card, #ffffff);
+  border-bottom: 1px solid var(--border, #e5e7eb);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -19,7 +19,7 @@
   cursor: pointer;
 
   .logo-icon {
-    color: var(--accent-pink);
+    color: var(--primary, #db2777);
     font-size: 24px;
     display: flex;
     align-items: center;
@@ -29,7 +29,7 @@
   .logo-text {
     font-size: 20px;
     font-weight: 700;
-    color: var(--text-main);
+    color: var(--foreground, #1f2937);
     letter-spacing: -0.02em;
   }
 }
@@ -40,7 +40,7 @@
 
   .nav-link {
     text-decoration: none;
-    color: var(--text-muted);
+    color: var(--muted-foreground, #6b7280);
     font-weight: 500;
     font-size: 15px;
     transition: all 0.2s ease;
@@ -72,21 +72,31 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  color: var(--text-muted);
 
   .nav-icon-btn {
-    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 40px;
     height: 40px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid var(--border, #e5e7eb);
+    color: var(--foreground);
+    cursor: pointer;
+    transition: all 0.2s ease;
 
     mat-icon {
-      font-size: 22px;
-      width: 22px;
-      height: 22px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     &:hover {
-      color: var(--text-main);
-      background: #f9fafb;
+      color: var(--primary, #db2777);
+      background: var(--secondary, #fce7f3);
+      border-color: var(--primary, #db2777);
     }
   }
 
@@ -104,19 +114,23 @@
 
     .avatar-placeholder,
     .avatar-image-container {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: #f3f4f6;
+      background: white;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-muted);
-      border: 1px solid #e5e7eb;
+      border: 2px solid var(--border, #e5e7eb);
       transition: all 0.2s ease;
       overflow: hidden;
+      object-fit: cover;
 
       &:hover {
+        border-color: var(--primary, #db2777);
+        box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.1);
+      }
         border-color: var(--accent-pink);
         color: var(--accent-pink);
       }
@@ -128,4 +142,3 @@
       object-fit: cover;
     }
   }
-}

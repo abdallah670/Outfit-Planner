@@ -1,38 +1,38 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, CUSTOM_ELEMENTS_SCHEMA, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
+import Swal from 'sweetalert2';
 import { UserUseCases } from '../../../domain/usecases/user.usecases';
 import { FeedUseCases } from '../../../domain/usecases/feed.usecases';
 import { FollowUseCases } from '../../../domain/usecases/follow.usecases';
 import { PublicUserProfile } from '../../../domain/entities/public-user-profile.entity';
-
 import { CursorPagedResult } from '../../../domain/entities/response.entity';
 import { FeedPost } from '../../../domain/entities/feed.entity';
+import { PostItemComponent } from '../../components/shared/post-item/post-item.component';
 
 type TabType = 'activity' | 'followers' | 'following';
 
 @Component({
   selector: 'app-public-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule, PostItemComponent],
   templateUrl: './public-profile.component.html',
   styleUrls: ['./public-profile.component.scss']
 })
 export class PublicProfileComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private userUseCases = inject(UserUseCases);
   private feedUseCases = inject(FeedUseCases);
   private followUseCases = inject(FollowUseCases);
 
   userId = signal<string | null>(null);
-  
-  // Public profile data
   publicProfile = signal<PublicUserProfile | null>(null);
   
-  // Stats
   stats = signal({
     outfits: 0,
     items: 0,
@@ -40,11 +40,8 @@ export class PublicProfileComponent implements OnInit {
     following: 0
   });
 
-  // Tab management
   activeTab = signal<TabType>('activity');
-
-  // Follow state
-  isFollowing = signal(false);
+  followLoading = signal(false);
 
   // Activity Feed
   activityPosts = signal<FeedPost[]>([]);
@@ -69,7 +66,7 @@ export class PublicProfileComponent implements OnInit {
     if (id) {
       this.userId.set(id);
       this.loadPublicProfile(id);
-      this.checkFollowStatus(id);
+      this.setTab('activity');
     }
   }
 
@@ -85,13 +82,6 @@ export class PublicProfileComponent implements OnInit {
         });
       },
       error: (err) => console.error('Failed to load public profile', err)
-    });
-  }
-
-  private checkFollowStatus(userId: string): void {
-    this.followUseCases.isFollowing(userId).subscribe({
-      next: (status) => this.isFollowing.set(status),
-      error: () => this.isFollowing.set(false)
     });
   }
 
@@ -118,9 +108,8 @@ export class PublicProfileComponent implements OnInit {
     this.activityLoading.set(true);
     this.feedUseCases.getUserFeed(userId, this.activityCursor() || undefined, 20).subscribe({
       next: (result: CursorPagedResult<FeedPost>) => {
-        const current = this.activityPosts();
         const newItems = result.items || [];
-        this.activityPosts.set(reset ? newItems : [...current, ...newItems]);
+        this.activityPosts.update(current => reset ? newItems : [...current, ...newItems]);
         this.activityCursor.set(result.nextCursor);
         this.activityHasMore.set(result.hasMore);
         this.activityLoading.set(false);
@@ -130,7 +119,6 @@ export class PublicProfileComponent implements OnInit {
         this.activityLoading.set(false);
       }
     });
-
   }
 
   loadMoreActivity(): void {
@@ -157,7 +145,6 @@ export class PublicProfileComponent implements OnInit {
       }
     });
   }
-  
 
   loadMoreFollowers(): void {
     const userId = this.userId();
@@ -166,7 +153,7 @@ export class PublicProfileComponent implements OnInit {
     this.followersLoading.set(true);
     this.followUseCases.getFollowers(userId, this.followersCursor() || undefined, 20).subscribe({
       next: (result: CursorPagedResult<any>) => {
-        this.followersList.set([...this.followersList(), ...(result.items || [])]);
+        this.followersList.update(current => [...current, ...(result.items || [])]);
         this.followersCursor.set(result.nextCursor);
         this.followersHasMore.set(result.hasMore);
         this.followersLoading.set(false);
@@ -196,6 +183,7 @@ export class PublicProfileComponent implements OnInit {
       }
     });
   }
+
   loadMoreFollowing(): void {
     const userId = this.userId();
     if (!userId || !this.followingCursor() || this.followingLoading()) return;
@@ -203,7 +191,7 @@ export class PublicProfileComponent implements OnInit {
     this.followingLoading.set(true);
     this.followUseCases.getFollowing(userId, this.followingCursor() || undefined, 20).subscribe({
       next: (result: CursorPagedResult<any>) => {
-        this.followingList.set([...this.followingList(), ...(result.items || [])]);
+        this.followingList.update(current => [...current, ...(result.items || [])]);
         this.followingCursor.set(result.nextCursor);
         this.followingHasMore.set(result.hasMore);
         this.followingLoading.set(false);
@@ -215,18 +203,52 @@ export class PublicProfileComponent implements OnInit {
     });
   }
 
- 
   onFollowToggle(): void {
     const id = this.userId();
     if (!id) return;
 
-    if (this.isFollowing()) {
+    if (this.publicProfile()?.isFollowing) {
       this.followUseCases.unfollowUser(id).subscribe({
-        next: () => this.isFollowing.set(false)
+        next: () => {
+          this.publicProfile.update((profile) => ({ ...profile!, isFollowing: false }));
+          this.stats.update(s => ({ ...s, followers: s.followers - 1 }));
+        }
       });
     } else {
       this.followUseCases.followUser(id).subscribe({
-        next: () => this.isFollowing.set(true)
+        next: () => {
+          this.publicProfile.update((profile) => ({ ...profile!, isFollowing: true }));
+          this.stats.update(s => ({ ...s, followers: s.followers + 1 }));
+        }
+      });
+    }
+  }
+
+  onPostUpdated(updatedPost: FeedPost): void {
+    this.activityPosts.update(posts => posts.map(p => p.id === updatedPost.id ? updatedPost : p));
+  }
+
+  onPostDeleted(postId: string): void {
+    this.activityPosts.update(posts => posts.filter(p => p.id !== postId));
+  }
+
+  toggleUserFollow(userId: string, event: Event, listType: 'followers' | 'following'): void {
+    event.stopPropagation();
+    const list = listType === 'followers' ? this.followersList : this.followingList;
+    const user = list().find(u => u.userId === userId);
+    if (!user) return;
+
+    if (user.isFollowing) {
+      this.followUseCases.unfollowUser(userId).subscribe({
+        next: () => {
+          list.update(items => items.map(u => u.userId === userId ? { ...u, isFollowing: false } : u));
+        }
+      });
+    } else {
+      this.followUseCases.followUser(userId).subscribe({
+        next: () => {
+          list.update(items => items.map(u => u.userId === userId ? { ...u, isFollowing: true } : u));
+        }
       });
     }
   }
@@ -239,10 +261,5 @@ export class PublicProfileComponent implements OnInit {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
     return num.toString();
-  }
-
-  toggleReaction(post: any): void {
-    // TODO: Implement reaction toggle functionality
-    console.log('Toggle reaction for post:', post);
   }
 }

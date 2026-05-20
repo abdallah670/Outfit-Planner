@@ -48,7 +48,7 @@
       <section class="trending-outfits-card closet-explorer">
         <div class="section-header">
           <h2 class="section-title">Trending Outfits</h2>
-          <button mat-button class="view-all-link" routerLink="/social">View All</button>
+          <button mat-button class="view-all-link" [routerLink]="['/social']" [queryParams]="{tab: 'trending'}">View All</button>
         </div>
         
         <!-- Loading State -->
@@ -61,7 +61,7 @@
         <!-- Trending Items -->
         <div class="items-display">
           @for (outfit of trendingOutfits(); track outfit.id) {
-            <div class="trending-item" [routerLink]="['/outfits', outfit.id]">
+            <div class="trending-item" [routerLink]="['/social']" [queryParams]="{tab: 'trending'}">
               <div class="trending-image-wrapper">
                 @if (outfit.imageUrl && !failedImages.has(outfit.id)) {
                   <img [src]="outfit.imageUrl" [alt]="outfit.userName" (error)="onImageError(outfit.id)" />
@@ -79,7 +79,7 @@
                     }
                     <span class="user-name">{{ outfit.userName }}</span>
                   </div>
-                  <div class="likes-count">
+                  <div  class="likes-count">
                     <mat-icon>favorite</mat-icon>
                     {{ outfit.likes }}
                   </div>

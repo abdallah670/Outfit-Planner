@@ -3,6 +3,8 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { TrendingOutfit } from '../../domain/entities/outfit.entity';
+import { CursorPagedResult } from '../../domain/entities/response.entity';
+
 
 interface TrendingOutfitDto {
   id: string;
@@ -13,9 +15,12 @@ interface TrendingOutfitDto {
   userName: string;
   userAvatar?: string;
   voteCount: number;
-  commentCount: number;
+  commentsCount: number;
   trendingScore: number;
   createdAt: string;
+  isFollowing?:boolean;
+  isOwner?:boolean;
+  isLiked:boolean;
 }
 
 @Injectable({
@@ -26,15 +31,29 @@ export class TrendingDataSource {
 
   constructor(private http: HttpClient) {}
 
-  getTrendingOutfits(page = 1, pageSize = 20): Observable<{ items: TrendingOutfit[]; totalCount: number }> {
-    return this.http
-      .get<any>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}`)
-      .pipe(
-        map((response: any) => ({
-          items: response.items.map((o: TrendingOutfitDto) => this.mapTrendingOutfitDtoToEntity(o)),
-          totalCount: response.totalCount,
-        })),
-      );
+  getTrendingOutfits(cursor?: string, pageSize: number = 20): Observable<CursorPagedResult<TrendingOutfit>> {
+    let url = `${this.apiUrl}?pageSize=${pageSize}`;
+    if (cursor) {
+      url += `&cursor=${encodeURIComponent(cursor)}`;
+    }
+    return this.http.get<any>(url).pipe(
+      map((response: any) => ({
+        items: response.items.map((o: TrendingOutfitDto) => this.mapTrendingOutfitDtoToEntity(o)),
+        nextCursor: response.nextCursor,
+        hasMore: response.hasMore,
+        pageSize: response.pageSize
+      }))
+    );
+  }
+
+
+  private fixUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${environment.resourceBaseUrl}${path}`;
   }
 
   private mapTrendingOutfitDtoToEntity(dto: TrendingOutfitDto): TrendingOutfit {
@@ -42,14 +61,15 @@ export class TrendingDataSource {
       id: dto.id,
       userId: dto.userId,
       userName: dto.userName,
-      userAvatar: dto.userAvatar || 'assets/default-avatar.png',
-      imageUrl: dto.imageUrl || 'assets/placeholder.png',
+      userAvatar: dto.userAvatar ? this.fixUrl(dto.userAvatar) : 'assets/default-avatar.png',
+      imageUrl: dto.imageUrl ? this.fixUrl(dto.imageUrl) : 'assets/placeholder.png',
       likes: dto.voteCount,
-      comments: dto.commentCount,
-      occasion: 'Trending',
+      comments: dto.commentsCount,
       trendingScore: dto.trendingScore,
-      voteId: '', // Legacy field for mapping compatibility
       createdAt: new Date(dto.createdAt),
+      isfollowing:dto.isFollowing,
+      isliked:dto.isLiked,
+      isowner:dto.isOwner
     };
   }
 }

@@ -1,3 +1,5 @@
+import { Visibility, TaggedUser } from "./feed.entity";
+
 /**
  * Represents a validation poll for outfit feedback
  */
@@ -10,7 +12,10 @@ export interface Poll {
   status: PollStatus;
   options: PollOption[];
   totalVotes: number;
+  userVotedOptionId?: string;
   createdAt: Date;
+  tags?: string[];
+  taggedUsers?: TaggedUser[];
 }
 
 /**
@@ -20,10 +25,10 @@ export interface PollOption {
   id: string;
   pollId?: string;
   outfitId?: string;
-  description: string;
   displayOrder: number;
   voteCount: number;
   outfitThumbnail?: string;
+  description?: string;
 }
 
 /**
@@ -34,9 +39,6 @@ export interface Vote {
   pollId: string;
   optionId: string;
   voterId: string;
-  rating: number;
-  comment?: string;
-  isAnonymous: boolean;
   createdAt: Date;
 }
 
@@ -47,7 +49,9 @@ export interface CreatePollRequest {
   question: string;
   context?: string;
   expiresAt: Date;
+  visibility: Visibility;
   options: CreatePollOptionRequest[];
+  tags?: string[];
 }
 
 /**
@@ -58,6 +62,7 @@ export interface UpdatePollRequest {
   context?: string;
   expiresAt?: string;
   options?: CreatePollOptionRequest[];
+  tags?: string[];
 }
 
 /**
@@ -65,8 +70,8 @@ export interface UpdatePollRequest {
  */
 export interface CreatePollOptionRequest {
   outfitId?: string;
-  description: string;
   displayOrder?: number;
+  description?: string;
 }
 
 /**
@@ -74,9 +79,6 @@ export interface CreatePollOptionRequest {
  */
 export interface CastVoteRequest {
   optionId: string;
-  rating: number;
-  comment?: string;
-  isAnonymous: boolean;
 }
 
 /**
@@ -92,16 +94,25 @@ export interface RecentPollWithCommentsDto {
   poll: Poll;
   comments: any[]; 
 }
+export interface VoterInfo {
+  voterId: string;
+  voterName: string;
+  voterAvatarUrl: string;
+  votedAt: Date;
+  optionId: string;
+  optionDescription?: string;
+  optionDisplayOrder: number;
+}
 
 /**
  * Helper to map PollOption from ValidationPoll to local interface
  */
-export function mapPollOptionToDisplayOption(option: PollOption): { id: string; imageUrl: string; label: string; votes: number } {
+export function mapPollOptionToDisplayOption(option: PollOption): { id: string; imageUrl: string; votes: number; description: string } {
   return {
     id: option.id,
     imageUrl: option.outfitThumbnail || '',
-    label: option.description,
     votes: option.voteCount,
+    description: option.description || ''
   };
 }
 

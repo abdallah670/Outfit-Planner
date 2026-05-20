@@ -35,6 +35,7 @@ export interface OutfitRepository {
   getOutfitById(id: string): Observable<Outfit>;
   createOutfit(outfit: Partial<Outfit>): Observable<Outfit>;
   updateOutfit(id: string, outfit: Partial<Outfit>): Observable<Outfit>;
+  createOutfitWithImage(imageFile: File): Observable<Outfit>;
   deleteOutfit(id: string): Observable<boolean>;
   getOutfitsSuggestions(request: OutfitSuggestionsRequest): Observable<Outfit[]>;
   getTodaysPick(latitude?: number, longitude?: number, date?: string): Observable<TodaysPickResponse>;

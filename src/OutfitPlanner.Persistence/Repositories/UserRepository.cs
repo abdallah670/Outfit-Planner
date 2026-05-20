@@ -19,4 +19,8 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         return await _dbSet.FirstOrDefaultAsync(u => u.UserName == username);
     }
+    public async Task<IEnumerable<User>> GetTaggedUsersAsync(IEnumerable<string> usernames)
+    {
+        return await _dbSet.Where(u => usernames.Contains(u.UserName)).ToListAsync();
+    }
 }

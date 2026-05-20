@@ -31,4 +31,15 @@ public class PostReactionRepository : GenericRepository<PostReaction>, IPostReac
         return await _dbSet
             .CountAsync(r => r.PostId == postId);
     }
+
+    public async Task<PostReaction> GetUserReaction(string userId, Guid id)
+    {
+        var reaction = await _dbSet
+            .FirstOrDefaultAsync(r => r.PostId == id && r.UserId == userId);
+        if (reaction is null)
+        {
+            throw new InvalidOperationException("Reaction not found.");
+        }
+        return reaction;
+    }
 }

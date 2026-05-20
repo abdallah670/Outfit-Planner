@@ -10,9 +10,17 @@ public class User : IdentityUser
     public string? Bio { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? LastLogin { get; set; }
-    
+    public UserRole? Role { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiration { get; set; }
+    
+    // Email verification
+    public string? EmailVerificationToken { get; set; }
+    public DateTime? EmailVerificationTokenExpiry { get; set; }
+    
+    // Password reset
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiry { get; set; }
     
     // Navigation properties
     public UserStyleProfile? StyleProfile { get; set; }

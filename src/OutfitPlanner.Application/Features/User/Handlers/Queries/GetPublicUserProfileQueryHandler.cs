@@ -35,6 +35,12 @@ public class GetPublicUserProfileQueryHandler(
 
         var followersCount = await followRepository.GetFollowersCountAsync(request.UserId);
         var followingCount = await followRepository.GetFollowingCountAsync(request.UserId);
+        
+        var isfollowing = false;
+        if (!string.IsNullOrEmpty(request.RequesterId))
+        {
+            isfollowing = await followRepository.IsFollowingAsync(request.RequesterId, request.UserId);
+        }
 
         // Style profile (if exists)
         PublicUserStyleProfileDto? styleProfile = null;
@@ -49,6 +55,7 @@ public class GetPublicUserProfileQueryHandler(
                 AcceptsTrends = user.StyleProfile.AcceptsTrends
             };
         }
+        var isowner = (request.UserId == request.RequesterId ? true : false);
 
         return new PublicUserProfileDto
         {
@@ -62,7 +69,9 @@ public class GetPublicUserProfileQueryHandler(
             OutfitCount = outfitCount,
             TotalWears = totalWears,
             FollowersCount = followersCount,
+            IsOwner = isowner,
             FollowingCount = followingCount,
+            IsFollowing = isfollowing,
             StyleProfile = styleProfile
         };
     }

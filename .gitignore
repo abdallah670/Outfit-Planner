@@ -107,10 +107,4 @@ appsettings.json
 # Uncomment if you want to ignore appsettings.Development.json
 # appsettings.Development.json
 #folder of test photos
-test-data/
-Design/
-plans/
-docs/
-wwwroot/uploads
-wwwroot/outfit-images
 wwwroot/profile_pictures

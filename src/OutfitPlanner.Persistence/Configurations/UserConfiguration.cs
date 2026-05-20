@@ -14,6 +14,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne()
             .HasForeignKey<UserStyleProfile>(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(u => u.Role).HasConversion<string>();
 
         builder.HasOne(u => u.Preferences)
             .WithOne()
@@ -56,8 +57,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(u => u.Followers)
-            .WithOne(f => f.Following)
-            .HasForeignKey(f => f.FollowingId)
+            .WithOne(f => f.Followed)
+            .HasForeignKey(f => f.FollowedId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(u => u.Following)

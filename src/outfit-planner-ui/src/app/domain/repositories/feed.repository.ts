@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 import { FeedPost } from '../entities/feed.entity';
 import { PostComment } from '../entities/feed.entity';
 import { CommandResponse, CursorPagedResult } from '../entities/response.entity';
+import { VoterInfo } from '../entities/poll.entity';
+
 
 export const FEED_REPOSITORY = new InjectionToken<FeedRepository>('FeedRepository');
 
@@ -12,10 +14,18 @@ export interface FeedRepository {
     pageSize?: number,
     visibility?: string,
     sortBy?: string,
+    postType?: string,
+    followingOnly?: boolean
+  ): Observable<CursorPagedResult<FeedPost>>;
+
+  getUserFeed(
+    userId: string,
+    cursor?: string,
+    pageSize?: number,
     postType?: string
   ): Observable<CursorPagedResult<FeedPost>>;
- getUserFeed(
-    userId: string,
+
+  getMyPosts(
     cursor?: string,
     pageSize?: number,
     postType?: string
@@ -33,6 +43,12 @@ export interface FeedRepository {
   addComment(postId: string, content: string, parentCommentId?: string): Observable<CommandResponse>;
 
   deleteComment(commentId: string): Observable<void>;
+  
+  updateComment(commentId: string, content: string): Observable<CommandResponse>;
 
   createOutfitPost(dto: { outfitId: string; caption?: string; visibility: number }): Observable<CommandResponse>;
+
+ 
+
+  getVotersForPoll(pollId: string, optionId?: string): Observable<VoterInfo[]>;
 }

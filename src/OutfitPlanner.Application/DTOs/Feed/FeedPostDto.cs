@@ -17,8 +17,27 @@ public class FeedPostDto
     public ValidationPollDto? Poll { get; set; }
     public string? Caption { get; set; }
     public Visibility Visibility { get; set; }
-    public int LikeCount { get; set; }
-    public int CommentCount { get; set; }
+    public int LikesCount { get; set; }
+    public int CommentsCount { get; set; }
+    public List<string> Tags { get; set; } = new();
     public string? UserReaction { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+    public bool IsFollowing { get; set; } = false;
+    public bool IsOwner { get; set; } = false;
+    public bool HasVoted { get; set; } = false;
+    public bool IsLiked { get; set; } = false;
+    public List<TaggedUserDto> TaggedUsers { get; set; } = new();
+
+}
+public class GetFeedPostByIdDto : FeedPostDto
+{
+    public List<PostCommentDto> Comments { get; set; } = new();
+
+}
+
+public class TaggedUserDto
+{
+    public Guid UserId { get; set; }
+    public string UserName { get; set; } = string.Empty;
+    public string? ProfilePictureUrl { get; set; }
 }

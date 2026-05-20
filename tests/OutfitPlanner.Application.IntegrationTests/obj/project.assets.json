@@ -161,6 +161,18 @@
           }
         }
       },
+      "Hangfire.MemoryStorage/1.8.1.2": {
+        "type": "package",
+        "dependencies": {
+          "Hangfire.Core": "1.7.35"
+        },
+        "compile": {
+          "lib/netstandard1.3/Hangfire.MemoryStorage.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Hangfire.MemoryStorage.dll": {}
+        }
+      },
       "Hangfire.NetCore/1.8.14": {
         "type": "package",
         "dependencies": {
@@ -2458,6 +2470,10 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
+          "Hangfire.AspNetCore": "1.8.1.2",
+          "Hangfire.Core": "1.8.1.2",
+          "Hangfire.MemoryStorage": "1.8.1.2",
+          "Microsoft.EntityFrameworkCore.Sqlite": "8.0.0",
           "OutfitPlanner.Application": "1.0.0",
           "OutfitPlanner.Domain": "1.0.0",
           "OutfitPlanner.Persistence": "1.0.0",
@@ -2770,6 +2786,19 @@
         "lib/netstandard1.3/Hangfire.Core.xml",
         "lib/netstandard2.0/Hangfire.Core.dll",
         "lib/netstandard2.0/Hangfire.Core.xml"
+      ]
+    },
+    "Hangfire.MemoryStorage/1.8.1.2": {
+      "sha512": "Z2C+WOHRHMe4Oh4VghJPGTECh0+/sndaLiUCv1Zyoq+6Y79FXteUg+nl2M40xc1D9ntntBfLwfLpfDpLA/idEg==",
+      "type": "package",
+      "path": "hangfire.memorystorage/1.8.1.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "hangfire.memorystorage.1.8.1.2.nupkg.sha512",
+        "hangfire.memorystorage.nuspec",
+        "lib/net40/Hangfire.MemoryStorage.dll",
+        "lib/netstandard1.3/Hangfire.MemoryStorage.dll"
       ]
     },
     "Hangfire.NetCore/1.8.14": {
@@ -5869,8 +5898,8 @@
             "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj": {
               "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj"
             },
-            "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
-              "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
+            "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
+              "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
             }
           }
         }

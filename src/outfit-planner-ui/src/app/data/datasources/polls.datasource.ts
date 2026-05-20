@@ -21,6 +21,8 @@ interface PollDto {
   options: PollOptionDto[];
   totalVotes: number;
   createdAt: string;
+  tags?: string[];
+  taggedUsers?: any[];
 }
 
 interface PollOptionDto {
@@ -51,23 +53,13 @@ export interface UpdatePollOptionRequest {
   providedIn: 'root',
 })
 export class PollsDataSource {
-  private readonly apiUrl = `${environment.baseUrl}/api/polls`;
+  private readonly apiUrl = `${environment.baseUrl}/polls`;
 
   constructor(private http: HttpClient) {}
 
-  getPolls(): Observable<Poll[]> {
-    return this.http
-      .get<PollDto[]>(`${this.apiUrl}`)
-      .pipe(
-        map((polls: PollDto[]) =>
-          polls.map((p: PollDto) => this.mapPollDtoToEntity(p)),
-        ),
-      );
-  }
-
   getUserPolls(): Observable<Poll[]> {
     return this.http
-      .get<PollDto[]>(`${this.apiUrl}/my`)
+      .get<PollDto[]>(`${this.apiUrl}/my-polls`)
       .pipe(
         map((polls: PollDto[]) =>
           polls.map((p: PollDto) => this.mapPollDtoToEntity(p)),
@@ -89,6 +81,13 @@ export class PollsDataSource {
     return this.http.post<CommandResponse>(`${this.apiUrl}/${pollId}/vote`, dto);
   }
 
+  removeVote(optionId:string): Observable<void> {
+   return this.http.delete<void>(`${this.apiUrl}/vote`, { 
+     body: JSON.stringify(optionId),
+     headers: { 'Content-Type': 'application/json' }
+   });
+  }
+
   updatePoll(pollId: string, request: UpdatePollRequest): Observable<Poll> {
     return this.http.put<PollDto>(`${this.apiUrl}/${pollId}`, request)
       .pipe(map((poll: PollDto) => this.mapPollDtoToEntity(poll)));
@@ -102,12 +101,6 @@ export class PollsDataSource {
     return this.http.post<void>(`${this.apiUrl}/${pollId}/close`, {});
   }
 
-  uploadPollImage(file: File): Observable<string> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<{ url: string }>(`${environment.baseUrl}/poll-image-upload/upload`, formData)
-      .pipe(map(res => res.url));
-  }
 
   getRecentPollWithComments(cursor?: string, pageSize: number = 20): Observable<{ poll: Poll; comments: any[] }> {
     let url = `${this.apiUrl}/recent-poll?commentsPageSize=${pageSize}`;
@@ -136,6 +129,8 @@ export class PollsDataSource {
       options: dto.options.map((o: PollOptionDto) => this.mapOptionDtoToEntity(o)),
       totalVotes: dto.totalVotes,
       createdAt: new Date(dto.createdAt),
+      tags: dto.tags || [],
+      taggedUsers: dto.taggedUsers || [],
     };
   }
 
@@ -148,15 +143,24 @@ export class PollsDataSource {
     }
   }
 
+  private fixUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${environment.resourceBaseUrl}${path}`;
+  }
+
   private mapOptionDtoToEntity(dto: PollOptionDto): PollOption {
     return {
       id: dto.id,
       pollId: dto.pollId,
       outfitId: dto.outfitId,
-      description: dto.description,
       displayOrder: dto.displayOrder,
       voteCount: dto.voteCount,
-      outfitThumbnail: dto.outfitThumbnail,
+      outfitThumbnail: dto.outfitThumbnail ? this.fixUrl(dto.outfitThumbnail) : undefined,
+      description: dto.description || '',
     };
   }
 }

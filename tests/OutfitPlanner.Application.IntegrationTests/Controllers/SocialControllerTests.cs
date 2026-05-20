@@ -146,15 +146,15 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
     {
         await LoginTestUser();
 
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Which outfit looks better for a date?",
             Context = "Looking for suggestions for Friday night",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
-                new() { Description = "Blue dress with heels", DisplayOrder = 1 },
-                new() { Description = "Casual jeans with blouse", DisplayOrder = 2 }
+                new() { DisplayOrder = 1 },
+                new() {  DisplayOrder = 2 }
             }
         };
 
@@ -171,13 +171,13 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
     {
         await LoginTestUser();
 
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Which outfit looks better?",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
-                new() { Description = "Only one option", DisplayOrder = 1 }
+                new() { DisplayOrder = 1 }
             }
         };
 
@@ -190,14 +190,14 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
     {
         await LoginTestUser();
 
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Which outfit looks better?",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(-1), // Already expired
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
-                new() { Description = "Option 1", DisplayOrder = 1 },
-                new() { Description = "Option 2", DisplayOrder = 2 }
+                new() { DisplayOrder = 1 },
+                new() { DisplayOrder = 2 }
             }
         };
 
@@ -250,9 +250,7 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         var voteRequest = new CastVoteDto
         {
             OptionId = optionId,
-            Rating = 4,
-            Comment = "Looks great!",
-            IsAnonymous = false
+          
         };
 
         var voteResponse = await _client.PostAsJsonAsync($"/api/social/polls/{pollId}/vote", voteRequest);
@@ -270,14 +268,14 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         await LoginTestUser();
 
         // Create an expired poll
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Expired Poll Test",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(-1), // Already expired
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
-                new() { Description = "Option 1", DisplayOrder = 1 },
-                new() { Description = "Option 2", DisplayOrder = 2 }
+                new() { DisplayOrder = 1 },
+                new() { DisplayOrder = 2 }
             }
         };
 
@@ -294,7 +292,7 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         var voteRequest = new CastVoteDto
         {
             OptionId = optionId,
-            Rating = 3
+          
         };
 
         var voteResponse = await _client.PostAsJsonAsync($"/api/social/polls/{pollId}/vote", voteRequest);
@@ -319,7 +317,7 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         var voteRequest1 = new CastVoteDto
         {
             OptionId = option1Id,
-            Rating = 5
+           
         };
 
         var voteResponse1 = await _client.PostAsJsonAsync($"/api/social/polls/{pollId}/vote", voteRequest1);
@@ -329,7 +327,7 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         var voteRequest2 = new CastVoteDto
         {
             OptionId = option2Id,
-            Rating = 3
+           
         };
 
         var voteResponse2 = await _client.PostAsJsonAsync($"/api/social/polls/{pollId}/vote", voteRequest2);
@@ -364,15 +362,15 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         await LoginTestUser();
 
         // Step 1: Create a poll
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = "Lifecycle Test Poll",
             Context = "Testing the full poll lifecycle",
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
-                new() { Description = "Option A", DisplayOrder = 1 },
-                new() { Description = "Option B", DisplayOrder = 2 }
+                new() { DisplayOrder = 1 },
+                new() { DisplayOrder = 2 }
             }
         };
 
@@ -403,8 +401,7 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
         var voteRequest = new CastVoteDto
         {
             OptionId = option1Id,
-            Rating = 5,
-            Comment = "Great choice!"
+
         };
 
         var voteResponse = await _client.PostAsJsonAsync($"/api/social/polls/{pollId}/vote", voteRequest);
@@ -435,14 +432,14 @@ public class SocialControllerTests : IClassFixture<WebApplicationFactory<Program
 
     private async Task<Guid> CreateTestPoll(string question)
     {
-        var createRequest = new CreatePollDto
+        var createRequest = new CreatePollPostDto
         {
             Question = question,
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-            Options = new List<CreatePollOptionDto>
+            Options = new List<PollOptionDto>
             {
-                new() { Description = "Test Option 1", DisplayOrder = 1 },
-                new() { Description = "Test Option 2", DisplayOrder = 2 }
+                new() { DisplayOrder = 1 },
+                new() { DisplayOrder = 2 }
             }
         };
 

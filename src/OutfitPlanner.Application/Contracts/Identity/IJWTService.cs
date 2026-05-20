@@ -11,4 +11,12 @@ public interface IJWTService
     Task<AuthResponse> RefreshToken(string token, string refreshToken);
     Task<AuthResponse> SocialLogin(string email, string name, string provider, string providerId, string? profilePictureUrl = null);
     Task LinkExternalAccount(string userId, string email, string provider, string providerId, string? profilePictureUrl = null);
+    
+    // Email verification
+    Task VerifyEmailAsync(string email, string token);
+    Task ResendVerificationEmailAsync(string email);
+    
+    // Password reset
+    Task ForgotPasswordAsync(string email);
+    Task ResetPasswordAsync(string email, string token, string newPassword);
 }

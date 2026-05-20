@@ -10,49 +10,45 @@
   <!-- Filters and Sort -->
   <div class="controls-section">
     <div class="filter-group">
-      <mat-chip-set>
-        <mat-chip 
-          [selected]="activeFilter() === 'all'" 
-          (click)="activeFilter.set('all')"
-          color="primary">
-          All
-        </mat-chip>
-        <mat-chip 
-          [selected]="activeFilter() === 'public'" 
-          (click)="activeFilter.set('public')"
-          color="primary">
-          Public
-        </mat-chip>
-        <mat-chip 
-          [selected]="activeFilter() === 'friends'" 
-          (click)="activeFilter.set('friends')"
-          color="primary">
-          Friends Only
-        </mat-chip>
-        <mat-chip 
-          [selected]="activeFilter() === 'private'" 
-          (click)="activeFilter.set('private')"
-          color="primary">
-          Private
-        </mat-chip>
-      </mat-chip-set>
+      <button 
+        mat-stroked-button
+        [color]="activeFilter() === 'all' ? 'primary' : ''" 
+        (click)="activeFilter.set('all')">
+        All
+      </button>
+      <button 
+        mat-stroked-button
+        [color]="activeFilter() === 'public' ? 'primary' : ''" 
+        (click)="activeFilter.set('public')">
+        Public
+      </button>
+      <button 
+        mat-stroked-button
+        [color]="activeFilter() === 'friends' ? 'primary' : ''" 
+        (click)="activeFilter.set('friends')">
+        Friends Only
+      </button>
+      <button 
+        mat-stroked-button
+        [color]="activeFilter() === 'private' ? 'primary' : ''" 
+        (click)="activeFilter.set('private')">
+        Private
+      </button>
     </div>
     
     <div class="sort-group">
-      <mat-chip-set>
-        <mat-chip 
-          [selected]="activeSort() === 'newest'" 
-          (click)="activeSort.set('newest')"
-          color="accent">
-          Newest
-        </mat-chip>
-        <mat-chip 
-          [selected]="activeSort() === 'most-liked'" 
-          (click)="activeSort.set('most-liked')"
-          color="accent">
-          Most Liked
-        </mat-chip>
-      </mat-chip-set>
+      <button 
+        mat-stroked-button
+        [color]="activeSort() === 'newest' ? 'primary' : ''" 
+        (click)="activeSort.set('newest')">
+        Newest
+      </button>
+      <button 
+        mat-stroked-button
+        [color]="activeSort() === 'most-liked' ? 'primary' : ''" 
+        (click)="activeSort.set('most-liked')">
+        Most Liked
+      </button>
     </div>
   </div>
 
@@ -121,11 +117,11 @@
         <div class="engagement-stats">
           <button mat-icon-button>
             <mat-icon>favorite_border</mat-icon>
-            {{ post.likeCount }}
+            {{ post.likesCount }}
           </button>
           <button mat-icon-button>
             <mat-icon>chat_bubble_outline</mat-icon>
-            {{ post.commentCount }}
+            {{ post.commentsCount }}
           </button>
         </div>
 

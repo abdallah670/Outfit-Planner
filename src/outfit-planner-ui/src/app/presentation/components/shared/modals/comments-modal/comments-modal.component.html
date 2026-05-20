@@ -1,0 +1,132 @@
+<div class="comments-modal" [class.comments-modal--inline]="isInline">
+  <!-- Header -->
+  @if (!isInline) {
+    <div class="comments-modal__header">
+      <h3>Comments</h3>
+      <button class="close-btn" (click)="closeModal()">
+        <iconify-icon icon="lucide:x" style="font-size: 20px;"></iconify-icon>
+      </button>
+    </div>
+  }
+
+  <!-- Comments List -->
+  <div class="comments-modal__content">
+    @if (loading) {
+      <div class="loading-state">
+        <iconify-icon icon="lucide:loader-2" class="spin-icon" style="font-size: 36px;"></iconify-icon>
+        <p>Loading comments...</p>
+      </div>
+    } @else if (comments.length === 0) {
+      <div class="empty-state">
+        <iconify-icon icon="lucide:message-circle" style="font-size: 48px; opacity: 0.3;"></iconify-icon>
+        <p>No comments yet. Be the first to comment!</p>
+      </div>
+    } @else {
+      <div class="comments-list">
+        <ng-container *ngTemplateOutlet="commentList; context: { $implicit: comments, level: 0 }"></ng-container>
+      </div>
+
+      <ng-template #commentList let-commentsList let-level="level">
+        @for (comment of commentsList; track comment.id) {
+          <div class="comment-item" [class.comment-item--nested]="level > 0">
+            <div class="comment-item__header">
+              <img [src]="comment.userAvatarUrl || 'assets/default-avatar.png'" alt="Avatar" class="comment-item__avatar" [class.comment-item__avatar--small]="level > 0" (click)="goToUserProfile(comment.userId)" style="cursor: pointer;">
+              <div class="comment-item__meta">
+                <span class="comment-item__username" (click)="goToUserProfile(comment.userId)" style="cursor: pointer;">{{ comment.userName }}</span>
+                <span class="comment-item__time">{{ formatTimeAgo(comment.createdAt) }}</span>
+              </div>
+            </div>
+
+            <div class="comment-item__body">
+              @if (editingCommentId === comment.id) {
+                <div class="comment-item__edit">
+                  <textarea class="edit-textarea" [(ngModel)]="editContent" rows="3" placeholder="Edit your comment"></textarea>
+                  <div class="edit-actions">
+                    <button class="edit-btn edit-btn--cancel" (click)="cancelEditing()">Cancel</button>
+                    <button class="edit-btn edit-btn--save" (click)="saveEdit(comment.id)">Save</button>
+                  </div>
+                </div>
+              } @else {
+                <p class="comment-item__content">
+                  @for (segment of parseMentions(comment.content); track $index) {
+                    @if (segment.isMention && segment.userId) {
+                      <span class="mention-link" (click)="goToUserProfile(segment.userId!)" style="color: #2563eb; font-weight: 500; cursor: pointer;">{{ segment.text }}</span>
+                    } @else {
+                      <span>{{ segment.text }}</span>
+                    }
+                  }
+                </p>
+              }
+
+              <!-- Comment actions -->
+              <div class="comment-item__actions-row">
+                <button class="comment-action-btn" (click)="startReplying(comment)">
+                  <iconify-icon icon="lucide:reply" style="font-size: 14px"></iconify-icon>
+                  <span>Reply</span>
+                </button>
+
+                @if (isOwnComment(comment) && editingCommentId !== comment.id) {
+                  <button class="comment-action-btn" (click)="startEditing(comment)">
+                    <iconify-icon icon="lucide:edit-3" style="font-size: 14px"></iconify-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button class="comment-action-btn comment-action-btn--danger" (click)="deleteComment(comment.id)">
+                    <iconify-icon icon="lucide:trash-2" style="font-size: 14px"></iconify-icon>
+                    <span>Delete</span>
+                  </button>
+                }
+              </div>
+
+              <!-- Reply Input -->
+              @if (replyingToCommentId === comment.id) {
+                <div class="reply-input-box">
+                  <textarea class="reply-textarea" [(ngModel)]="replyContent" placeholder="Write a reply..." rows="2"></textarea>
+                  <div class="reply-actions">
+                    <button class="reply-btn reply-btn--cancel" (click)="cancelReplying()">Cancel</button>
+                    <button class="reply-btn reply-btn--post" [disabled]="!replyContent.trim()" (click)="submitReply(comment.id)">Reply</button>
+                  </div>
+                </div>
+              }
+
+              <!-- Nested Replies -->
+              @if (comment.replies && comment.replies.length > 0) {
+                <div class="replies-container">
+                  <button class="toggle-replies-btn" (click)="toggleShowReplies(comment.id)">
+                    <iconify-icon [icon]="areRepliesExpanded(comment.id) ? 'lucide:chevron-up' : 'lucide:chevron-down'" style="font-size: 14px"></iconify-icon>
+                    <span>{{ areRepliesExpanded(comment.id) ? 'Hide' : 'Show' }} {{ comment.totalReplies }} {{ comment.totalReplies === 1 ? 'reply' : 'replies' }}</span>
+                  </button>
+
+                  @if (areRepliesExpanded(comment.id)) {
+                    <div class="replies-list">
+                      <ng-container *ngTemplateOutlet="commentList; context: { $implicit: comment.replies, level: level + 1 }"></ng-container>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </ng-template>
+
+      @if (hasMore) {
+        <div class="load-more">
+          <button class="load-more-btn" (click)="loadMore()" [disabled]="loadingMore">
+            @if (loadingMore) {
+              <iconify-icon icon="lucide:loader-2" class="spin-icon" style="font-size: 16px"></iconify-icon>
+            }
+            Load More Comments
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Add Comment Footer -->
+  <div class="comments-modal__footer">
+    <textarea class="comment-input" placeholder="Add a comment..." [(ngModel)]="newCommentContent" rows="2"></textarea>
+    <button class="post-btn" [disabled]="!newCommentContent.trim()" (click)="submitComment()">
+      <iconify-icon icon="lucide:send" style="font-size: 16px;"></iconify-icon>
+      Post
+    </button>
+  </div>
+</div>

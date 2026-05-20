@@ -1,0 +1,162 @@
+<div class="admin-system-container">
+  <div class="page-header">
+    <h2>System Management</h2>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="loadSystemHealth()">
+        <mat-icon>refresh</mat-icon>
+        Refresh Health
+      </button>
+      
+      <button mat-button (click)="createBackup()">
+        <mat-icon>backup</mat-icon>
+        Create Backup
+      </button>
+      
+      <button mat-button (click)="clearSystemCache()">
+        <mat-icon>clear</mat-icon>
+        Clear Cache
+      </button>
+    </div>
+  </div>
+
+  <div class="system-content">
+    @if (loading$ | async) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading system data...</p>
+      </div>
+    } @else {
+      <div class="system-grid">
+        <!-- System Health -->
+        <mat-card class="system-card">
+          <mat-card-header>
+            <mat-card-title>System Health</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="health-indicators">
+              <div class="health-item" [class]="getHealthClass(systemHealth)">
+                <div class="health-status">{{getHealthStatus(systemHealth)}}</div>
+                <div class="health-details">
+                  <div class="health-metric">
+                    <span class="metric-label">CPU:</span>
+                    <span class="metric-value">{{systemHealth?.cpuUsage || 0}}%</span>
+                  </div>
+                  <div class="health-metric">
+                    <span class="metric-label">Memory:</span>
+                    <span class="metric-value">{{systemHealth?.memoryUsage || 0}}%</span>
+                  </div>
+                  <div class="health-metric">
+                    <span class="metric-label">Disk:</span>
+                    <span class="metric-value">{{systemHealth?.diskUsage || 0}}%</span>
+                  </div>
+                  <div class="health-metric">
+                    <span class="metric-label">Last Check:</span>
+                    <span class="metric-value">{{systemHealth?.lastCheck | date:'short'}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- System Performance -->
+        <mat-card class="system-card">
+          <mat-card-header>
+            <mat-card-title>Performance Metrics</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="performance-metrics">
+              <div class="metric-item">
+                <div class="metric-value">{{systemPerformance?.averageResponseTime || 0}}ms</div>
+                <div class="metric-label">Response Time</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{systemPerformance?.requestsPerSecond || 0}}/s</div>
+                <div class="metric-label">Request Rate</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{systemPerformance?.activeConnections || 0}}</div>
+                <div class="metric-label">Active Connections</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{systemPerformance?.cpuUsage || 0}}%</div>
+                <div class="metric-label">CPU Usage</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- System Logs -->
+        <mat-card class="system-card full-width">
+          <mat-card-header>
+            <mat-card-title>System Logs</mat-card-title>
+            <div class="log-filters">
+              <mat-form-field appearance="outline">
+                <mat-label>Level</mat-label>
+                <mat-select [(ngModel)]="logLevel">
+                  <mat-option value="">All Levels</mat-option>
+                  <mat-option value="error">Error</mat-option>
+                  <mat-option value="warn">Warning</mat-option>
+                  <mat-option value="info">Info</mat-option>
+                  <mat-option value="debug">Debug</mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Search</mat-label>
+                <input matInput [(ngModel)]="logSearch" placeholder="Search logs...">
+              </mat-form-field>
+              
+              <button mat-button (click)="loadLogs()">
+                <mat-icon>search</mat-icon>
+                Search
+              </button>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="logs-container">
+              <table mat-table [dataSource]="systemLogs" class="logs-table">
+                <!-- Timestamp Column -->
+                <ng-container matColumnDef="timestamp">
+                  <th mat-header-cell *matHeaderCellDef> Timestamp </th>
+                  <td mat-cell *matCellDef="let log"> {{log.timestamp | date:'short'}} </td>
+                </ng-container>
+
+                <!-- Level Column -->
+                <ng-container matColumnDef="level">
+                  <th mat-header-cell *matHeaderCellDef> Level </th>
+                  <td mat-cell *matCellDef="let log">
+                    <span class="log-level" [class]="getLogLevelClass(log.level)">{{log.level}}</span>
+                  </td>
+                </ng-container>
+
+                <!-- Message Column -->
+                <ng-container matColumnDef="message">
+                  <th mat-header-cell *matHeaderCellDef> Message </th>
+                  <td mat-cell *matCellDef="let log"> {{log.message}} </td>
+                </ng-container>
+
+                <!-- Source Column -->
+                <ng-container matColumnDef="source">
+                  <th mat-header-cell *matHeaderCellDef> Source </th>
+                  <td mat-cell *matCellDef="let log"> {{log.source}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedLogColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedLogColumns;"></tr>
+              </table>
+
+              <mat-paginator
+                [length]="totalLogs"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="[10, 25, 50, 100]"
+                (page)="onLogPageChange($event)"
+                showFirstLastButtons>
+              </mat-paginator>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  </div>
+</div>

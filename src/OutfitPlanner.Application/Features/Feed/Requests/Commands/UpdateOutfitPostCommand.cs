@@ -13,4 +13,6 @@ public class UpdateOutfitPostCommand : IRequest<BaseCommandResponse>
     public string UserId { get; set; } = string.Empty;
     public string? Caption { get; set; }
     public Visibility Visibility { get; set; }
+    public List<string> Tags { get; set; }  
+    public Guid OutfitId { get; set; }  
 }

@@ -1,0 +1,154 @@
+<div class="admin-polls-container">
+  <div class="page-header">
+    <h2>Polls Management</h2>
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchFilter" placeholder="Search polls...">
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="statusFilter">
+          <mat-option value="">All Status</mat-option>
+          <mat-option value="0">Active</mat-option>
+          <mat-option value="1">Closed</mat-option>
+          <mat-option value="2">Featured</mat-option>
+          <mat-option value="3">Hidden</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" (click)="applyFilter()">
+        <mat-icon>search</mat-icon>
+        Search
+      </button>
+      
+      <button mat-button (click)="bulkClose()" [disabled]="selectedPolls.size === 0">
+        <mat-icon>close</mat-icon>
+        Close Selected
+      </button>
+      
+      <button mat-button (click)="bulkFeature()" [disabled]="selectedPolls.size === 0">
+        <mat-icon>star</mat-icon>
+        Feature Selected
+      </button>
+      
+      <button mat-button color="accent" (click)="bulkDelete()" [disabled]="selectedPolls.size === 0">
+        <mat-icon>delete</mat-icon>
+        Delete Selected
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    @if (loading$ | async) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading polls...</p>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="polls" class="polls-table">
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="toggleAllPolls()" [checked]="isAllSelected()"></mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let poll">
+            <mat-checkbox (change)="togglePollSelection(poll.id)" [checked]="selectedPolls.has(poll.id)"></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let poll"> {{poll.id.substring(0, 8)}}... </td>
+        </ng-container>
+
+        <!-- Question Column -->
+        <ng-container matColumnDef="question">
+          <th mat-header-cell *matHeaderCellDef> Question </th>
+          <td mat-cell *matCellDef="let poll"> 
+            <div class="poll-question">{{poll.question}}</div>
+          </td>
+        </ng-container>
+
+        <!-- Author Column -->
+        <ng-container matColumnDef="userName">
+          <th mat-header-cell *matHeaderCellDef> Author </th>
+          <td mat-cell *matCellDef="let poll"> {{poll.userName}} </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let poll">
+            <span class="status-badge" [class]="getStatusClass(poll)">
+              {{getStatusText(poll)}}
+              @if (poll.isFeatured) {
+                <mat-icon class="featured-icon">star</mat-icon>
+              }
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Votes Column -->
+        <ng-container matColumnDef="votes">
+          <th mat-header-cell *matHeaderCellDef> Votes </th>
+          <td mat-cell *matCellDef="let poll">
+            <div class="vote-stats">
+              <div class="total-votes">{{poll.totalVotes}}</div>
+              <div class="vote-distribution">
+                @for (option of poll.options; track $index) {
+                  <div class="vote-bar">
+                    <div class="vote-fill" [style.width.%]="getVotePercentage(poll.optionVotes[$index], poll.totalVotes)"></div>
+                    <span class="vote-text">{{option}} ({{poll.optionVotes[$index]}})</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef> Created </th>
+          <td mat-cell *matCellDef="let poll"> {{poll.createdAt | date:'medium'}} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let poll">
+            <button mat-icon-button (click)="closePoll(poll.id)" [disabled]="poll.status !== '0'"
+                    matTooltip="Close Poll">
+              <mat-icon>close</mat-icon>
+            </button>
+            <button mat-icon-button (click)="featurePoll(poll.id)" [disabled]="poll.isFeatured"
+                    matTooltip="Feature Poll">
+              <mat-icon>star</mat-icon>
+            </button>
+            <button mat-icon-button (click)="unfeaturePoll(poll.id)" [disabled]="!poll.isFeatured"
+                    matTooltip="Unfeature Poll">
+              <mat-icon>star_border</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deletePoll(poll.id)" color="warn"
+                    matTooltip="Delete Poll">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="totalPolls"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  </div>
+</div>

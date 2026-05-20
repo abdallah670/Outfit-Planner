@@ -54,7 +54,7 @@ public class CreateOutfitWithPhotoCommandHandler : IRequestHandler<CreateOutfitW
             string imageUrl;
             using (var stream = request.Photo.OpenReadStream())
             {
-                var fileName = $"outfit-photo-{Guid.NewGuid()}.jpg";
+                var fileName = request.Photo.FileName;
                 var uploadResult = await _imageStorageService.UploadImageAsync(
                     stream,
                     fileName,
@@ -68,31 +68,45 @@ public class CreateOutfitWithPhotoCommandHandler : IRequestHandler<CreateOutfitW
 
                 imageUrl = uploadResult.OriginalPath ?? $"/uploads/outfit-images/{fileName}";
             }
+            //create clothing item with the photo as the image url, then create outfit with that clothing item
+            var clothingItem = new ClothingItem
+            {
+                Id = Guid.NewGuid(),
+                UserId = request.UserId,
+                Name =request.Name??"Photo Item",
+                Category = "Photo",
+                ImageUrl = imageUrl,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+                await _unitOfWork.ClothingItems.AddAsync(clothingItem);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var outfitItem = new OutfitItem
+            {
+                Id = Guid.NewGuid(),
+                ClothingItemId = clothingItem.Id,
+                Role = ItemRole.Primary,
+                LayeringOrder = 0,
+                IsEssential = true
+            };
+             
+               
+
 
             // Create the outfit entity
             var outfit = new Outfit
             {
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
-                Name = request.Name,
-                Status = OutfitStatus.Active,
+                Name =request.Name??"Custom Outfit",
                 CreatedAt = DateTimeOffset.UtcNow,
                 ImageUrl = imageUrl,
-                Items = new List<OutfitItem>() // Empty list - no clothing items
+                Items = new List<OutfitItem> { outfitItem },
+                Occasion=OccasionType.Casual,
+                Season=Season.Spring,
+                WeatherCondition="Sunny"
             };
 
-            // Parse optional enums
-            if (!string.IsNullOrEmpty(request.Occasion) &&
-                Enum.TryParse<OccasionType>(request.Occasion, true, out var occasion))
-            {
-                outfit.Occasion = occasion;
-            }
-
-            if (!string.IsNullOrEmpty(request.Season) &&
-                Enum.TryParse<Season>(request.Season, true, out var season))
-            {
-                outfit.Season = season;
-            }
+           
 
             // Save outfit
             await _unitOfWork.Outfits.AddAsync(outfit);
@@ -106,9 +120,7 @@ public class CreateOutfitWithPhotoCommandHandler : IRequestHandler<CreateOutfitW
             return new CreateOutfitWithPhotoResponseDto
             {
                 Id = outfit.Id,
-                Name = outfit.Name,
                 ImageUrl = outfit.ImageUrl,
-                Occasion = outfit.Occasion.ToString(),
                 CreatedAt = outfit.CreatedAt
             };
         }

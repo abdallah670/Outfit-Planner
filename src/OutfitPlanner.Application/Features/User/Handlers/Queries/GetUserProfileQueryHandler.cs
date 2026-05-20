@@ -57,6 +57,7 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, U
             Email = user.Email ?? string.Empty,
             UserName = user.UserName ?? string.Empty,
             ProfilePictureUrl = user.ProfilePictureUrl,
+            Bio = user.Bio,
             CreatedAt = user.CreatedAt,
             LastLogin = user.LastLogin,
             WardrobeItemCount = wardrobeItems.Count(),

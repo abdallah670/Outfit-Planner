@@ -14,11 +14,9 @@ public class Outfit : BaseEntity
     public string WeatherCondition { get; set; } = string.Empty;
     public Season Season { get; set; }
     public int? ComfortRating { get; set; }
-    public int? StyleRating { get; set; }
     
     public DateTimeOffset? LastWorn { get; set; }
     public int TimesWorn { get; set; }
-    public OutfitStatus Status { get; set; } = OutfitStatus.Active; // Enum
     // metadata jsonb? In SQL Server, likely nvarchar(max).
     // I'll skip metadata prop for now or use string.
     
@@ -28,6 +26,9 @@ public class Outfit : BaseEntity
     public ICollection<OutfitItem> Items { get; set; } = new List<OutfitItem>();
    // public ICollection<OutfitFeedback> Feedback { get; set; } = new List<OutfitFeedback>();
     public ICollection<PollOption> PollOptions { get; set; } = new List<PollOption>();
+    
+    public int LikesCount { get; set; } = 0;
+    public int CommentsCount { get; set; } = 0;
 }
 
 public class OutfitItem : BaseEntity

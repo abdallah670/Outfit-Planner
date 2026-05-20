@@ -1,4 +1,5 @@
 using MediatR;
+using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Enums;
 
@@ -8,7 +9,10 @@ public class CreatePollPostCommand : IRequest<BaseCommandResponse>
 {
     public string UserId { get; set; } = string.Empty;
     public string Question { get; set; } = string.Empty;
-    public List<Guid> OutfitIds { get; set; } = new();
+
+    public string? Context { get; set; }
+    public List<string> Tags { get; set; } = new();
+    public List<PollOptionDto> Options { get; set; } = new();
     public DateTimeOffset ExpiresAt { get; set; }
     public Visibility Visibility { get; set; } = Visibility.Public;
 }

@@ -6,7 +6,7 @@ namespace OutfitPlanner.Application.Contracts.Persistence;
 
 public interface IFollowRepository : IGenericRepository<Follow>
 {
-    Task<bool> IsFollowingAsync(string followerId, string followingId);
+    Task<bool> IsFollowingAsync(string followerId, string followedId);
     Task<List<Follow>> GetFollowersAsync(string userId, int page, int pageSize);
     Task<List<Follow>> GetFollowingAsync(string userId, int page, int pageSize);
     Task<int> GetFollowersCountAsync(string userId);
@@ -15,10 +15,10 @@ public interface IFollowRepository : IGenericRepository<Follow>
     /// <summary>
     /// Get followers with cursor-based pagination
     /// </summary>
-    Task<CursorPagination.CursorPagedResult<Follow>> GetFollowersCursorAsync(string userId, string? cursor, int pageSize);
+    Task<CursorPagination.CursorPagedResult<Follow>> GetFollowersCursorAsync(string userId, string? cursor, int pageSize, string? searchQuery = null);
     
     /// <summary>
     /// Get following with cursor-based pagination
     /// </summary>
-    Task<CursorPagination.CursorPagedResult<Follow>> GetFollowingCursorAsync(string userId, string? cursor, int pageSize);
+    Task<CursorPagination.CursorPagedResult<Follow>> GetFollowingCursorAsync(string userId, string? cursor, int pageSize, string? searchQuery = null);
 }

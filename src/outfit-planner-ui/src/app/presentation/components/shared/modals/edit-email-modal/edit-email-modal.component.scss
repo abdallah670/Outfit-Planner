@@ -2,3 +2,21 @@
   width: 100%;
   margin-bottom: 1rem;
 }
+
+.forgot-password-link {
+  text-align: center;
+  margin-top: 0.5rem;
+  
+  a {
+    color: #f857a6;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    
+    &:hover {
+      color: #e91e8c;
+      text-decoration: underline;
+    }
+  }
+}

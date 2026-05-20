@@ -1,0 +1,81 @@
+.admin-audit-logs-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.filters mat-form-field {
+  min-width: 200px;
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  flex-direction: column;
+  gap: 16px;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell {
+  font-weight: 600;
+  color: #333;
+}
+
+td.mat-cell {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.action-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.action-badge.user-action {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.action-badge.report-action {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.action-badge.setting-action {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.recent {
+  color: #1976d2;
+  font-weight: 500;
+}

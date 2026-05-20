@@ -9,4 +9,7 @@ public class CreatePollPostDto
     public List<Guid> OutfitIds { get; set; } = new();
     public DateTimeOffset ExpiresAt { get; set; }
     public Visibility Visibility { get; set; } = Visibility.Public;
+    public List<PollOptionDto> Options { get; set; }
+ public List<string> Tags { get; set; }
+    public string Context { get; set; }
 }

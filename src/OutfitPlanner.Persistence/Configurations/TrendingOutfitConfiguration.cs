@@ -15,20 +15,15 @@ public class TrendingOutfitConfiguration : IEntityTypeConfiguration<TrendingOutf
         builder.Property(x => x.TrendingScore)
             .HasPrecision(10, 2)
             .IsRequired();
-        
-        builder.Property(x => x.VoteCount)
-            .IsRequired();
-        
-        builder.Property(x => x.LikeCount)
+      
+        builder.Property(x => x.LikesCount)
             .IsRequired()
             .HasDefaultValue(0);
         
-        builder.Property(x => x.CommentCount)
+        builder.Property(x => x.CommentsCount)
             .IsRequired()
             .HasDefaultValue(0);
-        
-        builder.Property(x => x.ReactionCount)
-            .IsRequired();
+      
         
         builder.Property(x => x.RankPosition)
             .IsRequired();

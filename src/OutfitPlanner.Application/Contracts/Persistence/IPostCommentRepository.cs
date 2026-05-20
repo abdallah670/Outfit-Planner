@@ -14,4 +14,5 @@ public interface IPostCommentRepository : IGenericRepository<PostComment>
     /// Get root comments with cursor-based pagination
     /// </summary>
     Task<CursorPagination.CursorPagedResult<PostComment>> GetRootCommentsCursorAsync(Guid postId, string? cursor, int pageSize);
+    Task<IEnumerable<PostComment>> GetByParentCommentId(Guid commentId);
 }

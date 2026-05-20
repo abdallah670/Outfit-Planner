@@ -14,6 +14,8 @@ public class ValidationPoll : BaseEntity
     
     public ICollection<PollOption> Options { get; set; } = new List<PollOption>();
     public ICollection<Vote> Votes { get; set; } = new List<Vote>(); // Relation? Poll->Votes direct? Diagram says ValidationPolls ||--o{ Votes
+    
+    public int TotalVotes { get; set; } = 0;
 }
 
 public class PollOption : BaseEntity
@@ -23,10 +25,8 @@ public class PollOption : BaseEntity
     
     public Guid? OutfitId { get; set; }
     public Outfit? Outfit { get; set; }
-    
-    public string Description { get; set; } = string.Empty;
     public int DisplayOrder { get; set; }
-    
+    public string Description { get; set; } = string.Empty;
     public ICollection<Vote> Votes { get; set; } = new List<Vote>();
 }
 
@@ -39,8 +39,5 @@ public class Vote : BaseEntity
     
     public string VoterId { get; set; } = string.Empty;
     public User Voter { get; set; } = null!;
-    
-    public int Rating { get; set; } // 1-5
-    public bool IsAnonymous { get; set; }
     
 }

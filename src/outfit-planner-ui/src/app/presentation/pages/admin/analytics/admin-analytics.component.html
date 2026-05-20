@@ -1,0 +1,136 @@
+<div class="admin-analytics-container">
+  <div class="page-header">
+    <h2>Analytics Dashboard</h2>
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date</mat-label>
+        <input matInput [(ngModel)]="startDate" type="date">
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>End Date</mat-label>
+        <input matInput [(ngModel)]="endDate" type="date">
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" (click)="loadAnalytics()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      
+      <button mat-button (click)="exportAnalytics()">
+        <mat-icon>download</mat-icon>
+        Export
+      </button>
+    </div>
+  </div>
+
+  <div class="analytics-content">
+    @if (loading$ | async) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading analytics...</p>
+      </div>
+    } @else {
+      <div class="analytics-grid">
+        <!-- User Metrics -->
+        <mat-card class="analytics-card">
+          <mat-card-header>
+            <mat-card-title>User Metrics</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.userMetrics?.totalUsers || 0}}</div>
+                <div class="metric-label">Total Users</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.userMetrics?.activeUsers || 0}}</div>
+                <div class="metric-label">Active Users</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.userMetrics?.newUsers || 0}}</div>
+                <div class="metric-label">New Users</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.userMetrics?.userGrowthRate || 0}}%</div>
+                <div class="metric-label">Growth Rate</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Content Metrics -->
+        <mat-card class="analytics-card">
+          <mat-card-header>
+            <mat-card-title>Content Metrics</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.contentStats?.totalPosts || 0}}</div>
+                <div class="metric-label">Total Posts</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.contentStats?.totalPolls || 0}}</div>
+                <div class="metric-label">Total Polls</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.contentStats?.totalOutfits || 0}}</div>
+                <div class="metric-label">Total Outfits</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.contentStats?.engagementRate || 0}}%</div>
+                <div class="metric-label">Engagement Rate</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- System Performance -->
+        <mat-card class="analytics-card">
+          <mat-card-header>
+            <mat-card-title>System Performance</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.systemStats?.cpuUsage || 0}}%</div>
+                <div class="metric-label">CPU Usage</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.systemStats?.memoryUsage || 0}}%</div>
+                <div class="metric-label">Memory Usage</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.systemStats?.diskUsage || 0}}%</div>
+                <div class="metric-label">Disk Usage</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">{{analytics?.systemStats?.responseTime || 0}}ms</div>
+                <div class="metric-label">Response Time</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Trends Chart -->
+        <mat-card class="analytics-card full-width">
+          <mat-card-header>
+            <mat-card-title>Activity Trends</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-container">
+              @for (trend of analytics?.trends || []; track $index) {
+                <div class="trend-item">
+                  <div class="trend-date">{{trend.date | date:'short'}}</div>
+                  <div class="trend-value">{{trend.value}}</div>
+                  <div class="trend-label">{{trend.metric}}</div>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  </div>
+</div>

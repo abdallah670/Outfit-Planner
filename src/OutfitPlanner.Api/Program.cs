@@ -1,6 +1,7 @@
 using OutfitPlanner.Api.Middleware;
 using OutfitPlanner.Api.Converters;
 using OutfitPlanner.Infrastructure;
+using OutfitPlanner.Infrastructure.Services;
 using OutfitPlanner.Persistence.Data;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -11,14 +12,20 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using System.Text.Json.Serialization;
 using Hangfire;
 using Hangfire.SqlServer;
-using OutfitPlanner.Infrastructure.Services;
 
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    .MinimumLevel.Override("Swashbuckle", Serilog.Events.LogEventLevel.Debug)
     .WriteTo.Console()
     .WriteTo.File("Logs/outfitplanner-log.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add environment variables to configuration
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Host.UseSerilog();
 
 // Add services to the container.
@@ -27,6 +34,8 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
         options.JsonSerializerOptions.Converters.Add(new NullableTimeSpanConverter());
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 builder.Services.AddSwaggerGen(options =>
 {
@@ -60,6 +69,9 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
+
+    // Use full names to avoid collisions between DTOs with same names in different namespaces
+    options.CustomSchemaIds(type => type.FullName?.Replace("`", "_").Replace("[", "_").Replace("]", "_").Replace(",", "_").Replace(" ", ""));
 });
 
 builder.Services.AddCors(options =>
@@ -83,6 +95,14 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Add Application Services
 builder.Services.AddApplication(builder.Configuration);
+
+// Add role-based authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("AdminOrPlanner", policy => policy.RequireRole("Admin", "Planner"));
+    options.AddPolicy("PlannerOnly", policy => policy.RequireRole("Planner"));
+});
 
 // Add Memory Cache for search results
 builder.Services.AddMemoryCache();
@@ -167,12 +187,13 @@ if (!hasGoogleOAuth && !hasFacebookOAuth)
 
 var app = builder.Build();
 
+// Apply CORS before logging and exceptions to ensure headers are present on error responses
+app.UseCors("AllowAll");
+
 // Add Request Logging Middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 
-// Apply CORS before HTTPS redirection to handle preflight requests properly
-app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -197,6 +218,12 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Add user activity tracking middleware
+app.UseMiddleware<UserActivityMiddleware>();
+
+// Add audit logging middleware
+app.UseMiddleware<AuditLogMiddleware>();
 
 // Hangfire Dashboard - accessible at /hangfire
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
@@ -240,6 +267,26 @@ try
         );
         
         Log.Information("Hangfire recurring job 'daily-trending-calculation' scheduled to run daily at midnight UTC");
+    }
+
+    // Schedule recurring Hangfire job for auto-unlocking accounts
+    using (var scope = app.Services.CreateScope())
+    {
+        var unlockJob = scope.ServiceProvider.GetRequiredService<AccountUnlockBackgroundJob>();
+        var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+        
+        // Schedule job to run every 5 minutes
+        recurringJobManager.AddOrUpdate(
+            "auto-unlock-accounts",
+            () => unlockJob.AutoUnlockAccounts(),
+            "*/5 * * * *", // Cron: Every 5 minutes
+            new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Utc
+            }
+        );
+        
+        Log.Information("Hangfire recurring job 'auto-unlock-accounts' scheduled to run every 5 minutes");
     }
     
     app.Run();

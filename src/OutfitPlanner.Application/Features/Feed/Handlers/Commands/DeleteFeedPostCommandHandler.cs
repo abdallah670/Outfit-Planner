@@ -3,6 +3,7 @@ using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Responses;
+using OutfitPlanner.Domain.Entities;
 
 namespace OutfitPlanner.Application.Features.Feed.Handlers.Commands;
 
@@ -43,6 +44,18 @@ public class DeleteFeedPostCommandHandler : IRequestHandler<DeleteFeedPostComman
                 Success = false,
                 Message = "You can only delete your own posts"
             };
+        }
+
+        // Update Outfit counts if linked
+        if (post.OutfitId.HasValue)
+        {
+            var outfit = await _unitOfWork.Repository<Outfit>().GetByIdAsync(post.OutfitId.Value);
+            if (outfit != null)
+            {
+                outfit.LikesCount = Math.Max(0, outfit.LikesCount - post.LikesCount);
+                outfit.CommentsCount = Math.Max(0, outfit.CommentsCount - post.CommentsCount);
+                await _unitOfWork.Repository<Outfit>().UpdateAsync(outfit);
+            }
         }
 
         await _feedPostRepository.RemoveAsync(post);

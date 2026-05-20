@@ -40,7 +40,8 @@ public class OutfitPostsController : ControllerBase
             UserId = userId,
             OutfitId = request.OutfitId,
             Caption = request.Caption,
-            Visibility = request.Visibility
+            Visibility = request.Visibility,
+            Tags = request.Tags
         };
         
         var response = await _mediator.Send(command);
@@ -59,7 +60,7 @@ public class OutfitPostsController : ControllerBase
     public async Task<ActionResult<FeedPostDto>> GetOutfitPost(Guid id)
     {
         var userId = GetUserId();
-        var query = new GetFeedPostByIdQuery { PostId = id, UserId = userId };
+        var query = new GetFeedPostByIdQuery { PostId = id, RequesterId = userId };
         var post = await _mediator.Send(query);
         
         if (post == null)
@@ -80,7 +81,8 @@ public class OutfitPostsController : ControllerBase
             PostId = id,
             UserId = userId,
             Caption = request.Caption,
-            Visibility = request.Visibility
+            Visibility = request.Visibility,
+            Tags = request.Tags
         };
         
         var response = await _mediator.Send(command);

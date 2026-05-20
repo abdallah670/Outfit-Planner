@@ -12,8 +12,11 @@ public class GetFeedQuery : IRequest<CursorPagination.CursorPagedResult<FeedPost
 {
     public string? UserId { get; set; }
     public string? Cursor { get; set; }
+
     public int PageSize { get; set; } = 20;
     public string SortBy { get; set; } = "popular";
     public string Visibility { get; set; } = "Public";
     public string? PostType { get; set; }
+    public bool FollowingOnly { get; set; }
 }
+

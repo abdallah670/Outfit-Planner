@@ -14,12 +14,17 @@ public interface IFeedPostRepository : IGenericRepository<FeedPost>
         string? userId, 
         string? cursor, 
         int pageSize, 
-        string sortBy, 
+        string? sortBy, 
         Visibility visibility,
-        PostType? postType);
+        PostType? postType,
+        bool followingOnly = false);
+
+
+
     
     Task<FeedPost?> GetByIdWithDetailsAsync(Guid id);
     Task<FeedPost?> GetByOutfitIdAsync(Guid outfitId);
     Task<FeedPost?> GetByPollIdAsync(Guid pollId);
-    Task<List<FeedPost>> GetUserPostsAsync(string userId, int page, int pageSize);
+    Task<CursorPagination.CursorPagedResult<FeedPost>> GetUserPostsAsync(string userId, string? cursor, int pageSize, PostType? postType = null);
+    
 }

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace OutfitPlanner.Application.DTOs.Outfit;
 
 /// <summary>
@@ -5,11 +7,8 @@ namespace OutfitPlanner.Application.DTOs.Outfit;
 /// </summary>
 public class CreateOutfitWithPhotoDto
 {
-    public string Name { get; set; } = string.Empty;
-    public string? Occasion { get; set; }
-    public string? Season { get; set; }
-    public string? WeatherCondition { get; set; }
-    // Photo is sent as IFormFile in the controller, not in JSON body
+    public string? Name { get; set; }
+    public IFormFile? Photo { get; set; }
 }
 
 /// <summary>
@@ -18,8 +17,8 @@ public class CreateOutfitWithPhotoDto
 public class CreateOutfitWithPhotoResponseDto
 {
     public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+    public string? Name { get; set; }
+    
     public string? ImageUrl { get; set; }
-    public string? Occasion { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

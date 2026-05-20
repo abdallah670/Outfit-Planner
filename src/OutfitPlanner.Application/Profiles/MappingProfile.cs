@@ -66,21 +66,19 @@ public class MappingProfile : Profile
         CreateMap<CreateOutfitDto, Outfit>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => Enum.Parse<OccasionType>(s.Occasion, true)))
             .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season, true)))
-            .ForMember(d => d.Status, opt => opt.MapFrom(s => OutfitStatus.Active))
+            
             .ForMember(d => d.ImageUrl, opt => opt.Ignore());
 
         // Outfit - Update
         CreateMap<UpdateOutfitDto, Outfit>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Occasion != null ? Enum.Parse<OccasionType>(s.Occasion, true) : default(OccasionType)))
             .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season != null ? Enum.Parse<Season>(s.Season, true) : default(Season)))
-            .ForMember(d => d.Status, opt => opt.Ignore())
             .ForMember(d => d.UserId, opt => opt.Ignore())
             .ForMember(d => d.Id, opt => opt.Ignore())
             .ForMember(d => d.CreatedAt, opt => opt.Ignore())
             .ForMember(d => d.TimesWorn, opt => opt.Ignore())
             .ForMember(d => d.LastWorn, opt => opt.Ignore())
             .ForMember(d => d.ComfortRating, opt => opt.Condition(s => s.ComfortRating.HasValue))
-            .ForMember(d => d.StyleRating, opt => opt.Condition(s => s.StyleRating.HasValue))
             .ForMember(d => d.Name, opt => opt.Condition(s => !string.IsNullOrEmpty(s.Name)))
             .ForMember(d => d.WeatherCondition, opt => opt.Condition(s => !string.IsNullOrEmpty(s.WeatherCondition)))
             .ForMember(d => d.ImageUrl, opt => opt.Condition(s => !string.IsNullOrEmpty(s.ImageUrl)))
@@ -89,18 +87,15 @@ public class MappingProfile : Profile
         // Outfit - To DTOs
         CreateMap<Outfit, OutfitDto>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Occasion.ToString()))
-            .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season.ToString()))
-            .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()));
+            .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season.ToString()));
 
         CreateMap<OutfitDto, Outfit>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => Enum.Parse<OccasionType>(s.Occasion, true)))
-            .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season, true)))
-            .ForMember(d => d.Status, opt => opt.MapFrom(s => Enum.Parse<OutfitStatus>(s.Status, true)));
+            .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season, true)));
 
         CreateMap<Outfit, OutfitListDto>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Occasion.ToString()))
             .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season.ToString()))
-            .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()))
             .ForMember(d => d.ItemCount, opt => opt.MapFrom(s => s.Items.Count))
             .ForMember(d => d.ThumbnailUrl, opt => opt.MapFrom(s => s.Items.FirstOrDefault() != null ? s.Items.FirstOrDefault().ClothingItem.ThumbnailUrl : string.Empty));
 
@@ -121,6 +116,7 @@ public class MappingProfile : Profile
         // User - To Profile DTO
         CreateMap<User, UserProfileDto>()
             .ForMember(d => d.Email, opt => opt.MapFrom(s => s.Email ?? string.Empty))
+            .ForMember(d => d.Bio, opt => opt.MapFrom(s => s.Bio))
             .ForMember(d => d.StyleProfile, opt => opt.MapFrom(s => s.StyleProfile))
             .ForMember(d => d.Preferences, opt => opt.MapFrom(s => s.Preferences));
 
@@ -150,6 +146,7 @@ public class MappingProfile : Profile
         // Update DTOs to Entities
         CreateMap<UpdateUserProfileDto, User>()
             .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Name))
+            .ForMember(d => d.Bio, opt => opt.MapFrom(s => s.Bio))
             .ForMember(d => d.ProfilePictureUrl, opt => opt.Ignore());
 
         CreateMap<UpdateStyleProfileDto, UserStyleProfile>()
@@ -181,6 +178,7 @@ public class MappingProfile : Profile
         // Update DTOs to Entities
         CreateMap<UpdateUserProfileDto, User>()
             .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Name))
+            .ForMember(d => d.Bio, opt => opt.MapFrom(s => s.Bio))
             .ForMember(d => d.ProfilePictureUrl, opt => opt.Ignore());
 
         CreateMap<UpdateStyleProfileDto, UserStyleProfile>()
@@ -211,13 +209,15 @@ public class MappingProfile : Profile
 
         // PollOption
         CreateMap<PollOption, PollOptionDto>()
-            .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.Votes.Count));
+            .ForMember(d => d.OutfitThumbnail, opt => opt.MapFrom(s => s.Outfit != null ? s.Outfit.ImageUrl : null))
+            .ForMember(d=>d.Description, opt => opt.MapFrom(s => !string.IsNullOrEmpty(s.Description) ? s.Description : (s.Outfit != null ? s.Outfit.Name : string.Empty)));
 
-        CreateMap<PollOptionDto, PollOption>();
+        CreateMap<PollOptionDto, PollOption>()
+        .ForMember(d=>d.Description, opt => opt.MapFrom(s => !string.IsNullOrEmpty(s.Description) ? s.Description : string.Empty));
 
-        // Vote
-        CreateMap<Vote, VoteDto>()
-            .ForMember(d => d.Rating, opt => opt.MapFrom(s => s.Rating));
+
+
+     
 
         CreateMap<VoteDto, Vote>();
 
@@ -229,8 +229,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Outfit.UserId))
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
             .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.Outfit.User.ProfilePictureUrl))
-            .ForMember(d => d.VoteCount, opt => opt.MapFrom(s => s.VoteCount))
-            .ForMember(d => d.CommentCount, opt => opt.MapFrom(s => s.CommentCount))
+            .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.CommentsCount))
             .ForMember(d => d.TrendingScore, opt => opt.MapFrom(s => s.TrendingScore))
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.Date));
 
@@ -263,7 +262,15 @@ CreateMap<FeedPost, FeedPostDto>()
 CreateMap<PostComment, PostCommentDto>()
     .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Name))
     .ForMember(d => d.UserAvatarUrl, opt => opt.MapFrom(s => s.User.ProfilePictureUrl))
-    .ForMember(d => d.Replies, opt => opt.MapFrom(s => s.Replies));
+    .ForMember(d => d.Replies, opt => opt.MapFrom(s => s.Replies)).
+    ForMember(d=>d.ParentCommentId, opt => opt.MapFrom(s => s.ParentCommentId.HasValue ? s.ParentCommentId.Value.ToString() : null))
+    .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.CreatedAt))
+    .ForMember(d => d.TotalReplies, opt => opt.MapFrom(s => s.TotalReplies));
+
+CreateMap<User, TaggedUserDto>()
+    .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Id))
+    .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.UserName))
+    .ForMember(d => d.ProfilePictureUrl, opt => opt.MapFrom(s => s.ProfilePictureUrl));
      } 
 }
 

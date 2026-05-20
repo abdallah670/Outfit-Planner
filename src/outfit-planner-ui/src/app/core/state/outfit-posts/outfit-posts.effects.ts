@@ -3,15 +3,15 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { OutfitPostsActions } from './outfit-posts.actions';
 import { catchError, map, mergeMap, of, Observable, tap } from 'rxjs';
-import { OutfitPostsUseCases } from '../../../domain/usecases/outfit-posts.usecases';
+import { OutfitPostUseCases } from '../../../domain/usecases/outfit-posts.usecases';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FeedPost } from '../../../domain/entities/feed.entity';
+import { FeedPost, PostType } from '../../../domain/entities/feed.entity';
 import { CommandResponse } from '../../../domain/entities/response.entity';
 
 @Injectable()
 export class OutfitPostsEffects {
   private actions$ = inject(Actions);
-  private outfitPostsUseCases = inject(OutfitPostsUseCases);
+  private outfitPostsUseCases = inject(OutfitPostUseCases);
   private snackBar = inject(MatSnackBar);
 
   createOutfitPost$ = createEffect(() =>
@@ -25,13 +25,17 @@ export class OutfitPostsEffects {
               userId: '', // Backend provides this
               userName: '',
               userAvatarUrl: '',
-              postType: 0,
+              postType: PostType.Outfit,
               outfitId: action.outfitId,
               caption: action.caption,
               visibility: action.visibility,
-              likeCount: 0,
-              commentCount: 0,
+              likesCount: 0,
+              commentsCount: 0,
               createdAt: new Date(),
+              isLiked: false,
+              isFollowing: false,
+              isOwner: true,
+              hasVoted: false
             };
             return OutfitPostsActions.createOutfitPostSuccess({ post: newPost });
           }),

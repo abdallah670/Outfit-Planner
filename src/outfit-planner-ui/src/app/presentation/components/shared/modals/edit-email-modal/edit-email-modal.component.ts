@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
@@ -43,6 +44,7 @@ export class EditEmailModalComponent implements OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: { email: string },
     private store: Store,
     private snackBar: MatSnackBar,
+    private router: Router,
   ) {
     this.currentEmail = data.email;
 
@@ -118,6 +120,11 @@ export class EditEmailModalComponent implements OnDestroy {
         }
       }, 10000);
     }
+  }
+
+  goToForgotPassword(): void {
+    this.dialogRef.close(false);
+    this.router.navigate(['/forgot-password']);
   }
 
   onCancel(): void {

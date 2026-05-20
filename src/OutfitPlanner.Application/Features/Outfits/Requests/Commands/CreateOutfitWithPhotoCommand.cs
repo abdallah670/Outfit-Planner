@@ -10,9 +10,6 @@ namespace OutfitPlanner.Application.Features.Outfits.Requests.Commands;
 public class CreateOutfitWithPhotoCommand : IRequest<CreateOutfitWithPhotoResponseDto>
 {
     public string UserId { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string? Occasion { get; set; }
-    public string? Season { get; set; }
-    public string? WeatherCondition { get; set; }
     public IFormFile Photo { get; set; } = null!;
+    public string? Name { get;  set; }
 }

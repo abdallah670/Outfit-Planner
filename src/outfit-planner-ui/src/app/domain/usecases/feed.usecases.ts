@@ -4,13 +4,21 @@ import { FEED_REPOSITORY, FeedRepository } from '../repositories/feed.repository
 import { FeedPost } from '../entities/feed.entity';
 import { PostComment } from '../entities/feed.entity';
 import { CommandResponse, CursorPagedResult } from '../entities/response.entity';
+import {  PollsRepository } from '../repositories/polls.repository';
+import { POLLS_REPOSITORY } from '../repositories/polls.repository';
+import { VoterInfo } from '../entities/poll.entity';
+
+
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class FeedUseCases {
+  
   constructor(
     @Inject(FEED_REPOSITORY) private readonly feedRepository: FeedRepository,
+    @Inject(POLLS_REPOSITORY) private readonly pollsRepository: PollsRepository,
   ) {}
 
   getFeedPosts(
@@ -18,10 +26,13 @@ export class FeedUseCases {
     pageSize?: number,
     visibility?: string,
     sortBy?: string,
-    postType?: string
+    postType?: string,
+    followingOnly?: boolean
   ): Observable<CursorPagedResult<FeedPost>> {
-    return this.feedRepository.getFeedPosts(cursor, pageSize, visibility, sortBy, postType);
+    return this.feedRepository.getFeedPosts(cursor, pageSize, visibility, sortBy, postType, followingOnly);
   }
+
+
    // Get user's activity feed (posts)
   getUserFeed(
     userId: string,
@@ -30,6 +41,14 @@ export class FeedUseCases {
     postType?: string
   ): Observable<CursorPagedResult<FeedPost>> {
     return this.feedRepository.getUserFeed(userId, cursor, pageSize, postType);
+  }
+
+  getMyPosts(
+    cursor?: string,
+    pageSize?: number,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>> {
+    return this.feedRepository.getMyPosts(cursor, pageSize, postType);
   }
 
 
@@ -61,7 +80,24 @@ export class FeedUseCases {
     return this.feedRepository.deleteComment(commentId);
   }
 
+  updateComment(commentId: string, content: string): Observable<CommandResponse> {
+    return this.feedRepository.updateComment(commentId, content);
+  }
+
   createOutfitPost(dto: { outfitId: string; caption?: string; visibility: number }): Observable<CommandResponse> {
     return this.feedRepository.createOutfitPost(dto);
   }
+
+  
+   voteOnPoll(pollId: string, optionId: string): Observable<CommandResponse> {
+    return this.pollsRepository.vote(pollId, {optionId});
+  }
+
+   removeVote( optionId: string): Observable<void> {
+     return this.pollsRepository.removeVote(optionId);
+   }
+
+   getVotersForPoll(pollId: string, optionId?: string): Observable<VoterInfo[]> {
+     return this.feedRepository.getVotersForPoll(pollId, optionId);
+   }
 }

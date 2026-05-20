@@ -9,7 +9,7 @@ export interface FollowRepository {
   followUser(userId: string): Observable<any>;
   unfollowUser(userId: string): Observable<any>;
   isFollowing(userId: string): Observable<boolean>;
-  getFollowers(userId: string, cursor?: string, pageSize?: number): Observable<CursorPagedResult<Follower>>;
-  getFollowing(userId: string, cursor?: string, pageSize?: number): Observable<CursorPagedResult<Following>>;
+  getFollowers(userId: string, cursor?: string, pageSize?: number,searchQuery?: string): Observable<CursorPagedResult<Follower>>;
+  getFollowing(userId: string, cursor?: string, pageSize?: number,searchQuery?: string): Observable<CursorPagedResult<Following>>;
   getFollowStats(userId: string): Observable<FollowStats>;
 }

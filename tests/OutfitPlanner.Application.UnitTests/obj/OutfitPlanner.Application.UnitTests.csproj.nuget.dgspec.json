@@ -768,8 +768,8 @@
               "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
                 "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
               },
-              "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
-                "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
+              "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
+                "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj"
               }
             }
           }
@@ -790,6 +790,26 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "Hangfire.AspNetCore": {
+              "target": "Package",
+              "version": "[1.8.1.2, )"
+            },
+            "Hangfire.Core": {
+              "target": "Package",
+              "version": "[1.8.1.2, )"
+            },
+            "Hangfire.MemoryStorage": {
+              "target": "Package",
+              "version": "[1.8.1.2, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Serilog.AspNetCore": {
               "target": "Package",
               "version": "[10.0.0, )"
@@ -1236,14 +1256,14 @@
         }
       }
     },
-    "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
+    "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj",
+        "projectUniqueName": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj",
         "projectName": "OutfitPlanner.Persistence",
-        "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj",
+        "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\OutfitPlanner.Persistence.csproj",
         "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-        "outputPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\obj\\",
+        "outputPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Persistence\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

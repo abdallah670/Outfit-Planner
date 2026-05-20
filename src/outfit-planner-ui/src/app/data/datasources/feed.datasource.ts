@@ -5,13 +5,14 @@ import { Observable, map } from 'rxjs';
 import { FeedPost } from '../../domain/entities/feed.entity';
 import { PostComment } from '../../domain/entities/feed.entity';
 import { CommandResponse,CursorPagedResult } from '../../domain/entities/response.entity';
+import { VoterInfo } from '../../domain/entities/poll.entity';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class FeedDataSource {
-  private readonly apiUrl = `${environment.baseUrl}/api/feed`;
+  private readonly apiUrl = `${environment.baseUrl}/feed`;
 
   constructor(private http: HttpClient) {}
 
@@ -20,7 +21,8 @@ export class FeedDataSource {
     pageSize: number = 20,
     visibility: string = 'Public',
     sortBy: string = 'recent',
-    postType?: string
+    postType?: string,
+    followingOnly: boolean = false
   ): Observable<CursorPagedResult<FeedPost>> {
     let params = new HttpParams()
       .set('pageSize', pageSize.toString())
@@ -33,6 +35,10 @@ export class FeedDataSource {
     if (postType) {
       params = params.set('postType', postType);
     }
+    if (followingOnly) {
+      params = params.set('followingOnly', 'true');
+    }
+
 
     return this.http.get<CursorPagedResult<any>>(this.apiUrl, { params }).pipe(
       map(response => ({
@@ -42,7 +48,7 @@ export class FeedDataSource {
       }))
     );
   }
-getUserFeed(
+  getUserFeed(
     userId: string,
     cursor?: string,
     pageSize: number = 20,
@@ -53,6 +59,24 @@ getUserFeed(
     if (postType) params = params.set('postType', postType);
 
     return this.http.get<CursorPagedResult<any>>(`${this.apiUrl}/user/${userId}`, { params }).pipe(
+      map(response => ({
+        ...response,
+        nextCursor: response.nextCursor || null,
+        items: response.items.map((post: any) => this.mapFeedPost(post))
+      }))
+    );
+  }
+
+  getMyPosts(
+    cursor?: string,
+    pageSize: number = 20,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>> {
+    let params = new HttpParams().set('pageSize', pageSize.toString());
+    if (cursor) params = params.set('cursor', cursor);
+    if (postType) params = params.set('postType', postType);
+
+    return this.http.get<CursorPagedResult<any>>(`${this.apiUrl}/my-posts`, { params }).pipe(
       map(response => ({
         ...response,
         nextCursor: response.nextCursor || null,
@@ -104,7 +128,59 @@ getUserFeed(
     return this.http.delete<void>(`${this.apiUrl}/comments/${commentId}`);
   }
 
+  updateComment(commentId: string, content: string): Observable<CommandResponse> {
+    return this.http.put<CommandResponse>(`${this.apiUrl}/comments/${commentId}`, { content });
+  }
+
+  getVotersForPoll(pollId: string, optionId?: string): Observable<VoterInfo[]> {
+    let url = `${environment.baseUrl}/polls/${pollId}/voters`;
+    let params = new HttpParams();
+    if (optionId) {
+      params = params.set('optionId', optionId);
+    }
+
+    return this.http.get<any[]>(url, { params }).pipe(
+      map(votes => votes.map((v: any) => ({
+        voterId: v.voterId,
+        voterName: v.voterName,
+        voterAvatarUrl: v.voterAvatarUrl ? this.fixUrl(v.voterAvatarUrl) : 'assets/default-avatar.png',
+        votedAt: new Date(v.votedAt),
+        optionId: v.optionId,
+        optionDescription: v.optionDescription || '',
+        optionDisplayOrder: v.optionDisplayOrder ?? 0
+      })))
+    );
+  }
+
+  private fixUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${environment.resourceBaseUrl}${path}`;
+  }
+
   private mapFeedPost(post: any): FeedPost {
+    // Prefix user avatar
+    if (post.userAvatarUrl) {
+      post.userAvatarUrl = this.fixUrl(post.userAvatarUrl);
+    }
+
+    // Prefix outfit image
+    if (post.outfit && post.outfit.imageUrl) {
+      post.outfit.imageUrl = this.fixUrl(post.outfit.imageUrl);
+    }
+
+    // Prefix poll option thumbnails
+    if (post.poll && post.poll.options) {
+      post.poll.options.forEach((option: any) => {
+        if (option.outfitThumbnail) {
+          option.outfitThumbnail = this.fixUrl(option.outfitThumbnail);
+        }
+      });
+    }
+
     return {
       ...post,
       createdAt: new Date(post.createdAt),
@@ -115,13 +191,25 @@ getUserFeed(
       } : undefined,
       poll: post.poll ? {
         ...post.poll,
+        status: post.poll.status?.toLowerCase(),
         createdAt: new Date(post.poll.createdAt),
-        expiresAt: new Date(post.poll.expiresAt)
-      } : undefined
+        expiresAt: new Date(post.poll.expiresAt),
+        userVotedOptionId: post.poll.userVotedOptionId
+      } : undefined,
+      isFollowing: post.isFollowing,
+      isLiked: post.isLiked,
+      isOwner: post.isOwner,
+      hasVoted: post.hasVoted,
+      comments: post.comments ? post.comments.map((c: any) => this.mapPostComment(c)) : undefined
     };
   }
 
   private mapPostComment(comment: any): PostComment {
+    // Prefix user avatar if it's a relative URL
+    if (comment.userAvatarUrl) {
+      comment.userAvatarUrl = this.fixUrl(comment.userAvatarUrl);
+    }
+    
     return {
       ...comment,
       createdAt: new Date(comment.createdAt),

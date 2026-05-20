@@ -48,6 +48,15 @@ public class PostCommentRepository : GenericRepository<PostComment>, IPostCommen
     {
         var query = _dbSet
             .Include(c => c.User)
+            .Include(c => c.Replies)
+                .ThenInclude(r => r.User)
+            .Include(c => c.Replies)
+                .ThenInclude(r => r.Replies)
+                    .ThenInclude(rr => rr.User)
+            .Include(c => c.Replies)
+                .ThenInclude(r => r.Replies)
+                    .ThenInclude(rr => rr.Replies)
+                        .ThenInclude(rrr => rrr.User)
             .Where(c => c.PostId == postId && c.ParentCommentId == null && !c.IsDeleted)
             .AsQueryable();
 
@@ -95,6 +104,8 @@ public class PostCommentRepository : GenericRepository<PostComment>, IPostCommen
     {
         return await _dbSet
             .Include(c => c.User)
+            .Include(c => c.Replies)
+                .ThenInclude(r => r.User)
             .Where(c => c.PostId == postId && !c.IsDeleted)
             .ToListAsync();
     }
@@ -104,5 +115,13 @@ public class PostCommentRepository : GenericRepository<PostComment>, IPostCommen
         return await _dbSet
             .Where(c => c.PostId == postId && !c.IsDeleted)
             .CountAsync();
+    }
+    public async Task<IEnumerable<PostComment>> GetByParentCommentId(Guid commentId)
+    {
+        //get replies of the comment with the parent comment id
+        return await _dbSet
+            .Include(c => c.Replies)
+            .Where(c => c.ParentCommentId == commentId && !c.IsDeleted)
+            .ToListAsync();
     }
 }

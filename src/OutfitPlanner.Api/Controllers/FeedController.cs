@@ -28,26 +28,34 @@ public class FeedController : ControllerBase
 
     private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-   /// <summary>
+    /// <summary>
     /// Get Posts
     /// </summary>
     [HttpGet]
+    [AllowAnonymous]
+
     public async Task<ActionResult<CursorPagination.CursorPagedResult<FeedPostDto>>> GetFeedPosts(
         [FromQuery] string? cursor = null,
         [FromQuery] int pageSize = 20,
         [FromQuery] string visibility = "Public",
         [FromQuery] string? sortBy = "recent",
-        [FromQuery] string? postType = null)
+        [FromQuery] string? postType = null,
+        [FromQuery] bool followingOnly = false)
+
     {
         var query = new GetFeedQuery 
         { 
-            UserId = null, 
+            UserId = User.Identity?.IsAuthenticated == true ? GetUserId() : null, 
             Cursor = cursor, 
             PageSize = pageSize,
             SortBy = sortBy ?? "recent",
             Visibility = visibility,
-            PostType = postType 
+            PostType = postType,
+            FollowingOnly = followingOnly
         };
+
+
+
         
         var posts = await _mediator.Send(query);
         return Ok(posts);
@@ -66,9 +74,11 @@ public class FeedController : ControllerBase
     {
         try
         {
+            var viewerId = User.Identity?.IsAuthenticated == true ? GetUserId() : null;
             var query = new GetUserFeedQuery
             {
                 UserId = userId,
+                ViewerUserId = viewerId,
                 Cursor = cursor,
                 PageSize = pageSize,
                 PostType = postType
@@ -85,13 +95,36 @@ public class FeedController : ControllerBase
     }
 
     /// <summary>
+    /// Get my own posts
+    /// </summary>
+    [HttpGet("my-posts")]
+    public async Task<ActionResult<CursorPagination.CursorPagedResult<FeedPostDto>>> GetMyPosts(
+        [FromQuery] string? cursor = null,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? sortBy = "recent",
+        [FromQuery] string? postType = null)
+    {
+        var userId = GetUserId();
+        var query = new GetUserFeedQuery
+        {
+            UserId = userId,
+            Cursor = cursor,
+            PageSize = pageSize,
+            PostType = postType
+        };
+        
+        var posts = await _mediator.Send(query);
+        return Ok(posts);
+    }
+
+    /// <summary>
     /// Get a specific post by ID
     /// </summary>
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<FeedPostDto>> GetPostById(Guid id)
+    public async Task<ActionResult<GetFeedPostByIdDto?>> GetPostById(Guid id)
     {
         var userId = GetUserId();
-        var query = new GetFeedPostByIdQuery { PostId = id, UserId = userId };
+        var query = new GetFeedPostByIdQuery { PostId = id, RequesterId = userId };
         var post = await _mediator.Send(query);
         
         if (post == null)
@@ -223,5 +256,25 @@ public class FeedController : ControllerBase
         return NoContent();
     }
 
-    
+    /// <summary>
+    /// Update a comment on a post
+    /// </summary>
+    [HttpPut("comments/{commentId:guid}")]
+    public async Task<ActionResult<BaseCommandResponse>> UpdateComment(Guid commentId, [FromBody] CreateCommentDto request)
+    {
+        var userId = GetUserId();
+        var command = new UpdatePostCommentCommand
+        {
+            CommentId = commentId,
+            UserId = userId,
+            Content = request.Content
+        };
+        
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return BadRequest(response);
+            
+        return Ok(response);
+    }
 }

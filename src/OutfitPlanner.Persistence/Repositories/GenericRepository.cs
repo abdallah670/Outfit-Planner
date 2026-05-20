@@ -16,71 +16,117 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _context = context;
         _dbSet = context.Set<T>();
     }
-    public async Task<T?> GetByIdAsync(string id)
+
+    public async Task<T?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
-
-    public async Task<T?> GetByIdAsync(Guid id)
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbSet.ToListAsync();
+        return await _dbSet.ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.Where(predicate).ToListAsync();
+        return await _dbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
-    public async Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate)
+    public async Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.SingleOrDefaultAsync(predicate);
+        return await _dbSet.SingleOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+    public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FirstOrDefaultAsync(predicate);
+        return await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public async Task AddAsync(T entity)
+    public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await _dbSet.AddAsync(entity);
+        return await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public async Task AddRangeAsync(IEnumerable<T> entities)
+    public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IQueryable<T>> include, CancellationToken cancellationToken = default)
     {
-         await _dbSet.AddRangeAsync(entities);
+        IQueryable<T> query = _dbSet;
+        query = include(query);
+        return await query.FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public async Task RemoveAsync(T entity)
+    public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
+    {
+        await _dbSet.AddAsync(entity, cancellationToken);
+    }
+
+    public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+    {
+         await _dbSet.AddRangeAsync(entities, cancellationToken);
+    }
+
+    public async Task RemoveAsync(T entity, CancellationToken cancellationToken = default)
     {
         _dbSet.Remove(entity);
+        await Task.CompletedTask;
     }
 
-    public async Task RemoveRangeAsync(IEnumerable<T> entities)
+    public async Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
+    {
+        _dbSet.Remove(entity);
+        await Task.CompletedTask;
+    }
+
+    public async Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
     {
         _dbSet.RemoveRange(entities);
+        await Task.CompletedTask;
     }
 
-    public async Task UpdateAsync(T entity)
+    public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
     {
         _dbSet.Update(entity);
+        await Task.CompletedTask;
     }
-    public virtual async Task<int> CountAsync() => await _dbSet.CountAsync();
-    public virtual async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
-        => await _dbSet.AnyAsync(predicate);
 
-    public virtual async Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize)
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.CountAsync(cancellationToken);
+    }
+
+    public async Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.CountAsync(predicate, cancellationToken);
+    }
+
+    public async Task<int> SumAsync(Expression<Func<T, int>> selector, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.SumAsync(selector, cancellationToken);
+    }
+
+    public async Task<decimal> SumAsync(Expression<Func<T, decimal>> selector, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.SumAsync(selector, cancellationToken);
+    }
+
+    public async Task<double> AverageAsync(Expression<Func<T, double>> selector, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.AverageAsync(selector, cancellationToken);
+    }
+
+    public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+        => await _dbSet.AnyAsync(predicate, cancellationToken);
+
+    public virtual async Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
     public virtual IQueryable<T> Get(Expression<Func<T, bool>>? filter = null,
@@ -105,5 +151,12 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
             }
 
             return query;
-    }   
+    }
+
+    public virtual IQueryable<T> GetQueryable(Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            Func<IQueryable<T>, IQueryable<T>>? include = null)
+    {
+        return Get(filter, orderBy, include);
+    }
 }

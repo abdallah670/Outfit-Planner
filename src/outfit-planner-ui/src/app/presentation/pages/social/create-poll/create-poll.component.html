@@ -1,0 +1,249 @@
+<div class="create-poll-page">
+  <!-- Header -->
+  <header class="page-header">
+    <button mat-icon-button (click)="onCancel()" aria-label="Go back" style="display: inline-flex; align-items: center; justify-content: center;">
+      <iconify-icon icon="lucide:arrow-left" style="font-size: 20px; color: #2d3748;"></iconify-icon>
+    </button>
+    <h1 class="page-title">{{ isEditMode ? 'Edit Poll' : 'Create Poll' }}</h1>
+  </header>
+
+  <!-- Wizard Stepper -->
+  @if (!isEditMode) {
+  <div class="wizard-stepper">
+    <div class="step completed">
+      <div class="step-circle" style="display: flex; align-items: center; justify-content: center;">
+        <iconify-icon icon="lucide:check" style="font-size: 16px; color: #fff;"></iconify-icon>
+      </div>
+      <span class="step-label">Select Outfits</span>
+    </div>
+    <div class="step active">
+      <div class="step-circle">2</div>
+      <span class="step-label">Configure Poll</span>
+    </div>
+    <div class="step">
+      <div class="step-circle">3</div>
+      <span class="step-label">Preview &amp; Publish</span>
+    </div>
+  </div>
+  }
+
+  <form [formGroup]="pollForm" (ngSubmit)="onSubmit()" class="builder-layout">
+    <!-- Left Column: Options -->
+    <div class="options-section">
+      <div class="section-header">
+        <h2 class="section-title">Poll Options ({{ options.length }}/{{ maxOptions }})</h2>
+      </div>
+
+      <div class="options-list" formArrayName="options">
+        <div
+          *ngFor="let option of options.controls; let i = index"
+          [formGroupName]="i"
+          class="option-card">
+          <div class="drag-handle" style="display: flex; align-items: center; justify-content: center;">
+            <iconify-icon icon="lucide:grip-vertical" style="font-size: 20px; color: #a0aec0;"></iconify-icon>
+          </div>
+
+          <div class="option-image-wrapper" *ngIf="getImagePreview(i); else noImage">
+            <img [src]="getImagePreview(i)" alt="Option image" class="option-image" />
+            <button 
+              type="button" 
+              class="remove-image-btn" 
+              (click)="removeImageFromOption(i)"
+              title="Remove image">
+              <iconify-icon icon="lucide:x"></iconify-icon>
+            </button>
+          </div>
+          <ng-template #noImage>
+            <div class="option-image-placeholder" (click)="fileInput.click()">
+              <iconify-icon icon="lucide:image" style="font-size: 24px; color: #a0aec0;"></iconify-icon>
+              <span style="font-size: 10px; color: #718096; font-weight: 600; margin-top: 4px;">Upload Photo</span>
+            </div>
+          </ng-template>
+
+          <!-- Hidden File Input for Direct Upload -->
+          <input 
+            #fileInput 
+            type="file" 
+            accept="image/*" 
+            (change)="onFileSelectedForOption($event, i)" 
+            style="display: none;" 
+          />
+
+          <div class="option-details">
+            <span class="option-label">Option {{ getOptionLetter(i) }}</span>
+            <input
+              class="option-name"
+              formControlName="description"
+              [placeholder]="'Option ' + getOptionLetter(i)"
+            />
+            <p class="option-meta" *ngIf="option.get('outfitId')?.value">
+              Outfit ID: {{ option.get('outfitId')?.value | slice:0:12 }}...
+            </p>
+          </div>
+
+          <div class="option-actions" style="display: flex; align-items: center; gap: 8px;">
+            <button
+              mat-icon-button
+              class="icon-btn"
+              (click)="fileInput.click()"
+              aria-label="Upload photo"
+              style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;">
+              <iconify-icon icon="lucide:upload-cloud" style="font-size: 16px; color: #718096;"></iconify-icon>
+            </button>
+            <button
+              *ngIf="canRemoveOption()"
+              mat-icon-button
+              class="icon-btn destructive"
+              type="button"
+              (click)="removeOption(i)"
+              aria-label="Remove option"
+              style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;">
+              <iconify-icon icon="lucide:trash-2" style="font-size: 16px; color: #e53e3e;"></iconify-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Add Option Button -->
+        <button
+          *ngIf="canAddOption()"
+          mat-stroked-button
+          type="button"
+          color="primary"
+          (click)="addOption()"
+          class="add-option-btn"
+          style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+          <iconify-icon icon="lucide:plus-circle" style="font-size: 18px; color: #fab4c6;"></iconify-icon>
+          Add Another Outfit
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Column: Configuration -->
+    <div class="config-section">
+      <h2 class="section-title" style="margin-bottom: 24px">Poll Configuration</h2>
+
+      <div class="form-group">
+        <label class="form-label">What's your question?</label>
+        <textarea
+          class="form-textarea"
+          formControlName="question"
+          placeholder="e.g., Which outfit should I wear for my weekend brunch date?"></textarea>
+        <mat-error *ngIf="pollForm.get('question')?.hasError('required')" class="form-error">
+          Question is required
+        </mat-error>
+        <mat-error *ngIf="pollForm.get('question')?.hasError('minlength')" class="form-error">
+          Question must be at least 3 characters
+        </mat-error>
+        <mat-error *ngIf="pollForm.get('question')?.hasError('maxlength')" class="form-error">
+          Question cannot exceed 500 characters
+        </mat-error>
+      </div>
+
+      <!-- Tag Followers -->
+      <div class="form-group" style="position: relative;">
+        <label class="form-label">Tag Followers</label>
+        <div class="tag-input-container" style="position: relative; display: flex; align-items: center;">
+          <iconify-icon icon="lucide:search" class="search-icon" style="position: absolute; left: 14px; color: #718096; font-size: 20px; display: flex; align-items: center; justify-content: center;"></iconify-icon>
+          <input
+            type="text"
+            class="form-textarea"
+            style="min-height: 48px; height: 48px; padding-left: 44px; margin-bottom: 0;"
+            placeholder="Search followers by username..."
+            [value]="tagSearchQuery()"
+            (input)="onTagSearchChange($any($event).target.value)"
+          />
+        </div>
+
+        <!-- Tag search dropdown -->
+        <div class="tag-dropdown" *ngIf="showTagDropdown() && filteredFollowers().length > 0" style="position: absolute; left: 0; right: 0; background: #ffffff; border: 1px solid rgba(250, 180, 198, 0.3); border-radius: 12px; box-shadow: 0 10px 25px rgba(250, 180, 198, 0.1); z-index: 100; max-height: 200px; overflow-y: auto; margin-top: 4px;">
+          <div *ngFor="let follower of filteredFollowers()" class="tag-option" (click)="tagUser(follower)" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(250, 180, 198, 0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+            <img [src]="follower.userAvatarUrl || 'assets/default-avatar.png'" [alt]="follower.userName" class="follower-avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(250, 180, 198, 0.2);" />
+            <span class="follower-name" style="font-size: 14px; font-weight: 600; color: #2d3748;">{{ follower.userName }}</span>
+          </div>
+        </div>
+
+        <!-- Selected tags -->
+        <div class="tagged-users-container" *ngIf="taggedUsers().length > 0" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
+          <div *ngFor="let user of taggedUsers()" class="user-tag" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(250, 180, 198, 0.1); border: 1px solid rgba(250, 180, 198, 0.3); border-radius: 20px; font-size: 13px; font-weight: 600; color: #f47496;">
+            <span>@{{ user.userName }}</span>
+            <iconify-icon icon="lucide:x" class="remove-tag" (click)="removeTag(user.userId)" style="font-size: 16px; width: 16px; height: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #a0aec0; transition: color 0.2s;" onmouseover="this.style.color='#e53e3e'" onmouseout="this.style.color='#a0aec0'"></iconify-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Poll Duration</label>
+        <div class="select-wrapper" style="position: relative; display: flex; align-items: center;">
+          <select class="form-select" formControlName="duration">
+            <option value="24h">24 Hours</option>
+            <option value="3d">3 Days</option>
+            <option value="7d">7 Days</option>
+          </select>
+          <iconify-icon icon="lucide:chevron-down" class="select-icon" style="position: absolute; right: 14px; color: #718096; pointer-events: none; font-size: 20px;"></iconify-icon>
+        </div>
+      </div>
+
+      <!-- Privacy Settings -->
+      <div class="form-group">
+        <label class="form-label">Privacy Settings</label>
+        <div class="privacy-options">
+          <!-- Public -->
+          <div
+            class="privacy-card"
+            [class.active]="privacySetting === 'public'"
+            (click)="setPrivacy('public')">
+            <div class="privacy-card-header" style="display: flex; align-items: center; gap: 8px;">
+              <iconify-icon icon="lucide:globe" style="font-size: 20px; color: inherit;"></iconify-icon>
+              Public
+            </div>
+            <p class="privacy-card-desc">
+              Anyone in the community feed can view and vote on this poll.
+            </p>
+            <iconify-icon icon="lucide:check-circle" class="check-icon" style="font-size: 18px;"></iconify-icon>
+          </div>
+
+          <!-- Followers Only -->
+          <div
+            class="privacy-card"
+            [class.active]="privacySetting === 'followers'"
+            (click)="setPrivacy('followers')">
+            <div class="privacy-card-header" style="display: flex; align-items: center; gap: 8px;">
+              <iconify-icon icon="lucide:users" style="font-size: 20px; color: inherit;"></iconify-icon>
+              Followers Only
+            </div>
+            <p class="privacy-card-desc">
+              Only people who follow you can view and participate.
+            </p>
+            <iconify-icon icon="lucide:check-circle" class="check-icon" style="font-size: 18px;"></iconify-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button
+          mat-stroked-button
+          color="primary"
+          type="button"
+          (click)="onCancel()"
+          class="btn btn-outline">
+          Cancel
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="isSubmitting()"
+          class="btn btn-primary"
+          style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+          <span>{{ isEditMode ? 'Save Changes' : 'Preview & Publish' }}</span>
+          @if (!isEditMode) {
+          <iconify-icon icon="lucide:arrow-right" style="font-size: 16px; color: #fff;"></iconify-icon>
+          } @else {
+          <iconify-icon icon="lucide:check" style="font-size: 16px; color: #fff;"></iconify-icon>
+          }
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

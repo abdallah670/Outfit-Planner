@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace OutfitPlanner.Application.DTOs.Wardrobe;
 
 public class CreateClothingItemDto
@@ -18,5 +20,5 @@ public class CreateClothingItemDto
     public string ThumbnailUrl { get; set; } = string.Empty;
     public string MaintenanceNotes { get; set; } = string.Empty;
     public List<string> Tags { get; set; } = new();           // Tag names only — server creates the ClothingTag entities
-    
+    public IFormFile? Image { get; set; }
 }

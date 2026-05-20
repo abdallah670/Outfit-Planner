@@ -25,10 +25,14 @@ public interface IUnitOfWork : IDisposable
     IPostReactionRepository PostReactions { get; }
     IPostCommentRepository PostComments { get; }
     IFollowRepository Follows { get; }
+    IUserActivityRepository UserActivities { get; }
+     IAuditLogRepository AuditLogs { get; }
+    ISystemSettingRepository SystemSettings { get; }
+    IContentReportRepository ContentReports { get; }
    
-
+    Task<int> CompleteAsync(CancellationToken cancellationToken = default);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-
+    IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class;
     /// <summary>
     /// Begins a new database transaction
     /// </summary>
