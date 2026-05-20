@@ -74,7 +74,7 @@
     @if (activityPosts().length > 0) {
       <div class="feed__list">
         @for (post of activityPosts(); track post.id) {
-          <app-post-item [post]="post" (postUpdated)="onPostUpdated($event)"></app-post-item>
+          <app-post-item [post]="post" (postUpdated)="onPostUpdated($event)" (postDeleted)="onPostDeleted(post.id)"></app-post-item>
         }
 
         @if (activityHasMore()) {

@@ -113,8 +113,7 @@ User ─────── Standard application features (current default)
 // src/OutfitPlanner.Domain/Enums/UserRole.cs
 public enum UserRole
 {
-    User = 0,
-    Moderator = 1,
+    Planner = 0,
     Admin = 2
 }
 ```

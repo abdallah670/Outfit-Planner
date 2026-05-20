@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, ViewContainerRef, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -8,6 +8,7 @@ import { Poll, PollOption } from '../../../../domain/entities/poll.entity';
 import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
 import { CommentsModalComponent } from '../modals/comments-modal/comments-modal.component';
 import { VotersModalComponent } from '../modals/voters-modal/voters-modal.component';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-post-item',
@@ -20,11 +21,13 @@ import { VotersModalComponent } from '../modals/voters-modal/voters-modal.compon
 export class PostItemComponent {
   @Input({ required: true }) post!: FeedPost;
   @Output() postUpdated = new EventEmitter<FeedPost>();
+  @Output() postDeleted = new EventEmitter<string>();
 
   private feedUseCases = inject(FeedUseCases);
   private router = inject(Router);
   private viewContainerRef = inject(ViewContainerRef);
   private cdRef = inject(ChangeDetectorRef);
+  private authService = inject(AuthService);
 
   readonly PostType = PostType;
 
@@ -181,5 +184,57 @@ export class PostItemComponent {
     const maxVotes = Math.max(...poll.options.map(o => o.voteCount));
     if (maxVotes === 0) return false;
     return poll.options.find(o => o.id === optionId)?.voteCount === maxVotes;
+  }
+  isOwner(post: FeedPost): boolean {
+    return post.userId === this.authService.currentUser()?.id;
+  }
+
+  showMenu = false;
+
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+  }
+
+  @HostListener('document:click')
+  closeMenu(): void {
+    this.showMenu = false;
+  }
+
+  editPost(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = false;
+    if (this.post.postType === PostType.Poll) {
+      this.router.navigate(['/social/polls', this.post.pollId || this.post.poll?.id || this.post.id, 'edit']);
+    } else {
+      this.router.navigate(['/social/posts', this.post.id, 'edit']);
+    }
+  }
+
+  deletePost(): void {
+    this.showMenu = false;
+    Swal.fire({
+      title: 'Delete Post',
+      text: 'Are you sure you want to delete this post?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+      confirmButtonColor: '#fab4c6',
+      cancelButtonColor: '#2d3748'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.feedUseCases.deletePost(this.post.id).subscribe({
+          next: () => {
+            this.postDeleted.emit(this.post.id);
+            
+            Swal.fire('Deleted!', 'Your post has been deleted.', 'success');
+          },
+          error: (error) => {
+            Swal.fire('Error!', error.message, 'error');
+          }
+        });
+      }
+    });
   }
 }

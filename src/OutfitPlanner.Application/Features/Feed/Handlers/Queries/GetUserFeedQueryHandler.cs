@@ -27,13 +27,22 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
 
     public async Task<CursorPagination.CursorPagedResult<FeedPostDto>> Handle(GetUserFeedQuery request, CancellationToken cancellationToken)
     {
-        var result = await _feedPostRepository.GetFeedAsync(
+        PostType? postType = null;
+        if (!string.IsNullOrEmpty(request.PostType))
+        {
+            // Normalize "OutfitPost" -> "Outfit", "PollPost" -> "Poll" if needed, or parse directly
+            var rawType = request.PostType.Replace("Post", "", StringComparison.OrdinalIgnoreCase);
+            if (Enum.TryParse<PostType>(rawType, true, out var parsedPostType))
+            {
+                postType = parsedPostType;
+            }
+        }
+
+        var result = await _feedPostRepository.GetUserPostsAsync(
             request.UserId,
             request.Cursor,
             request.PageSize,
-            null,
-            Visibility.Public,
-            null);
+            postType);
 
 
 

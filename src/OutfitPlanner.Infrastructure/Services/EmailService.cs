@@ -20,8 +20,11 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(string to, string subject, string body, bool isHtml = true)
     {
+        var username = !string.IsNullOrWhiteSpace(_emailSettings.SmtpUsername) ? _emailSettings.SmtpUsername : _emailSettings.SmtpUser;
+        var password = !string.IsNullOrWhiteSpace(_emailSettings.SmtpPassword) ? _emailSettings.SmtpPassword : _emailSettings.SmtpPass;
+
         // Validate email settings
-        if (string.IsNullOrWhiteSpace(_emailSettings.SmtpUsername) || string.IsNullOrWhiteSpace(_emailSettings.SmtpPassword))
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
             _logger.LogError("Email settings not configured. Please set EmailSettings__SmtpUsername and EmailSettings__SmtpPassword environment variables.");
             throw new InvalidOperationException("Email service is not configured. Please contact the administrator.");
@@ -40,7 +43,7 @@ public class EmailService : IEmailService
 
             using var client = new SmtpClient(_emailSettings.SmtpHost, _emailSettings.SmtpPort);
             client.EnableSsl = _emailSettings.EnableSsl;
-            client.Credentials = new NetworkCredential(_emailSettings.SmtpUsername, _emailSettings.SmtpPassword);
+            client.Credentials = new NetworkCredential(username, password);
 
             await client.SendMailAsync(message);
             _logger.LogInformation("Email sent successfully to {Email}", to);
@@ -64,7 +67,7 @@ public class EmailService : IEmailService
         .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
         .header {{ background-color: #3f51b5; color: white; padding: 20px; text-align: center; }}
         .content {{ background-color: #f9f9f9; padding: 30px; margin: 20px 0; }}
-        .button {{ background-color: #3f51b5; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0; }}
+        .button {{ background-color: #3f51b5; color: #ffffff !important; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0; font-weight: bold; }}
         .token {{ background-color: #e0e0e0; padding: 15px; font-family: monospace; font-size: 16px; text-align: center; margin: 20px 0; }}
         .footer {{ text-align: center; color: #666; font-size: 12px; margin-top: 30px; }}
     </style>
@@ -80,7 +83,7 @@ public class EmailService : IEmailService
             <p>Your verification code is:</p>
             <div class='token'>{verificationToken}</div>
             <p>Enter this code on the verification page, or click the button below:</p>
-            <a href='https://localhost:4200/verify-email?token={verificationToken}&email={WebUtility.UrlEncode(to)}' class='button'>Verify Email</a>
+            <a href='http://localhost:4200/verify-email?token={verificationToken}&email={WebUtility.UrlEncode(to)}' class='button'>Verify Email</a>
             <p style='margin-top: 30px;'>This code will expire in 24 hours.</p>
         </div>
         <div class='footer'>
@@ -106,7 +109,7 @@ public class EmailService : IEmailService
         .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
         .header {{ background-color: #ff5722; color: white; padding: 20px; text-align: center; }}
         .content {{ background-color: #f9f9f9; padding: 30px; margin: 20px 0; }}
-        .button {{ background-color: #ff5722; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0; }}
+        .button {{ background-color: #ff5722; color: #ffffff !important; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0; font-weight: bold; }}
         .token {{ background-color: #e0e0e0; padding: 15px; font-family: monospace; font-size: 16px; text-align: center; margin: 20px 0; }}
         .warning {{ background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }}
         .footer {{ text-align: center; color: #666; font-size: 12px; margin-top: 30px; }}
@@ -119,16 +122,16 @@ public class EmailService : IEmailService
         </div>
         <div class='content'>
             <h2>Hello {userName},</h2>
-            <p>We received a request to reset your password. Use the code below to reset it:</p>
-            <div class='token'>{resetToken}</div>
+            <p>We received a request to reset your password. Use the link below to reset it:</p>
+            <div class='token'>http://localhost:4200/reset-password?token={resetToken}&email={WebUtility.UrlEncode(to)}</div>
             <p>Or click the button below to reset your password:</p>
-            <a href='https://localhost:4200/reset-password?token={resetToken}&email={WebUtility.UrlEncode(to)}' class='button'>Reset Password</a>
+            <a href='http://localhost:4200/reset-password?token={resetToken}&email={WebUtility.UrlEncode(to)}' class='button'>Reset Password</a>
             <div class='warning'>
                 <strong>Security Notice:</strong> This code will expire in 1 hour. If you didn't request this, please ignore this email.
             </div>
         </div>
         <div class='footer'>
-            <p>&copy; 2024 Outfit Planner. All rights reserved.</p>
+            <p>&copy; 2025 Outfit Planner. All rights reserved.</p>
         </div>
     </div>
 </body>

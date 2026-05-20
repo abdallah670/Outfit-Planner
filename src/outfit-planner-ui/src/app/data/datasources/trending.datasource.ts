@@ -47,15 +47,22 @@ export class TrendingDataSource {
   }
 
 
+  private fixUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${environment.resourceBaseUrl}${path}`;
+  }
+
   private mapTrendingOutfitDtoToEntity(dto: TrendingOutfitDto): TrendingOutfit {
     return {
       id: dto.id,
       userId: dto.userId,
       userName: dto.userName,
-      userAvatar: dto.userAvatar || 'assets/default-avatar.png',
-      imageUrl:  dto.imageUrl && !dto.imageUrl.startsWith('http') 
-        ? `${environment.resourceBaseUrl}${dto.imageUrl}` 
-        : dto.imageUrl || 'assets/placeholder.png',
+      userAvatar: dto.userAvatar ? this.fixUrl(dto.userAvatar) : 'assets/default-avatar.png',
+      imageUrl: dto.imageUrl ? this.fixUrl(dto.imageUrl) : 'assets/placeholder.png',
       likes: dto.voteCount,
       comments: dto.commentsCount,
       trendingScore: dto.trendingScore,

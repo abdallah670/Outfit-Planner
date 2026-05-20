@@ -45,7 +45,8 @@ public class JwtService : IJWTService
             new Claim(JwtRegisteredClaimNames.Email, user.Email!),
             new Claim(CustomClaimTypes.Uid, user.Id),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Name, user.UserName!)
+            new Claim(ClaimTypes.Name, user.UserName!),
+            new Claim("email_confirmed", user.EmailConfirmed.ToString().ToLower())
         }
         .Union(userClaims)
         .Union(roleClaims);
@@ -126,7 +127,8 @@ public class JwtService : IJWTService
                 Email = request.Email,
                 Name = $"{request.FirstName} {request.LastName}",
                 UserName = request.UserName,
-                EmailConfirmed = false
+                EmailConfirmed = false,
+                Role = Domain.Enums.UserRole.Planner
             };
 
             var existingEmail = await _userManager.FindByEmailAsync(request.Email);
@@ -161,7 +163,14 @@ public class JwtService : IJWTService
             await _userManager.UpdateAsync(user);
 
             // Send verification email
-            await _emailService.SendVerificationEmailAsync(user.Email!, user.UserName!, verificationToken);
+            try
+            {
+                await _emailService.SendVerificationEmailAsync(user.Email!, user.UserName!, verificationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to send verification email to {Email} during registration. Continuing registration.", user.Email);
+            }
 
             _logger.LogInformation("Successfully registered user {Email}. Verification email sent.", user.Email);
 
@@ -280,7 +289,8 @@ public class JwtService : IJWTService
                 Name = name,
                 UserName = username,
                 EmailConfirmed = true,
-                ProfilePictureUrl = profilePictureUrl
+                ProfilePictureUrl = profilePictureUrl,
+                Role = Domain.Enums.UserRole.Planner
             };
 
             // Generate a random secure password (users won't use this, they use social login)
@@ -465,9 +475,15 @@ public class JwtService : IJWTService
         await _userManager.UpdateAsync(user);
 
         // Send verification email
-        await _emailService.SendVerificationEmailAsync(user.Email!, user.UserName!, verificationToken);
-
-        _logger.LogInformation("Verification email resent to {Email}", email);
+        try
+        {
+            await _emailService.SendVerificationEmailAsync(user.Email!, user.UserName!, verificationToken);
+            _logger.LogInformation("Verification email resent to {Email}", email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send verification email to {Email}. SMTP may not be configured. Verification token: {Token}", email, verificationToken);
+        }
     }
 
     // Password Reset Methods
@@ -487,10 +503,21 @@ public class JwtService : IJWTService
         user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1);
         await _userManager.UpdateAsync(user);
 
-        // Send reset email
-        await _emailService.SendPasswordResetEmailAsync(user.Email!, user.UserName!, resetToken);
+        // Send password reset email
+        try
+        {
+            await _emailService.SendPasswordResetEmailAsync(user.Email!, user.UserName!, resetToken);
+            _logger.LogInformation("Password reset email sent to {Email}", email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send password reset email to {Email}. SMTP may not be configured.", email);
+        }
 
-        _logger.LogInformation("Password reset email sent to {Email}", email);
+        // Always log the reset link for development purposes
+        _logger.LogInformation("Password reset link for {Email}: http://localhost:4200/reset-password?token={Token}&email={Email}",
+            email, resetToken, email);
+        Console.WriteLine($"\n\n=== PASSWORD RESET LINK ===\nhttp://localhost:4200/reset-password?token={resetToken}&email={email}\n===========================\n");
     }
 
     public async Task ResetPasswordAsync(string email, string token, string newPassword)
@@ -511,13 +538,15 @@ public class JwtService : IJWTService
             throw new Exception("Reset token has expired. Please request a new one.");
         }
 
-        // Reset password
+        // Validate the custom token matches what's stored in DB (already done above)
+        // Now generate an ASP.NET Identity-compatible token and reset the password
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
         
         if (!result.Succeeded)
         {
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            _logger.LogError("Password reset failed: {Errors}", errors);
             throw new Exception($"Failed to reset password: {errors}");
         }
 
@@ -531,9 +560,6 @@ public class JwtService : IJWTService
 
     private string GenerateSecureToken()
     {
-        var randomNumber = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber).Replace("+", "-").Replace("/", "_").Replace("=", "");
+        return RandomNumberGenerator.GetInt32(100000, 999999).ToString();
     }
 }

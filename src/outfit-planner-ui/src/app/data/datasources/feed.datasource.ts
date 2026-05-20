@@ -48,7 +48,7 @@ export class FeedDataSource {
       }))
     );
   }
- getUserFeed(
+  getUserFeed(
     userId: string,
     cursor?: string,
     pageSize: number = 20,
@@ -59,6 +59,24 @@ export class FeedDataSource {
     if (postType) params = params.set('postType', postType);
 
     return this.http.get<CursorPagedResult<any>>(`${this.apiUrl}/user/${userId}`, { params }).pipe(
+      map(response => ({
+        ...response,
+        nextCursor: response.nextCursor || null,
+        items: response.items.map((post: any) => this.mapFeedPost(post))
+      }))
+    );
+  }
+
+  getMyPosts(
+    cursor?: string,
+    pageSize: number = 20,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>> {
+    let params = new HttpParams().set('pageSize', pageSize.toString());
+    if (cursor) params = params.set('cursor', cursor);
+    if (postType) params = params.set('postType', postType);
+
+    return this.http.get<CursorPagedResult<any>>(`${this.apiUrl}/my-posts`, { params }).pipe(
       map(response => ({
         ...response,
         nextCursor: response.nextCursor || null,
@@ -125,7 +143,7 @@ export class FeedDataSource {
       map(votes => votes.map((v: any) => ({
         voterId: v.voterId,
         voterName: v.voterName,
-        voterAvatarUrl: v.voterAvatarUrl ? (v.voterAvatarUrl.startsWith('http') ? v.voterAvatarUrl : `${environment.resourceBaseUrl}${v.voterAvatarUrl}`) : 'assets/default-avatar.png',
+        voterAvatarUrl: v.voterAvatarUrl ? this.fixUrl(v.voterAvatarUrl) : 'assets/default-avatar.png',
         votedAt: new Date(v.votedAt),
         optionId: v.optionId,
         optionDescription: v.optionDescription || '',
@@ -134,24 +152,31 @@ export class FeedDataSource {
     );
   }
 
+  private fixUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${environment.resourceBaseUrl}${path}`;
+  }
+
   private mapFeedPost(post: any): FeedPost {
-    const resourceUrl = environment.resourceBaseUrl;
-    
     // Prefix user avatar
-    if (post.userAvatarUrl && !post.userAvatarUrl.startsWith('http')) {
-      post.userAvatarUrl = `${resourceUrl}${post.userAvatarUrl}`;
+    if (post.userAvatarUrl) {
+      post.userAvatarUrl = this.fixUrl(post.userAvatarUrl);
     }
 
     // Prefix outfit image
-    if (post.outfit && post.outfit.imageUrl && !post.outfit.imageUrl.startsWith('http')) {
-      post.outfit.imageUrl = `${resourceUrl}${post.outfit.imageUrl}`;
+    if (post.outfit && post.outfit.imageUrl) {
+      post.outfit.imageUrl = this.fixUrl(post.outfit.imageUrl);
     }
 
     // Prefix poll option thumbnails
     if (post.poll && post.poll.options) {
       post.poll.options.forEach((option: any) => {
-        if (option.outfitThumbnail && !option.outfitThumbnail.startsWith('http')) {
-          option.outfitThumbnail = `${resourceUrl}${option.outfitThumbnail}`;
+        if (option.outfitThumbnail) {
+          option.outfitThumbnail = this.fixUrl(option.outfitThumbnail);
         }
       });
     }
@@ -180,11 +205,9 @@ export class FeedDataSource {
   }
 
   private mapPostComment(comment: any): PostComment {
-    const resourceUrl = environment.resourceBaseUrl;
-    
     // Prefix user avatar if it's a relative URL
-    if (comment.userAvatarUrl && !comment.userAvatarUrl.startsWith('http')) {
-      comment.userAvatarUrl = `${resourceUrl}${comment.userAvatarUrl}`;
+    if (comment.userAvatarUrl) {
+      comment.userAvatarUrl = this.fixUrl(comment.userAvatarUrl);
     }
     
     return {

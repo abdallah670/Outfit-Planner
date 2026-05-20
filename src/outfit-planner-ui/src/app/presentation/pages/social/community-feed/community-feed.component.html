@@ -40,11 +40,39 @@
 
   <!-- Content Area -->
   <div class="feed-content">
-    <!-- Posts Tabs (All, Following, Trending) -->
-    <ng-container *ngIf="activeTab() === 'all' || activeTab() === 'following' || activeTab() === 'trending'">
+    <!-- Posts Tabs (All, Following, Trending, My Posts) -->
+    <ng-container *ngIf="activeTab() === 'all' || activeTab() === 'following' || activeTab() === 'trending' || activeTab() === 'my-posts'">
+      <!-- My Posts Sub-Filters -->
+      <div *ngIf="activeTab() === 'my-posts'" class="sub-filters">
+        <button 
+          class="sub-filter-btn" 
+          [class.active]="myPostsFilter() === 'all'"
+          (click)="setMyPostsFilter('all')"
+        >
+          <iconify-icon icon="lucide:layout-grid"></iconify-icon>
+          <span>All My Posts</span>
+        </button>
+        <button 
+          class="sub-filter-btn" 
+          [class.active]="myPostsFilter() === 'outfit'"
+          (click)="setMyPostsFilter('outfit')"
+        >
+          <iconify-icon icon="lucide:shirt"></iconify-icon>
+          <span>Outfit Posts</span>
+        </button>
+        <button 
+          class="sub-filter-btn" 
+          [class.active]="myPostsFilter() === 'poll'"
+          (click)="setMyPostsFilter('poll')"
+        >
+          <iconify-icon icon="lucide:bar-chart-2"></iconify-icon>
+          <span>My Polls</span>
+        </button>
+      </div>
+
       <div class="posts-grid">
         @for (post of posts(); track post.id) {
-          <app-post-item [post]="post" (postUpdated)="onPostUpdated($event)"></app-post-item>
+          <app-post-item [post]="post" (postUpdated)="onPostUpdated($event)" (postDeleted)="onPostDeleted(post.id)"></app-post-item>
         } @empty {
           <div class="empty-state" *ngIf="!loading()">
             <iconify-icon icon="lucide:layout-grid" style="font-size: 48px"></iconify-icon>

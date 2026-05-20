@@ -7,11 +7,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { UserActions } from '../../../../../core/state/user/user.actions';
 import { selectUserError, selectChangingPassword } from '../../../../../core/state/user/user.selectors';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-change-password-modal',
@@ -43,6 +45,8 @@ export class ChangePasswordModalComponent implements OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: {},
     private store: Store,
     private snackBar: MatSnackBar,
+    private authService: AuthService,
+    private router: Router,
   ) {
     this.passwordForm = this.fb.group({
       currentPassword: ['', Validators.required],
@@ -94,8 +98,13 @@ export class ChangePasswordModalComponent implements OnDestroy {
           if (error) {
             this.snackBar.open(`Password change failed: ${error}`, 'Close', { duration: 5000 });
           } else {
-            this.snackBar.open('Password changed successfully!', 'Close', { duration: 3000 });
+            this.snackBar.open('Password changed successfully! You will be logged out for security.', 'Close', { duration: 3000 });
             this.dialogRef.close(true);
+            // Log out the user for security after password change
+            setTimeout(() => {
+              this.authService.logout();
+              this.router.navigate(['/login']);
+            }, 1000);
           }
         });
       });
@@ -108,6 +117,11 @@ export class ChangePasswordModalComponent implements OnDestroy {
         }
       }, 10000);
     }
+  }
+
+  goToForgotPassword(): void {
+    this.dialogRef.close(false);
+    this.router.navigate(['/forgot-password']);
   }
 
   onCancel(): void {

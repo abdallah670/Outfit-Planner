@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OutfitPlanner.Application.Contracts;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Models;
+using OutfitPlanner.Application.Models.Authentication;
 using OutfitPlanner.Infrastructure.Configuration;
 using OutfitPlanner.Infrastructure.Services;
 using OutfitPlanner.Persistence;
@@ -60,6 +61,40 @@ public static class DependencyInjection
         // Register Email Settings and Service
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, EmailService>();
+
+        // Register Background Removal Settings
+        services.Configure<BackgroundRemovalSettings>(
+            configuration.GetSection(BackgroundRemovalSettings.SectionName));
+
+        // Register AI Settings
+        services.Configure<AISettings>(
+            configuration.GetSection(AISettings.SectionName));
+
+        // Register Authentication Settings
+        services.Configure<GoogleAuthSettings>(
+            configuration.GetSection(GoogleAuthSettings.SectionName));
+        services.Configure<FacebookAuthSettings>(
+            configuration.GetSection(FacebookAuthSettings.SectionName));
+
+        // Register Backup Settings
+        services.Configure<BackupSettings>(
+            configuration.GetSection(BackupSettings.SectionName));
+
+        // Register Cache Settings
+        services.Configure<CacheSettings>(
+            configuration.GetSection(CacheSettings.SectionName));
+
+        // Register Maintenance Settings
+        services.Configure<MaintenanceSettings>(
+            configuration.GetSection(MaintenanceSettings.SectionName));
+
+        // Register Service Management Settings
+        services.Configure<ServiceManagementSettings>(
+            configuration.GetSection(ServiceManagementSettings.SectionName));
+
+        // Register User Activity Settings
+        services.Configure<UserActivitySettings>(
+            configuration.GetSection(UserActivitySettings.SectionName));
 
         // Register Account Unlock Background Job
         services.AddScoped<AccountUnlockBackgroundJob>();

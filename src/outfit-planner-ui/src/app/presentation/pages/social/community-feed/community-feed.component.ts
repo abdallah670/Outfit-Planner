@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed, inject, ViewEncapsulation, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { FeedPost, PostType, Visibility } from '../../../../domain/entities/feed.entity';
 
@@ -13,7 +13,7 @@ import { PostItemComponent } from '../../../components/shared/post-item/post-ite
 import { CursorPagedResult } from '../../../../domain/entities/response.entity';
 import { TrendingOutfit } from '../../../../domain/entities/outfit.entity';
 
-type FeedTab = 'all' | 'following' | 'trending' | 'followers' | 'following-list';
+type FeedTab = 'all' | 'following' | 'trending' | 'followers' | 'following-list' | 'my-posts';
 
 interface FeedTabConfig {
   value: FeedTab;
@@ -42,6 +42,7 @@ export class CommunityFeedComponent implements OnInit {
   private followUseCases = inject(FollowUseCases);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   activeTab = signal<FeedTab>('all');
   loading = signal(false);
@@ -56,22 +57,41 @@ export class CommunityFeedComponent implements OnInit {
   userListCursor = signal<string | null>(null);
   userListHasMore = signal(false);
 
+  // My Posts Filter State
+  myPostsFilter = signal<'all' | 'outfit' | 'poll'>('all');
+
   feedTabs: FeedTabConfig[] = [
     { value: 'all', label: 'All Posts', icon: 'layout-grid' },
     { value: 'following', label: 'Following', icon: 'users' },
     { value: 'trending', label: 'Trending', icon: 'trending-up' },
+    { value: 'my-posts', label: 'My Posts', icon: 'user' },
     { value: 'followers', label: 'My Followers', icon: 'user-check' },
     { value: 'following-list', label: 'My Following', icon: 'user-plus' },
   ];
 
   ngOnInit(): void {
-    this.loadData(true);
+    this.route.queryParams.subscribe(params => {
+      const tabParam = params['tab'] as FeedTab;
+      if (tabParam && this.feedTabs.some(t => t.value === tabParam)) {
+        this.activeTab.set(tabParam);
+      }
+      
+      const filterParam = params['filter'] as 'all' | 'outfit' | 'poll';
+      if (filterParam && ['all', 'outfit', 'poll'].includes(filterParam)) {
+        this.myPostsFilter.set(filterParam);
+      }
+
+      this.loadData(true);
+    });
   }
 
   setTab(tab: FeedTab): void {
     if (this.activeTab() === tab) return;
-    this.activeTab.set(tab);
-    this.loadData(true);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   loadData(reset = false): void {
@@ -91,6 +111,8 @@ export class CommunityFeedComponent implements OnInit {
       this.loadFollowingPosts(reset);
     } else if (tab === 'trending') {
       this.loadTrendingPosts(reset);
+    } else if (tab === 'my-posts') {
+      this.loadMyPosts(reset);
     } else if (tab === 'followers') {
       this.loadFollowers(reset);
     } else if (tab === 'following-list') {
@@ -112,6 +134,30 @@ export class CommunityFeedComponent implements OnInit {
       error: () => this.loading.set(false)
     });
 
+  }
+
+  private loadMyPosts(reset: boolean): void {
+    const filter = this.myPostsFilter();
+    let postType: string | undefined = undefined;
+    if (filter === 'outfit') {
+      postType = 'Outfit';
+    } else if (filter === 'poll') {
+      postType = 'Poll';
+    }
+
+    this.feedUseCases.getMyPosts(this.nextCursor() || undefined, 10, postType).subscribe({
+      next: (result) => this.handlePostsResult(result, reset),
+      error: () => this.loading.set(false)
+    });
+  }
+
+  setMyPostsFilter(filter: 'all' | 'outfit' | 'poll'): void {
+    if (this.myPostsFilter() === filter) return;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { filter },
+      queryParamsHandling: 'merge'
+    });
   }
 
   private loadTrendingPosts(reset: boolean): void {
@@ -187,13 +233,14 @@ export class CommunityFeedComponent implements OnInit {
         occasion: 'Social' as any,
         suitableWeather: {} as any,
         season: 'AllSeason' as any,
-        comfortLevel: 0,
-        styleRating: 0,
         createdAt: item.createdAt,
         lastWorn: item.createdAt,
         timesWorn: 0,
         status: 'active' as any,
-        feedback: []
+        feedback: [],
+        commentsCount: item.comments,
+        likesCount: item.likes,
+       
       },
       tags: [],
       visibility: Visibility.Public,
@@ -209,6 +256,10 @@ export class CommunityFeedComponent implements OnInit {
 
   onPostUpdated(updatedPost: FeedPost): void {
     this.posts.update(posts => posts.map(p => p.id === updatedPost.id ? updatedPost : p));
+  }
+
+  onPostDeleted(postId: string): void {
+    this.posts.update(posts => posts.filter(p => p.id !== postId));
   }
 
   toggleUserFollow(userId: string, event: Event): void {

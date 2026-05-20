@@ -22,7 +22,8 @@ public class GetFollowingQueryHandler : IRequestHandler<GetFollowingQuery, Curso
         var result = await _followRepository.GetFollowingCursorAsync(
             request.UserId,
             request.Cursor,
-            request.PageSize);
+            request.PageSize,
+            request.SearchQuery);
         var followedUserIds = (await _followRepository.FindAsync(f => f.FollowerId == request.RequesterId, cancellationToken))
                       .Select(f => f.FollowedId)
                       .ToList();

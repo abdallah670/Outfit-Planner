@@ -21,6 +21,8 @@ interface PollDto {
   options: PollOptionDto[];
   totalVotes: number;
   createdAt: string;
+  tags?: string[];
+  taggedUsers?: any[];
 }
 
 interface PollOptionDto {
@@ -127,6 +129,8 @@ export class PollsDataSource {
       options: dto.options.map((o: PollOptionDto) => this.mapOptionDtoToEntity(o)),
       totalVotes: dto.totalVotes,
       createdAt: new Date(dto.createdAt),
+      tags: dto.tags || [],
+      taggedUsers: dto.taggedUsers || [],
     };
   }
 
@@ -139,17 +143,23 @@ export class PollsDataSource {
     }
   }
 
+  private fixUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${environment.resourceBaseUrl}${path}`;
+  }
+
   private mapOptionDtoToEntity(dto: PollOptionDto): PollOption {
-    const resourceUrl = environment.resourceBaseUrl;
     return {
       id: dto.id,
       pollId: dto.pollId,
       outfitId: dto.outfitId,
       displayOrder: dto.displayOrder,
       voteCount: dto.voteCount,
-      outfitThumbnail: dto.outfitThumbnail && !dto.outfitThumbnail.startsWith('http') 
-        ? `${resourceUrl}${dto.outfitThumbnail}` 
-        : dto.outfitThumbnail,
+      outfitThumbnail: dto.outfitThumbnail ? this.fixUrl(dto.outfitThumbnail) : undefined,
       description: dto.description || '',
     };
   }

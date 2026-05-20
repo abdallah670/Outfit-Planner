@@ -32,8 +32,7 @@ public enum Season
     Spring,
     Summer,
     Autumn,
-    Winter,
-    AllSeason
+    Winter
 }
 
 public enum StylePreference

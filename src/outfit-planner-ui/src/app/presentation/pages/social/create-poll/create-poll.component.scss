@@ -165,6 +165,7 @@
 }
 
 .option-image-wrapper {
+  position: relative;
   width: 80px;
   height: 80px;
   border-radius: 8px;
@@ -175,6 +176,33 @@
   align-items: center;
   justify-content: center;
   background: #f3f4f6;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  z-index: 5;
+
+  &:hover {
+    background: #ef4444;
+  }
+
+  iconify-icon {
+    font-size: 12px;
+  }
 }
 
 .option-image {
@@ -189,10 +217,20 @@
   border-radius: 8px;
   border: 1px dashed #d1d5db;
   display: flex;
+  flex-direction: column;
+  gap: 4px;
   align-items: center;
   justify-content: center;
   background: #f9fafb;
   color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #ff6fa8;
+    color: #ff6fa8;
+    background: #fff0f6;
+  }
 }
 
 .option-details {
@@ -211,22 +249,28 @@
 }
 
 .option-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: #1f2937;
-  margin: 0 0 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  border: none;
-  background: transparent;
+  border: 1px solid rgba(250, 180, 198, 0.3);
+  border-radius: 8px;
+  background: rgba(250, 180, 198, 0.03);
   width: 100%;
-  padding: 0;
+  padding: 8px 12px;
   font-family: inherit;
+  transition: all 0.2s ease;
+  margin-top: 4px;
 
   &:focus {
     outline: none;
-    border-bottom: 1px solid #ff6fa8;
+    border-color: #ff6fa8;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 111, 168, 0.1);
+  }
+
+  &.ng-invalid.ng-touched {
+    border-color: #ef4444;
+    background: #fef2f2;
   }
 }
 

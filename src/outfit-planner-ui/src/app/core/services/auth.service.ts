@@ -32,6 +32,7 @@ export class AuthService{
   isAdmin = computed(() => this.userRoles().includes('Admin'));
   isPlanner = computed(() => this.userRoles().includes('Planner'));
   hasRole = (role: string) => computed(() => this.userRoles().includes(role));
+  isEmailConfirmed = computed(() => this.currentUser()?.emailConfirmed ?? false);
 
   constructor() {
     this.checkAuthStatus();
@@ -119,11 +120,15 @@ export class AuthService{
     this.userRoles.set(roles);
     console.log('[AuthService] User roles:', roles);
 
+    const payload = this.decodeToken(response.token);
+    const emailConfirmed = payload ? (payload['email_confirmed'] === 'true' || payload['email_confirmed'] === true) : false;
+
     this.currentUser.set({
       id: response.id,
       userName: response.userName,
       email: response.email,
       roles: roles,
+      emailConfirmed: emailConfirmed
     });
     this.isAuthenticated.set(true);
     console.log('[AuthService] isAuthenticated set to:', this.isAuthenticated());
@@ -172,12 +177,14 @@ export class AuthService{
         const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload['sub'];
         const userName = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || payload['unique_name'];
         const email = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || payload['email'];
+        const emailConfirmed = payload['email_confirmed'] === 'true' || payload['email_confirmed'] === true;
 
         this.currentUser.set({
           id: userId,
           userName: userName,
           email: email,
           roles: roles,
+          emailConfirmed: emailConfirmed
         });
         
         console.log('[AuthService] Restored session for:', userName);

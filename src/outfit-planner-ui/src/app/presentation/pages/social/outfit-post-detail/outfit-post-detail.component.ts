@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, inject, signal, CUSTOM_ELEMENTS_SCHEMA, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -6,6 +6,7 @@ import { FeedPostWithComments } from '../../../../domain/entities/feed.entity';
 import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CommentsModalComponent } from '../../../components/shared/modals/comments-modal/comments-modal.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-outfit-post-detail',
@@ -163,6 +164,59 @@ export class OutfitPostDetailComponent implements OnInit {
     if (post) {
       this.router.navigate(['/social/posts', post.id, 'edit']);
     }
+  }
+
+  isOwner(): boolean {
+    const post = this.outfitPost();
+    if (!post) return false;
+    return post.userId === this.authService.currentUser()?.id;
+  }
+
+  showMenu = false;
+
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+  }
+
+  @HostListener('document:click')
+  closeMenu(): void {
+    this.showMenu = false;
+  }
+
+  deletePost(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = false;
+    const post = this.outfitPost();
+    if (!post) return;
+
+    Swal.fire({
+      title: 'Delete Post',
+      text: 'Are you sure you want to delete this post?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+      confirmButtonColor: '#fab4c6',
+      cancelButtonColor: '#2d3748'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.feedUseCases.deletePost(post.id).subscribe({
+          next: () => {
+            Swal.fire('Deleted!', 'Your post has been deleted.', 'success').then(() => {
+              this.router.navigate(['/social/feed']);
+            });
+          },
+          error: (error) => {
+            Swal.fire('Error!', error.message, 'error');
+          }
+        });
+      }
+    });
+  }
+
+  searchByTag(userId: string): void {
+    this.router.navigate(['/profile', userId]);
   }
 
   ngOnDestroy(): void {

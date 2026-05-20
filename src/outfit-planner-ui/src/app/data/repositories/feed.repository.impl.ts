@@ -27,13 +27,21 @@ export class FeedRepositoryImpl implements FeedRepository {
     return this.feedDataSource.getFeedPosts(cursor, pageSize, visibility, sortBy, postType, followingOnly);
   }
 
- getUserFeed(
+  getUserFeed(
     userId: string,
     cursor?: string,
     pageSize?: number,
     postType?: string
   ): Observable<CursorPagedResult<FeedPost>> {
     return this.feedDataSource.getUserFeed(userId, cursor, pageSize, postType);
+  }
+
+  getMyPosts(
+    cursor?: string,
+    pageSize?: number,
+    postType?: string
+  ): Observable<CursorPagedResult<FeedPost>> {
+    return this.feedDataSource.getMyPosts(cursor, pageSize, postType);
   }
   getPostById(id: string): Observable<FeedPost> {
     return this.feedDataSource.getPostById(id);
