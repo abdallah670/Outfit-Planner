@@ -1,0 +1,3484 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head>
+      <style>
+        /*! tailwindcss v4.3.0 | MIT License | https://tailwindcss.com */
+        @layer properties;
+        @layer theme, base, components, utilities;
+        @layer theme {
+          :root,
+          :root {
+            --font-sans:
+              ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+              "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            --font-mono:
+              ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+              "Liberation Mono", "Courier New", monospace;
+            --color-amber-50: oklch(98.7% 0.022 95.277);
+            --color-amber-200: oklch(92.4% 0.12 95.746);
+            --color-amber-500: oklch(76.9% 0.188 70.08);
+            --color-amber-700: oklch(55.5% 0.163 48.998);
+            --color-emerald-50: oklch(97.9% 0.021 166.113);
+            --color-emerald-200: oklch(90.5% 0.093 164.15);
+            --color-emerald-500: oklch(69.6% 0.17 162.48);
+            --color-emerald-600: oklch(59.6% 0.145 163.225);
+            --color-emerald-700: oklch(50.8% 0.118 165.612);
+            --color-teal-50: oklch(98.4% 0.014 180.72);
+            --color-blue-50: oklch(97% 0.014 254.604);
+            --color-blue-200: oklch(88.2% 0.059 254.128);
+            --color-blue-500: oklch(62.3% 0.214 259.815);
+            --color-blue-700: oklch(48.8% 0.243 264.376);
+            --color-pink-100: oklch(94.8% 0.028 342.258);
+            --color-zinc-950: oklch(14.1% 0.005 285.823);
+            --color-neutral-50: oklch(98.5% 0 0);
+            --color-neutral-100: oklch(97% 0 0);
+            --color-neutral-200: oklch(92.2% 0 0);
+            --color-neutral-500: oklch(55.6% 0 0);
+            --color-stone-50: oklch(98.5% 0.001 106.423);
+            --color-stone-100: oklch(97% 0.001 106.424);
+            --color-stone-200: oklch(92.3% 0.003 48.717);
+            --color-stone-300: oklch(86.9% 0.005 56.366);
+            --color-stone-400: oklch(70.9% 0.01 56.259);
+            --color-stone-500: oklch(55.3% 0.013 58.071);
+            --color-stone-600: oklch(44.4% 0.011 73.639);
+            --color-stone-700: oklch(37.4% 0.01 67.558);
+            --color-stone-900: oklch(21.6% 0.006 56.043);
+            --color-white: #fff;
+            --spacing: 0.25rem;
+            --container-md: 28rem;
+            --container-lg: 32rem;
+            --container-xl: 36rem;
+            --container-2xl: 42rem;
+            --container-4xl: 56rem;
+            --container-5xl: 64rem;
+            --text-xs: 12px;
+            --text-xs--line-height: calc(1 / 0.75);
+            --text-sm: 14px;
+            --text-sm--line-height: calc(1.25 / 0.875);
+            --text-base: 16px;
+            --text-base--line-height: calc(1.5 / 1);
+            --text-lg: 18px;
+            --text-lg--line-height: calc(1.75 / 1.125);
+            --text-xl: 20px;
+            --text-xl--line-height: calc(1.75 / 1.25);
+            --text-2xl: 24px;
+            --text-2xl--line-height: calc(2 / 1.5);
+            --text-3xl: 30px;
+            --text-3xl--line-height: calc(2.25 / 1.875);
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --tracking-tight: -0.025em;
+            --tracking-wide: 0.025em;
+            --tracking-wider: 0.05em;
+            --tracking-widest: 0.1em;
+            --leading-snug: 1.375;
+            --leading-relaxed: 1.625;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --animate-bounce: bounce 1s infinite;
+            --blur-3xl: 64px;
+            --default-transition-duration: 150ms;
+            --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            --default-font-family: var(--font-sans);
+            --default-mono-font-family: var(--font-mono);
+            --radius: var(--radius-sm);
+            --color-background: #fafafa;
+            --color-border: #dfe6e9;
+            --color-primary: #f8b4c4;
+            --color-primary-foreground: #2d3436;
+            --color-secondary: #9caf88;
+            --color-muted: #dfe6e9;
+            --color-muted-foreground: #636e72;
+            --color-surface: #ffffff;
+            --color-text-primary: #2d3436;
+            --color-text-secondary: #636e72;
+            --color-warning: #fdcb6e;
+            --color-ai-bubble: #f0f0f5;
+            --color-user-bubble: #f8b4c4;
+            --color-sage: #9caf88;
+            --color-sage-hover: #8a9e75;
+            --color-rose: #f8b4c4;
+            --color-rose-light: #fef0f2;
+            --color-dark-text: #2d3436;
+            --font-body: Inter;
+            --font-headings: Inter;
+          }
+        }
+        @layer base {
+          *,
+          ::after,
+          ::before,
+          ::backdrop,
+          ::file-selector-button {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: 0 solid;
+          }
+          html,
+          :root {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            tab-size: 4;
+            font-family: var(
+              --default-font-family,
+              ui-sans-serif,
+              system-ui,
+              sans-serif,
+              "Apple Color Emoji",
+              "Segoe UI Emoji",
+              "Segoe UI Symbol",
+              "Noto Color Emoji"
+            );
+            font-feature-settings: var(--default-font-feature-settings, normal);
+            font-variation-settings: var(
+              --default-font-variation-settings,
+              normal
+            );
+            -webkit-tap-highlight-color: transparent;
+          }
+          hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px;
+          }
+          abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted;
+          }
+          h1,
+          h2,
+          h3,
+          h4,
+          h5,
+          h6 {
+            font-size: inherit;
+            font-weight: inherit;
+          }
+          a {
+            color: inherit;
+            -webkit-text-decoration: inherit;
+            text-decoration: inherit;
+          }
+          b,
+          strong {
+            font-weight: bolder;
+          }
+          code,
+          kbd,
+          samp,
+          pre {
+            font-family: var(
+              --default-mono-font-family,
+              ui-monospace,
+              SFMono-Regular,
+              Menlo,
+              Monaco,
+              Consolas,
+              "Liberation Mono",
+              "Courier New",
+              monospace
+            );
+            font-feature-settings: var(
+              --default-mono-font-feature-settings,
+              normal
+            );
+            font-variation-settings: var(
+              --default-mono-font-variation-settings,
+              normal
+            );
+            font-size: 1em;
+          }
+          small {
+            font-size: 80%;
+          }
+          sub,
+          sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+          }
+          sub {
+            bottom: -0.25em;
+          }
+          sup {
+            top: -0.5em;
+          }
+          table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse;
+          }
+          :-moz-focusring {
+            outline: auto;
+          }
+          progress {
+            vertical-align: baseline;
+          }
+          summary {
+            display: list-item;
+          }
+          ol,
+          ul,
+          menu {
+            list-style: none;
+          }
+          img,
+          svg,
+          video,
+          canvas,
+          audio,
+          iframe,
+          embed,
+          object {
+            display: block;
+            vertical-align: middle;
+          }
+          img,
+          video {
+            max-width: 100%;
+            height: auto;
+          }
+          button,
+          input,
+          select,
+          optgroup,
+          textarea,
+          ::file-selector-button {
+            font: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            border-radius: 0;
+            background-color: transparent;
+            opacity: 1;
+          }
+          :where(select:is([multiple], [size])) optgroup {
+            font-weight: bolder;
+          }
+          :where(select:is([multiple], [size])) optgroup option {
+            padding-inline-start: 20px;
+          }
+          ::file-selector-button {
+            margin-inline-end: 4px;
+          }
+          ::placeholder {
+            opacity: 1;
+          }
+          @supports (not (-webkit-appearance: -apple-pay-button)) or
+            (contain-intrinsic-size: 1px) {
+            ::placeholder {
+              color: currentcolor;
+              @supports (color: color-mix(in lab, red, red)) {
+                color: color-mix(in oklab, currentcolor 50%, transparent);
+              }
+            }
+          }
+          textarea {
+            resize: vertical;
+          }
+          ::-webkit-search-decoration {
+            -webkit-appearance: none;
+          }
+          ::-webkit-date-and-time-value {
+            min-height: 1lh;
+            text-align: inherit;
+          }
+          ::-webkit-datetime-edit {
+            display: inline-flex;
+          }
+          ::-webkit-datetime-edit-fields-wrapper {
+            padding: 0;
+          }
+          ::-webkit-datetime-edit,
+          ::-webkit-datetime-edit-year-field,
+          ::-webkit-datetime-edit-month-field,
+          ::-webkit-datetime-edit-day-field,
+          ::-webkit-datetime-edit-hour-field,
+          ::-webkit-datetime-edit-minute-field,
+          ::-webkit-datetime-edit-second-field,
+          ::-webkit-datetime-edit-millisecond-field,
+          ::-webkit-datetime-edit-meridiem-field {
+            padding-block: 0;
+          }
+          ::-webkit-calendar-picker-indicator {
+            line-height: 1;
+          }
+          :-moz-ui-invalid {
+            box-shadow: none;
+          }
+          button,
+          input:where([type="button"], [type="reset"], [type="submit"]),
+          ::file-selector-button {
+            appearance: button;
+          }
+          ::-webkit-inner-spin-button,
+          ::-webkit-outer-spin-button {
+            height: auto;
+          }
+          [hidden]:where(:not([hidden="until-found"])) {
+            display: none !important;
+          }
+        }
+        @layer utilities {
+          .pointer-events-none {
+            pointer-events: none;
+          }
+          .absolute {
+            position: absolute;
+          }
+          .relative {
+            position: relative;
+          }
+          .top-0 {
+            top: calc(var(--spacing) * 0);
+          }
+          .top-1\.5 {
+            top: calc(var(--spacing) * 1.5);
+          }
+          .right-1\.5 {
+            right: calc(var(--spacing) * 1.5);
+          }
+          .right-1\/4 {
+            right: calc(1 / 4 * 100%);
+          }
+          .right-6 {
+            right: calc(var(--spacing) * 6);
+          }
+          .right-10 {
+            right: calc(var(--spacing) * 10);
+          }
+          .-bottom-10 {
+            bottom: calc(var(--spacing) * -10);
+          }
+          .bottom-6 {
+            bottom: calc(var(--spacing) * 6);
+          }
+          .z-10 {
+            z-index: 10;
+          }
+          .z-50 {
+            z-index: 50;
+          }
+          .mx-auto {
+            margin-inline: auto;
+          }
+          .mt-0\.5 {
+            margin-top: calc(var(--spacing) * 0.5);
+          }
+          .mt-1 {
+            margin-top: calc(var(--spacing) * 1);
+          }
+          .mt-1\.5 {
+            margin-top: calc(var(--spacing) * 1.5);
+          }
+          .mt-2 {
+            margin-top: calc(var(--spacing) * 2);
+          }
+          .mt-4 {
+            margin-top: calc(var(--spacing) * 4);
+          }
+          .mt-6 {
+            margin-top: calc(var(--spacing) * 6);
+          }
+          .mt-8 {
+            margin-top: calc(var(--spacing) * 8);
+          }
+          .mt-auto {
+            margin-top: auto;
+          }
+          .mb-0\.5 {
+            margin-bottom: calc(var(--spacing) * 0.5);
+          }
+          .mb-1 {
+            margin-bottom: calc(var(--spacing) * 1);
+          }
+          .mb-4 {
+            margin-bottom: calc(var(--spacing) * 4);
+          }
+          .mb-6 {
+            margin-bottom: calc(var(--spacing) * 6);
+          }
+          .ml-3 {
+            margin-left: calc(var(--spacing) * 3);
+          }
+          .ml-7 {
+            margin-left: calc(var(--spacing) * 7);
+          }
+          .block {
+            display: block;
+          }
+          .flex {
+            display: flex;
+          }
+          .grid {
+            display: grid;
+          }
+          .aspect-\[3\/4\] {
+            aspect-ratio: 3/4;
+          }
+          .aspect-square {
+            aspect-ratio: 1 / 1;
+          }
+          .h-1\.5 {
+            height: calc(var(--spacing) * 1.5);
+          }
+          .h-2 {
+            height: calc(var(--spacing) * 2);
+          }
+          .h-2\.5 {
+            height: calc(var(--spacing) * 2.5);
+          }
+          .h-4 {
+            height: calc(var(--spacing) * 4);
+          }
+          .h-5 {
+            height: calc(var(--spacing) * 5);
+          }
+          .h-6 {
+            height: calc(var(--spacing) * 6);
+          }
+          .h-7 {
+            height: calc(var(--spacing) * 7);
+          }
+          .h-8 {
+            height: calc(var(--spacing) * 8);
+          }
+          .h-9 {
+            height: calc(var(--spacing) * 9);
+          }
+          .h-10 {
+            height: calc(var(--spacing) * 10);
+          }
+          .h-11 {
+            height: calc(var(--spacing) * 11);
+          }
+          .h-12 {
+            height: calc(var(--spacing) * 12);
+          }
+          .h-14 {
+            height: calc(var(--spacing) * 14);
+          }
+          .h-16 {
+            height: calc(var(--spacing) * 16);
+          }
+          .h-40 {
+            height: calc(var(--spacing) * 40);
+          }
+          .h-48 {
+            height: calc(var(--spacing) * 48);
+          }
+          .h-\[1px\] {
+            height: 1px;
+          }
+          .h-full {
+            height: 100%;
+          }
+          .min-h-0 {
+            min-height: calc(var(--spacing) * 0);
+          }
+          .min-h-\[90px\] {
+            min-height: 90px;
+          }
+          .min-h-\[190px\] {
+            min-height: 190px;
+          }
+          .min-h-\[600px\] {
+            min-height: 600px;
+          }
+          .min-h-\[750px\] {
+            min-height: 750px;
+          }
+          .min-h-\[850px\] {
+            min-height: 850px;
+          }
+          .w-1\.5 {
+            width: calc(var(--spacing) * 1.5);
+          }
+          .w-2 {
+            width: calc(var(--spacing) * 2);
+          }
+          .w-2\.5 {
+            width: calc(var(--spacing) * 2.5);
+          }
+          .w-4 {
+            width: calc(var(--spacing) * 4);
+          }
+          .w-5 {
+            width: calc(var(--spacing) * 5);
+          }
+          .w-6 {
+            width: calc(var(--spacing) * 6);
+          }
+          .w-7 {
+            width: calc(var(--spacing) * 7);
+          }
+          .w-8 {
+            width: calc(var(--spacing) * 8);
+          }
+          .w-9 {
+            width: calc(var(--spacing) * 9);
+          }
+          .w-10 {
+            width: calc(var(--spacing) * 10);
+          }
+          .w-11 {
+            width: calc(var(--spacing) * 11);
+          }
+          .w-12 {
+            width: calc(var(--spacing) * 12);
+          }
+          .w-14 {
+            width: calc(var(--spacing) * 14);
+          }
+          .w-16 {
+            width: calc(var(--spacing) * 16);
+          }
+          .w-40 {
+            width: calc(var(--spacing) * 40);
+          }
+          .w-48 {
+            width: calc(var(--spacing) * 48);
+          }
+          .w-72 {
+            width: calc(var(--spacing) * 72);
+          }
+          .w-80 {
+            width: calc(var(--spacing) * 80);
+          }
+          .w-96 {
+            width: calc(var(--spacing) * 96);
+          }
+          .w-full {
+            width: 100%;
+          }
+          .max-w-2xl {
+            max-width: var(--container-2xl);
+          }
+          .max-w-4xl {
+            max-width: var(--container-4xl);
+          }
+          .max-w-5xl {
+            max-width: var(--container-5xl);
+          }
+          .max-w-lg {
+            max-width: var(--container-lg);
+          }
+          .max-w-md {
+            max-width: var(--container-md);
+          }
+          .max-w-xl {
+            max-width: var(--container-xl);
+          }
+          .min-w-0 {
+            min-width: calc(var(--spacing) * 0);
+          }
+          .flex-1 {
+            flex: 1;
+          }
+          .flex-shrink-0 {
+            flex-shrink: 0;
+          }
+          .animate-bounce {
+            animation: var(--animate-bounce);
+          }
+          .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+          }
+          .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          .grid-cols-5 {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+          }
+          .flex-col {
+            flex-direction: column;
+          }
+          .flex-wrap {
+            flex-wrap: wrap;
+          }
+          .items-center {
+            align-items: center;
+          }
+          .items-end {
+            align-items: flex-end;
+          }
+          .items-start {
+            align-items: flex-start;
+          }
+          .justify-between {
+            justify-content: space-between;
+          }
+          .justify-center {
+            justify-content: center;
+          }
+          .justify-end {
+            justify-content: flex-end;
+          }
+          .justify-start {
+            justify-content: flex-start;
+          }
+          .gap-1 {
+            gap: calc(var(--spacing) * 1);
+          }
+          .gap-1\.5 {
+            gap: calc(var(--spacing) * 1.5);
+          }
+          .gap-2 {
+            gap: calc(var(--spacing) * 2);
+          }
+          .gap-2\.5 {
+            gap: calc(var(--spacing) * 2.5);
+          }
+          .gap-3 {
+            gap: calc(var(--spacing) * 3);
+          }
+          .gap-4 {
+            gap: calc(var(--spacing) * 4);
+          }
+          .gap-5 {
+            gap: calc(var(--spacing) * 5);
+          }
+          .gap-6 {
+            gap: calc(var(--spacing) * 6);
+          }
+          .gap-8 {
+            gap: calc(var(--spacing) * 8);
+          }
+          .divide-x-0 {
+            :where(& > :not(:last-child)) {
+              --tw-divide-x-reverse: 0;
+              border-inline-style: var(--tw-border-style);
+              border-inline-start-width: calc(0px * var(--tw-divide-x-reverse));
+              border-inline-end-width: calc(
+                0px * calc(1 - var(--tw-divide-x-reverse))
+              );
+            }
+          }
+          .divide-y {
+            :where(& > :not(:last-child)) {
+              --tw-divide-y-reverse: 0;
+              border-bottom-style: var(--tw-border-style);
+              border-top-style: var(--tw-border-style);
+              border-top-width: calc(1px * var(--tw-divide-y-reverse));
+              border-bottom-width: calc(
+                1px * calc(1 - var(--tw-divide-y-reverse))
+              );
+            }
+          }
+          .truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .overflow-hidden {
+            overflow: hidden;
+          }
+          .overflow-y-auto {
+            overflow-y: auto;
+          }
+          .rounded {
+            border-radius: var(--radius);
+          }
+          .rounded-full {
+            border-radius: calc(infinity * 1px);
+          }
+          .rounded-lg {
+            border-radius: var(--radius-lg);
+          }
+          .rounded-md {
+            border-radius: var(--radius-md);
+          }
+          .rounded-sm {
+            border-radius: var(--radius-sm);
+          }
+          .rounded-xl {
+            border-radius: var(--radius-xl);
+          }
+          .rounded-tl-none {
+            border-top-left-radius: 0;
+          }
+          .rounded-tr-none {
+            border-top-right-radius: 0;
+          }
+          .border {
+            border-style: var(--tw-border-style);
+            border-width: 1px;
+          }
+          .border-2 {
+            border-style: var(--tw-border-style);
+            border-width: 2px;
+          }
+          .border-t {
+            border-top-style: var(--tw-border-style);
+            border-top-width: 1px;
+          }
+          .border-r {
+            border-right-style: var(--tw-border-style);
+            border-right-width: 1px;
+          }
+          .border-b {
+            border-bottom-style: var(--tw-border-style);
+            border-bottom-width: 1px;
+          }
+          .border-l {
+            border-left-style: var(--tw-border-style);
+            border-left-width: 1px;
+          }
+          .border-amber-200 {
+            border-color: var(--color-amber-200);
+          }
+          .border-amber-200\/40 {
+            border-color: color-mix(
+              in srgb,
+              oklch(92.4% 0.12 95.746) 40%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-amber-200) 40%,
+                transparent
+              );
+            }
+          }
+          .border-blue-200 {
+            border-color: var(--color-blue-200);
+          }
+          .border-border {
+            border-color: var(--color-border);
+          }
+          .border-emerald-200 {
+            border-color: var(--color-emerald-200);
+          }
+          .border-emerald-500\/30 {
+            border-color: color-mix(
+              in srgb,
+              oklch(69.6% 0.17 162.48) 30%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-emerald-500) 30%,
+                transparent
+              );
+            }
+          }
+          .border-neutral-200 {
+            border-color: var(--color-neutral-200);
+          }
+          .border-neutral-200\/50 {
+            border-color: color-mix(in srgb, oklch(92.2% 0 0) 50%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-neutral-200) 50%,
+                transparent
+              );
+            }
+          }
+          .border-primary\/40 {
+            border-color: color-mix(in srgb, #f8b4c4 40%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-primary) 40%,
+                transparent
+              );
+            }
+          }
+          .border-rose {
+            border-color: var(--color-rose);
+          }
+          .border-rose-light\/40 {
+            border-color: color-mix(in srgb, #fef0f2 40%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-rose-light) 40%,
+                transparent
+              );
+            }
+          }
+          .border-rose\/20 {
+            border-color: color-mix(in srgb, #f8b4c4 20%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-rose) 20%,
+                transparent
+              );
+            }
+          }
+          .border-sage\/20 {
+            border-color: color-mix(in srgb, #9caf88 20%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-sage) 20%,
+                transparent
+              );
+            }
+          }
+          .border-secondary\/20 {
+            border-color: color-mix(in srgb, #9caf88 20%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-secondary) 20%,
+                transparent
+              );
+            }
+          }
+          .border-secondary\/30 {
+            border-color: color-mix(in srgb, #9caf88 30%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-secondary) 30%,
+                transparent
+              );
+            }
+          }
+          .border-stone-100 {
+            border-color: var(--color-stone-100);
+          }
+          .border-stone-100\/30 {
+            border-color: color-mix(
+              in srgb,
+              oklch(97% 0.001 106.424) 30%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-stone-100) 30%,
+                transparent
+              );
+            }
+          }
+          .border-stone-200 {
+            border-color: var(--color-stone-200);
+          }
+          .border-stone-200\/40 {
+            border-color: color-mix(
+              in srgb,
+              oklch(92.3% 0.003 48.717) 40%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-stone-200) 40%,
+                transparent
+              );
+            }
+          }
+          .border-stone-200\/50 {
+            border-color: color-mix(
+              in srgb,
+              oklch(92.3% 0.003 48.717) 50%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-stone-200) 50%,
+                transparent
+              );
+            }
+          }
+          .border-stone-200\/80 {
+            border-color: color-mix(
+              in srgb,
+              oklch(92.3% 0.003 48.717) 80%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-stone-200) 80%,
+                transparent
+              );
+            }
+          }
+          .border-stone-300 {
+            border-color: var(--color-stone-300);
+          }
+          .border-transparent {
+            border-color: transparent;
+          }
+          .bg-\[\#fafaf9\] {
+            background-color: #fafaf9;
+          }
+          .bg-ai-bubble {
+            background-color: var(--color-ai-bubble);
+          }
+          .bg-amber-50 {
+            background-color: var(--color-amber-50);
+          }
+          .bg-amber-500 {
+            background-color: var(--color-amber-500);
+          }
+          .bg-background {
+            background-color: var(--color-background);
+          }
+          .bg-blue-50 {
+            background-color: var(--color-blue-50);
+          }
+          .bg-blue-500 {
+            background-color: var(--color-blue-500);
+          }
+          .bg-dark-text {
+            background-color: var(--color-dark-text);
+          }
+          .bg-emerald-50 {
+            background-color: var(--color-emerald-50);
+          }
+          .bg-emerald-500 {
+            background-color: var(--color-emerald-500);
+          }
+          .bg-emerald-500\/5 {
+            background-color: color-mix(
+              in srgb,
+              oklch(69.6% 0.17 162.48) 5%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-emerald-500) 5%,
+                transparent
+              );
+            }
+          }
+          .bg-muted {
+            background-color: var(--color-muted);
+          }
+          .bg-muted-foreground\/20 {
+            background-color: color-mix(in srgb, #636e72 20%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-muted-foreground) 20%,
+                transparent
+              );
+            }
+          }
+          .bg-muted-foreground\/40 {
+            background-color: color-mix(in srgb, #636e72 40%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-muted-foreground) 40%,
+                transparent
+              );
+            }
+          }
+          .bg-muted-foreground\/60 {
+            background-color: color-mix(in srgb, #636e72 60%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-muted-foreground) 60%,
+                transparent
+              );
+            }
+          }
+          .bg-neutral-50 {
+            background-color: var(--color-neutral-50);
+          }
+          .bg-neutral-50\/50 {
+            background-color: color-mix(
+              in srgb,
+              oklch(98.5% 0 0) 50%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-neutral-50) 50%,
+                transparent
+              );
+            }
+          }
+          .bg-neutral-100 {
+            background-color: var(--color-neutral-100);
+          }
+          .bg-pink-100\/50 {
+            background-color: color-mix(
+              in srgb,
+              oklch(94.8% 0.028 342.258) 50%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-pink-100) 50%,
+                transparent
+              );
+            }
+          }
+          .bg-primary {
+            background-color: var(--color-primary);
+          }
+          .bg-primary\/20 {
+            background-color: color-mix(in srgb, #f8b4c4 20%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-primary) 20%,
+                transparent
+              );
+            }
+          }
+          .bg-primary\/25 {
+            background-color: color-mix(in srgb, #f8b4c4 25%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-primary) 25%,
+                transparent
+              );
+            }
+          }
+          .bg-rose {
+            background-color: var(--color-rose);
+          }
+          .bg-rose-light {
+            background-color: var(--color-rose-light);
+          }
+          .bg-rose-light\/40 {
+            background-color: color-mix(in srgb, #fef0f2 40%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-rose-light) 40%,
+                transparent
+              );
+            }
+          }
+          .bg-rose\/10 {
+            background-color: color-mix(in srgb, #f8b4c4 10%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-rose) 10%,
+                transparent
+              );
+            }
+          }
+          .bg-sage {
+            background-color: var(--color-sage);
+          }
+          .bg-sage\/10 {
+            background-color: color-mix(in srgb, #9caf88 10%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-sage) 10%,
+                transparent
+              );
+            }
+          }
+          .bg-secondary {
+            background-color: var(--color-secondary);
+          }
+          .bg-secondary\/10 {
+            background-color: color-mix(in srgb, #9caf88 10%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-secondary) 10%,
+                transparent
+              );
+            }
+          }
+          .bg-secondary\/15 {
+            background-color: color-mix(in srgb, #9caf88 15%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-secondary) 15%,
+                transparent
+              );
+            }
+          }
+          .bg-stone-50 {
+            background-color: var(--color-stone-50);
+          }
+          .bg-stone-50\/40 {
+            background-color: color-mix(
+              in srgb,
+              oklch(98.5% 0.001 106.423) 40%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-stone-50) 40%,
+                transparent
+              );
+            }
+          }
+          .bg-stone-50\/50 {
+            background-color: color-mix(
+              in srgb,
+              oklch(98.5% 0.001 106.423) 50%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-stone-50) 50%,
+                transparent
+              );
+            }
+          }
+          .bg-stone-50\/70 {
+            background-color: color-mix(
+              in srgb,
+              oklch(98.5% 0.001 106.423) 70%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-stone-50) 70%,
+                transparent
+              );
+            }
+          }
+          .bg-stone-100 {
+            background-color: var(--color-stone-100);
+          }
+          .bg-stone-100\/70 {
+            background-color: color-mix(
+              in srgb,
+              oklch(97% 0.001 106.424) 70%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-stone-100) 70%,
+                transparent
+              );
+            }
+          }
+          .bg-stone-900\/60 {
+            background-color: color-mix(
+              in srgb,
+              oklch(21.6% 0.006 56.043) 60%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-stone-900) 60%,
+                transparent
+              );
+            }
+          }
+          .bg-surface {
+            background-color: var(--color-surface);
+          }
+          .bg-teal-50\/40 {
+            background-color: color-mix(
+              in srgb,
+              oklch(98.4% 0.014 180.72) 40%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-teal-50) 40%,
+                transparent
+              );
+            }
+          }
+          .bg-transparent {
+            background-color: transparent;
+          }
+          .bg-user-bubble {
+            background-color: var(--color-user-bubble);
+          }
+          .bg-white {
+            background-color: var(--color-white);
+          }
+          .bg-zinc-950\/45 {
+            background-color: color-mix(
+              in srgb,
+              oklch(14.1% 0.005 285.823) 45%,
+              transparent
+            );
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-zinc-950) 45%,
+                transparent
+              );
+            }
+          }
+          .bg-gradient-to-r {
+            --tw-gradient-position: to right in oklab;
+            background-image: linear-gradient(var(--tw-gradient-stops));
+          }
+          .from-\[\#fff3f5\] {
+            --tw-gradient-from: #fff3f5;
+            --tw-gradient-stops: var(
+              --tw-gradient-via-stops,
+              var(--tw-gradient-position),
+              var(--tw-gradient-from) var(--tw-gradient-from-position),
+              var(--tw-gradient-to) var(--tw-gradient-to-position)
+            );
+          }
+          .via-\[\#faf5f5\] {
+            --tw-gradient-via: #faf5f5;
+            --tw-gradient-via-stops:
+              var(--tw-gradient-position),
+              var(--tw-gradient-from) var(--tw-gradient-from-position),
+              var(--tw-gradient-via) var(--tw-gradient-via-position),
+              var(--tw-gradient-to) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-via-stops);
+          }
+          .to-\[\#f5fbf9\] {
+            --tw-gradient-to: #f5fbf9;
+            --tw-gradient-stops: var(
+              --tw-gradient-via-stops,
+              var(--tw-gradient-position),
+              var(--tw-gradient-from) var(--tw-gradient-from-position),
+              var(--tw-gradient-to) var(--tw-gradient-to-position)
+            );
+          }
+          .fill-stone-300 {
+            fill: var(--color-stone-300);
+          }
+          .stroke-none {
+            stroke: none;
+          }
+          .object-cover {
+            object-fit: cover;
+          }
+          .p-1 {
+            padding: calc(var(--spacing) * 1);
+          }
+          .p-1\.5 {
+            padding: calc(var(--spacing) * 1.5);
+          }
+          .p-2 {
+            padding: calc(var(--spacing) * 2);
+          }
+          .p-3 {
+            padding: calc(var(--spacing) * 3);
+          }
+          .p-3\.5 {
+            padding: calc(var(--spacing) * 3.5);
+          }
+          .p-4 {
+            padding: calc(var(--spacing) * 4);
+          }
+          .p-5 {
+            padding: calc(var(--spacing) * 5);
+          }
+          .p-6 {
+            padding: calc(var(--spacing) * 6);
+          }
+          .p-8 {
+            padding: calc(var(--spacing) * 8);
+          }
+          .px-1\.5 {
+            padding-inline: calc(var(--spacing) * 1.5);
+          }
+          .px-2 {
+            padding-inline: calc(var(--spacing) * 2);
+          }
+          .px-2\.5 {
+            padding-inline: calc(var(--spacing) * 2.5);
+          }
+          .px-3 {
+            padding-inline: calc(var(--spacing) * 3);
+          }
+          .px-3\.5 {
+            padding-inline: calc(var(--spacing) * 3.5);
+          }
+          .px-4 {
+            padding-inline: calc(var(--spacing) * 4);
+          }
+          .px-5 {
+            padding-inline: calc(var(--spacing) * 5);
+          }
+          .px-6 {
+            padding-inline: calc(var(--spacing) * 6);
+          }
+          .px-8 {
+            padding-inline: calc(var(--spacing) * 8);
+          }
+          .px-12 {
+            padding-inline: calc(var(--spacing) * 12);
+          }
+          .py-0\.5 {
+            padding-block: calc(var(--spacing) * 0.5);
+          }
+          .py-1 {
+            padding-block: calc(var(--spacing) * 1);
+          }
+          .py-1\.5 {
+            padding-block: calc(var(--spacing) * 1.5);
+          }
+          .py-2 {
+            padding-block: calc(var(--spacing) * 2);
+          }
+          .py-2\.5 {
+            padding-block: calc(var(--spacing) * 2.5);
+          }
+          .py-3 {
+            padding-block: calc(var(--spacing) * 3);
+          }
+          .py-3\.5 {
+            padding-block: calc(var(--spacing) * 3.5);
+          }
+          .py-4 {
+            padding-block: calc(var(--spacing) * 4);
+          }
+          .py-5 {
+            padding-block: calc(var(--spacing) * 5);
+          }
+          .py-6 {
+            padding-block: calc(var(--spacing) * 6);
+          }
+          .py-10 {
+            padding-block: calc(var(--spacing) * 10);
+          }
+          .pt-4 {
+            padding-top: calc(var(--spacing) * 4);
+          }
+          .pt-6 {
+            padding-top: calc(var(--spacing) * 6);
+          }
+          .pb-1 {
+            padding-bottom: calc(var(--spacing) * 1);
+          }
+          .pb-1\.5 {
+            padding-bottom: calc(var(--spacing) * 1.5);
+          }
+          .pb-4 {
+            padding-bottom: calc(var(--spacing) * 4);
+          }
+          .pb-6 {
+            padding-bottom: calc(var(--spacing) * 6);
+          }
+          .text-center {
+            text-align: center;
+          }
+          .text-left {
+            text-align: left;
+          }
+          .text-right {
+            text-align: right;
+          }
+          .font-body {
+            font-family: var(--font-body);
+          }
+          .font-headings {
+            font-family: var(--font-headings);
+          }
+          .text-2xl {
+            font-size: var(--text-2xl);
+            line-height: var(--tw-leading, var(--text-2xl--line-height));
+          }
+          .text-3xl {
+            font-size: var(--text-3xl);
+            line-height: var(--tw-leading, var(--text-3xl--line-height));
+          }
+          .text-base {
+            font-size: var(--text-base);
+            line-height: var(--tw-leading, var(--text-base--line-height));
+          }
+          .text-lg {
+            font-size: var(--text-lg);
+            line-height: var(--tw-leading, var(--text-lg--line-height));
+          }
+          .text-sm {
+            font-size: var(--text-sm);
+            line-height: var(--tw-leading, var(--text-sm--line-height));
+          }
+          .text-xl {
+            font-size: var(--text-xl);
+            line-height: var(--tw-leading, var(--text-xl--line-height));
+          }
+          .text-xs {
+            font-size: var(--text-xs);
+            line-height: var(--tw-leading, var(--text-xs--line-height));
+          }
+          .text-\[9px\] {
+            font-size: 9px;
+          }
+          .text-\[10px\] {
+            font-size: 10px;
+          }
+          .text-\[11px\] {
+            font-size: 11px;
+          }
+          .leading-relaxed {
+            --tw-leading: var(--leading-relaxed);
+            line-height: var(--leading-relaxed);
+          }
+          .leading-snug {
+            --tw-leading: var(--leading-snug);
+            line-height: var(--leading-snug);
+          }
+          .font-bold {
+            --tw-font-weight: var(--font-weight-bold);
+            font-weight: var(--font-weight-bold);
+          }
+          .font-medium {
+            --tw-font-weight: var(--font-weight-medium);
+            font-weight: var(--font-weight-medium);
+          }
+          .font-semibold {
+            --tw-font-weight: var(--font-weight-semibold);
+            font-weight: var(--font-weight-semibold);
+          }
+          .tracking-\[0\.25em\] {
+            --tw-tracking: 0.25em;
+            letter-spacing: 0.25em;
+          }
+          .tracking-tight {
+            --tw-tracking: var(--tracking-tight);
+            letter-spacing: var(--tracking-tight);
+          }
+          .tracking-wide {
+            --tw-tracking: var(--tracking-wide);
+            letter-spacing: var(--tracking-wide);
+          }
+          .tracking-wider {
+            --tw-tracking: var(--tracking-wider);
+            letter-spacing: var(--tracking-wider);
+          }
+          .tracking-widest {
+            --tw-tracking: var(--tracking-widest);
+            letter-spacing: var(--tracking-widest);
+          }
+          .text-amber-700 {
+            color: var(--color-amber-700);
+          }
+          .text-blue-700 {
+            color: var(--color-blue-700);
+          }
+          .text-dark-text {
+            color: var(--color-dark-text);
+          }
+          .text-emerald-600 {
+            color: var(--color-emerald-600);
+          }
+          .text-emerald-700 {
+            color: var(--color-emerald-700);
+          }
+          .text-muted-foreground {
+            color: var(--color-muted-foreground);
+          }
+          .text-neutral-500 {
+            color: var(--color-neutral-500);
+          }
+          .text-primary {
+            color: var(--color-primary);
+          }
+          .text-primary-foreground {
+            color: var(--color-primary-foreground);
+          }
+          .text-rose {
+            color: var(--color-rose);
+          }
+          .text-sage {
+            color: var(--color-sage);
+          }
+          .text-secondary {
+            color: var(--color-secondary);
+          }
+          .text-stone-400 {
+            color: var(--color-stone-400);
+          }
+          .text-stone-500 {
+            color: var(--color-stone-500);
+          }
+          .text-stone-600 {
+            color: var(--color-stone-600);
+          }
+          .text-stone-700 {
+            color: var(--color-stone-700);
+          }
+          .text-text-primary {
+            color: var(--color-text-primary);
+          }
+          .text-text-secondary {
+            color: var(--color-text-secondary);
+          }
+          .text-warning {
+            color: var(--color-warning);
+          }
+          .text-white {
+            color: var(--color-white);
+          }
+          .uppercase {
+            text-transform: uppercase;
+          }
+          .italic {
+            font-style: italic;
+          }
+          .opacity-40 {
+            opacity: 40%;
+          }
+          .shadow-2xl {
+            --tw-shadow: 0 25px 50px -12px
+              var(--tw-shadow-color, rgb(0 0 0 / 0.25));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-2xs {
+            --tw-shadow: 0 1px var(--tw-shadow-color, rgb(0 0 0 / 0.05));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-lg {
+            --tw-shadow:
+              0 10px 15px -3px var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
+              0 4px 6px -4px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-sm {
+            --tw-shadow:
+              0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
+              0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-xs {
+            --tw-shadow: 0 1px 2px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.05));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .blur-3xl {
+            --tw-blur: blur(var(--blur-3xl));
+            filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+              var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+              var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+          }
+          .filter {
+            filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+              var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+              var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+          }
+          .transition-all {
+            transition-property: all;
+            transition-timing-function: var(
+              --tw-ease,
+              var(--default-transition-timing-function)
+            );
+            transition-duration: var(
+              --tw-duration,
+              var(--default-transition-duration)
+            );
+          }
+          .transition-colors {
+            transition-property:
+              color, background-color, border-color, outline-color,
+              text-decoration-color, fill, stroke, --tw-gradient-from,
+              --tw-gradient-via, --tw-gradient-to;
+            transition-timing-function: var(
+              --tw-ease,
+              var(--default-transition-timing-function)
+            );
+            transition-duration: var(
+              --tw-duration,
+              var(--default-transition-duration)
+            );
+          }
+          .select-none {
+            -webkit-user-select: none;
+            user-select: none;
+          }
+          .hover\:border-stone-200 {
+            &:hover {
+              @media (hover: hover) {
+                border-color: var(--color-stone-200);
+              }
+            }
+          }
+          .hover\:bg-neutral-50 {
+            &:hover {
+              @media (hover: hover) {
+                background-color: var(--color-neutral-50);
+              }
+            }
+          }
+          .hover\:bg-rose\/90 {
+            &:hover {
+              @media (hover: hover) {
+                background-color: color-mix(in srgb, #f8b4c4 90%, transparent);
+                @supports (color: color-mix(in lab, red, red)) {
+                  background-color: color-mix(
+                    in oklab,
+                    var(--color-rose) 90%,
+                    transparent
+                  );
+                }
+              }
+            }
+          }
+          .hover\:bg-rose\/95 {
+            &:hover {
+              @media (hover: hover) {
+                background-color: color-mix(in srgb, #f8b4c4 95%, transparent);
+                @supports (color: color-mix(in lab, red, red)) {
+                  background-color: color-mix(
+                    in oklab,
+                    var(--color-rose) 95%,
+                    transparent
+                  );
+                }
+              }
+            }
+          }
+          .hover\:bg-sage-hover {
+            &:hover {
+              @media (hover: hover) {
+                background-color: var(--color-sage-hover);
+              }
+            }
+          }
+          .hover\:bg-stone-50 {
+            &:hover {
+              @media (hover: hover) {
+                background-color: var(--color-stone-50);
+              }
+            }
+          }
+          .hover\:text-dark-text {
+            &:hover {
+              @media (hover: hover) {
+                color: var(--color-dark-text);
+              }
+            }
+          }
+          .hover\:text-sage {
+            &:hover {
+              @media (hover: hover) {
+                color: var(--color-sage);
+              }
+            }
+          }
+          .hover\:text-sage-hover {
+            &:hover {
+              @media (hover: hover) {
+                color: var(--color-sage-hover);
+              }
+            }
+          }
+          .hover\:text-white {
+            &:hover {
+              @media (hover: hover) {
+                color: var(--color-white);
+              }
+            }
+          }
+          .hover\:shadow-xs {
+            &:hover {
+              @media (hover: hover) {
+                --tw-shadow: 0 1px 2px 0
+                  var(--tw-shadow-color, rgb(0 0 0 / 0.05));
+                box-shadow:
+                  var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+                  var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+                  var(--tw-shadow);
+              }
+            }
+          }
+          .md\:grid-cols-2 {
+            @media (width >= 48rem) {
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+          }
+          .md\:divide-x {
+            @media (width >= 48rem) {
+              :where(& > :not(:last-child)) {
+                --tw-divide-x-reverse: 0;
+                border-inline-style: var(--tw-border-style);
+                border-inline-start-width: calc(
+                  1px * var(--tw-divide-x-reverse)
+                );
+                border-inline-end-width: calc(
+                  1px * calc(1 - var(--tw-divide-x-reverse))
+                );
+              }
+            }
+          }
+          .md\:divide-y-0 {
+            @media (width >= 48rem) {
+              :where(& > :not(:last-child)) {
+                --tw-divide-y-reverse: 0;
+                border-bottom-style: var(--tw-border-style);
+                border-top-style: var(--tw-border-style);
+                border-top-width: calc(0px * var(--tw-divide-y-reverse));
+                border-bottom-width: calc(
+                  0px * calc(1 - var(--tw-divide-y-reverse))
+                );
+              }
+            }
+          }
+        }
+        @property --tw-divide-x-reverse {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0;
+        }
+        @property --tw-border-style {
+          syntax: "*";
+          inherits: false;
+          initial-value: solid;
+        }
+        @property --tw-divide-y-reverse {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0;
+        }
+        @property --tw-gradient-position {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-gradient-from {
+          syntax: "<color>";
+          inherits: false;
+          initial-value: #0000;
+        }
+        @property --tw-gradient-via {
+          syntax: "<color>";
+          inherits: false;
+          initial-value: #0000;
+        }
+        @property --tw-gradient-to {
+          syntax: "<color>";
+          inherits: false;
+          initial-value: #0000;
+        }
+        @property --tw-gradient-stops {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-gradient-via-stops {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-gradient-from-position {
+          syntax: "<length-percentage>";
+          inherits: false;
+          initial-value: 0%;
+        }
+        @property --tw-gradient-via-position {
+          syntax: "<length-percentage>";
+          inherits: false;
+          initial-value: 50%;
+        }
+        @property --tw-gradient-to-position {
+          syntax: "<length-percentage>";
+          inherits: false;
+          initial-value: 100%;
+        }
+        @property --tw-leading {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-font-weight {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-tracking {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-shadow-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-shadow-alpha {
+          syntax: "<percentage>";
+          inherits: false;
+          initial-value: 100%;
+        }
+        @property --tw-inset-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-inset-shadow-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-inset-shadow-alpha {
+          syntax: "<percentage>";
+          inherits: false;
+          initial-value: 100%;
+        }
+        @property --tw-ring-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-ring-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-inset-ring-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-inset-ring-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-ring-inset {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-ring-offset-width {
+          syntax: "<length>";
+          inherits: false;
+          initial-value: 0px;
+        }
+        @property --tw-ring-offset-color {
+          syntax: "*";
+          inherits: false;
+          initial-value: #fff;
+        }
+        @property --tw-ring-offset-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-blur {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-brightness {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-contrast {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-grayscale {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-hue-rotate {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-invert {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-opacity {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-saturate {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-sepia {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-drop-shadow {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-drop-shadow-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-drop-shadow-alpha {
+          syntax: "<percentage>";
+          inherits: false;
+          initial-value: 100%;
+        }
+        @property --tw-drop-shadow-size {
+          syntax: "*";
+          inherits: false;
+        }
+        @keyframes bounce {
+          0%,
+          100% {
+            transform: translateY(-25%);
+            animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+          }
+          50% {
+            transform: none;
+            animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+          }
+        }
+        @layer properties {
+          @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or
+            ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+            *,
+            ::before,
+            ::after,
+            ::backdrop {
+              --tw-divide-x-reverse: 0;
+              --tw-border-style: solid;
+              --tw-divide-y-reverse: 0;
+              --tw-gradient-position: initial;
+              --tw-gradient-from: #0000;
+              --tw-gradient-via: #0000;
+              --tw-gradient-to: #0000;
+              --tw-gradient-stops: initial;
+              --tw-gradient-via-stops: initial;
+              --tw-gradient-from-position: 0%;
+              --tw-gradient-via-position: 50%;
+              --tw-gradient-to-position: 100%;
+              --tw-leading: initial;
+              --tw-font-weight: initial;
+              --tw-tracking: initial;
+              --tw-shadow: 0 0 #0000;
+              --tw-shadow-color: initial;
+              --tw-shadow-alpha: 100%;
+              --tw-inset-shadow: 0 0 #0000;
+              --tw-inset-shadow-color: initial;
+              --tw-inset-shadow-alpha: 100%;
+              --tw-ring-color: initial;
+              --tw-ring-shadow: 0 0 #0000;
+              --tw-inset-ring-color: initial;
+              --tw-inset-ring-shadow: 0 0 #0000;
+              --tw-ring-inset: initial;
+              --tw-ring-offset-width: 0px;
+              --tw-ring-offset-color: #fff;
+              --tw-ring-offset-shadow: 0 0 #0000;
+              --tw-blur: initial;
+              --tw-brightness: initial;
+              --tw-contrast: initial;
+              --tw-grayscale: initial;
+              --tw-hue-rotate: initial;
+              --tw-invert: initial;
+              --tw-opacity: initial;
+              --tw-saturate: initial;
+              --tw-sepia: initial;
+              --tw-drop-shadow: initial;
+              --tw-drop-shadow-color: initial;
+              --tw-drop-shadow-alpha: 100%;
+              --tw-drop-shadow-size: initial;
+            }
+          }
+        }
+      </style>
+      <link
+        rel="preload"
+        as="image"
+        href="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/2"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/api/flow-image/1%3A1%0Aclassic%20elegant%20beige%20trench%20coat%20hanging%20minimal%20clean%20studio"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/api/flow-image/1%3A1%0Aluxurious%20navy%20blue%20wool%20blazer%20jacket%20on%20hanger%20studio"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/api/flow-image/1%3A1%0Acharcoal%20grey%20tailored%20dress%20trousers%20flat%20lay%20minimalist"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/api/flow-image/1%3A1%0Apolished%20dark%20brown%20leather%20oxford%20shoes%20premium%20clean%20background"
+      />
+    </head>
+    <body>
+      <div
+        class="bg-background text-text-primary font-body min-h-[850px] flex flex-col desktop-screen"
+        data-component="@screens/main.jsx"
+      >
+        <header
+          class="w-full bg-surface border-b border-border px-12 py-4 flex items-center justify-between"
+          data-component="@components/MainHeader.jsx"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-sm bg-secondary flex items-center justify-center text-white"
+            >
+              <span
+                class=""
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 18px;
+                  height: 18px;
+                "
+                data-icon="shirt"
+                data-component="@globalComponents/Icon.jsx"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18px"
+                  height="18px"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.6666666666666665"
+                    d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23"
+                  ></path></svg
+              ></span>
+            </div>
+            <span
+              class="font-body font-bold text-lg tracking-tight text-text-primary"
+              ><span data-file="/components/MainHeader.jsx" data-idx="6"
+                >Outfit Planner</span
+              ></span
+            >
+          </div>
+          <nav class="flex items-center gap-8">
+            <a
+              class="text-sm font-medium flex items-center gap-1.5 pb-1 text-text-secondary"
+              data-media-type="banani-button"
+              ><span
+                ><span data-file="/components/MainHeader.jsx" data-idx="0"
+                  >My Wardrobe</span
+                ></span
+              ></a
+            ><a
+              class="text-sm font-medium flex items-center gap-1.5 pb-1 text-text-secondary"
+              data-media-type="banani-button"
+              ><span
+                ><span data-file="/components/MainHeader.jsx" data-idx="1"
+                  >Plan Outfits</span
+                ></span
+              ></a
+            ><a
+              class="text-sm font-medium flex items-center gap-1.5 pb-1 text-text-secondary"
+              data-media-type="banani-button"
+              ><span
+                ><span data-file="/components/MainHeader.jsx" data-idx="2"
+                  >Calendar</span
+                ></span
+              ></a
+            ><a
+              class="text-sm font-medium flex items-center gap-1.5 pb-1 text-text-secondary"
+              data-media-type="banani-button"
+              ><span
+                ><span data-file="/components/MainHeader.jsx" data-idx="3"
+                  >Social</span
+                ></span
+              ></a
+            ><a
+              class="text-sm font-medium flex items-center gap-1.5 pb-1 text-text-secondary"
+              data-media-type="banani-button"
+              ><span
+                class="text-primary"
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 13px;
+                  height: 13px;
+                "
+                data-icon="sparkles"
+                data-component="@globalComponents/Icon.jsx"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13px"
+                  height="13px"
+                  viewBox="0 0 24 24"
+                >
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3.6923076923076925"
+                  >
+                    <path
+                      d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594zM20 2v4m2-2h-4"
+                    ></path>
+                    <circle cx="4" cy="20" r="2"></circle>
+                  </g></svg></span
+              ><span
+                ><span data-file="/components/MainHeader.jsx" data-idx="4"
+                  >AI Stylist</span
+                ></span
+              ></a
+            ><a
+              class="text-sm font-medium flex items-center gap-1.5 pb-1 text-text-secondary"
+              data-media-type="banani-button"
+              ><span
+                ><span data-file="/components/MainHeader.jsx" data-idx="5"
+                  >Settings</span
+                ></span
+              ></a
+            >
+          </nav>
+          <div class="flex items-center gap-4">
+            <button
+              class="relative p-2 text-text-secondary"
+              data-media-type="banani-button"
+            >
+              <span
+                class=""
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 20px;
+                  height: 20px;
+                "
+                data-icon="bell"
+                data-component="@globalComponents/Icon.jsx"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.4"
+                    d="M10.268 21a2 2 0 0 0 3.464 0m-10.47-5.674A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
+                  ></path></svg></span
+              ><span
+                class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full"
+              ></span>
+            </button>
+            <div
+              class="w-9 h-9 rounded-full overflow-hidden border border-border"
+            >
+              <img
+                src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/2"
+                class="w-full h-full object-cover"
+                data-component="@globalComponents/UserAvatar.jsx"
+              />
+            </div>
+          </div>
+        </header>
+        <div class="flex flex-1 min-h-0">
+          <div
+            class="w-72 flex flex-col border-r border-border bg-surface p-5"
+            data-component="@components/SessionHistory.jsx"
+          >
+            <div class="flex items-center justify-between mb-6">
+              <span class="text-sm font-semibold text-text-primary font-body"
+                ><span data-file="/components/SessionHistory.jsx" data-idx="9"
+                  >Conversations</span
+                ></span
+              ><button
+                class="flex items-center gap-1.5 text-xs font-semibold text-secondary bg-secondary/10 border border-secondary/20 px-3 py-1.5 rounded-sm"
+                data-media-type="banani-button"
+              >
+                <span
+                  class=""
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 12px;
+                    height: 12px;
+                  "
+                  data-icon="plus"
+                  data-component="@globalComponents/Icon.jsx"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12px"
+                    height="12px"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="4"
+                      d="M5 12h14m-7-7v14"
+                    ></path></svg></span
+                ><span data-file="/components/SessionHistory.jsx" data-idx="10"
+                  >New</span
+                >
+              </button>
+            </div>
+            <div class="flex flex-col gap-5 flex-1">
+              <div class="flex flex-col gap-1">
+                <span
+                  class="text-xs font-semibold text-muted-foreground px-2 mb-1 tracking-wide uppercase"
+                  ><span data-file="/components/SessionHistory.jsx" data-idx="0"
+                    >Today</span
+                  ></span
+                ><a
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-body bg-primary/20 text-text-primary font-semibold border border-primary/40"
+                  data-media-type="banani-button"
+                  ><span
+                    class="text-secondary"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="umbrella"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                      >
+                        <path d="M12 13v7a2 2 0 0 0 4 0M12 2v2"></path>
+                        <path
+                          d="M20.992 13a1 1 0 0 0 .97-1.274a10.284 10.284 0 0 0-19.923 0A1 1 0 0 0 3 13z"
+                        ></path>
+                      </g></svg></span
+                  ><span class="truncate flex-1"
+                    ><span
+                      data-file="/components/SessionHistory.jsx"
+                      data-idx="1"
+                      >Rainy day interview suit</span
+                    ></span
+                  ><span
+                    class="w-1.5 h-1.5 rounded-full bg-secondary flex-shrink-0"
+                  ></span></a
+                ><a
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-body text-text-secondary"
+                  data-media-type="banani-button"
+                  ><span
+                    class="text-muted-foreground"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="sparkles"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                      >
+                        <path
+                          d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594zM20 2v4m2-2h-4"
+                        ></path>
+                        <circle cx="4" cy="20" r="2"></circle>
+                      </g></svg></span
+                  ><span class="truncate flex-1"
+                    ><span
+                      data-file="/components/SessionHistory.jsx"
+                      data-idx="2"
+                      >Parisian casual weekend look</span
+                    ></span
+                  ></a
+                >
+              </div>
+              <div class="flex flex-col gap-1">
+                <span
+                  class="text-xs font-semibold text-muted-foreground px-2 mb-1 tracking-wide uppercase"
+                  ><span data-file="/components/SessionHistory.jsx" data-idx="3"
+                    >Yesterday</span
+                  ></span
+                ><a
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-body text-text-secondary"
+                  data-media-type="banani-button"
+                  ><span
+                    class="text-muted-foreground"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="heart"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676a.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                      ></path></svg></span
+                  ><span class="truncate flex-1"
+                    ><span
+                      data-file="/components/SessionHistory.jsx"
+                      data-idx="4"
+                      >Date night dinner attire</span
+                    ></span
+                  ></a
+                ><a
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-body text-text-secondary"
+                  data-media-type="banani-button"
+                  ><span
+                    class="text-muted-foreground"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="palette"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                      >
+                        <path
+                          d="M12 22a1 1 0 0 1 0-20a10 9 0 0 1 10 9a5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"
+                        ></path>
+                        <circle
+                          cx="13.5"
+                          cy="6.5"
+                          r=".5"
+                          fill="currentColor"
+                        ></circle>
+                        <circle
+                          cx="17.5"
+                          cy="10.5"
+                          r=".5"
+                          fill="currentColor"
+                        ></circle>
+                        <circle
+                          cx="6.5"
+                          cy="12.5"
+                          r=".5"
+                          fill="currentColor"
+                        ></circle>
+                        <circle
+                          cx="8.5"
+                          cy="7.5"
+                          r=".5"
+                          fill="currentColor"
+                        ></circle>
+                      </g></svg></span
+                  ><span class="truncate flex-1"
+                    ><span
+                      data-file="/components/SessionHistory.jsx"
+                      data-idx="5"
+                      >Gallery opening vernissage</span
+                    ></span
+                  ></a
+                >
+              </div>
+              <div class="flex flex-col gap-1">
+                <span
+                  class="text-xs font-semibold text-muted-foreground px-2 mb-1 tracking-wide uppercase"
+                  ><span data-file="/components/SessionHistory.jsx" data-idx="6"
+                    >Previous 7 Days</span
+                  ></span
+                ><a
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-body text-text-secondary"
+                  data-media-type="banani-button"
+                  ><span
+                    class="text-muted-foreground"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="archive"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                      >
+                        <rect width="20" height="5" x="2" y="3" rx="1"></rect>
+                        <path
+                          d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8m-10 4h4"
+                        ></path>
+                      </g></svg></span
+                  ><span class="truncate flex-1"
+                    ><span
+                      data-file="/components/SessionHistory.jsx"
+                      data-idx="7"
+                      >Capsule wardrobe audit</span
+                    ></span
+                  ></a
+                ><a
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-body text-text-secondary"
+                  data-media-type="banani-button"
+                  ><span
+                    class="text-muted-foreground"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="compass"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                      >
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path
+                          d="m16.24 7.76l-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"
+                        ></path>
+                      </g></svg></span
+                  ><span class="truncate flex-1"
+                    ><span
+                      data-file="/components/SessionHistory.jsx"
+                      data-idx="8"
+                      >Summer escape packing list</span
+                    ></span
+                  ></a
+                >
+              </div>
+            </div>
+            <div class="pt-4 border-t border-border">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-text-primary flex-shrink-0"
+                >
+                  <span data-file="/components/SessionHistory.jsx" data-idx="11"
+                    >VC</span
+                  >
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-xs font-semibold text-text-primary truncate"
+                    ><span
+                      data-file="/components/SessionHistory.jsx"
+                      data-idx="12"
+                      >Victoria Sterling</span
+                    ></span
+                  ><span class="text-xs text-muted-foreground"
+                    ><span
+                      data-file="/components/SessionHistory.jsx"
+                      data-idx="13"
+                      >Atelier Patron</span
+                    ></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex-1 flex flex-col bg-background"
+            style="max-width: 720px"
+          >
+            <div class="px-8 pt-6 pb-4 border-b border-border bg-surface">
+              <p
+                class="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1"
+              >
+                <span data-file="/screens/main.jsx" data-idx="4"
+                  >Active Session</span
+                >
+              </p>
+              <h2 class="text-lg font-semibold text-text-primary">
+                <span data-file="/screens/main.jsx" data-idx="5"
+                  >Rainy Day Interview Look</span
+                >
+              </h2>
+            </div>
+            <div class="flex-1 px-8 py-6 flex flex-col gap-5">
+              <div class="flex gap-3 justify-start">
+                <div
+                  class="w-8 h-8 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center flex-shrink-0 mt-0.5"
+                >
+                  <span
+                    class="text-secondary"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="sparkles"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                      >
+                        <path
+                          d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594zM20 2v4m2-2h-4"
+                        ></path>
+                        <circle cx="4" cy="20" r="2"></circle>
+                      </g></svg
+                  ></span>
+                </div>
+                <div class="flex flex-col gap-3 items-start max-w-lg">
+                  <div
+                    class="px-4 py-3 text-sm font-body leading-relaxed bg-ai-bubble text-text-primary rounded-md rounded-tl-none"
+                  >
+                    Hello Victoria! I'm your AI Fashion Assistant. I've analysed
+                    your 142 wardrobe items and today's weather. What can I
+                    style for you?
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-3 justify-end">
+                <div class="flex flex-col gap-3 items-end max-w-lg">
+                  <div
+                    class="px-4 py-3 text-sm font-body leading-relaxed bg-user-bubble text-text-primary rounded-md rounded-tr-none"
+                  >
+                    What should I wear for a rainy interview tomorrow?
+                  </div>
+                </div>
+                <div
+                  class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5 border border-border"
+                >
+                  <img
+                    src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/2"
+                    class="w-full h-full object-cover"
+                    data-component="@globalComponents/UserAvatar.jsx"
+                  />
+                </div>
+              </div>
+              <div class="flex gap-3 justify-start">
+                <div
+                  class="w-8 h-8 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center flex-shrink-0 mt-0.5"
+                >
+                  <span
+                    class="text-secondary"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="sparkles"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                      >
+                        <path
+                          d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594zM20 2v4m2-2h-4"
+                        ></path>
+                        <circle cx="4" cy="20" r="2"></circle>
+                      </g></svg
+                  ></span>
+                </div>
+                <div class="flex flex-col gap-3 items-start max-w-lg">
+                  <div
+                    class="px-4 py-3 text-sm font-body leading-relaxed bg-ai-bubble text-text-primary rounded-md rounded-tl-none"
+                  >
+                    Based on your wardrobe and the rainy forecast (72°F, high
+                    humidity), here's a polished, weather-ready combination that
+                    will make a strong first impression:
+                  </div>
+                  <div
+                    class="w-full bg-surface border border-border rounded-md overflow-hidden"
+                  >
+                    <div
+                      class="px-4 py-3 border-b border-border flex items-center justify-between bg-background"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="text-secondary"
+                          style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 13px;
+                            height: 13px;
+                          "
+                          data-icon="wand-2"
+                          data-component="@globalComponents/Icon.jsx"
+                          ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="13px"
+                            height="13px"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="3.6923076923076925"
+                              d="m21.64 3.64l-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72M14 7l3 3M5 6v4m14 4v4M10 2v2M7 8H3m18 8h-4M11 3H9"
+                            ></path></svg></span
+                        ><span
+                          class="text-xs font-semibold text-text-primary uppercase tracking-wider"
+                          ><span data-file="/screens/main.jsx" data-idx="6"
+                            >Recommended Outfit</span
+                          ></span
+                        >
+                      </div>
+                      <span class="text-xs text-muted-foreground"
+                        ><span data-file="/screens/main.jsx" data-idx="7"
+                          >Rainy Interview Edit</span
+                        ></span
+                      >
+                    </div>
+                    <div class="grid grid-cols-2">
+                      <div
+                        class="p-4 flex gap-3 items-center bg-surface border-b border-border border-r border-border"
+                      >
+                        <div
+                          class="w-11 h-11 rounded-md overflow-hidden bg-background border border-border flex-shrink-0"
+                        >
+                          <img
+                            data-query="classic elegant beige trench coat hanging minimal clean studio"
+                            data-aspect-ratio="1:1"
+                            style="aspect-ratio: 1/1; object-fit: cover"
+                            src="https://storage.googleapis.com/banani-generated-images/generated-images/80416b76-b55c-4eb8-b9f7-e4f440c43dd0.jpg"
+                            class="w-full h-full object-cover"
+                            data-component="@globalComponents/Image.jsx"
+                          />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <span
+                            class="text-[10px] font-bold uppercase tracking-wider text-secondary block"
+                            >OUTERWEAR</span
+                          >
+                          <p
+                            class="text-xs font-semibold text-text-primary truncate mt-0.5"
+                          >
+                            The Madison Trench
+                          </p>
+                          <p
+                            class="text-[10px] text-muted-foreground mt-0.5 truncate"
+                          >
+                            Water-resistant beige gabardine
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        class="p-4 flex gap-3 items-center bg-surface border-b border-border"
+                      >
+                        <div
+                          class="w-11 h-11 rounded-md overflow-hidden bg-background border border-border flex-shrink-0"
+                        >
+                          <img
+                            data-query="luxurious navy blue wool blazer jacket on hanger studio"
+                            data-aspect-ratio="1:1"
+                            style="aspect-ratio: 1/1; object-fit: cover"
+                            src="https://storage.googleapis.com/banani-generated-images/generated-images/84113d57-bc68-40a6-a717-33215eab55dd.jpg"
+                            class="w-full h-full object-cover"
+                            data-component="@globalComponents/Image.jsx"
+                          />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <span
+                            class="text-[10px] font-bold uppercase tracking-wider text-secondary block"
+                            >SUITING</span
+                          >
+                          <p
+                            class="text-xs font-semibold text-text-primary truncate mt-0.5"
+                          >
+                            Classic Navy Wool Blazer
+                          </p>
+                          <p
+                            class="text-[10px] text-muted-foreground mt-0.5 truncate"
+                          >
+                            Super 120s virgin wool, tailored
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        class="p-4 flex gap-3 items-center bg-surface border-r border-border"
+                      >
+                        <div
+                          class="w-11 h-11 rounded-md overflow-hidden bg-background border border-border flex-shrink-0"
+                        >
+                          <img
+                            data-query="charcoal grey tailored dress trousers flat lay minimalist"
+                            data-aspect-ratio="1:1"
+                            style="aspect-ratio: 1/1; object-fit: cover"
+                            src="https://storage.googleapis.com/banani-generated-images/generated-images/46cf907a-c5a7-46fa-92e4-00a1b89782e1.jpg"
+                            class="w-full h-full object-cover"
+                            data-component="@globalComponents/Image.jsx"
+                          />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <span
+                            class="text-[10px] font-bold uppercase tracking-wider text-secondary block"
+                            >TROUSERS</span
+                          >
+                          <p
+                            class="text-xs font-semibold text-text-primary truncate mt-0.5"
+                          >
+                            Grey Dress Trousers
+                          </p>
+                          <p
+                            class="text-[10px] text-muted-foreground mt-0.5 truncate"
+                          >
+                            High-rise double pleat, moisture-wicking
+                          </p>
+                        </div>
+                      </div>
+                      <div class="p-4 flex gap-3 items-center bg-surface">
+                        <div
+                          class="w-11 h-11 rounded-md overflow-hidden bg-background border border-border flex-shrink-0"
+                        >
+                          <img
+                            data-query="polished dark brown leather oxford shoes premium clean background"
+                            data-aspect-ratio="1:1"
+                            style="aspect-ratio: 1/1; object-fit: cover"
+                            src="https://storage.googleapis.com/banani-generated-images/generated-images/4147817c-a77b-4529-836c-a84628316501.jpg"
+                            class="w-full h-full object-cover"
+                            data-component="@globalComponents/Image.jsx"
+                          />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <span
+                            class="text-[10px] font-bold uppercase tracking-wider text-secondary block"
+                            >FOOTWEAR</span
+                          >
+                          <p
+                            class="text-xs font-semibold text-text-primary truncate mt-0.5"
+                          >
+                            Brown Calf Leather Oxfords
+                          </p>
+                          <p
+                            class="text-[10px] text-muted-foreground mt-0.5 truncate"
+                          >
+                            Goodyear welted, waterproof sole
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="px-4 py-3 bg-background border-t border-border flex items-center justify-between"
+                    >
+                      <div class="flex items-center gap-2.5">
+                        <div
+                          class="w-8 h-8 rounded-full border-2 border-secondary/30 bg-secondary/10 flex items-center justify-center"
+                        >
+                          <span class="text-xs font-bold text-secondary"
+                            >88</span
+                          >
+                        </div>
+                        <div>
+                          <p class="text-xs font-semibold text-text-primary">
+                            <span data-file="/screens/main.jsx" data-idx="8"
+                              >Style Score</span
+                            >
+                          </p>
+                          <p class="text-[10px] text-muted-foreground">
+                            <span data-file="/screens/main.jsx" data-idx="9"
+                              >Silhouette &amp; weather match</span
+                            >
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        class="flex items-center gap-1.5 bg-secondary text-white text-xs font-semibold px-4 py-2 rounded-sm"
+                        data-media-type="banani-button"
+                      >
+                        <span
+                          class=""
+                          style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 11px;
+                            height: 11px;
+                          "
+                          data-icon="bookmark"
+                          data-component="@globalComponents/Icon.jsx"
+                          ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="11px"
+                            height="11px"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="4.363636363636363"
+                              d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"
+                            ></path></svg></span
+                        ><span data-file="/screens/main.jsx" data-idx="10"
+                          >Save Outfit</span
+                        >
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center flex-shrink-0"
+                >
+                  <span
+                    class="text-secondary"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 14px;
+                      height: 14px;
+                    "
+                    data-icon="sparkles"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14px"
+                      height="14px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.4285714285714284"
+                      >
+                        <path
+                          d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594zM20 2v4m2-2h-4"
+                        ></path>
+                        <circle cx="4" cy="20" r="2"></circle>
+                      </g></svg
+                  ></span>
+                </div>
+                <div
+                  class="bg-ai-bubble px-4 py-3 rounded-md rounded-tl-none flex items-center gap-1.5"
+                >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full bg-muted-foreground/60"
+                  ></span
+                  ><span
+                    class="w-1.5 h-1.5 rounded-full bg-muted-foreground/40"
+                  ></span
+                  ><span
+                    class="w-1.5 h-1.5 rounded-full bg-muted-foreground/20"
+                  ></span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="px-8 py-3 flex items-center gap-2 border-t border-border bg-surface flex-wrap"
+            >
+              <button
+                class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border bg-surface text-xs font-medium text-text-secondary"
+                data-media-type="banani-button"
+              >
+                <span
+                  class="text-muted-foreground"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 12px;
+                    height: 12px;
+                  "
+                  data-icon="heart"
+                  data-component="@globalComponents/Icon.jsx"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12px"
+                    height="12px"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="4"
+                      d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676a.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                    ></path></svg></span
+                ><span data-file="/screens/main.jsx" data-idx="0"
+                  >Date night?</span
+                ></button
+              ><button
+                class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border bg-surface text-xs font-medium text-text-secondary"
+                data-media-type="banani-button"
+              >
+                <span
+                  class="text-muted-foreground"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 12px;
+                    height: 12px;
+                  "
+                  data-icon="briefcase"
+                  data-component="@globalComponents/Icon.jsx"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12px"
+                    height="12px"
+                    viewBox="0 0 24 24"
+                  >
+                    <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="4"
+                    >
+                      <path
+                        d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
+                      ></path>
+                      <rect width="20" height="14" x="2" y="6" rx="2"></rect>
+                    </g></svg></span
+                ><span data-file="/screens/main.jsx" data-idx="1"
+                  >Casual Friday</span
+                ></button
+              ><button
+                class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border bg-surface text-xs font-medium text-text-secondary"
+                data-media-type="banani-button"
+              >
+                <span
+                  class="text-muted-foreground"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 12px;
+                    height: 12px;
+                  "
+                  data-icon="sun"
+                  data-component="@globalComponents/Icon.jsx"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12px"
+                    height="12px"
+                    viewBox="0 0 24 24"
+                  >
+                    <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="4"
+                    >
+                      <circle cx="12" cy="12" r="4"></circle>
+                      <path
+                        d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+                      ></path>
+                    </g></svg></span
+                ><span data-file="/screens/main.jsx" data-idx="2"
+                  >Beach trip</span
+                ></button
+              ><button
+                class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border bg-surface text-xs font-medium text-text-secondary"
+                data-media-type="banani-button"
+              >
+                <span
+                  class="text-muted-foreground"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 12px;
+                    height: 12px;
+                  "
+                  data-icon="help-circle"
+                  data-component="@globalComponents/Icon.jsx"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12px"
+                    height="12px"
+                    viewBox="0 0 24 24"
+                  >
+                    <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="4"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path
+                        d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.08 4h.01"
+                      ></path>
+                    </g></svg></span
+                ><span data-file="/screens/main.jsx" data-idx="3"
+                  >What's missing?</span
+                >
+              </button>
+            </div>
+            <div
+              class="px-6 bg-surface border-t border-border flex items-center"
+              style="min-height: 56px"
+            >
+              <div
+                class="flex-1 flex items-center gap-3 bg-background border border-border rounded-sm px-4 h-10"
+              >
+                <div class="flex-1 text-sm text-muted-foreground select-none">
+                  <span data-file="/screens/main.jsx" data-idx="11"
+                    >Ask your stylist anything...</span
+                  >
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button
+                    class="p-1 text-muted-foreground"
+                    data-media-type="banani-button"
+                  >
+                    <span
+                      class=""
+                      style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 15px;
+                        height: 15px;
+                      "
+                      data-icon="paperclip"
+                      data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15px"
+                        height="15px"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="3.2"
+                          d="m16 6l-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551"
+                        ></path></svg
+                    ></span></button
+                  ><button
+                    class="p-1 text-muted-foreground"
+                    data-media-type="banani-button"
+                  >
+                    <span
+                      class=""
+                      style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 15px;
+                        height: 15px;
+                      "
+                      data-icon="mic"
+                      data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15px"
+                        height="15px"
+                        viewBox="0 0 24 24"
+                      >
+                        <g
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="3.2"
+                        >
+                          <path d="M12 19v3m7-12v2a7 7 0 0 1-14 0v-2"></path>
+                          <rect width="6" height="13" x="9" y="2" rx="3"></rect>
+                        </g></svg
+                    ></span>
+                  </button>
+                </div>
+              </div>
+              <button
+                class="ml-3 bg-secondary text-white text-xs font-semibold px-5 rounded-sm flex items-center gap-1.5 h-10"
+                data-media-type="banani-button"
+              >
+                <span data-file="/screens/main.jsx" data-idx="12">Send</span
+                ><span
+                  class=""
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 11px;
+                    height: 11px;
+                  "
+                  data-icon="send"
+                  data-component="@globalComponents/Icon.jsx"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="11px"
+                    height="11px"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="4.363636363636363"
+                      d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11zm7.318-19.539l-10.94 10.939"
+                    ></path></svg
+                ></span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="flex-1 border-l border-border bg-surface flex flex-col p-6 gap-4"
+          >
+            <div
+              class="bg-background rounded-md border border-border p-5 flex items-center justify-between"
+            >
+              <div>
+                <p
+                  class="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+                >
+                  <span data-file="/screens/main.jsx" data-idx="13"
+                    >San Francisco</span
+                  >
+                </p>
+                <h3 class="text-3xl font-bold text-text-primary mt-1">22°C</h3>
+                <p class="text-xs text-muted-foreground mt-1">
+                  <span data-file="/screens/main.jsx" data-idx="14"
+                    >Partly Cloudy · Feels like 24°</span
+                  >
+                </p>
+              </div>
+              <span
+                class="text-warning"
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 44px;
+                  height: 44px;
+                "
+                data-icon="cloud-sun"
+                data-component="@globalComponents/Icon.jsx"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="44px"
+                  height="44px"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.0909090909090908"
+                    d="M12 2v2m-7.07.93l1.41 1.41M20 12h2m-2.93-7.07l-1.41 1.41m-1.713 6.31a4 4 0 0 0-5.925-4.128M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6"
+                  ></path></svg
+              ></span>
+            </div>
+            <div
+              class="bg-background rounded-md border border-border p-5 flex flex-col gap-3"
+            >
+              <h4 class="text-sm font-semibold text-text-primary">
+                <span data-file="/screens/main.jsx" data-idx="15"
+                  >Wardrobe Health</span
+                >
+              </h4>
+              <div class="flex justify-between text-xs text-muted-foreground">
+                <span
+                  ><span data-file="/screens/main.jsx" data-idx="16"
+                    >Items Worn</span
+                  ></span
+                ><span class="font-semibold text-text-primary">68%</span>
+              </div>
+              <div class="w-full h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-secondary rounded-full"
+                  style="width: 68%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bg-background rounded-md border border-border p-5 flex flex-col gap-4"
+            >
+              <h4 class="text-sm font-semibold text-text-primary">
+                <span data-file="/screens/main.jsx" data-idx="17"
+                  >Quick Tips</span
+                >
+              </h4>
+              <div class="flex gap-3 items-start">
+                <div
+                  class="w-7 h-7 rounded-sm bg-primary/25 flex items-center justify-center flex-shrink-0"
+                >
+                  <span
+                    class="text-text-primary"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 13px;
+                      height: 13px;
+                    "
+                    data-icon="droplets"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="13px"
+                      height="13px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.6923076923076925"
+                      >
+                        <path
+                          d="M7 16.3c2.2 0 4-1.83 4-4.05c0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05"
+                        ></path>
+                        <path
+                          d="M12.56 6.6A11 11 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"
+                        ></path>
+                      </g></svg
+                  ></span>
+                </div>
+                <p class="text-xs text-text-secondary leading-relaxed">
+                  <span data-file="/screens/main.jsx" data-idx="18"
+                    >Water-proof your leather shoes before the rain.</span
+                  >
+                </p>
+              </div>
+              <div class="flex gap-3 items-start">
+                <div
+                  class="w-7 h-7 rounded-sm bg-primary/25 flex items-center justify-center flex-shrink-0"
+                >
+                  <span
+                    class="text-text-primary"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 13px;
+                      height: 13px;
+                    "
+                    data-icon="wind"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="13px"
+                      height="13px"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.6923076923076925"
+                        d="M12.8 19.6A2 2 0 1 0 14 16H2m15.5-8a2.5 2.5 0 1 1 2 4H2m7.8-7.6A2 2 0 1 1 11 8H2"
+                      ></path></svg
+                  ></span>
+                </div>
+                <p class="text-xs text-text-secondary leading-relaxed">
+                  <span data-file="/screens/main.jsx" data-idx="19"
+                    >Wind forecast 15 mph — skip the wide-brim hat.</span
+                  >
+                </p>
+              </div>
+              <div class="flex gap-3 items-start">
+                <div
+                  class="w-7 h-7 rounded-sm bg-primary/25 flex items-center justify-center flex-shrink-0"
+                >
+                  <span
+                    class="text-text-primary"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 13px;
+                      height: 13px;
+                    "
+                    data-icon="thermometer"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="13px"
+                      height="13px"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.6923076923076925"
+                        d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0"
+                      ></path></svg
+                  ></span>
+                </div>
+                <p class="text-xs text-text-secondary leading-relaxed">
+                  <span data-file="/screens/main.jsx" data-idx="20"
+                    >Layer up; temperature drops 7° after 6 PM.</span
+                  >
+                </p>
+              </div>
+            </div>
+            <div
+              class="mt-auto bg-secondary/10 rounded-md border border-secondary/20 p-4 flex items-center justify-between"
+            >
+              <div>
+                <p class="text-xs font-semibold text-text-primary">
+                  <span data-file="/screens/main.jsx" data-idx="21"
+                    >Session Quality</span
+                  >
+                </p>
+                <p class="text-xs text-muted-foreground mt-0.5">
+                  <span data-file="/screens/main.jsx" data-idx="22"
+                    >3 messages · 1 outfit saved</span
+                  >
+                </p>
+              </div>
+              <button
+                class="text-xs font-semibold text-secondary border border-secondary/30 px-3 py-1.5 rounded-sm bg-surface"
+                data-media-type="banani-button"
+              >
+                <span data-file="/screens/main.jsx" data-idx="23"
+                  >View History</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+</div>

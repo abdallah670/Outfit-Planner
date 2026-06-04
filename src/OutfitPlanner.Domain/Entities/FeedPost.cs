@@ -26,8 +26,7 @@ public class FeedPost : BaseEntity
     public int LikesCount { get; set; }
     public int CommentsCount { get; set; }
     
-    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-    public DateTimeOffset? UpdatedAt { get; set; }
+   
     
     public ICollection<PostReaction> Reactions { get; set; } = new List<PostReaction>();
     public ICollection<PostComment> Comments { get; set; } = new List<PostComment>();

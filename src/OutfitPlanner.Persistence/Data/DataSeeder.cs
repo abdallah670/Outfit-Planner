@@ -1198,6 +1198,90 @@ public class DataSeeder
         return sizes[random.Next(sizes.Length)];
     }
 
+    /// <summary>
+    /// Seeds AI chat sessions with sample conversations between users and the AI fashion assistant
+    /// </summary>
+    private async Task SeedChatSessionsAsync()
+    {
+        if (await _context.ChatSessions.AnyAsync())
+        {
+            _logger.LogInformation("Chat sessions already exist, skipping chat sessions seeding.");
+            return;
+        }
+
+        var users = await _userManager.Users.Take(3).ToListAsync();
+        if (users.Count == 0) return;
+
+        var sessions = new List<ChatSession>();
+        var messages = new List<ChatMessage>();
+        var random = new Random(42);
+
+        var conversationTopics = new[]
+        {
+            ("Rainy day interview look", new[]
+            {
+                ("user", "What should I wear for a rainy interview tomorrow?"),
+                ("assistant", "Based on your wardrobe and the rainy forecast (18°C, high humidity), here's a polished, weather-ready combination: a Navy Wool Blazer paired with Grey Dress Trousers, Brown Oxfords, and a Beige Trench Coat for rain protection. This combination scores 88/100 for style compatibility."),
+                ("user", "That sounds great! What tie would you recommend with the navy blazer?"),
+                ("assistant", "For a navy blazer with grey trousers, I recommend a burgundy or deep red silk tie. It adds a nice contrast without clashing. A subtle pattern like small polka dots or a textured knit works well for interviews."),
+            }),
+            ("Date night dinner attire", new[]
+            {
+                ("user", "I have a dinner date tonight. What should I wear?"),
+                ("assistant", "For a dinner date, I'd suggest: a well-fitted White Linen Shirt (you have one in your wardrobe), paired with Dark Jeans and Brown Leather Loafers. Add a Navy Blazer for a polished touch. This look scores 85/100 — it's relaxed yet refined!"),
+                ("user", "Should I wear cologne with this outfit?"),
+                ("assistant", "Absolutely! A light spritz of cologne completes the experience. Go with something fresh and subtle — citrus or aquatic notes work well for a dinner date. Don't overspray though, less is more!"),
+            }),
+            ("Summer escape packing list", new[]
+            {
+                ("user", "I'm going on a beach trip next week. Help me pack!"),
+                ("assistant", "For a beach trip (28°C, sunny): Pack your Linen Shirt, Cotton Shorts, Swim Trunks, Flip Flops, and a Lightweight Cardigan for evenings. That's 5 versatile pieces you can mix and match. I see you have most of these in your wardrobe!"),
+                ("user", "What about accessories?"),
+                ("assistant", "Great question! Pack: A wide-brim straw hat for sun protection, polarized sunglasses, a canvas tote bag, and a light scarf that can double as a beach cover-up. Don't forget reef-safe sunscreen!"),
+            }),
+        };
+
+        for (int t = 0; t < conversationTopics.Length; t++)
+        {
+            var user = users[t % users.Count];
+            var (title, conversation) = conversationTopics[t];
+            var sessionId = Guid.NewGuid();
+
+            var session = new ChatSession
+            {
+                Id = sessionId,
+                UserId = user.Id,
+                Title = title,
+                Status = "Active",
+                MessageCount = conversation.Length,
+                LastActivityAt = DateTimeOffset.UtcNow.AddDays(-random.Next(1, 14)),
+                CreatedAt = DateTimeOffset.UtcNow.AddDays(-random.Next(5, 30))
+            };
+            sessions.Add(session);
+
+            int order = 0;
+            foreach (var (role, content) in conversation)
+            {
+                messages.Add(new ChatMessage
+                {
+                    Id = Guid.NewGuid(),
+                    SessionId = sessionId,
+                    SenderId = role == "user" ? user.Id : "ai",
+                    Content = content,
+                    Role = role,
+                    CreatedAt = session.CreatedAt.AddMinutes(order * 5 + random.Next(1, 10))
+                });
+                order++;
+            }
+        }
+
+        await _context.ChatSessions.AddRangeAsync(sessions);
+        await _context.ChatMessages.AddRangeAsync(messages);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Seeded {Count} chat sessions with {MessageCount} messages", sessions.Count, messages.Count);
+    }
+
     private static string GetRandomComment(Random random)
     {
         var comments = new[]

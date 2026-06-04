@@ -224,12 +224,10 @@ public class MappingProfile : Profile
         // TrendingOutfit
         CreateMap<TrendingOutfit, TrendingOutfitDto>()
             .ForMember(d => d.Id, opt => opt.MapFrom(s => s.OutfitId))
-            .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Outfit.Name))
             .ForMember(d => d.ImageUrl, opt => opt.MapFrom(s => s.Outfit.ImageUrl))
             .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Outfit.UserId))
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
             .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.Outfit.User.ProfilePictureUrl))
-            .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.CommentsCount))
             .ForMember(d => d.TrendingScore, opt => opt.MapFrom(s => s.TrendingScore))
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.Date));
 

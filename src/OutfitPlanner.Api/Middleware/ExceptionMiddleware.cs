@@ -55,7 +55,16 @@ namespace OutfitPlanner.Api.Middleware{
                     break;
             }
             httpContext.Response.StatusCode = (int)statusCode;
-            await httpContext.Response.WriteAsync(result);
+            try
+            {
+                await httpContext.Response.WriteAsync(result);
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            catch (Exception)
+            {
+            }
         }
     }
     public class ErrorDetails

@@ -13,15 +13,18 @@ public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateT
 {
     private readonly IFeedPostRepository _feedPostRepository;
     private readonly ITrendingOutfitRepository _trendingOutfitRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CalculateTrendingOutfitsCommandHandler> _logger;
 
     public CalculateTrendingOutfitsCommandHandler(
         IFeedPostRepository feedPostRepository,
         ITrendingOutfitRepository trendingOutfitRepository,
+        IUnitOfWork unitOfWork,
         ILogger<CalculateTrendingOutfitsCommandHandler> logger)
     {
         _feedPostRepository = feedPostRepository;
         _trendingOutfitRepository = trendingOutfitRepository;
+        _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
@@ -47,11 +50,14 @@ public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateT
 
             foreach (var feedPost in feedPosts)
             {
+                if (feedPost.OutfitId == null)
+                    continue;
+
                 var score = CalculateTrendingScore(feedPost);
                 
                 scoredPosts.Add(new TrendingOutfit
                 {
-                    OutfitId = feedPost.OutfitId ?? Guid.Empty,
+                    OutfitId = feedPost.OutfitId.Value,
                     PollId = feedPost.PollId,
                     TrendingScore = score,
                     LikesCount = feedPost.LikesCount,
@@ -69,6 +75,9 @@ public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateT
                 scoredPosts[i].RankPosition = i + 1;
                 await _trendingOutfitRepository.AddAsync(scoredPosts[i]);
             }
+
+            // Persist all changes to the database
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             response.Success = true;
             response.Message = "Trending posts calculated successfully";

@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { Weather } from '../../../domain/entities/weather.entity';
 
-import { WeatherDisplayComponent } from '../../components/weather-display/weather-display.component';
+import { WeatherDisplayComponent } from '../../components/shared/weather-display/weather-display.component';
 import { DailyPickComponent } from '../../components/shared/daily-pick/daily-pick.component';
 import { WardrobeHealthComponent } from '../../components/shared/wardrobe-health/wardrobe-health.component';
 import { ClothingCardComponent } from '../../components/clothing-card/clothing-card.component';

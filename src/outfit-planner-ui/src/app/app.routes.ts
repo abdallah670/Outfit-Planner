@@ -27,6 +27,7 @@ import { PublicProfileComponent } from './presentation/pages/public-profile/publ
 import { MyPollsComponent } from './presentation/pages/social/my-polls/my-polls.component';
 import { CreateOutfitPostComponent } from './presentation/pages/social/create-outfit-post/create-outfit-post.component';
 import { OutfitPostDetailComponent } from './presentation/pages/social/outfit-post-detail/outfit-post-detail.component';
+import { AiAssistantComponent } from './presentation/pages/ai-assistant/ai-assistant.component';
 
 import { AdminLayoutComponent } from './presentation/layouts/admin-layout/admin-layout.component';
 import { AdminDashboardComponent } from './presentation/pages/admin/dashboard/admin-dashboard.component';
@@ -72,6 +73,9 @@ export const routes: Routes = [
   { path: 'social/posts/:id', component: OutfitPostDetailComponent, canActivate: [authGuard] },
   { path: 'social/posts/:id/edit', component: CreateOutfitPostComponent, canActivate: [authGuard] },
 
+  { path: 'ai-assistant', component: AiAssistantComponent, canActivate: [authGuard], title: 'AI Fashion Assistant' },
+  {path: 'inspiration', component: AiAssistantComponent, canActivate: [authGuard], title: 'AI Fashion Inspiration' },
+  {path: 'ai', component: AiAssistantComponent, canActivate: [authGuard], title: 'AI Fashion Assistant' },
   { path: 'search', component: GlobalSearchComponent, canActivate: [authGuard] },
   { path: 'notifications', component: NotificationsCenterComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },

@@ -54,6 +54,9 @@ import { CalendarEffects } from './core/state/calendar/calendar.effects';
 import { adminReducer } from './core/state/admin/admin.reducer';
 import { AdminEffects } from './core/state/admin/admin.effects';
 import { adminRepositoryProvider } from './data/repositories/admin.repository.impl';
+import { aiFeature, reducer as aiReducer } from './core/state/ai/ai.reducer';
+import { AiEffects } from './core/state/ai/ai.effects';
+import { aiRepositoryProvider } from './data/repositories/ai.repository.impl';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -77,6 +80,7 @@ export const appConfig: ApplicationConfig = {
        admin: adminReducer,
        calendar: calendarFeature.reducer,
        search: searchReducer,
+       ai: aiReducer,
      }),
      provideEffects(
        authEffects,
@@ -92,6 +96,7 @@ export const appConfig: ApplicationConfig = {
        CalendarEffects,
        searchEffects,
        AdminEffects,
+       AiEffects,
      ),
       weatherRepositoryProvider,
       outfitRepositoryProvider,
@@ -103,6 +108,7 @@ export const appConfig: ApplicationConfig = {
       wearEventRepositoryProvider,
      userRepositoryProvider,
      adminRepositoryProvider,
+     aiRepositoryProvider,
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

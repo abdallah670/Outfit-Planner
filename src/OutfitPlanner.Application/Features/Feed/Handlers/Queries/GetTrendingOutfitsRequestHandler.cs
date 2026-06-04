@@ -24,22 +24,10 @@ public class GetTrendingOutfitsRequestHandler : IRequestHandler<GetTrendingOutfi
     {
         var result = await _trendingOutfitRepository.GetGlobalTrendingCursorAsync(request.Cursor, request.PageSize);
         
-        var followedUserIds = (await _unitOfWork.Follows.FindAsync(f => f.FollowerId == request.UserId, cancellationToken))
-                       .Select(f => f.FollowedId)
-                       .ToList();
-                       
-        // Get user's liked posts
-        var likedPostIds = (await _unitOfWork.PostReactions.FindAsync(r => r.UserId == request.UserId, cancellationToken))
-            .Select(r => r.PostId)
-            .ToList();
-       
-        // Map and enrich posts with user context
+    
         var dtos = result.Items.Select(item =>
         {
             var dto = _mapper.Map<TrendingOutfitDto>(item);
-            dto.IsOwner = dto.UserId == request.UserId;
-            dto.IsFollowing = followedUserIds.Contains(dto.UserId);
-            dto.IsLiked = likedPostIds.Contains(dto.Id);
             return dto;
         }).ToList();
 

@@ -6,6 +6,7 @@ using OutfitPlanner.Application.Models;
 using OutfitPlanner.Application.Models.Authentication;
 using OutfitPlanner.Infrastructure.Configuration;
 using OutfitPlanner.Infrastructure.Services;
+using OutfitPlanner.Infrastructure.Services.AI;
 using OutfitPlanner.Persistence;
 
 namespace OutfitPlanner.Infrastructure;
@@ -69,6 +70,20 @@ public static class DependencyInjection
         // Register AI Settings
         services.Configure<AISettings>(
             configuration.GetSection(AISettings.SectionName));
+
+        // Register AI Fashion Assistant Services
+        services.AddMemoryCache();
+        services.AddScoped<IColorHarmonyService, ColorHarmonyService>();
+        services.AddScoped<IStyleCompatibilityService, StyleCompatibilityService>();
+        services.AddScoped<IOutfitCombinationService, OutfitCombinationService>();
+        services.AddScoped<IIntentClassifier, IntentClassifier>();
+        services.AddScoped<IWardrobeContextBuilder, WardrobeContextBuilder>();
+        services.AddScoped<IChatHistoryCache, ChatHistoryCache>();
+        services.AddHttpClient<ILLMResponseGenerator, LLMResponseGenerator>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+        services.AddScoped<IChatService, ChatService>();
 
         // Register Authentication Settings
         services.Configure<GoogleAuthSettings>(

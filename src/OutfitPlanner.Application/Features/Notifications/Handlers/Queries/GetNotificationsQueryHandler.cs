@@ -55,7 +55,7 @@ public class GetNotificationsQueryHandler : IRequestHandler<GetNotificationsQuer
                 Message = n.Message,
                 ActionUrl = n.ActionUrl,
                 IsRead = n.IsRead,
-                CreatedAt = n.CreatedAt
+                CreatedAt = n.CreatedAt.UtcDateTime
             }).ToList();
         }
         catch (NotFoundException)

@@ -8,19 +8,15 @@ import { CursorPagedResult } from '../../domain/entities/response.entity';
 
 interface TrendingOutfitDto {
   id: string;
-  name: string;
-  description?: string;
   imageUrl?: string;
   userId: string;
   userName: string;
   userAvatar?: string;
-  voteCount: number;
-  commentsCount: number;
   trendingScore: number;
+  rankPosition: number;
+  feedPostId?: string;
+  postType?: string;
   createdAt: string;
-  isFollowing?:boolean;
-  isOwner?:boolean;
-  isLiked:boolean;
 }
 
 @Injectable({
@@ -63,13 +59,11 @@ export class TrendingDataSource {
       userName: dto.userName,
       userAvatar: dto.userAvatar ? this.fixUrl(dto.userAvatar) : 'assets/default-avatar.png',
       imageUrl: dto.imageUrl ? this.fixUrl(dto.imageUrl) : 'assets/placeholder.png',
-      likes: dto.voteCount,
-      comments: dto.commentsCount,
       trendingScore: dto.trendingScore,
+      rank: dto.rankPosition,
       createdAt: new Date(dto.createdAt),
-      isfollowing:dto.isFollowing,
-      isliked:dto.isLiked,
-      isowner:dto.isOwner
+      feedPostId: dto.feedPostId,
+      postType: dto.postType
     };
   }
 }

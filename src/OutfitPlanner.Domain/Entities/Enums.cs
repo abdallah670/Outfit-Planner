@@ -35,6 +35,14 @@ public enum Season
     Winter
 }
 
+public enum NotificationType 
+{ 
+    Social, 
+    Reminder, 
+    Weather, 
+    System 
+}
+
 public enum StylePreference
 {
     Minimalist,

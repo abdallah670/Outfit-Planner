@@ -17,17 +17,19 @@ public class GetCurrentWeatherQueryHandler : IRequestHandler<GetCurrentWeatherQu
 
     public async Task<WeatherDto> Handle(GetCurrentWeatherQuery request, CancellationToken cancellationToken)
     {
-        // Validate that either city or coordinates are provided
-        if (string.IsNullOrWhiteSpace(request.City) && 
-            (!request.Latitude.HasValue || !request.Longitude.HasValue))
+        var city = request.City;
+        double? lat = request.Latitude;
+        double? lon = request.Longitude;
+        
+        if (string.IsNullOrWhiteSpace(city) && (!lat.HasValue || !lon.HasValue))
         {
-            throw new BadRequestException("Either city name or latitude/longitude coordinates must be provided");
+            city = "Cairo";
         }
 
         var weather = await _weatherService.GetCurrentWeatherAsync(
-            request.City,
-            request.Latitude,
-            request.Longitude,
+            city,
+            lat,
+            lon,
             cancellationToken);
 
         if (weather == null)

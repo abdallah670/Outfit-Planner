@@ -1,0 +1,184 @@
+<div class="ai-assistant">
+  <!-- Left Sidebar: Session History -->
+  <aside class="session-sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Conversations</span>
+      <button class="btn-new" (click)="newSession()">
+        <iconify-icon icon="lucide:plus" width="12" height="12"></iconify-icon>
+        New
+      </button>
+    </div>
+
+    <div class="session-list">
+      @for (session of (sessions$ | async) ?? []; track session.id) {
+        <a class="session-item" [class.active]="(currentSessionId$ | async) === session.id">
+          <iconify-icon icon="lucide:message-circle" width="14" height="14" class="session-icon"></iconify-icon>
+          <span class="session-title">{{ session.title }}</span>
+        </a>
+      } @empty {
+        <div class="empty-sessions">
+          <iconify-icon icon="lucide:sparkles" width="24" height="24"></iconify-icon>
+          <p>Start a conversation with your AI stylist</p>
+        </div>
+      }
+    </div>
+
+    <div class="sidebar-footer">
+      @if (user$ | async; as user) {
+        <div class="user-info">
+          <div class="user-avatar">
+            <img [src]="user.profilePictureUrl || 'assets/default-avatar.png'" [alt]="user.name || user.username" (error)="$event.target.src = 'assets/default-avatar.png'" />
+          </div>
+          <div class="user-details">
+            <span class="user-name">{{ user.name || user.username }}</span>
+            <span class="user-role">Wardrobe Owner</span>
+          </div>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- Center: Chat Area -->
+  <main class="chat-area">
+    <div class="chat-header">
+      <p class="chat-label">ACTIVE SESSION</p>
+      <h2 class="chat-title">AI Fashion Assistant</h2>
+    </div>
+
+    <div class="messages-container">
+      @let messages = messages$ | async;
+      @let isSending = isSending$ | async;
+
+      @if (messages && messages.length > 0) {
+        @for (message of messages; track trackById($index, message)) {
+          <div class="message-row" [class.user-row]="message.role === 'user'" [class.ai-row]="message.role === 'assistant'">
+            @if (message.role === 'user') {
+              @if (user$ | async; as user) {
+                <div class="user-avatar-small">
+                  <img [src]="user.profilePictureUrl || 'assets/default-avatar.png'" [alt]="user.name || user.username" (error)="$event.target.src = 'assets/default-avatar.png'" />
+                </div>
+              }
+            }
+
+            <div class="message-bubble" [class.user-bubble]="message.role === 'user'" [class.ai-bubble]="message.role === 'assistant'">
+              {{ message.content }}
+            </div>
+
+            @if (message.role === 'assistant') {
+              <div class="ai-avatar">
+                <iconify-icon icon="lucide:sparkles" width="14" height="14"></iconify-icon>
+              </div>
+            }
+          </div>
+        }
+      } @else {
+        <!-- Welcome message for new/empty chat -->
+        <div class="welcome-message">
+          <div class="welcome-avatar">
+            <iconify-icon icon="lucide:sparkles" width="24" height="24"></iconify-icon>
+          </div>
+          <h3 class="welcome-title">Hi! I'm your AI Fashion Assistant</h3>
+          <p class="welcome-text">
+            Ask me anything about your wardrobe, outfit suggestions, style tips, or
+            what to wear for any occasion. Let's find your perfect look!
+          </p>
+          <div class="welcome-hints">
+            <div class="hint-chip" (click)="sendQuickSuggestion('What should I wear today?')">
+              <iconify-icon icon="lucide:sparkles" width="12" height="12"></iconify-icon>
+              What to wear today?
+            </div>
+            <div class="hint-chip" (click)="sendQuickSuggestion('Suggest a date night outfit')">
+              <iconify-icon icon="lucide:heart" width="12" height="12"></iconify-icon>
+              Date night outfit
+            </div>
+            <div class="hint-chip" (click)="sendQuickSuggestion('Analyze my wardrobe')">
+              <iconify-icon icon="lucide:bar-chart-3" width="12" height="12"></iconify-icon>
+              Analyze wardrobe
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (isSending) {
+        <div class="message-row ai-row">
+          <div class="ai-avatar">
+            <iconify-icon icon="lucide:sparkles" width="14" height="14"></iconify-icon>
+          </div>
+          <div class="typing-indicator">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="suggestions-bar">
+      @for (suggestion of quickSuggestions; track suggestion) {
+        <button class="suggestion-chip" (click)="sendQuickSuggestion(suggestion)">
+          {{ suggestion }}
+        </button>
+      }
+    </div>
+
+    <div class="input-bar">
+      <div class="input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="userMessage"
+          (keyup.enter)="sendMessage()"
+          placeholder="Ask your stylist anything..."
+          class="chat-input"
+        />
+        <div class="input-actions">
+          <button class="icon-btn"><iconify-icon icon="lucide:paperclip" width="15" height="15"></iconify-icon></button>
+          <button class="icon-btn"><iconify-icon icon="lucide:mic" width="15" height="15"></iconify-icon></button>
+        </div>
+      </div>
+      <button class="btn-send" (click)="sendMessage()">
+        Send
+        <iconify-icon icon="lucide:send" width="11" height="11"></iconify-icon>
+      </button>
+    </div>
+  </main>
+
+  <!-- Right Panel: Real Weather + Wardrobe Health + Tips -->
+  <aside class="info-panel">
+    <div class="weather-card">
+      <app-weather-display
+        [weather]="(weather$ | async) || null"
+        [loading]="(weatherLoading$ | async) || false"
+        [showFeelsLike]="true"
+        [showDescription]="true"
+        [showCity]="true"
+      ></app-weather-display>
+    </div>
+
+      <div class="stat-card">
+      <h4>Wardrobe Health</h4>
+      @if (wardrobeItems$ | async; as wardrobeItems) {
+        <app-wardrobe-health [itemsInput]="wardrobeItems"></app-wardrobe-health>
+      }
+    </div>
+
+    <div class="tips-card">
+      <h4>Quick Tips</h4>
+      @for (tip of tips$ | async; track tip.text) {
+        <div class="tip-item">
+          <div class="tip-icon"><iconify-icon [icon]="tip.icon" width="13" height="13"></iconify-icon></div>
+          <p>{{ tip.text }}</p>
+        </div>
+      }
+    </div>
+
+    <div class="session-card">
+      <div>
+        <p class="session-quality">Session Quality</p>
+        <p class="session-meta">{{ (messages$ | async)?.length || 0 }} messages </p>
+        <!-- <p class="session-meta">Saved outfits: {{ (savedOutfits$ | async)?.length || 0 }}</p> -->
+      </div>
+        
+      
+    </div>
+  </aside>
+</div>

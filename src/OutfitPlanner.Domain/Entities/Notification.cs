@@ -1,4 +1,6 @@
+using OutfitPlanner.Domain.Enums;
 namespace OutfitPlanner.Domain.Entities;
+
 
 public class Notification : BaseEntity
 {
@@ -12,13 +14,6 @@ public class Notification : BaseEntity
     
     // Status
     public bool IsRead { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+   
 }
 
-public enum NotificationType 
-{ 
-    Social, 
-    Reminder, 
-    Weather, 
-    System 
-}

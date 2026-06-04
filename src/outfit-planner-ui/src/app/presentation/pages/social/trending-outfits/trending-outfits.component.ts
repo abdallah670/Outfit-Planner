@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Signal } from '@angular/core';
+import { Component, OnInit, Signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,15 +28,13 @@ export class TrendingOutfitsComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(TrendingActions.loadTrending({ pageSize: 20 }));
-
-  }
-
-  react(outfit: TrendingOutfit, reactionType: string = 'Like'): void {
-    // TODO: Implement reaction using FeedActions once TrendingOutfits are mapped to FeedPosts
-    console.log('Reaction not yet implemented in new architecture', { outfitId: outfit.id, reactionType });
   }
 
   viewDetails(outfit: TrendingOutfit): void {
-    this.router.navigate(['/outfits', outfit.id]);
+    if (outfit.postType === 'Poll') {
+      this.router.navigate(['/social/polls', outfit.feedPostId]);
+    } else if (outfit.postType === 'OutfitPost') {
+      this.router.navigate(['/social/posts', outfit.feedPostId]);
+    } 
   }
 }

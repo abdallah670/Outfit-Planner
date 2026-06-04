@@ -63,6 +63,7 @@
           @for (outfit of trendingOutfits(); track outfit.id) {
             <div class="trending-item" [routerLink]="['/social']" [queryParams]="{tab: 'trending'}">
               <div class="trending-image-wrapper">
+                <div class="rank-badge">#{{ outfit.rank }}</div>
                 @if (outfit.imageUrl && !failedImages.has(outfit.id)) {
                   <img [src]="outfit.imageUrl" [alt]="outfit.userName" (error)="onImageError(outfit.id)" />
                 } @else {
@@ -79,10 +80,7 @@
                     }
                     <span class="user-name">{{ outfit.userName }}</span>
                   </div>
-                  <div  class="likes-count">
-                    <mat-icon>favorite</mat-icon>
-                    {{ outfit.likes }}
-                  </div>
+                  <div class="score-badge">Score: {{ outfit.trendingScore | number:'1.1-1' }}</div>
                 </div>
               </div>
             </div>

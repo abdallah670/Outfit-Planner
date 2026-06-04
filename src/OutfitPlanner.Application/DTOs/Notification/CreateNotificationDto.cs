@@ -1,5 +1,5 @@
 using OutfitPlanner.Domain.Entities;
-
+using OutfitPlanner.Domain.Enums;
 namespace OutfitPlanner.Application.DTOs.Notification;
 
 public class CreateNotificationDto

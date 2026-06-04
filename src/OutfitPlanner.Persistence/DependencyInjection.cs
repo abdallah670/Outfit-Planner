@@ -110,6 +110,7 @@ public static class DependencyInjection
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
         services.AddScoped<IContentReportRepository, ContentReportRepository>();
+        services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
         services.AddScoped<DataSeeder>();
         return services;
     }
