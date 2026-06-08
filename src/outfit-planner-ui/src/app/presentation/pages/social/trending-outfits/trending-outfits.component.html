@@ -1,47 +1,84 @@
 <div class="trending-page">
   <header class="header">
-    <h1 class="page-title">All Trending Outfits</h1>
+    <h1 class="page-title">Trending Outfits</h1>
     <p class="page-subtitle">Ranked by community engagement</p>
   </header>
 
   <main class="main-content">
-    <div class="trending-list" *ngIf="trendingOutfits().length > 0">
-      @for (outfit of trendingOutfits(); track outfit.id) {
-        <div class="trending-card" (click)="viewDetails(outfit)">
-          <div class="rank-badge">
-            <span class="rank-number">#{{ outfit.rank }}</span>
-          </div>
-          
-          <div class="outfit-image-container">
-            <img *ngIf="outfit.imageUrl; else noImage" [src]="outfit.imageUrl" alt="Trending outfit" class="trending-image">
-            <ng-template #noImage>
-              <img src="assets/placeholder.jpg" alt="No outfit image" class="trending-image">
-            </ng-template>
-          </div>
-          
-          <div class="outfit-info">
-            <div class="outfit-header">
-              <h3>{{ outfit.userName }}</h3>
-              <span class="score-badge">Score: {{ outfit.trendingScore | number:'1.1-1' }}</span>
+    @if (trendingOutfits.length > 0) {
+      <div class="trending-grid">
+        @for (outfit of trendingOutfits; track outfit.id) {
+          <article class="post-card" (click)="viewDetails(outfit)">
+            <!-- Post Header -->
+            <div class="post-card__header">
+              <div class="post-card__header-left">
+                <div class="rank-badge">
+                  <span class="rank-number">#{{ outfit.rank }}</span>
+                </div>
+                <div class="post-card__user">
+                  <div class="post-card__avatar-wrap">
+                    <img [src]="outfit.userAvatar || 'assets/default-avatar.png'" class="post-card__avatar-img">
+                  </div>
+                  <div class="post-card__meta">
+                    <span class="post-card__username">{{ outfit.userName }}</span>
+                    <span class="post-card__time">{{ outfit.createdAt | date:'mediumDate' }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="post-card__badge" [class]="outfit.postType === 'Poll' ? 'poll-badge' : 'outfit-badge'">
+                <iconify-icon [icon]="outfit.postType === 'Poll' ? 'lucide:bar-chart-2' : 'lucide:shirt'" style="font-size: 14px"></iconify-icon>
+                <span>{{ outfit.postType === 'Poll' ? 'Poll' : 'Outfit' }}</span>
+              </div>
             </div>
-            <div class="action-row">
-              <span class="type-badge" [class]="outfit.postType === 'Poll' ? 'poll-badge' : 'outfit-badge'">
-                {{ outfit.postType === 'Poll' ? 'Poll' : 'Outfit' }}
-              </span>
-              <span class="view-link">View details →</span>
+
+            <!-- Caption / Score -->
+            <div class="post-card__caption">
+              Trending outfit with a score of {{ outfit.trendingScore | number:'1.1-1' }}
             </div>
+
+            <!-- Outfit Media -->
+            <div class="post-card__media">
+              <img *ngIf="outfit.imageUrl; else noImage" [src]="outfit.imageUrl" alt="Trending outfit">
+              <ng-template #noImage>
+                <img src="assets/placeholder.jpg" alt="No outfit image">
+              </ng-template>
+            </div>
+
+            <!-- Post Actions -->
+            <div class="post-card__actions">
+              <button class="post-card__action-btn">
+                <iconify-icon icon="lucide:heart" style="font-size: 20px; color: #e53e3e;"></iconify-icon>
+                <span>{{ outfit.likes }}</span>
+              </button>
+              <button class="post-card__action-btn">
+                <iconify-icon icon="lucide:message-circle" style="font-size: 20px"></iconify-icon>
+                <span>{{ outfit.comments }}</span>
+              </button>
+              <button class="post-card__action-btn post-card__action-btn--end" (click)="viewDetails(outfit); $event.stopPropagation();">
+                <iconify-icon icon="lucide:external-link" style="font-size: 18px"></iconify-icon>
+                <span>Details</span>
+              </button>
+            </div>
+          </article>
+        }
+
+        @if (hasMore && !isLoading) {
+          <div class="load-more">
+            <button class="load-more-btn" (click)="loadMore()">Load More</button>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    } @else if (!isLoading) {
+      <div class="empty-state">
+        <mat-icon>explore</mat-icon>
+        <p>No trending outfits yet. Check back later!</p>
+      </div>
+    }
 
-    <div *ngIf="trendingOutfits().length === 0 && !loading()" class="empty-state">
-      <mat-icon>explore</mat-icon>
-      <p>No trending outfits yet. Check back later!</p>
-    </div>
-
-    <div *ngIf="loading()" class="loading-state">
-      <p>Loading trending outfits...</p>
-    </div>
+    @if (isLoading) {
+      <div class="loading-state">
+        <p>Loading trending outfits...</p>
+      </div>
+    }
   </main>
 </div>

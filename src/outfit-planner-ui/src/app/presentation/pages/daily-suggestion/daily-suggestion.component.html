@@ -145,14 +145,15 @@
     </div>
 
     <!-- Alternatives Section -->
-    <div class="alternatives-section">
+    <div class="alternatives-section" *ngIf="alternatives().length > 0">
       <div class="section-header">
         <h3 class="section-title">Alternative Suggestions</h3>
         <div class="swipe-hint">
-          Swipe for more
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
+            <line x1="4" y1="12" x2="20" y2="12"/>
+            <polyline points="14 6 20 12 14 18"/>
           </svg>
+          Swipe to explore
         </div>
       </div>
 

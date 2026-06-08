@@ -12,6 +12,8 @@ interface TrendingOutfitDto {
   userId: string;
   userName: string;
   userAvatar?: string;
+  likesCount: number;
+  commentsCount: number;
   trendingScore: number;
   rankPosition: number;
   feedPostId?: string;
@@ -63,7 +65,11 @@ export class TrendingDataSource {
       rank: dto.rankPosition,
       createdAt: new Date(dto.createdAt),
       feedPostId: dto.feedPostId,
-      postType: dto.postType
+      postType: dto.postType,
+      likes: dto.likesCount ?? 0,
+      comments: dto.commentsCount ?? 0,
+      isliked: false
+      
     };
   }
 }

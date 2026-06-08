@@ -1,17 +1,16 @@
-import { Component, OnInit, signal, computed, inject, ViewEncapsulation, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, signal, inject, ViewEncapsulation, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { FeedPost, PostType, Visibility } from '../../../../domain/entities/feed.entity';
+import { FeedPost } from '../../../../domain/entities/feed.entity';
 
 import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
-import { TrendingUseCases } from '../../../../domain/usecases/trending.usecases';
 import { FollowUseCases } from '../../../../domain/usecases/follow.usecases';
 import { AuthService } from '../../../../core/services/auth.service';
 import { PostItemComponent } from '../../../components/shared/post-item/post-item.component';
+import { TrendingOutfitsComponent } from '../trending-outfits/trending-outfits.component';
 import { CursorPagedResult } from '../../../../domain/entities/response.entity';
-import { TrendingOutfit } from '../../../../domain/entities/outfit.entity';
 
 type FeedTab = 'all' | 'following' | 'trending' | 'followers' | 'following-list' | 'my-posts';
 
@@ -31,6 +30,7 @@ interface FeedTabConfig {
     RouterModule,
     MatIconModule,
     PostItemComponent,
+    TrendingOutfitsComponent,
   ],
   templateUrl: './community-feed.component.html',
   styleUrl: './community-feed.component.scss',
@@ -38,7 +38,6 @@ interface FeedTabConfig {
 })
 export class CommunityFeedComponent implements OnInit {
   private feedUseCases = inject(FeedUseCases);
-  private trendingUseCases = inject(TrendingUseCases);
   private followUseCases = inject(FollowUseCases);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -109,14 +108,15 @@ export class CommunityFeedComponent implements OnInit {
       this.loadAllPosts(reset);
     } else if (tab === 'following') {
       this.loadFollowingPosts(reset);
-    } else if (tab === 'trending') {
-      this.loadTrendingPosts(reset);
     } else if (tab === 'my-posts') {
       this.loadMyPosts(reset);
     } else if (tab === 'followers') {
       this.loadFollowers(reset);
     } else if (tab === 'following-list') {
       this.loadFollowingList(reset);
+    } else if (tab === 'trending') {
+      // Trending is handled entirely by TrendingOutfitsComponent
+      this.loading.set(false);
     }
   }
 
@@ -128,12 +128,10 @@ export class CommunityFeedComponent implements OnInit {
   }
 
   private loadFollowingPosts(reset: boolean): void {
-    // If backend supports filtering by "following", we can use it.
     this.feedUseCases.getFeedPosts(this.nextCursor() || undefined, 10, 'Public', 'recent', 'All', true).subscribe({
       next: (result) => this.handlePostsResult(result, reset),
       error: () => this.loading.set(false)
     });
-
   }
 
   private loadMyPosts(reset: boolean): void {
@@ -159,22 +157,6 @@ export class CommunityFeedComponent implements OnInit {
       queryParamsHandling: 'merge'
     });
   }
-
-  private loadTrendingPosts(reset: boolean): void {
-    const cursor = reset ? undefined : (this.nextCursor() ?? undefined);
-    this.trendingUseCases.getTrendingOutfits(cursor, 10).subscribe({
-
-      next: (result) => {
-        const mappedPosts: FeedPost[] = result.items.map(item => this.mapTrendingToPost(item));
-        this.posts.update(current => reset ? mappedPosts : [...current, ...mappedPosts]);
-        this.nextCursor.set(result.nextCursor);
-        this.hasMore.set(result.hasMore);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false)
-    });
-  }
-
 
   private loadFollowers(reset: boolean): void {
     const currentUserId = this.authService.currentUser()?.id;
@@ -208,45 +190,6 @@ export class CommunityFeedComponent implements OnInit {
     this.userListCursor.set(result.nextCursor);
     this.userListHasMore.set(result.hasMore);
     this.loading.set(false);
-  }
-
-  private mapTrendingToPost(item: TrendingOutfit): FeedPost {
-    return {
-      id: item.id,
-      userId: item.userId,
-      userName: item.userName,
-      userAvatarUrl: item.userAvatar,
-      createdAt: item.createdAt,
-      postType: PostType.Outfit,
-      caption: item.userName + "'s trending outfit",
-      likesCount: item.likes,
-      commentsCount: item.comments,
-      isLiked: item.isliked,
-      isOwner: item.isowner,
-      outfitId: item.id,
-      outfit: {
-        id: item.id,
-        userId: item.userId,
-        name: item.userName + "'s outfit",
-        imageUrl: item.imageUrl,
-        items: [],
-        occasion: 'Social' as any,
-        suitableWeather: {} as any,
-        season: 'AllSeason' as any,
-        createdAt: item.createdAt,
-        lastWorn: item.createdAt,
-        timesWorn: 0,
-        status: 'active' as any,
-        feedback: [],
-        commentsCount: item.comments,
-        likesCount: item.likes,
-       
-      },
-      tags: [],
-      visibility: Visibility.Public,
-
-    
-    };
   }
 
   loadMore(): void {

@@ -22,6 +22,7 @@ public class GetTrendingOutfitsRequestHandler : IRequestHandler<GetTrendingOutfi
 
     public async Task<CursorPagination.CursorPagedResult<TrendingOutfitDto>> Handle(GetTrendingOutfitsRequest request, CancellationToken cancellationToken)
     {
+        
         var result = await _trendingOutfitRepository.GetGlobalTrendingCursorAsync(request.Cursor, request.PageSize);
         
     

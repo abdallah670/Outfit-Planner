@@ -86,7 +86,7 @@ public class TrendingOutfitRepository : GenericRepository<TrendingOutfit>, ITren
         }
 
         var items = await query
-            .OrderByDescending(t => t.TrendingScore)
+            .OrderByDescending(t => t.RankPosition)
             .ThenByDescending(t => t.Id)
             .Take(pageSize + 1)
             .ToListAsync();

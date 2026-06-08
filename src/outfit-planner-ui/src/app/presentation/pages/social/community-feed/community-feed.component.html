@@ -40,8 +40,8 @@
 
   <!-- Content Area -->
   <div class="feed-content">
-    <!-- Posts Tabs (All, Following, Trending, My Posts) -->
-    <ng-container *ngIf="activeTab() === 'all' || activeTab() === 'following' || activeTab() === 'trending' || activeTab() === 'my-posts'">
+    <!-- Posts Tabs (All, Following, My Posts) -->
+    <ng-container *ngIf="activeTab() === 'all' || activeTab() === 'following' || activeTab() === 'my-posts'">
       <!-- My Posts Sub-Filters -->
       <div *ngIf="activeTab() === 'my-posts'" class="sub-filters">
         <button 
@@ -86,6 +86,11 @@
           </div>
         }
       </div>
+    </ng-container>
+    
+    <!-- Trending Tab - Use the dedicated trending-outfits component -->
+    <ng-container *ngIf="activeTab() === 'trending'">
+      <app-trending-outfits></app-trending-outfits>
     </ng-container>
 
     <!-- User List Tabs (Followers, Following) -->

@@ -13,6 +13,8 @@ public class TrendingOutfitDto
     public Guid FeedPostId { get; set; }
     public string? PostType { get; set; }
     public int RankPosition { get; set; }
+    public int LikesCount { get; set; }
+    public int CommentsCount { get; set; }
     public double TrendingScore { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
   

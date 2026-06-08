@@ -11,7 +11,6 @@ export interface Outfit {
   lastWorn: Date;
   timesWorn: number;
   status: OutfitStatus;
-  feedback: OutfitFeedback[];
   commentsCount?: number;
   likesCount? : number;
   rank?:number;
@@ -53,14 +52,7 @@ export interface WeatherCondition {
   windSpeed: number;
 }
 
-export interface OutfitFeedback {
-  id: string;
-  outfitId: string;
-  userId: string;
-  rating: number;
-  comment: string;
-  createdAt: Date;
-}
+
 
 export enum OccasionType {
   Casual = 'Casual',
@@ -112,9 +104,13 @@ export interface TrendingOutfit {
   userName: string;
   userAvatar: string;
   imageUrl: string;
+  likes: number;
+  comments: number;
+  isliked?: boolean;
   trendingScore: number;
   rank: number;
   createdAt: Date;
-  feedPostId?: string;
+  isfollowing?: boolean;
   postType?: string;
+  feedPostId?: string;
 }
