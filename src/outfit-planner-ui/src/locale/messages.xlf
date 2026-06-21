@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="3163551985676255462" datatype="html">
+        <source>Outfit Planner</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">5,10</context>
+        </context-group>
+        <note priority="1" from="description">The app brand name in the navbar</note>
+        <note priority="1" from="meaning">Outfit Planner app name</note>
+      </trans-unit>
+      <trans-unit id="5736343724354797570" datatype="html">
+        <source>My Wardrobe</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+        <note priority="1" from="description">Navigation link to wardrobe management</note>
+        <note priority="1" from="meaning">Wardrobe nav link</note>
+      </trans-unit>
+      <trans-unit id="427260080535891303" datatype="html">
+        <source>Plan Outfits</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">11,12</context>
+        </context-group>
+        <note priority="1" from="description">Navigation link to outfit planning</note>
+        <note priority="1" from="meaning">Outfits nav link</note>
+      </trans-unit>
+      <trans-unit id="5680674791210028393" datatype="html">
+        <source>Calendar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+        <note priority="1" from="description">Navigation link to calendar view</note>
+        <note priority="1" from="meaning">Calendar nav link</note>
+      </trans-unit>
+      <trans-unit id="7068734149968391243" datatype="html">
+        <source>Social</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+        <note priority="1" from="description">Navigation link to social feed</note>
+        <note priority="1" from="meaning">Social nav link</note>
+      </trans-unit>
+      <trans-unit id="2321068914579939079" datatype="html">
+        <source>AI Stylist</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">35,36</context>
+        </context-group>
+        <note priority="1" from="description">Navigation link to AI fashion assistant</note>
+        <note priority="1" from="meaning">AI Stylist nav link</note>
+      </trans-unit>
+      <trans-unit id="4377425255878594772" datatype="html">
+        <source>Settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">36,39</context>
+        </context-group>
+        <note priority="1" from="description">Navigation link to app settings</note>
+        <note priority="1" from="meaning">Settings nav link</note>
+      </trans-unit>
+      <trans-unit id="167977680996982720" datatype="html">
+        <source><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;fi fi-us&quot; style=&quot;font-size: 16px; border-radius: 2px;&quot;&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> EN </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">43,45</context>
+        </context-group>
+        <note priority="1" from="description">Button that opens language selection menu</note>
+        <note priority="1" from="meaning">Language switcher button</note>
+      </trans-unit>
+      <trans-unit id="1502372881684625225" datatype="html">
+        <source>English</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+        <note priority="1" from="description">Language selection for English</note>
+        <note priority="1" from="meaning">English language option</note>
+      </trans-unit>
+      <trans-unit id="1549222972549128920" datatype="html">
+        <source>Français</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">50,52</context>
+        </context-group>
+        <note priority="1" from="description">Language selection for French</note>
+        <note priority="1" from="meaning">French language option</note>
+      </trans-unit>
+      <trans-unit id="5138073870091450574" datatype="html">
+        <source>Deutsch</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">53,55</context>
+        </context-group>
+        <note priority="1" from="description">Language selection for German</note>
+        <note priority="1" from="meaning">German language option</note>
+      </trans-unit>
+      <trans-unit id="9123562495870009797" datatype="html">
+        <source>العربية</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">56,58</context>
+        </context-group>
+        <note priority="1" from="description">Language selection for Arabic</note>
+        <note priority="1" from="meaning">Arabic language option</note>
+      </trans-unit>
+      <trans-unit id="1457351373753902471" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon&gt;"/>search<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">65,67</context>
+        </context-group>
+        <note priority="1" from="description">Button to open search</note>
+        <note priority="1" from="meaning">Search button</note>
+      </trans-unit>
+      <trans-unit id="5904960896609524949" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon&gt;"/>notifications_none<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">77,80</context>
+        </context-group>
+        <note priority="1" from="description">Button to view notifications</note>
+        <note priority="1" from="meaning">Notifications button</note>
+      </trans-unit>
+      <trans-unit id="7413829146465964116" datatype="html">
+        <source>Profile avatar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">93,94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="141150949245348451" datatype="html">
+        <source>Default avatar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/components/shared/navbar/navbar.component.html</context>
+          <context context-type="linenumber">102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2022349594908228540" datatype="html">
+        <source>General Preferences</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">10,12</context>
+        </context-group>
+        <note priority="1" from="description">Settings sidebar link to general preferences</note>
+        <note priority="1" from="meaning">General Preferences sidebar nav</note>
+      </trans-unit>
+      <trans-unit id="2931492043975614686" datatype="html">
+        <source>Notifications</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">17,19</context>
+        </context-group>
+        <note priority="1" from="description">Settings sidebar link to notifications</note>
+        <note priority="1" from="meaning">Notifications sidebar nav</note>
+      </trans-unit>
+      <trans-unit id="772176051495918798" datatype="html">
+        <source>Connected Accounts</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">24,26</context>
+        </context-group>
+        <note priority="1" from="description">Settings sidebar link to connected accounts</note>
+        <note priority="1" from="meaning">Connected Accounts sidebar nav</note>
+      </trans-unit>
+      <trans-unit id="3826025677185623481" datatype="html">
+        <source>Privacy &amp; Data</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">31,37</context>
+        </context-group>
+        <note priority="1" from="description">Settings sidebar link to privacy and data</note>
+        <note priority="1" from="meaning">Privacy and Data sidebar nav</note>
+      </trans-unit>
+      <trans-unit id="2172632319041903358" datatype="html">
+        <source>App Preferences</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+        <note priority="1" from="description">Section heading for app preferences</note>
+        <note priority="1" from="meaning">App Preferences heading</note>
+      </trans-unit>
+      <trans-unit id="5389144949261614059" datatype="html">
+        <source>Customize your app experience</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+        <note priority="1" from="description">Subtitle describing app preferences section</note>
+        <note priority="1" from="meaning">App Preferences subtitle</note>
+      </trans-unit>
+      <trans-unit id="7844867834232493859" datatype="html">
+        <source>Unsaved changes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">48,53</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">119,124</context>
+        </context-group>
+        <note priority="1" from="description">Indicator showing unsaved changes exist</note>
+        <note priority="1" from="meaning">Unsaved changes indicator</note>
+      </trans-unit>
+      <trans-unit id="4818244590644560929" datatype="html">
+        <source>Temperature Unit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">56,57</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for temperature unit selection</note>
+        <note priority="1" from="meaning">Temperature Unit label</note>
+      </trans-unit>
+      <trans-unit id="8987163930558274544" datatype="html">
+        <source>Choose your preferred unit for weather forecasts</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">57,60</context>
+        </context-group>
+        <note priority="1" from="description">Description for temperature unit setting</note>
+        <note priority="1" from="meaning">Temperature Unit description</note>
+      </trans-unit>
+      <trans-unit id="2647965154385902661" datatype="html">
+        <source>Celsius (°C)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">65,68</context>
+        </context-group>
+        <note priority="1" from="description">Button to select Celsius temperature unit</note>
+        <note priority="1" from="meaning">Celsius button</note>
+      </trans-unit>
+      <trans-unit id="2420586012244113443" datatype="html">
+        <source>Fahrenheit (°F)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">72,77</context>
+        </context-group>
+        <note priority="1" from="description">Button to select Fahrenheit temperature unit</note>
+        <note priority="1" from="meaning">Fahrenheit button</note>
+      </trans-unit>
+      <trans-unit id="3885150912900035187" datatype="html">
+        <source>Language</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">80,81</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for language selection</note>
+        <note priority="1" from="meaning">Language label</note>
+      </trans-unit>
+      <trans-unit id="6381695117507404848" datatype="html">
+        <source>Select the language for the interface</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">81,84</context>
+        </context-group>
+        <note priority="1" from="description">Description for language selection setting</note>
+        <note priority="1" from="meaning">Language description</note>
+      </trans-unit>
+      <trans-unit id="35175276297462038" datatype="html">
+        <source>English (US)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">85,86</context>
+        </context-group>
+        <note priority="1" from="description">English language option in dropdown</note>
+        <note priority="1" from="meaning">English option</note>
+      </trans-unit>
+      <trans-unit id="4205305365268654855" datatype="html">
+        <source>Save Changes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">104,105</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">211,212</context>
+        </context-group>
+        <note priority="1" from="description">Button to save app preference changes</note>
+        <note priority="1" from="meaning">Save Changes button</note>
+      </trans-unit>
+      <trans-unit id="3918698885724977885" datatype="html">
+        <source>Notifications</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">114,115</context>
+        </context-group>
+        <note priority="1" from="description">Section heading for notification settings</note>
+        <note priority="1" from="meaning">Notifications heading</note>
+      </trans-unit>
+      <trans-unit id="6560558145405304969" datatype="html">
+        <source>Manage how you want to be notified</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">115,117</context>
+        </context-group>
+        <note priority="1" from="description">Subtitle describing notification settings section</note>
+        <note priority="1" from="meaning">Notifications subtitle</note>
+      </trans-unit>
+      <trans-unit id="1625874529216067395" datatype="html">
+        <source>Daily Outfit Suggestion</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">127,128</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for daily outfit suggestion notification</note>
+        <note priority="1" from="meaning">Daily Outfit Suggestion label</note>
+      </trans-unit>
+      <trans-unit id="7467125747611129184" datatype="html">
+        <source>Receive a notification every morning with your daily pick</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">128,132</context>
+        </context-group>
+        <note priority="1" from="description">Description for daily outfit suggestion notification</note>
+        <note priority="1" from="meaning">Daily Outfit Suggestion description</note>
+      </trans-unit>
+      <trans-unit id="3272791496756299533" datatype="html">
+        <source>Weekly Style Report</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">143,144</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for weekly style report notification</note>
+        <note priority="1" from="meaning">Weekly Style Report label</note>
+      </trans-unit>
+      <trans-unit id="5919799999129380195" datatype="html">
+        <source>Get a summary of your outfits and stats on Sundays</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">144,148</context>
+        </context-group>
+        <note priority="1" from="description">Description for weekly style report notification</note>
+        <note priority="1" from="meaning">Weekly Style Report description</note>
+      </trans-unit>
+      <trans-unit id="7243773507429362051" datatype="html">
+        <source>Weather Alerts</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">159,160</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for weather alerts notification</note>
+        <note priority="1" from="meaning">Weather Alerts label</note>
+      </trans-unit>
+      <trans-unit id="8589041612518952616" datatype="html">
+        <source>Notify me if weather changes for my planned outfit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">160,164</context>
+        </context-group>
+        <note priority="1" from="description">Description for weather alerts notification</note>
+        <note priority="1" from="meaning">Weather Alerts description</note>
+      </trans-unit>
+      <trans-unit id="962143195606862178" datatype="html">
+        <source>New Features</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">175,176</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for new features notification</note>
+        <note priority="1" from="meaning">New Features label</note>
+      </trans-unit>
+      <trans-unit id="3335050498509457836" datatype="html">
+        <source>Be the first to know about new app features</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">176,179</context>
+        </context-group>
+        <note priority="1" from="description">Description for new features notification</note>
+        <note priority="1" from="meaning">New Features description</note>
+      </trans-unit>
+      <trans-unit id="7462894442831896751" datatype="html">
+        <source>Social Notifications</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">191,192</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for social notifications</note>
+        <note priority="1" from="meaning">Social Notifications label</note>
+      </trans-unit>
+      <trans-unit id="5223170553129598873" datatype="html">
+        <source>Get notified when someone interacts with your outfits</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">192,196</context>
+        </context-group>
+        <note priority="1" from="description">Description for social notifications setting</note>
+        <note priority="1" from="meaning">Social Notifications description</note>
+      </trans-unit>
+      <trans-unit id="9041557543529062240" datatype="html">
+        <source>Connected Accounts</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">220,221</context>
+        </context-group>
+        <note priority="1" from="description">Section heading for connected accounts</note>
+        <note priority="1" from="meaning">Connected Accounts heading</note>
+      </trans-unit>
+      <trans-unit id="6142415181777781935" datatype="html">
+        <source>Manage third-party login providers</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">221,226</context>
+        </context-group>
+        <note priority="1" from="description">Subtitle describing connected accounts section</note>
+        <note priority="1" from="meaning">Connected Accounts subtitle</note>
+      </trans-unit>
+      <trans-unit id="4107977588530649348" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ isGoogleConnected ? &apos;Connected&apos; : &apos;Not connected&apos; }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">239,240</context>
+        </context-group>
+        <note priority="1" from="description">Connection status text for Google account</note>
+        <note priority="1" from="meaning">Google connected status</note>
+      </trans-unit>
+      <trans-unit id="1545450991091606437" datatype="html">
+        <source>Connect</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">251,252</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">287,288</context>
+        </context-group>
+        <note priority="1" from="description">Button to connect a third-party account</note>
+        <note priority="1" from="meaning">Connect button</note>
+      </trans-unit>
+      <trans-unit id="3627692133266459593" datatype="html">
+        <source>Disconnect</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">259,260</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">295,296</context>
+        </context-group>
+        <note priority="1" from="description">Button to disconnect a third-party account</note>
+        <note priority="1" from="meaning">Disconnect button</note>
+      </trans-unit>
+      <trans-unit id="861407930139838699" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ isFacebookConnected ? &apos;Connected&apos; : &apos;Not connected&apos; }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">275,276</context>
+        </context-group>
+        <note priority="1" from="description">Connection status text for Facebook account</note>
+        <note priority="1" from="meaning">Facebook connected status</note>
+      </trans-unit>
+      <trans-unit id="4826000866976302977" datatype="html">
+        <source>Privacy &amp; Data</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">305,306</context>
+        </context-group>
+        <note priority="1" from="description">Section heading for privacy and data settings</note>
+        <note priority="1" from="meaning">Privacy and Data heading</note>
+      </trans-unit>
+      <trans-unit id="9027235072782498800" datatype="html">
+        <source>Manage your personal data and privacy settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">306,311</context>
+        </context-group>
+        <note priority="1" from="description">Subtitle describing privacy and data settings</note>
+        <note priority="1" from="meaning">Privacy and Data subtitle</note>
+      </trans-unit>
+      <trans-unit id="3151876980670422325" datatype="html">
+        <source>Export Data</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">313,314</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for data export</note>
+        <note priority="1" from="meaning">Export Data label</note>
+      </trans-unit>
+      <trans-unit id="8322781421412498296" datatype="html">
+        <source>Download a copy of all your outfits and wardrobe items (CSV format)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">314,316</context>
+        </context-group>
+        <note priority="1" from="description">Description for data export setting</note>
+        <note priority="1" from="meaning">Export Data description</note>
+      </trans-unit>
+      <trans-unit id="8482716748577900195" datatype="html">
+        <source>Export CSV</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">316,320</context>
+        </context-group>
+        <note priority="1" from="description">Button to export data as CSV</note>
+        <note priority="1" from="meaning">Export CSV button</note>
+      </trans-unit>
+      <trans-unit id="215067471800801570" datatype="html">
+        <source>Delete Account</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">322,323</context>
+        </context-group>
+        <note priority="1" from="description">Setting label for account deletion</note>
+        <note priority="1" from="meaning">Delete Account label</note>
+      </trans-unit>
+      <trans-unit id="1533883961675847812" datatype="html">
+        <source>Permanently remove your account and all data</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">323,325</context>
+        </context-group>
+        <note priority="1" from="description">Description for account deletion setting</note>
+        <note priority="1" from="meaning">Delete Account description</note>
+      </trans-unit>
+      <trans-unit id="7216416004980094721" datatype="html">
+        <source>Delete Account</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/presentation/pages/settings/settings.component.html</context>
+          <context context-type="linenumber">325,331</context>
+        </context-group>
+        <note priority="1" from="description">Button to permanently delete account</note>
+        <note priority="1" from="meaning">Delete Account button</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

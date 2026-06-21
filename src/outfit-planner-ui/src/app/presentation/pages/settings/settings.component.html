@@ -7,28 +7,28 @@
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24"></path>
         </svg>
-        <span>General Preferences</span>
+        <span i18n="General Preferences sidebar nav|Settings sidebar link to general preferences">General Preferences</span>
       </a>
       <a href="#notifications" id="notifications" class="nav-item" [class.active]="activeSection === 'notifications'" (click)="onNavClick($event, 'notifications')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
           <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
         </svg>
-        <span>Notifications</span>
+        <span i18n="Notifications sidebar nav|Settings sidebar link to notifications">Notifications</span>
       </a>
       <a href="#connected" class="nav-item" [class.active]="activeSection === 'connected'" (click)="onNavClick($event, 'connected')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
         </svg>
-        <span>Connected Accounts</span>
+        <span i18n="Connected Accounts sidebar nav|Settings sidebar link to connected accounts">Connected Accounts</span>
       </a>
       <a href="#privacy" class="nav-item" [class.active]="activeSection === 'privacy'" (click)="onNavClick($event, 'privacy')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
         </svg>
-        <span>Privacy & Data</span>
+        <span i18n="Privacy and Data sidebar nav|Settings sidebar link to privacy and data">Privacy & Data</span>
       </a>
     </nav>
   </aside>
@@ -40,12 +40,12 @@
     <section id="preferences" class="settings-card" [class.has-unsaved-changes]="isAppPreferencesDirty">
       <div class="card-header">
         <div class="header-content">
-          <h2>App Preferences</h2>
-          <p class="card-subtitle">Customize your app experience</p>
+          <h2 i18n="App Preferences heading|Section heading for app preferences">App Preferences</h2>
+          <p class="card-subtitle" i18n="App Preferences subtitle|Subtitle describing app preferences section">Customize your app experience</p>
         </div>
         <div class="unsaved-indicator" *ngIf="isAppPreferencesDirty">
           <span class="dot"></span>
-          <span>Unsaved changes</span>
+          <span i18n="Unsaved changes indicator|Indicator showing unsaved changes exist">Unsaved changes</span>
         </div>
       </div>
       
@@ -53,8 +53,8 @@
         <!-- Temperature Unit -->
         <div class="setting-row">
           <div class="setting-info">
-            <label class="setting-label">Temperature Unit</label>
-            <p class="setting-description">Choose your preferred unit for weather forecasts</p>
+            <label class="setting-label" i18n="Temperature Unit label|Setting label for temperature unit selection">Temperature Unit</label>
+            <p class="setting-description" i18n="Temperature Unit description|Description for temperature unit setting">Choose your preferred unit for weather forecasts</p>
           </div>
           <div class="segmented-control">
             <button 
@@ -62,14 +62,14 @@
               [class.active]="appPreferences.temperatureUnit === 'Celsius'"
               (click)="onTemperatureUnitChange('Celsius')"
               [disabled]="(settingsLoading$ | async) === true">
-              Celsius (°C)
+              <span i18n="Celsius button|Button to select Celsius temperature unit">Celsius (&#176;C)</span>
             </button>
             <button 
               class="segment" 
               [class.active]="appPreferences.temperatureUnit === 'Fahrenheit'"
               (click)="onTemperatureUnitChange('Fahrenheit')"
               [disabled]="(settingsLoading$ | async) === true">
-              Fahrenheit (°F)
+              <span i18n="Fahrenheit button|Button to select Fahrenheit temperature unit">Fahrenheit (&#176;F)</span>
             </button>
           </div>
         </div>
@@ -77,16 +77,16 @@
         <!-- Language -->
         <div class="setting-row">
           <div class="setting-info">
-            <label class="setting-label">Language</label>
-            <p class="setting-description">Select the language for the interface</p>
+            <label class="setting-label" i18n="Language label|Setting label for language selection">Language</label>
+            <p class="setting-description" i18n="Language description|Description for language selection setting">Select the language for the interface</p>
           </div>
           <div class="select-wrapper">
             <select class="custom-select" [ngModel]="appPreferences.language" (ngModelChange)="onLanguageChange($event)" [disabled]="(settingsLoading$ | async) === true">
-              <option value="en">English (US)</option>
-              <option value="es">Español</option>
-              <option value="fr">Français</option>
+              <option value="en" i18n="English option|English language option in dropdown">English (US)</option>
+              <option value="es">Espa&#241;ol</option>
+              <option value="fr">Fran&#231;ais</option>
               <option value="de">Deutsch</option>
-              <option value="ar">العربية</option>
+              <option value="ar">&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</option>
             </select>
             <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 12 15 18 9"></polyline>
@@ -101,7 +101,7 @@
           class="btn-primary save-btn" 
           (click)="saveAppPreferences()"
           [disabled]="(settingsLoading$ | async) === true">
-          <span *ngIf="(settingsLoading$ | async) !== true">Save Changes</span>
+          <span *ngIf="(settingsLoading$ | async) !== true" i18n="Save Changes button|Button to save app preference changes">Save Changes</span>
           <span *ngIf="(settingsLoading$ | async) === true" class="spinner"></span>
         </button>
       </div>
@@ -111,12 +111,12 @@
     <section id="notifications" class="settings-card" [class.has-unsaved-changes]="isNotificationSettingsDirty">
       <div class="card-header">
         <div class="header-content">
-          <h2>Notifications</h2>
-          <p class="card-subtitle">Manage how you want to be notified</p>
+          <h2 i18n="Notifications heading|Section heading for notification settings">Notifications</h2>
+          <p class="card-subtitle" i18n="Notifications subtitle|Subtitle describing notification settings section">Manage how you want to be notified</p>
         </div>
         <div class="unsaved-indicator" *ngIf="isNotificationSettingsDirty">
           <span class="dot"></span>
-          <span>Unsaved changes</span>
+          <span i18n="Unsaved changes indicator|Indicator showing unsaved changes exist">Unsaved changes</span>
         </div>
       </div>
       
@@ -124,8 +124,8 @@
         <!-- Daily Outfit Suggestion -->
         <div class="setting-row toggle-row">
           <div class="setting-info">
-            <label class="setting-label">Daily Outfit Suggestion</label>
-            <p class="setting-description">Receive a notification every morning with your daily pick</p>
+            <label class="setting-label" i18n="Daily Outfit Suggestion label|Setting label for daily outfit suggestion notification">Daily Outfit Suggestion</label>
+            <p class="setting-description" i18n="Daily Outfit Suggestion description|Description for daily outfit suggestion notification">Receive a notification every morning with your daily pick</p>
           </div>
           <label class="toggle-switch">
             <input 
@@ -140,8 +140,8 @@
         <!-- Weekly Style Report -->
         <div class="setting-row toggle-row">
           <div class="setting-info">
-            <label class="setting-label">Weekly Style Report</label>
-            <p class="setting-description">Get a summary of your outfits and stats on Sundays</p>
+            <label class="setting-label" i18n="Weekly Style Report label|Setting label for weekly style report notification">Weekly Style Report</label>
+            <p class="setting-description" i18n="Weekly Style Report description|Description for weekly style report notification">Get a summary of your outfits and stats on Sundays</p>
           </div>
           <label class="toggle-switch">
             <input 
@@ -156,8 +156,8 @@
         <!-- Weather Alerts -->
         <div class="setting-row toggle-row">
           <div class="setting-info">
-            <label class="setting-label">Weather Alerts</label>
-            <p class="setting-description">Notify me if weather changes for my planned outfit</p>
+            <label class="setting-label" i18n="Weather Alerts label|Setting label for weather alerts notification">Weather Alerts</label>
+            <p class="setting-description" i18n="Weather Alerts description|Description for weather alerts notification">Notify me if weather changes for my planned outfit</p>
           </div>
           <label class="toggle-switch">
             <input 
@@ -172,8 +172,8 @@
         <!-- New Features -->
         <div class="setting-row toggle-row">
           <div class="setting-info">
-            <label class="setting-label">New Features</label>
-            <p class="setting-description">Be the first to know about new app features</p>
+            <label class="setting-label" i18n="New Features label|Setting label for new features notification">New Features</label>
+            <p class="setting-description" i18n="New Features description|Description for new features notification">Be the first to know about new app features</p>
           </div>
           <label class="toggle-switch">
             <input 
@@ -188,8 +188,8 @@
         <!-- Social Notifications -->
         <div class="setting-row toggle-row">
           <div class="setting-info">
-            <label class="setting-label">Social Notifications</label>
-            <p class="setting-description">Get notified when someone interacts with your outfits</p>
+            <label class="setting-label" i18n="Social Notifications label|Setting label for social notifications">Social Notifications</label>
+            <p class="setting-description" i18n="Social Notifications description|Description for social notifications setting">Get notified when someone interacts with your outfits</p>
           </div>
           <label class="toggle-switch">
             <input 
@@ -208,7 +208,7 @@
           class="btn-primary save-btn" 
           (click)="saveNotificationSettings()"
           [disabled]="(settingsLoading$ | async) === true">
-          <span *ngIf="(settingsLoading$ | async) !== true">Save Changes</span>
+          <span *ngIf="(settingsLoading$ | async) !== true" i18n="Save Changes button|Button to save notification changes">Save Changes</span>
           <span *ngIf="(settingsLoading$ | async) === true" class="spinner"></span>
         </button>
       </div>
@@ -217,8 +217,8 @@
     <!-- Connected Accounts Section -->
     <section id="connected" class="settings-card">
       <div class="card-header">
-        <h2>Connected Accounts</h2>
-        <p class="card-subtitle">Manage third-party login providers</p>
+        <h2 i18n="Connected Accounts heading|Section heading for connected accounts">Connected Accounts</h2>
+        <p class="card-subtitle" i18n="Connected Accounts subtitle|Subtitle describing connected accounts section">Manage third-party login providers</p>
       </div>
       
       <div class="card-body">
@@ -235,7 +235,7 @@
             </div>
             <div class="account-details">
               <span class="account-name">Google</span>
-            <span class="account-status" [class.connected]="isGoogleConnected">
+            <span class="account-status" [class.connected]="isGoogleConnected" i18n="Google connected status|Connection status text for Google account">
                 {{ isGoogleConnected ? 'Connected' : 'Not connected' }}
               </span>
               <span class="account-email" *ngIf="isGoogleConnected">
@@ -248,7 +248,7 @@
             class="btn-account connect"
             (click)="connectGoogle()"
             [disabled]="isConnectingGoogle">
-            <span *ngIf="!isConnectingGoogle">Connect</span>
+            <span *ngIf="!isConnectingGoogle" i18n="Connect button|Button to connect a third-party account">Connect</span>
             <span *ngIf="isConnectingGoogle" class="spinner"></span>
           </button>
           <button 
@@ -256,7 +256,7 @@
             class="btn-account disconnect"
             (click)="disconnectGoogle()"
             [disabled]="isDisconnectingGoogle">
-            <span *ngIf="!isDisconnectingGoogle">Disconnect</span>
+            <span *ngIf="!isDisconnectingGoogle" i18n="Disconnect button|Button to disconnect a third-party account">Disconnect</span>
             <span *ngIf="isDisconnectingGoogle" class="spinner"></span>
           </button>
         </div>
@@ -271,7 +271,7 @@
             </div>
             <div class="account-details">
               <span class="account-name">Facebook</span>
-            <span class="account-status" [class.connected]="isFacebookConnected">
+            <span class="account-status" [class.connected]="isFacebookConnected" i18n="Facebook connected status|Connection status text for Facebook account">
                 {{ isFacebookConnected ? 'Connected' : 'Not connected' }}
               </span>
               <span class="account-email" *ngIf="isFacebookConnected">
@@ -284,7 +284,7 @@
             class="btn-account connect"
             (click)="connectFacebook()"
             [disabled]="isConnectingFacebook">
-            <span *ngIf="!isConnectingFacebook">Connect</span>
+            <span *ngIf="!isConnectingFacebook" i18n="Connect button|Button to connect a third-party account">Connect</span>
             <span *ngIf="isConnectingFacebook" class="spinner"></span>
           </button>
           <button 
@@ -292,7 +292,7 @@
             class="btn-account disconnect"
             (click)="disconnectFacebook()"
             [disabled]="isDisconnectingFacebook">
-            <span *ngIf="!isDisconnectingFacebook">Disconnect</span>
+            <span *ngIf="!isDisconnectingFacebook" i18n="Disconnect button|Button to disconnect a third-party account">Disconnect</span>
             <span *ngIf="isDisconnectingFacebook" class="spinner"></span>
           </button>
         </div>
@@ -302,27 +302,27 @@
     <!-- Privacy & Data Section -->
     <section id="privacy" class="settings-card">
       <div class="card-header">
-        <h2>Privacy & Data</h2>
-        <p class="card-subtitle">Manage your personal data and privacy settings</p>
+        <h2 i18n="Privacy and Data heading|Section heading for privacy and data settings">Privacy & Data</h2>
+        <p class="card-subtitle" i18n="Privacy and Data subtitle|Subtitle describing privacy and data settings">Manage your personal data and privacy settings</p>
       </div>
       
       <div class="card-body">
         <!-- Export Data -->
         <div class="setting-row action-row">
           <div class="setting-info">
-            <label class="setting-label">Export Data</label>
-            <p class="setting-description">Download a copy of all your outfits and wardrobe items (CSV format)</p>
+            <label class="setting-label" i18n="Export Data label|Setting label for data export">Export Data</label>
+            <p class="setting-description" i18n="Export Data description|Description for data export setting">Download a copy of all your outfits and wardrobe items (CSV format)</p>
           </div>
-          <button class="btn-primary" (click)="onExportData()">Export CSV</button>
+          <button class="btn-primary" (click)="onExportData()" i18n="Export CSV button|Button to export data as CSV">Export CSV</button>
         </div>
 
         <!-- Delete Account -->
         <div class="setting-row action-row danger-row">
           <div class="setting-info">
-            <label class="setting-label danger">Delete Account</label>
-            <p class="setting-description">Permanently remove your account and all data</p>
+            <label class="setting-label danger" i18n="Delete Account label|Setting label for account deletion">Delete Account</label>
+            <p class="setting-description" i18n="Delete Account description|Description for account deletion setting">Permanently remove your account and all data</p>
           </div>
-          <button class="btn-danger-outline" (click)="onDeleteAccount()">Delete Account</button>
+          <button class="btn-danger-outline" (click)="onDeleteAccount()" i18n="Delete Account button|Button to permanently delete account">Delete Account</button>
         </div>
       </div>
     </section>

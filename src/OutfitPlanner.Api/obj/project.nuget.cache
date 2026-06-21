@@ -1,9 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "fGj3t6Lbq6s=",
+  "dgSpecHash": "Y5hiZUPK/d4=",
   "success": true,
   "projectFilePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\HP\\.nuget\\packages\\asp.versioning.abstractions\\10.0.0\\asp.versioning.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\asp.versioning.http\\10.0.0\\asp.versioning.http.10.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\asp.versioning.mvc\\10.0.0\\asp.versioning.mvc.10.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\asp.versioning.mvc.apiexplorer\\10.0.0\\asp.versioning.mvc.apiexplorer.10.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
@@ -99,6 +103,18 @@
       "warningLevel": 1,
       "filePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
       "libraryId": "AutoMapper",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'SQLitePCLRaw.lib.e_sqlite3' 2.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-2m69-gcr7-jv3q",
+      "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Api\\OutfitPlanner.Api.csproj",
+      "libraryId": "SQLitePCLRaw.lib.e_sqlite3",
       "targetGraphs": [
         "net10.0"
       ]

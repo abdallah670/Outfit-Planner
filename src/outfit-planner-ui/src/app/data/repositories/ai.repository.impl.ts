@@ -10,8 +10,8 @@ import { ChatSession, ChatMessage, ChatResponse } from '../../domain/entities/ai
 export class AiRepositoryImpl implements AiRepository {
   constructor(private readonly dataSource: AiDataSource) {}
 
-  sendMessage(message: string, sessionId?: string): Observable<ChatResponse> {
-    return this.dataSource.sendMessage(message, sessionId);
+  sendMessage(message: string, sessionId?: string, images?: File[]): Observable<ChatResponse> {
+    return this.dataSource.sendMessage(message, sessionId, images);
   }
 
   getSessions(): Observable<ChatSession[]> {

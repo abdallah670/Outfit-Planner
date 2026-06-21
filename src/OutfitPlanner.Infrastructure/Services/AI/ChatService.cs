@@ -1,5 +1,6 @@
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using Microsoft.Extensions.Logging;
 
 namespace OutfitPlanner.Infrastructure.Services.AI;
 
@@ -13,6 +14,7 @@ public class ChatService : IChatService
     private readonly ILLMResponseGenerator _responseGenerator;
     private readonly IChatHistoryCache _chatHistoryCache;
     private readonly IChatSessionRepository _sessionRepository;
+    private readonly ILogger<ChatService> _logger;
 
     public ChatService(
         IIntentClassifier intentClassifier,
@@ -22,7 +24,8 @@ public class ChatService : IChatService
         IOutfitCombinationService outfitCombinationService,
         ILLMResponseGenerator responseGenerator,
         IChatHistoryCache chatHistoryCache,
-        IChatSessionRepository sessionRepository)
+        IChatSessionRepository sessionRepository,
+        ILogger<ChatService> logger)
     {
         _intentClassifier = intentClassifier;
         _wardrobeContextBuilder = wardrobeContextBuilder;
@@ -32,6 +35,7 @@ public class ChatService : IChatService
         _responseGenerator = responseGenerator;
         _chatHistoryCache = chatHistoryCache;
         _sessionRepository = sessionRepository;
+        _logger = logger;
     }
 
     public async Task<ChatResponse> ProcessMessageAsync(ChatRequest request, CancellationToken cancellationToken = default)
@@ -47,11 +51,12 @@ public class ChatService : IChatService
             Timestamp = DateTimeOffset.UtcNow
         }, cancellationToken);
 
-        // Build context for outfit-related intents
-        var needsWardrobe = intent.Intent is "outfit_suggestion" or "outfit_rating" or "wardrobe_analysis";
-        var context = needsWardrobe
+        var hasImages = request.Images != null && request.Images.Any();
+        var needsWardrobe = !hasImages && (intent.Intent is "outfit_suggestion" or "outfit_rating" or "wardrobe_analysis");
+        
+        var context = needsWardrobe 
             ? await _wardrobeContextBuilder.BuildContextAsync(request.UserId, intent, cancellationToken)
-            : new WardrobeContext { UserId = request.UserId };
+            : new WardrobeContext { UserId = request.UserId, AvailableItems = new List<WardrobeItemContext>() };
 
         var combinations = needsWardrobe
             ? await _outfitCombinationService.GenerateCombinationsAsync(request.UserId, intent.Occasion, intent.WeatherCondition, maxResults: 3, cancellationToken: cancellationToken)
@@ -77,7 +82,7 @@ public class ChatService : IChatService
         var historyEntries = recentHistory.Select(m => new ChatHistoryEntry { Role = m.Role, Content = m.Content }).ToList();
 
         var llmResponse = await _responseGenerator.GenerateResponseAsync(
-            request.Message, intent, context, combinations, harmony, styleScore, historyEntries, cancellationToken);
+            request.Message, intent, context, combinations, harmony, styleScore, historyEntries, request.Images, cancellationToken);
 
         // Save AI response to cache
         await _chatHistoryCache.AddMessageAsync(sessionId, new CachedChatMessage
@@ -87,8 +92,15 @@ public class ChatService : IChatService
             Timestamp = DateTimeOffset.UtcNow
         }, cancellationToken);
 
-        // Persist to database (fire-and-forget)
-        _ = PersistSessionAsync(sessionId, request.UserId, request.Message, llmResponse.Text);
+        // Persist to database with proper error logging
+        try
+        {
+            await PersistSessionAsync(sessionId, request.UserId, request.Message, llmResponse.Text);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to persist chat session {SessionId}", sessionId);
+        }
 
         return new ChatResponse
         {
@@ -107,48 +119,46 @@ public class ChatService : IChatService
 
     private async Task PersistSessionAsync(Guid sessionId, string userId, string userMessage, string aiText)
     {
-        try
+       
+            
+        
+            
+        var session = await _sessionRepository.GetByIdAsync(sessionId);
+        if (session == null)
         {
-            var session = await _sessionRepository.GetByIdAsync(sessionId);
-            if (session == null)
+            session = new Domain.Entities.ChatSession
             {
-                session = new Domain.Entities.ChatSession
-                {
-                    Id = sessionId,
-                    UserId = userId,
-                    Title = userMessage.Length > 100 ? userMessage[..100] : userMessage,
-                    Status = "Active",
-                    MessageCount = 1,
-                    LastActivityAt = DateTimeOffset.UtcNow
-                };
-                await _sessionRepository.AddAsync(session);
-            }
-            else
-            {
-                session.MessageCount++;
-                session.LastActivityAt = DateTimeOffset.UtcNow;
-                await _sessionRepository.UpdateAsync(session);
-            }
-
-            await _sessionRepository.AddMessageAsync(new Domain.Entities.ChatMessage
-            {
-                SessionId = sessionId,
-                SenderId = userId,
-                Content = userMessage,
-                Role = "user"
-            });
-
-            await _sessionRepository.AddMessageAsync(new Domain.Entities.ChatMessage
-            {
-                SessionId = sessionId,
-                SenderId = "ai",
-                Content = aiText,
-                Role = "assistant"
-            });
+                Id = sessionId,
+                UserId = userId,
+                Title = userMessage.Length > 100 ? userMessage[..100] : userMessage,
+                Status = "Active",
+                MessageCount = 1,
+                CreatedAt = DateTimeOffset.UtcNow,
+                LastActivityAt = DateTimeOffset.UtcNow
+            };
+            await _sessionRepository.AddAsync(session);
         }
-        catch
+        else
         {
-            // Fire-and-forget, don't fail the response
+            session.MessageCount++;
+            session.LastActivityAt = DateTimeOffset.UtcNow;
+            await _sessionRepository.UpdateAsync(session);
         }
+
+        await _sessionRepository.AddMessageAsync(new Domain.Entities.ChatMessage
+        {
+            SessionId = sessionId,
+            SenderId = userId,
+            Content = userMessage,
+            Role = "user"
+        });
+
+        await _sessionRepository.AddMessageAsync(new Domain.Entities.ChatMessage
+        {
+            SessionId = sessionId,
+            SenderId = "ai",
+            Content = aiText,
+            Role = "assistant"
+        });
     }
 }

@@ -122,6 +122,17 @@
     </div>
 
     <div class="input-bar">
+      <!-- Image Preview Area -->
+      @if (attachedFiles.length > 0) {
+        <div class="image-preview-container" style="padding: 8px 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.05); border-radius: 8px 8px 0 0; margin-bottom: -4px; flex-wrap: wrap;">
+          @for (file of attachedFiles; track $index) {
+            <div style="position: relative;">
+              <img [src]="file.preview" style="height: 40px; width: 40px; object-fit: cover; border-radius: 4px;" alt="Attached image preview">
+              <button (click)="removeImage($index)" style="position: absolute; top: -5px; right: -5px; background: white; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; color: #666; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0;"><iconify-icon icon="lucide:x" width="10" height="10"></iconify-icon></button>
+            </div>
+          }
+        </div>
+      }
       <div class="input-wrapper">
         <input
           type="text"
@@ -131,8 +142,8 @@
           class="chat-input"
         />
         <div class="input-actions">
-          <button class="icon-btn"><iconify-icon icon="lucide:paperclip" width="15" height="15"></iconify-icon></button>
-          <button class="icon-btn"><iconify-icon icon="lucide:mic" width="15" height="15"></iconify-icon></button>
+          <input type="file" #fileInput accept="image/*" multiple style="display: none" (change)="onFileSelected($event)">
+          <button class="icon-btn" (click)="fileInput.click()"><iconify-icon icon="lucide:paperclip" width="15" height="15"></iconify-icon></button>
         </div>
       </div>
       <button class="btn-send" (click)="sendMessage()">

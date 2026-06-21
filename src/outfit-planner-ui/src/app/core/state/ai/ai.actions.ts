@@ -4,7 +4,7 @@ import { ChatSession, ChatMessage, ChatResponse } from '../../../domain/entities
 export const AiActions = createActionGroup({
   source: 'ai',
   events: {
-    'Send Message': props<{ message: string; sessionId?: string }>(),
+    'Send Message': props<{ message: string; sessionId?: string; images?: File[] }>(),
     'Send Message Success': props<{ response: ChatResponse }>(),
     'Send Message Failure': props<{ error: string }>(),
 

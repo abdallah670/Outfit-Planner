@@ -13,6 +13,7 @@ export interface ChatMessage {
   sessionId: string;
   senderId: string;
   content: string;
+  images: File[];
   role: 'user' | 'assistant';
   createdAt: string;
 }

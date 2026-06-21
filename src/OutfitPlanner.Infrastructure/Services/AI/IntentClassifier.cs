@@ -9,6 +9,7 @@ public class IntentClassifier : IIntentClassifier
 {
     private static readonly Dictionary<string, string[]> IntentKeywords = new()
     {
+        ["greeting"] = new[] { "hi", "hello", "hey", "good morning", "good evening", "good afternoon", "howdy", "sup" },
         ["outfit_suggestion"] = new[] { "wear", "outfit", "put on", "dress", "what should", "what to", "suggest", "recommend" },
         ["outfit_rating"] = new[] { "rate", "rating", "score", "evaluate", "how does", "look good", "review" },
         ["wardrobe_analysis"] = new[] { "missing", "need", "wardrobe", "closet", "analysis", "analyze", "inventory", "have" },

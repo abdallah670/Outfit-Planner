@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="ngi18n">
+    <body>
+      <trans-unit id="Outfit Planner app name" datatype="html">
+        <source>Outfit Planner</source>
+        <target>Kleidungsplaner</target>
+      </trans-unit>
+      <trans-unit id="Wardrobe nav link" datatype="html">
+        <source>My Wardrobe</source>
+        <target>Mein Kleiderschrank</target>
+      </trans-unit>
+      <trans-unit id="Outfits nav link" datatype="html">
+        <source>Plan Outfits</source>
+        <target>Outfits planen</target>
+      </trans-unit>
+      <trans-unit id="Calendar nav link" datatype="html">
+        <source>Calendar</source>
+        <target>Kalender</target>
+      </trans-unit>
+      <trans-unit id="Social nav link" datatype="html">
+        <source>Social</source>
+        <target>Soziales</target>
+      </trans-unit>
+      <trans-unit id="AI Stylist nav link" datatype="html">
+        <source>AI Stylist</source>
+        <target>KI-Stylist</target>
+      </trans-unit>
+      <trans-unit id="Settings nav link" datatype="html">
+        <source>Settings</source>
+        <target>Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="English language option" datatype="html">
+        <source>English</source>
+        <target>English</target>
+      </trans-unit>
+      <trans-unit id="French language option" datatype="html">
+        <source>Fran&#231;ais</source>
+        <target>Fran&#231;ais</target>
+      </trans-unit>
+      <trans-unit id="German language option" datatype="html">
+        <source>Deutsch</source>
+        <target>Deutsch</target>
+      </trans-unit>
+      <trans-unit id="Arabic language option" datatype="html">
+        <source>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</source>
+        <target>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</target>
+      </trans-unit>
+      <!-- Settings page -->
+      <trans-unit id="General Preferences sidebar nav" datatype="html">
+        <source>General Preferences</source>
+        <target>Allgemeine Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="Notifications sidebar nav" datatype="html">
+        <source>Notifications</source>
+        <target>Benachrichtigungen</target>
+      </trans-unit>
+      <trans-unit id="Connected Accounts sidebar nav" datatype="html">
+        <source>Connected Accounts</source>
+        <target>Verbundene Konten</target>
+      </trans-unit>
+      <trans-unit id="Privacy and Data sidebar nav" datatype="html">
+        <source>Privacy & Data</source>
+        <target>Datenschutz und Daten</target>
+      </trans-unit>
+      <trans-unit id="App Preferences heading" datatype="html">
+        <source>App Preferences</source>
+        <target>App-Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="App Preferences subtitle" datatype="html">
+        <source>Customize your app experience</source>
+        <target>Passen Sie Ihre App-Erfahrung an</target>
+      </trans-unit>
+      <trans-unit id="Unsaved changes indicator" datatype="html">
+        <source>Unsaved changes</source>
+        <target>Ungespeicherte &#196;nderungen</target>
+      </trans-unit>
+      <trans-unit id="Temperature Unit label" datatype="html">
+        <source>Temperature Unit</source>
+        <target>Temperatureinheit</target>
+      </trans-unit>
+      <trans-unit id="Temperature Unit description" datatype="html">
+        <source>Choose your preferred unit for weather forecasts</source>
+        <target>W&#228;hlen Sie Ihre bevorzugte Einheit f&#252;r Wettervorhersagen</target>
+      </trans-unit>
+      <trans-unit id="Celsius button" datatype="html">
+        <source>Celsius (&#176;C)</source>
+        <target>Celsius (&#176;C)</target>
+      </trans-unit>
+      <trans-unit id="Fahrenheit button" datatype="html">
+        <source>Fahrenheit (&#176;F)</source>
+        <target>Fahrenheit (&#176;F)</target>
+      </trans-unit>
+      <trans-unit id="Language label" datatype="html">
+        <source>Language</source>
+        <target>Sprache</target>
+      </trans-unit>
+      <trans-unit id="Language description" datatype="html">
+        <source>Select the language for the interface</source>
+        <target>W&#228;hlen Sie die Sprache f&#252;r die Benutzeroberfl&#228;che</target>
+      </trans-unit>
+      <trans-unit id="Save Changes button" datatype="html">
+        <source>Save Changes</source>
+        <target>&#196;nderungen speichern</target>
+      </trans-unit>
+      <trans-unit id="Notifications heading" datatype="html">
+        <source>Notifications</source>
+        <target>Benachrichtigungen</target>
+      </trans-unit>
+      <trans-unit id="Notifications subtitle" datatype="html">
+        <source>Manage how you want to be notified</source>
+        <target>Legen Sie fest, wie Sie benachrichtigt werden m&#246;chten</target>
+      </trans-unit>
+      <trans-unit id="Daily Outfit Suggestion label" datatype="html">
+        <source>Daily Outfit Suggestion</source>
+        <target>T&#228;gliche Outfit-Empfehlung</target>
+      </trans-unit>
+      <trans-unit id="Daily Outfit Suggestion description" datatype="html">
+        <source>Receive a notification every morning with your daily pick</source>
+        <target>Erhalten Sie jeden Morgen eine Benachrichtigung mit Ihrer Tagesempfehlung</target>
+      </trans-unit>
+      <trans-unit id="Weekly Style Report label" datatype="html">
+        <source>Weekly Style Report</source>
+        <target>W&#246;chentlicher Stilbericht</target>
+      </trans-unit>
+      <trans-unit id="Weekly Style Report description" datatype="html">
+        <source>Get a summary of your outfits and stats on Sundays</source>
+        <target>Erhalten Sie jeden Sonntag eine Zusammenfassung Ihrer Outfits und Statistiken</target>
+      </trans-unit>
+      <trans-unit id="Weather Alerts label" datatype="html">
+        <source>Weather Alerts</source>
+        <target>Wetterwarnungen</target>
+      </trans-unit>
+      <trans-unit id="Weather Alerts description" datatype="html">
+        <source>Notify me if weather changes for my planned outfit</source>
+        <target>Benachrichtigen Sie mich, sich das Wetter f&#252;r mein geplantes Outfit &#228;ndert</target>
+      </trans-unit>
+      <trans-unit id="New Features label" datatype="html">
+        <source>New Features</source>
+        <target>Neue Funktionen</target>
+      </trans-unit>
+      <trans-unit id="New Features description" datatype="html">
+        <source>Be the first to know about new app features</source>
+        <target>Seien Sie der Erste, der von neuen App-Funktionen erf&#228;hrt</target>
+      </trans-unit>
+      <trans-unit id="Social Notifications label" datatype="html">
+        <source>Social Notifications</source>
+        <target>Soziale Benachrichtigungen</target>
+      </trans-unit>
+      <trans-unit id="Social Notifications description" datatype="html">
+        <source>Get notified when someone interacts with your outfits</source>
+        <target>Benachrichtigung erhalten, wenn jemand mit Ihren Outfits interagiert</target>
+      </trans-unit>
+      <trans-unit id="Connected Accounts heading" datatype="html">
+        <source>Connected Accounts</source>
+        <target>Verbundene Konten</target>
+      </trans-unit>
+      <trans-unit id="Connected Accounts subtitle" datatype="html">
+        <source>Manage third-party login providers</source>
+        <target>Drittanbieter-Anmeldedienste verwalten</target>
+      </trans-unit>
+      <trans-unit id="Connect button" datatype="html">
+        <source>Connect</source>
+        <target>Verbinden</target>
+      </trans-unit>
+      <trans-unit id="Disconnect button" datatype="html">
+        <source>Disconnect</source>
+        <target>Trennen</target>
+      </trans-unit>
+      <trans-unit id="Privacy and Data heading" datatype="html">
+        <source>Privacy & Data</source>
+        <target>Datenschutz und Daten</target>
+      </trans-unit>
+      <trans-unit id="Privacy and Data subtitle" datatype="html">
+        <source>Manage your personal data and privacy settings</source>
+        <target>Verwalten Sie Ihre pers&#246;nlichen Daten und Datenschutzeinstellungen</target>
+      </trans-unit>
+      <trans-unit id="Export Data label" datatype="html">
+        <source>Export Data</source>
+        <target>Daten exportieren</target>
+      </trans-unit>
+      <trans-unit id="Export Data description" datatype="html">
+        <source>Download a copy of all your outfits and wardrobe items (CSV format)</source>
+        <target>Laden Sie eine Kopie aller Outfits und Kleidungsst&#252;cke herunter (CSV-Format)</target>
+      </trans-unit>
+      <trans-unit id="Export CSV button" datatype="html">
+        <source>Export CSV</source>
+        <target>CSV exportieren</target>
+      </trans-unit>
+      <trans-unit id="Delete Account label" datatype="html">
+        <source>Delete Account</source>
+        <target>Konto l&#246;schen</target>
+      </trans-unit>
+      <trans-unit id="Delete Account description" datatype="html">
+        <source>Permanently remove your account and all data</source>
+        <target>Ihr Konto und alle Daten dauerhaft entfernen</target>
+      </trans-unit>
+      <trans-unit id="Delete Account button" datatype="html">
+        <source>Delete Account</source>
+        <target>Konto l&#246;schen</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

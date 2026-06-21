@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using System.Text.Json.Serialization;
 using Hangfire;
 using Hangfire.SqlServer;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Asp.Versioning;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -72,6 +75,39 @@ builder.Services.AddSwaggerGen(options =>
 
     // Use full names to avoid collisions between DTOs with same names in different namespaces
     options.CustomSchemaIds(type => type.FullName?.Replace("`", "_").Replace("[", "_").Replace("]", "_").Replace(",", "_").Replace(" ", ""));
+});
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+}).AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    var config = builder.Configuration.GetSection("RateLimiting");
+    options.AddFixedWindowLimiter("Api", opt =>
+    {
+        opt.PermitLimit = config.GetValue<int>("ApiLimit");
+        opt.Window = TimeSpan.FromMinutes(config.GetValue<int>("ApiWindowMinutes"));
+    });
+    
+    options.AddFixedWindowLimiter("Auth", opt =>
+    {
+        opt.PermitLimit = config.GetValue<int>("AuthLimit");
+        opt.Window = TimeSpan.FromMinutes(config.GetValue<int>("AuthWindowMinutes"));
+    });
+
+    options.AddFixedWindowLimiter("Feed", opt =>
+    {
+        opt.PermitLimit = config.GetValue<int>("FeedLimit");
+        opt.Window = TimeSpan.FromMinutes(config.GetValue<int>("FeedWindowMinutes"));
+    });
 });
 
 builder.Services.AddCors(options =>
@@ -189,6 +225,7 @@ var app = builder.Build();
 
 // Apply CORS before logging and exceptions to ensure headers are present on error responses
 app.UseCors("AllowAll");
+app.UseRateLimiter();
 
 // Add Request Logging Middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
@@ -196,7 +233,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
@@ -236,6 +273,7 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 app.MapGet("/", () => Results.Redirect("/swagger"));
 app.MapGet("/api", () => Results.Redirect("/swagger"));
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 try 

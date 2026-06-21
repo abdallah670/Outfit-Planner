@@ -22,8 +22,21 @@ public class ChatCommandHandler : IRequestHandler<ChatCommand, BaseCommandRespon
         {
             UserId = request.UserId,
             Message = request.Message,
-            SessionId = request.SessionId
+            SessionId = request.SessionId,
+            Images = request.Images ?? new List<string>()
         };
+
+        if (request.UploadedImages != null && request.UploadedImages.Any())
+        {
+            var imagesToProcess = request.UploadedImages.Take(6);
+            foreach (var img in imagesToProcess)
+            {
+                using var ms = new MemoryStream();
+                await img.CopyToAsync(ms, cancellationToken);
+                var base64 = Convert.ToBase64String(ms.ToArray());
+                chatRequest.Images.Add(base64);
+            }
+        }
 
         var chatResponse = await _chatService.ProcessMessageAsync(chatRequest, cancellationToken);
 

@@ -3,6 +3,7 @@ import {
   provideBrowserGlobalErrorListeners,
   isDevMode,
   importProvidersFrom,
+  ErrorHandler,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
@@ -10,6 +11,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { CookieService } from 'ngx-cookie-service';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
+import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
@@ -57,10 +59,13 @@ import { adminRepositoryProvider } from './data/repositories/admin.repository.im
 import { aiFeature, reducer as aiReducer } from './core/state/ai/ai.reducer';
 import { AiEffects } from './core/state/ai/ai.effects';
 import { aiRepositoryProvider } from './data/repositories/ai.repository.impl';
+import { provideServiceWorker } from '@angular/service-worker';
+import { GlobalErrorHandler } from './core/errors/global-error-handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideRouter(routes),
     provideHttpClient(withInterceptors([tokenInterceptor]), withFetch()),
     provideAnimationsAsync(),
@@ -81,6 +86,7 @@ export const appConfig: ApplicationConfig = {
        calendar: calendarFeature.reducer,
        search: searchReducer,
        ai: aiReducer,
+       router: routerReducer,
      }),
      provideEffects(
        authEffects,
@@ -115,6 +121,10 @@ export const appConfig: ApplicationConfig = {
       autoPause: true,
       trace: false,
       traceLimit: 75,
-    }),
+    }), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          }),
+    provideRouterStore(),
   ],
 };

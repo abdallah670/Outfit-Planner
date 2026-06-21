@@ -5,6 +5,7 @@ public class ChatRequest
     public string UserId { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
     public Guid? SessionId { get; set; }
+    public List<string>? Images { get; set; }
 }
 
 public class ChatResponse

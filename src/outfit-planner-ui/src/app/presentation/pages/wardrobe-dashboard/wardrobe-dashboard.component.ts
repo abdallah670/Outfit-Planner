@@ -344,7 +344,6 @@ export class WardrobeDashboardComponent implements OnInit {
         case 'f472b6':
         case 'fce7f3':
         case 'f8b4c4':
-        case 'f43f5e':
           return 'Pink';
 
         // Beige / Tan / Light brown
@@ -388,7 +387,6 @@ export class WardrobeDashboardComponent implements OnInit {
         case '1e40af':
         case '1e3a8a':
         case '172554':
-        case '0f172a':
           return 'Navy';
 
         default:

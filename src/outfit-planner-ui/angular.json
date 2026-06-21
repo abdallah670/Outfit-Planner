@@ -39,6 +39,14 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "en",
+        "locales": {
+          "ar": "src/locale/messages.ar.xlf",
+          "fr": "src/locale/messages.fr.xlf",
+          "de": "src/locale/messages.de.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -62,6 +70,9 @@
               "node_modules/sweetalert2/dist/sweetalert2.min.css",
               "src/styles.scss"
             ],
+            "polyfills": [
+              "@angular/localize/init"
+            ],
           },
           "configurations": {
             "production": {
@@ -77,12 +88,22 @@
                   "maximumError": "50kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "ar": {
+              "localize": ["ar"]
+            },
+            "fr": {
+              "localize": ["fr"]
+            },
+            "de": {
+              "localize": ["de"]
             }
           },
           "defaultConfiguration": "production"
@@ -95,9 +116,24 @@
             },
             "development": {
               "buildTarget": "outfit-planner-ui:build:development"
+            },
+            "ar": {
+              "buildTarget": "outfit-planner-ui:build:ar"
+            },
+            "fr": {
+              "buildTarget": "outfit-planner-ui:build:fr"
+            },
+            "de": {
+              "buildTarget": "outfit-planner-ui:build:de"
             }
           },
           "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n",
+          "options": {
+            "outputPath": "src/locale"
+          }
         }
       }
     }

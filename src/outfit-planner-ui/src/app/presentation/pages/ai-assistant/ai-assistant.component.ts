@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AiActions } from '../../../core/state/ai/ai.actions';
 import { selectMessages, selectIsSending, selectSessions, selectCurrentSessionId } from '../../../core/state/ai/ai.reducer';
@@ -49,6 +49,7 @@ export class AiAssistantComponent implements OnInit {
   );
 
   userMessage = '';
+  attachedFiles: { file: File, preview: string }[] = [];
   quickSuggestions = ['Date night?', 'Casual Friday', 'Beach trip', "What's missing?"];
 
   ngOnInit() {
@@ -76,12 +77,43 @@ export class AiAssistantComponent implements OnInit {
     }
   }
 
+  onFileSelected(event: Event) {
+    const files = (event.target as HTMLInputElement).files;
+    if (files) {
+      const remainingSlots = 6 - this.attachedFiles.length;
+      const filesToAdd = Array.from(files).slice(0, remainingSlots);
+      
+      filesToAdd.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.attachedFiles.push({
+            file: file,
+            preview: reader.result as string
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    // Clear input so the same file can be selected again if needed
+    (event.target as HTMLInputElement).value = '';
+  }
+
+  removeImage(index: number) {
+    this.attachedFiles.splice(index, 1);
+  }
+
   sendMessage() {
     const msg = this.userMessage.trim();
-    if (!msg) return;
+    if (!msg && this.attachedFiles.length === 0) return;
 
-    this.store.dispatch(AiActions.appendMessage({ role: 'user', content: msg }));
-    this.store.dispatch(AiActions.sendMessage({ message: msg }));
+    const filesToSend = this.attachedFiles.map(f => f.file);
+
+    // Get the current session ID and dispatch message with it
+    this.store.select(selectCurrentSessionId).pipe(take(1)).subscribe(sid => {
+      this.store.dispatch(AiActions.appendMessage({ role: 'user', content: msg || `Attached ${filesToSend.length} image(s)` }));
+      this.store.dispatch(AiActions.sendMessage({ message: msg, sessionId: sid ?? undefined, images: filesToSend }));
+      this.attachedFiles = [];
+    });
     this.userMessage = '';
   }
 

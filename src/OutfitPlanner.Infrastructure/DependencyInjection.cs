@@ -118,6 +118,7 @@ public static class DependencyInjection
         services.AddHealthChecks();
         services.AddScoped<IBackupService, BackupService>();
         services.AddScoped<ICacheManagementService, CacheManagementService>();
+        services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<IMaintenanceService, MaintenanceService>();
         services.AddScoped<IServiceManagementService, ServiceManagementService>();
         services.AddScoped<IUserActivityService, UserActivityService>();

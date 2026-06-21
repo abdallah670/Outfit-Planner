@@ -5,6 +5,7 @@
       *ngIf="item.imageUrl && !imageError"
       [src]="item.imageUrl"
       [alt]="item.name"
+      loading="lazy"
       class="card-image"
       (error)="onImageError()"
     />
@@ -12,6 +13,7 @@
       *ngIf="!item.imageUrl || imageError"
       src="assets/placeholder.jpg"
       alt="Placeholder"
+      loading="lazy"
       class="card-image"
     />
 

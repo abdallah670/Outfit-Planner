@@ -12,10 +12,14 @@ export class AiDataSource {
 
   constructor(private readonly http: HttpClient) {}
 
-  sendMessage(message: string, sessionId?: string): Observable<ChatResponse> {
-    const body: { message: string; sessionId?: string } = { message };
-    if (sessionId) body.sessionId = sessionId;
-    return this.http.post<ChatResponse>(`${this.apiUrl}/chat`, body);
+  sendMessage(message: string, sessionId?: string, images?: File[]): Observable<ChatResponse> {
+    const formData = new FormData();
+    formData.append('Message', message);
+    if (sessionId) formData.append('SessionId', sessionId);
+    if (images && images.length > 0) {
+      images.forEach(img => formData.append('UploadedImages', img));
+    }
+    return this.http.post<ChatResponse>(`${this.apiUrl}/chat`, formData);
   }
 
   getSessions(): Observable<ChatSession[]> {

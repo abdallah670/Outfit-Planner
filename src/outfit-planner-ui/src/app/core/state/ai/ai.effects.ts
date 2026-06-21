@@ -16,7 +16,7 @@ export class AiEffects {
     this.actions$.pipe(
       ofType(AiActions.sendMessage),
       mergeMap((action: ReturnType<typeof AiActions.sendMessage>) =>
-        this.aiUseCases.sendMessage(action.message, action.sessionId).pipe(
+        this.aiUseCases.sendMessage(action.message, action.sessionId, action.images).pipe(
           map((response: ChatResponse) => AiActions.sendMessageSuccess({ response })),
           catchError((error) => {
             this.snackBar.open('Failed to send message', 'Close', { duration: 3000 });

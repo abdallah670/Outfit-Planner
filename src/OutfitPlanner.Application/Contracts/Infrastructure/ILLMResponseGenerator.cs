@@ -23,5 +23,6 @@ public interface ILLMResponseGenerator
         ColorHarmonyResult harmony,
         StyleScoreResult styleScore,
         List<ChatHistoryEntry> recentHistory,
+        List<string>? images = null,
         CancellationToken cancellationToken = default);
 }

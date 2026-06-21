@@ -1,9 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "IshuoEAVayM=",
+  "dgSpecHash": "8b7hWeWz70E=",
   "success": true,
   "projectFilePath": "F:\\Meno\\Outfit-Planner\\tests\\OutfitPlanner.Application.IntegrationTests\\OutfitPlanner.Application.IntegrationTests.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\HP\\.nuget\\packages\\asp.versioning.abstractions\\10.0.0\\asp.versioning.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\asp.versioning.http\\10.0.0\\asp.versioning.http.10.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\asp.versioning.mvc\\10.0.0\\asp.versioning.mvc.10.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\asp.versioning.mvc.apiexplorer\\10.0.0\\asp.versioning.mvc.apiexplorer.10.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",

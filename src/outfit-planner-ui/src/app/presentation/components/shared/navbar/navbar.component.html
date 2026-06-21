@@ -2,15 +2,15 @@
   <div class="nav-left">
     <div class="logo" routerLink="/">
       <i class="fa-solid fa-shirt logo-icon"></i>
-      <span class="logo-text">Outfit Planner</span>
+      <span class="logo-text" i18n="Outfit Planner app name|The app brand name in the navbar">Outfit Planner</span>
     </div>
   </div>
 
   <div class="nav-center">
-    <a routerLink="/wardrobe" routerLinkActive="active" class="nav-link">My Wardrobe</a>
-    <a routerLink="/outfits" routerLinkActive="active" class="nav-link">Plan Outfits</a>
-    <a routerLink="/calendar" routerLinkActive="active" class="nav-link">Calendar</a>
-    <a routerLink="/social" routerLinkActive="active" class="nav-link">Social</a>
+    <a routerLink="/wardrobe" routerLinkActive="active" class="nav-link" i18n="Wardrobe nav link|Navigation link to wardrobe management">My Wardrobe</a>
+    <a routerLink="/outfits" routerLinkActive="active" class="nav-link" i18n="Outfits nav link|Navigation link to outfit planning">Plan Outfits</a>
+    <a routerLink="/calendar" routerLinkActive="active" class="nav-link" i18n="Calendar nav link|Navigation link to calendar view">Calendar</a>
+    <a routerLink="/social" routerLinkActive="active" class="nav-link" i18n="Social nav link|Navigation link to social feed">Social</a>
     <a routerLink="/ai" routerLinkActive="active" class="nav-link">
                <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -32,12 +32,35 @@
                   </g>
                 </svg>
            
-      AI Stylist</a>
-    <a routerLink="/settings" routerLinkActive="active" class="nav-link">Settings</a>
+      <span i18n="AI Stylist nav link|Navigation link to AI fashion assistant">AI Stylist</span></a>
+    <a routerLink="/settings" routerLinkActive="active" class="nav-link" i18n="Settings nav link|Navigation link to app settings">Settings</a>
   </div>
 
-  <div class="nav-right">
-    <button routerLink="/search" mat-icon-button class="nav-icon-btn" aria-label="Search">
+  <div class="nav-right" style="display: flex; align-items: center; gap: 8px;">
+  
+    <!-- <div>
+      <button mat-button [matMenuTriggerFor]="languageMenu" class="btn btn-outline-secondary btn-sm" style="border: none; display: flex; align-items: center; gap: 6px;" i18n="Language switcher button|Button that opens language selection menu">
+        <span class="fi fi-us" style="font-size: 16px; border-radius: 2px;"></span> EN
+      </button>
+      <mat-menu #languageMenu="matMenu">
+        <a mat-menu-item href="/en/" style="display: flex; align-items: center; gap: 12px;">
+          <span class="fi fi-us" style="font-size: 16px; border-radius: 2px;"></span> <span i18n="English language option|Language selection for English">English</span>
+        </a>
+        <a mat-menu-item href="/fr/" style="display: flex; align-items: center; gap: 12px;">
+          <span class="fi fi-fr" style="font-size: 16px; border-radius: 2px;"></span> <span i18n="French language option|Language selection for French">Fran&#231;ais</span>
+        </a>
+        <a mat-menu-item href="/de/" style="display: flex; align-items: center; gap: 12px;">
+          <span class="fi fi-de" style="font-size: 16px; border-radius: 2px;"></span> <span i18n="German language option|Language selection for German">Deutsch</span>
+        </a>
+        <a mat-menu-item href="/ar/" dir="rtl" style="display: flex; align-items: center; gap: 12px;">
+          <span class="fi fi-sa" style="font-size: 16px; border-radius: 2px;"></span> <span i18n="Arabic language option|Language selection for Arabic">&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</span>
+        </a>
+      </mat-menu>
+    </div>
+
+    <app-theme-toggle></app-theme-toggle> -->
+
+    <button routerLink="/search" mat-icon-button class="nav-icon-btn" i18n-aria-label i18n="Search button|Button to open search">
       <mat-icon>search</mat-icon>
     </button>
     <button
@@ -47,16 +70,17 @@
       [matBadge]="notificationsCount$ | async"
       [matBadgeHidden]="!(notificationsCount$ | async)"
       matBadgeColor="warn"
-      aria-label="Notifications"
+      i18n-aria-label
+      i18n="Notifications button|Button to view notifications"
     >
       <mat-icon>notifications_none</mat-icon>
     </button>
     
     <!-- Admin link (only shown for admin users) -->
-    <button *ngIf="isAdmin()" routerLink="/admin/dashboard" mat-icon-button class="nav-icon-btn" aria-label="Admin Panel">
+    <!-- <button *ngIf="isAdmin()" routerLink="/admin/dashboard" mat-icon-button class="nav-icon-btn" aria-label="Admin Panel">
       <mat-icon>admin_panel_settings</mat-icon>
     </button>
-    
+     -->
     <div class="user-profile" routerLink="/profile" style="cursor: pointer">
       <ng-container *ngIf="profilePictureUrl$ | async as profilePictureUrl; else fallbackAvatar">
         <div
@@ -68,12 +92,13 @@
             alt="Profile avatar"
             class="avatar-image"
             (error)="onImageError($event, profilePictureUrl)"
+            i18n-alt
           />
         </div>
       </ng-container>
       <ng-template #fallbackAvatar>
         <div class="avatar-placeholder">
-          <img src="assets/default-avatar.png" alt="Default avatar" class="avatar-image" />
+          <img src="assets/default-avatar.png" alt="Default avatar" class="avatar-image" i18n-alt />
         </div>
       </ng-template>
     </div>

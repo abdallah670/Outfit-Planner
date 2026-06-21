@@ -9,8 +9,8 @@ import { ChatSession, ChatMessage, ChatResponse } from '../entities/ai.entity';
 export class AiUseCases {
   constructor(@Inject(AI_REPOSITORY) private readonly aiRepository: AiRepository) {}
 
-  sendMessage(message: string, sessionId?: string): Observable<ChatResponse> {
-    return this.aiRepository.sendMessage(message, sessionId);
+  sendMessage(message: string, sessionId?: string, images?: File[]): Observable<ChatResponse> {
+    return this.aiRepository.sendMessage(message, sessionId, images);
   }
 
   getSessions(): Observable<ChatSession[]> {

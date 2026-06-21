@@ -16,6 +16,7 @@ using OutfitPlanner.Persistence.Repositories;
 using OutfitPlanner.Persistence.Security;
 using System.Linq;
 using System.Text;
+using System;
 
 namespace OutfitPlanner.Persistence;
 
@@ -36,8 +37,9 @@ public static class DependencyInjection
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 // Lockout settings
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-                options.Lockout.MaxFailedAccessAttempts = 5;
+                var lockoutSettings = configuration.GetSection("Lockout");
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(lockoutSettings.GetValue<int?>("DefaultLockoutMinutes") ?? 30);
+                options.Lockout.MaxFailedAccessAttempts = lockoutSettings.GetValue<int?>("MaxFailedAttempts") ?? 5;
                 options.Lockout.AllowedForNewUsers = true;
                 
                 // Password settings
@@ -75,8 +77,6 @@ public static class DependencyInjection
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
                 ClockSkew = TimeSpan.FromMinutes(5) // Allow 5 minutes clock skew
             };
-
-          
         });
 
         services.AddScoped<IJWTService, JwtService>();
@@ -112,6 +112,7 @@ public static class DependencyInjection
         services.AddScoped<IContentReportRepository, ContentReportRepository>();
         services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
         services.AddScoped<DataSeeder>();
+        
         return services;
     }
 }
