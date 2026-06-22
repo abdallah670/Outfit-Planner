@@ -8,8 +8,9 @@ public class GetFeedQueryValidator : AbstractValidator<GetFeedQuery>
     public GetFeedQueryValidator()
     {
         RuleFor(x => x.Cursor)
-            .NotEmpty()
-            .WithMessage("Cursor is required");
+            .Empty()
+            .When(x => x.Cursor != null)
+            .WithMessage("Cursor cannot be empty when provided");
 
         RuleFor(x => x.PageSize)
             .GreaterThan(0)
@@ -22,8 +23,8 @@ public class GetFeedQueryValidator : AbstractValidator<GetFeedQuery>
             .WithMessage("SortBy must be either 'popular' or 'recent'");
 
         RuleFor(x => x.Visibility)
-            .IsInEnum()
-            .WithMessage("Invalid visibility value");
+            .Must(x => x == "Private" || x == "Followers" || x == "Public")
+            .WithMessage("Visibility must be 'Private', 'Followers', or 'Public'");
     }
 }
 
@@ -45,9 +46,10 @@ public class GetPostCommentsQueryValidator : AbstractValidator<GetPostCommentsQu
             .NotEmpty()
             .WithMessage("PostId is required");
 
-        RuleFor(x=>x.Cursor)
-            .NotEmpty()
-            .WithMessage("Cursor is required");
+        RuleFor(x => x.Cursor)
+            .Empty()
+            .When(x => x.Cursor != null)
+            .WithMessage("Cursor cannot be empty when provided");
 
         RuleFor(x => x.PageSize)
             .GreaterThan(0)

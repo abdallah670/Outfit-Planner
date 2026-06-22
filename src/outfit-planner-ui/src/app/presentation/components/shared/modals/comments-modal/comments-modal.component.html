@@ -89,7 +89,7 @@
               }
 
               <!-- Nested Replies -->
-              @if (comment.replies && comment.replies.length > 0) {
+              @if (comment.totalReplies > 0) {
                 <div class="replies-container">
                   <button class="toggle-replies-btn" (click)="toggleShowReplies(comment.id)">
                     <iconify-icon [icon]="areRepliesExpanded(comment.id) ? 'lucide:chevron-up' : 'lucide:chevron-down'" style="font-size: 14px"></iconify-icon>

@@ -70,6 +70,41 @@ export const aiFeature = createFeature({
       error,
     })),
 
+    on(AiActions.selectSession, (state, { sessionId }) => ({
+      ...state,
+      currentSessionId: sessionId,
+      messages: [],
+      currentPage: 1,
+      hasMoreMessages: false,
+      isLoading: true,
+      error: null,
+    })),
+    on(AiActions.loadMessages, (state) => ({
+      ...state,
+      isLoading: true,
+      error: null,
+    })),
+    on(AiActions.loadMessagesSuccess, (state, { messages, page, pageSize }) => {
+      // The backend returns messages ordered by CreatedAt ASC, so we can just prepend or replace.
+      // But wait! If we append page 1 to empty, we just set it.
+      // If we prepend page 2, we spread new messages then old messages.
+      const hasMore = messages.length === pageSize;
+      const newMessages = page === 1 ? messages : [...messages, ...state.messages];
+      
+      return {
+        ...state,
+        messages: newMessages,
+        currentPage: page,
+        hasMoreMessages: hasMore,
+        isLoading: false,
+      };
+    }),
+    on(AiActions.loadMessagesFailure, (state, { error }) => ({
+      ...state,
+      isLoading: false,
+      error,
+    })),
+
     on(AiActions.appendMessage, (state, { role, content }) => ({
       ...state,
       messages: [
@@ -103,4 +138,6 @@ export const {
   selectIsSending,
   selectIsLoading,
   selectError,
+  selectCurrentPage,
+  selectHasMoreMessages,
 } = aiFeature;

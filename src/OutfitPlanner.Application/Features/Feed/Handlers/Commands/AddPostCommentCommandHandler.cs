@@ -58,7 +58,21 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
                 await _unitOfWork.Repository<Outfit>().UpdateAsync(outfit);
             }
         }
-
+        //update total replies count for parent comment if this is a reply and update total replies count for parent comment of parent comment if this is a reply to a reply
+        while(comment.ParentCommentId.HasValue)
+        {
+            var parentComment = await _commentRepository.GetByIdAsync(comment.ParentCommentId.Value);
+            if (parentComment != null)
+            {
+                parentComment.TotalReplies++;
+                await _commentRepository.UpdateAsync(parentComment);
+                comment = parentComment;
+            }
+            else
+            {
+                break;
+            }
+        }
         await _unitOfWork.SaveChangesAsync();
 
         response.Success = true;

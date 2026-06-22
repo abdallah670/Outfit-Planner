@@ -1,16 +1,16 @@
+using OutfitPlanner.Domain.Enums;
+
 namespace OutfitPlanner.Domain.Entities;
 
 /// <summary>
-/// Pre-calculated trending outfit score for a specific date
+/// Pre-calculated trending post score for a specific date
 /// </summary>
 public class TrendingOutfit : BaseEntity
 {
-    public Guid OutfitId { get; set; }
-    public Outfit Outfit { get; set; } = null!;
-  
-    public Guid? PollId { get; set; }
-    public ValidationPoll? Poll { get; set; }
+    public Guid FeedPostId { get; set; }
+    public FeedPost FeedPost { get; set; } = null!;
     
+    public PostType PostType { get; set; }
     
     public int LikesCount { get; set; }
     public int CommentsCount { get; set; }

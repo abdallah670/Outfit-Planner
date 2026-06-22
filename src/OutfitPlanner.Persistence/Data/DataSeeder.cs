@@ -687,25 +687,20 @@ public class DataSeeder
             return;
         }
 
-        var outfits = await _context.Outfits.Take(10).ToListAsync();
-        var polls = await _context.ValidationPolls.Take(5).ToListAsync();
+        var feedPosts = await _context.FeedPosts.Take(10).ToListAsync();
 
-        if (outfits.Count == 0) return;
+        if (feedPosts.Count == 0) return;
 
         var trendingOutfits = new List<TrendingOutfit>();
         var random = new Random(42);
 
-        for (int i = 0; i < Math.Min(outfits.Count, 10); i++)
+        for (int i = 0; i < feedPosts.Count; i++)
         {
-            var poll = polls.ElementAtOrDefault(i % polls.Count);
-            
             trendingOutfits.Add(new TrendingOutfit
             {
                 Id = Guid.NewGuid(),
-                OutfitId = outfits[i].Id,
-                PollId = poll?.Id ?? Guid.Empty,
-             
-               
+                FeedPostId = feedPosts[i].Id,
+                PostType = feedPosts[i].PostType,
                 TrendingScore = random.Next(50, 100) / 10.0m,
                 RankPosition = i + 1,
                 Date = DateTime.UtcNow.Date,

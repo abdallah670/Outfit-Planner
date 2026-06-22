@@ -12,6 +12,11 @@ export const AiActions = createActionGroup({
     'Load Sessions Success': props<{ sessions: ChatSession[] }>(),
     'Load Sessions Failure': props<{ error: string }>(),
 
+    'Select Session': props<{ sessionId: string }>(),
+    'Load Messages': props<{ sessionId: string; page?: number; pageSize?: number }>(),
+    'Load Messages Success': props<{ messages: ChatMessage[]; page: number; pageSize: number }>(),
+    'Load Messages Failure': props<{ error: string }>(),
+
     'Append Message': props<{ role: 'user' | 'assistant'; content: string }>(),
     'Clear Current Session': props<{ userId: string }>(),
   },

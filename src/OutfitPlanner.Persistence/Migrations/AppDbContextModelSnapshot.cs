@@ -1213,6 +1213,9 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid>("FeedPostId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1221,11 +1224,8 @@ namespace OutfitPlanner.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<Guid>("OutfitId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("PollId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("PostType")
+                        .HasColumnType("int");
 
                     b.Property<int>("RankPosition")
                         .HasColumnType("int");
@@ -1239,13 +1239,11 @@ namespace OutfitPlanner.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PollId");
-
                     b.HasIndex("Date", "RankPosition");
 
                     b.HasIndex("Date", "TrendingScore");
 
-                    b.HasIndex("OutfitId", "Date")
+                    b.HasIndex("FeedPostId", "Date")
                         .IsUnique();
 
                     b.ToTable("TrendingOutfits", (string)null);
@@ -1925,20 +1923,13 @@ namespace OutfitPlanner.Persistence.Migrations
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.TrendingOutfit", b =>
                 {
-                    b.HasOne("OutfitPlanner.Domain.Entities.Outfit", "Outfit")
+                    b.HasOne("OutfitPlanner.Domain.Entities.FeedPost", "FeedPost")
                         .WithMany()
-                        .HasForeignKey("OutfitId")
+                        .HasForeignKey("FeedPostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OutfitPlanner.Domain.Entities.ValidationPoll", "Poll")
-                        .WithMany()
-                        .HasForeignKey("PollId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Outfit");
-
-                    b.Navigation("Poll");
+                    b.Navigation("FeedPost");
                 });
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.UserPreferences", b =>

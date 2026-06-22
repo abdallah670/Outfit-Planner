@@ -9,42 +9,42 @@ public class TrendingOutfitConfiguration : IEntityTypeConfiguration<TrendingOutf
     public void Configure(EntityTypeBuilder<TrendingOutfit> builder)
     {
         builder.ToTable("TrendingOutfits");
-        
+
         builder.HasKey(x => x.Id);
-        
+
+        builder.Property(x => x.FeedPostId)
+            .IsRequired();
+
+        builder.Property(x => x.PostType)
+            .IsRequired();
+
         builder.Property(x => x.TrendingScore)
             .HasPrecision(10, 2)
             .IsRequired();
-      
+
         builder.Property(x => x.LikesCount)
             .IsRequired()
             .HasDefaultValue(0);
-        
+
         builder.Property(x => x.CommentsCount)
             .IsRequired()
             .HasDefaultValue(0);
-      
-        
+
+
         builder.Property(x => x.RankPosition)
             .IsRequired();
-        
+
         builder.Property(x => x.Date)
             .IsRequired();
-        
-        builder.HasOne(x => x.Outfit)
+
+        builder.HasOne(x => x.FeedPost)
             .WithMany()
-            .HasForeignKey(x => x.OutfitId)
+            .HasForeignKey(x => x.FeedPostId)
             .OnDelete(DeleteBehavior.Cascade);
-        
-        builder.HasOne(x => x.Poll)
-            .WithMany()
-            .HasForeignKey(x => x.PollId)
-            .OnDelete(DeleteBehavior.NoAction)
-            .IsRequired(false);
-        
-        builder.HasIndex(x => new { x.OutfitId, x.Date })
+
+        builder.HasIndex(x => new { x.FeedPostId, x.Date })
             .IsUnique();
-        
+
         builder.HasIndex(x => new { x.Date, x.TrendingScore });
         builder.HasIndex(x => new { x.Date, x.RankPosition });
     }

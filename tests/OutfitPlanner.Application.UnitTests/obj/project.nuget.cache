@@ -138,6 +138,18 @@
       "targetGraphs": [
         "net10.0"
       ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'SQLitePCLRaw.lib.e_sqlite3' 2.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-2m69-gcr7-jv3q",
+      "projectPath": "F:\\Meno\\Outfit-Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
+      "warningLevel": 1,
+      "filePath": "F:\\Meno\\Outfit-Planner\\tests\\OutfitPlanner.Application.UnitTests\\OutfitPlanner.Application.UnitTests.csproj",
+      "libraryId": "SQLitePCLRaw.lib.e_sqlite3",
+      "targetGraphs": [
+        "net10.0"
+      ]
     }
   ]
 }

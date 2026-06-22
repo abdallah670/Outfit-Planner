@@ -15,10 +15,14 @@ public class TrendingOutfitRepository : GenericRepository<TrendingOutfit>, ITren
     public async Task<IEnumerable<TrendingOutfit>> GetTrendingByLocationAsync(string location, int count = 10)
     {
         return await _dbSet
-            .Include(t => t.Outfit)
-                .ThenInclude(o => o.User)
-            .Include(t => t.Poll)
-                .ThenInclude(p => p.Options)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.User)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.Outfit)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.Poll)
+                    .ThenInclude(p => p.Options)
+                        .ThenInclude(o => o.Outfit)
             .Where(t => t.Date.Date == DateTime.Today)
             .OrderByDescending(t => t.TrendingScore)
             .Take(count)
@@ -30,10 +34,14 @@ public class TrendingOutfitRepository : GenericRepository<TrendingOutfit>, ITren
         // Only return recent trending data (last 7 days) and order by score
         var cutoffDate = DateTime.Today.AddDays(-7);
         return await _dbSet
-            .Include(t => t.Outfit)
-                .ThenInclude(o => o.User)
-            .Include(t => t.Poll)
-                .ThenInclude(p => p.Options)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.User)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.Outfit)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.Poll)
+                    .ThenInclude(p => p.Options)
+                        .ThenInclude(o => o.Outfit)
             .Where(t => t.Date >= cutoffDate)
             .OrderByDescending(t => t.TrendingScore)
             .Take(count)
@@ -43,24 +51,28 @@ public class TrendingOutfitRepository : GenericRepository<TrendingOutfit>, ITren
     public async Task<(IEnumerable<TrendingOutfit> Items, int TotalCount)> GetGlobalTrendingPagedAsync(int page, int pageSize)
     {
         var cutoffDate = DateTime.Today.AddDays(-7);
-        
+
         // Get total count for pagination metadata
         var totalCount = await _dbSet
             .Where(t => t.Date >= cutoffDate)
             .CountAsync();
-        
+
         // Get paginated items
         var items = await _dbSet
-            .Include(t => t.Outfit)
-                .ThenInclude(o => o.User)
-            .Include(t => t.Poll)
-                .ThenInclude(p => p.Options)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.User)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.Outfit)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.Poll)
+                    .ThenInclude(p => p.Options)
+                        .ThenInclude(o => o.Outfit)
             .Where(t => t.Date >= cutoffDate)
             .OrderByDescending(t => t.TrendingScore)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
-        
+
         return (items, totalCount);
     }
 
@@ -68,10 +80,14 @@ public class TrendingOutfitRepository : GenericRepository<TrendingOutfit>, ITren
     {
         var cutoffDate = DateTime.Today.AddDays(-7);
         var query = _dbSet
-            .Include(t => t.Outfit)
-                .ThenInclude(o => o.User)
-            .Include(t => t.Poll)
-                .ThenInclude(p => p.Options)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.User)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.Outfit)
+            .Include(t => t.FeedPost)
+                .ThenInclude(f => f.Poll)
+                    .ThenInclude(p => p.Options)
+                        .ThenInclude(o => o.Outfit)
             .Where(t => t.Date >= cutoffDate)
             .AsQueryable();
 

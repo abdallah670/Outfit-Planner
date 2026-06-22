@@ -25,6 +25,18 @@ public class ChatSessionRepository : GenericRepository<ChatSession>, IChatSessio
             .ToListAsync();
     }
 
+    public async Task<List<ChatMessage>> GetMessagesBySessionIdAsync(Guid sessionId, int skip, int take)
+    {
+        var messages = await _context.Set<ChatMessage>()
+            .Where(m => m.SessionId == sessionId)
+            .OrderByDescending(m => m.CreatedAt)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+            
+        return messages.OrderBy(m => m.CreatedAt).ToList();
+    }
+
     public async Task AddMessageAsync(ChatMessage message)
     {
         await _context.Set<ChatMessage>().AddAsync(message);

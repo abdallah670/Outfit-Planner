@@ -26,7 +26,7 @@ export class AiDataSource {
     return this.http.get<ChatSession[]>(`${this.apiUrl}/sessions`);
   }
 
-  getSessionMessages(sessionId: string): Observable<ChatMessage[]> {
-    return this.http.get<ChatMessage[]>(`${this.apiUrl}/sessions/${sessionId}/messages`);
+  getSessionMessages(sessionId: string, page: number = 1, pageSize: number = 20): Observable<ChatMessage[]> {
+    return this.http.get<ChatMessage[]>(`${this.apiUrl}/sessions/${sessionId}/messages?page=${page}&pageSize=${pageSize}`);
   }
 }

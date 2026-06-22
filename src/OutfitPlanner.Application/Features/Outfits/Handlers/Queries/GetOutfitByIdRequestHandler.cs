@@ -42,7 +42,7 @@ public class GetOutfitByIdRequestHandler : IRequestHandler<GetOutfitByIdRequest,
             }
             
             var outfitDto = _mapper.Map<OutfitDto>(outfit);
-            
+
             // Map community feedback data
             var feedPost = await _feedPostRepository.GetFirstOrDefaultAsync(f => f.OutfitId == request.Id);
             if (feedPost != null)
@@ -51,13 +51,13 @@ public class GetOutfitByIdRequestHandler : IRequestHandler<GetOutfitByIdRequest,
                 outfitDto.PostType = feedPost.PostType.ToString();
                 outfitDto.LikesCount = feedPost.LikesCount;
                 outfitDto.CommentsCount = feedPost.CommentsCount;
-            }
-            
-            var trendingOutfit = await _trendingOutfitRepository.GetFirstOrDefaultAsync(t => t.OutfitId == request.Id);
-            if (trendingOutfit != null)
-            {
-                outfitDto.Rank = trendingOutfit.RankPosition;
-                outfitDto.Score =trendingOutfit.TrendingScore;
+
+                var trendingOutfit = await _trendingOutfitRepository.GetFirstOrDefaultAsync(t => t.FeedPostId == feedPost.Id);
+                if (trendingOutfit != null)
+                {
+                    outfitDto.Rank = trendingOutfit.RankPosition;
+                    outfitDto.Score = trendingOutfit.TrendingScore;
+                }
             }
 
             return outfitDto;

@@ -30,6 +30,10 @@ export class OutfitPostDetailComponent implements OnInit {
   authorAvatar = 'assets/default-avatar.png';
   currentUser: any = null;
 
+  get post(): FeedPostWithComments | null {
+    return this.outfitPost();
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
@@ -59,20 +63,16 @@ export class OutfitPostDetailComponent implements OnInit {
   }
 
   handleCommentAdded = (postId: string): void => {
-    if (this.outfitPost() && this.outfitPost()!.id === postId) {
-      this.outfitPost.update(post => {
-        if (post) post.commentsCount++;
-        return post;
-      });
+    const post = this.outfitPost();
+    if (post && post.id === postId) {
+      this.outfitPost.set({ ...post, commentsCount: post.commentsCount + 1 });
     }
   }
 
   handleCommentDeleted = (postId: string): void => {
-    if (this.outfitPost() && this.outfitPost()!.id === postId) {
-      this.outfitPost.update(post => {
-        if (post && post.commentsCount > 0) post.commentsCount--;
-        return post;
-      });
+    const post = this.outfitPost();
+    if (post && post.id === postId && post.commentsCount > 0) {
+      this.outfitPost.set({ ...post, commentsCount: post.commentsCount - 1 });
     }
   }
 
@@ -83,15 +83,12 @@ export class OutfitPostDetailComponent implements OnInit {
     const originalState = post.isLiked;
     const originalCount = post.likesCount;
 
-    // Optimistic update
-    this.outfitPost.update(p => {
-      if (!p) return p;
-      return {
-        ...p,
-        isLiked: !originalState,
-        likesCount: originalState ? p.likesCount - 1 : p.likesCount + 1
-      };
-    });
+    const updatedPost = {
+      ...post,
+      isLiked: !originalState,
+      likesCount: originalState ? post.likesCount - 1 : post.likesCount + 1
+    };
+    this.outfitPost.set(updatedPost);
 
     const action$ = originalState 
       ? this.feedUseCases.removeReaction(post.id) 
@@ -102,13 +99,10 @@ export class OutfitPostDetailComponent implements OnInit {
         error: (err) => {
           console.error('Failed to toggle reaction:', err);
           // Rollback on error
-          this.outfitPost.update(p => {
-            if (!p) return p;
-            return {
-              ...p,
-              isLiked: originalState,
-              likesCount: originalCount
-            };
+          this.outfitPost.set({
+            ...post,
+            isLiked: originalState,
+            likesCount: originalCount
           });
         }
       })

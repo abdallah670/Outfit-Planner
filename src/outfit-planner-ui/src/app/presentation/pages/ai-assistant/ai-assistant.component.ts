@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { Observable, take } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AiActions } from '../../../core/state/ai/ai.actions';
-import { selectMessages, selectIsSending, selectSessions, selectCurrentSessionId } from '../../../core/state/ai/ai.reducer';
+import { selectMessages, selectIsSending, selectSessions, selectCurrentSessionId, selectHasMoreMessages, selectCurrentPage } from '../../../core/state/ai/ai.reducer';
 import { selectUser } from '../../../core/state/auth/auth.selectors';
 import { selectAllItems } from '../../../core/state/wardrobe/wardrobe.selectors';
 import { selectCurrentWeather, selectWeatherLoading } from '../../../core/state/weather/weather.selectors';
@@ -37,6 +37,8 @@ export class AiAssistantComponent implements OnInit {
   isSending$: Observable<boolean> = this.store.select(selectIsSending);
   sessions$ = this.store.select(selectSessions);
   currentSessionId$: Observable<string | null> = this.store.select(selectCurrentSessionId);
+  hasMoreMessages$: Observable<boolean> = this.store.select(selectHasMoreMessages);
+  currentPage$: Observable<number> = this.store.select(selectCurrentPage);
   user$ = this.store.select(selectUser);
 
   weather$: Observable<Weather | null> = this.store.select(selectCurrentWeather);
@@ -124,6 +126,20 @@ export class AiAssistantComponent implements OnInit {
 
   newSession() {
     this.store.dispatch(AiActions.clearCurrentSession({ userId: '' }));
+  }
+
+  selectSession(id: string) {
+    this.store.dispatch(AiActions.selectSession({ sessionId: id }));
+  }
+
+  loadMoreMessages() {
+    this.store.select(selectCurrentSessionId).pipe(take(1)).subscribe(sessionId => {
+      if (sessionId) {
+        this.store.select(selectCurrentPage).pipe(take(1)).subscribe(page => {
+          this.store.dispatch(AiActions.loadMessages({ sessionId, page: page + 1, pageSize: 20 }));
+        });
+      }
+    });
   }
 
   trackById(_index: number, item: ChatMessage) {

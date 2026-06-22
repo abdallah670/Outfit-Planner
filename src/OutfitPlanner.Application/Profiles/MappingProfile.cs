@@ -223,13 +223,18 @@ public class MappingProfile : Profile
 
         // TrendingOutfit
         CreateMap<TrendingOutfit, TrendingOutfitDto>()
-            .ForMember(d => d.Id, opt => opt.MapFrom(s => s.OutfitId))
-            .ForMember(d => d.ImageUrl, opt => opt.MapFrom(s => s.Outfit.ImageUrl))
-            .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Outfit.UserId))
-            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Outfit.User.Name))
-            .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.Outfit.User.ProfilePictureUrl))
-            .ForMember(d => d.TrendingScore, opt => opt.MapFrom(s => s.TrendingScore)).
-            ForMember(d => d.LikesCount, opt => opt.MapFrom(s => s.LikesCount))
+            .ForMember(d => d.FeedPostId, opt => opt.MapFrom(s => s.FeedPostId))
+            .ForMember(d => d.PostType, opt => opt.MapFrom(s => s.PostType.ToString()))
+            .ForMember(d => d.Id, opt => opt.MapFrom(s => s.FeedPostId))
+            .ForMember(d => d.ImageUrl, opt => opt.MapFrom(s => 
+                s.FeedPost.Outfit != null ? s.FeedPost.Outfit.ImageUrl : 
+                (s.FeedPost.Poll != null && s.FeedPost.Poll.Options.Any(o => o.Outfit != null) 
+                    ? s.FeedPost.Poll.Options.FirstOrDefault(o => o.Outfit != null)!.Outfit!.ImageUrl : null)))
+            .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.FeedPost.UserId))
+            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.FeedPost.User.Name))
+            .ForMember(d => d.UserAvatar, opt => opt.MapFrom(s => s.FeedPost.User.ProfilePictureUrl))
+            .ForMember(d => d.TrendingScore, opt => opt.MapFrom(s => s.TrendingScore))
+            .ForMember(d => d.LikesCount, opt => opt.MapFrom(s => s.LikesCount))
             .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.CommentsCount))
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.Date));
 

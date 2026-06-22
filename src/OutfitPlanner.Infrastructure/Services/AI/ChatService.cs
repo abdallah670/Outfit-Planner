@@ -116,7 +116,7 @@ public class ChatService : IChatService
             SuggestedActions = llmResponse.SuggestedActions
         };
     }
-
+    
     private async Task PersistSessionAsync(Guid sessionId, string userId, string userMessage, string aiText)
     {
        

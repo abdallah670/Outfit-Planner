@@ -18,8 +18,8 @@ export class AiRepositoryImpl implements AiRepository {
     return this.dataSource.getSessions();
   }
 
-  getSessionMessages(sessionId: string): Observable<ChatMessage[]> {
-    return this.dataSource.getSessionMessages(sessionId);
+  getSessionMessages(sessionId: string, page: number = 1, pageSize: number = 20): Observable<ChatMessage[]> {
+    return this.dataSource.getSessionMessages(sessionId, page, pageSize);
   }
 }
 

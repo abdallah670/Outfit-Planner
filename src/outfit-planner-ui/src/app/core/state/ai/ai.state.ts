@@ -5,6 +5,8 @@ export interface AiState {
   currentSessionId: string | null;
   messages: ChatMessage[];
   images: File[];
+  currentPage: number;
+  hasMoreMessages: boolean;
   isSending: boolean;
   isLoading: boolean;
   error: string | null;
@@ -15,6 +17,8 @@ export const initialAiState: AiState = {
   currentSessionId: null,
   messages: [],
   images: [],
+  currentPage: 1,
+  hasMoreMessages: false,
   isSending: false,
   isLoading: false,
   error: null,

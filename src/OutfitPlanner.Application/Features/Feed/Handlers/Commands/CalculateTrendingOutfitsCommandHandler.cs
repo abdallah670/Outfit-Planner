@@ -50,15 +50,18 @@ public class CalculateTrendingOutfitsCommandHandler : IRequestHandler<CalculateT
 
             foreach (var feedPost in feedPosts)
             {
-                if (feedPost.OutfitId == null)
+                // Skip posts that are neither outfit nor poll posts
+                if (feedPost.PostType == PostType.Outfit && feedPost.OutfitId == null)
+                    continue;
+                if (feedPost.PostType == PostType.Poll && feedPost.PollId == null)
                     continue;
 
                 var score = CalculateTrendingScore(feedPost);
-                
+
                 scoredPosts.Add(new TrendingOutfit
                 {
-                    OutfitId = feedPost.OutfitId.Value,
-                    PollId = feedPost.PollId,
+                    FeedPostId = feedPost.Id,
+                    PostType = feedPost.PostType,
                     TrendingScore = score,
                     LikesCount = feedPost.LikesCount,
                     CommentsCount = feedPost.CommentsCount,

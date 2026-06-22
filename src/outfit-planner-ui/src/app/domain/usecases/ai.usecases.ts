@@ -17,7 +17,7 @@ export class AiUseCases {
     return this.aiRepository.getSessions();
   }
 
-  getSessionMessages(sessionId: string): Observable<ChatMessage[]> {
-    return this.aiRepository.getSessionMessages(sessionId);
+  getSessionMessages(sessionId: string, page: number = 1, pageSize: number = 20): Observable<ChatMessage[]> {
+    return this.aiRepository.getSessionMessages(sessionId, page, pageSize);
   }
 }

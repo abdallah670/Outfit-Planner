@@ -264,6 +264,39 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
     }
     return false;
   }
+  private deleteReplyFromTree(comments: PostComment[], commentId: string): boolean {
+    for (const comment of comments) {
+      if (comment.replies && comment.replies.length > 0) {
+        const index = comment.replies.findIndex(r => r.id === commentId);
+        if (index !== -1) {
+          comment.replies.splice(index, 1);
+          return true;
+        }
+        if (this.deleteReplyFromTree(comment.replies, commentId)) return true;
+      }
+    }
+    return false;
+  }
+  //switch parent comment of replies of deleted comment if it has replies, otherwise remove it from the list
+  swapParentCommentofRepliesofDeletedComment(comments: PostComment[], commentId: string): boolean {
+    for (const comment of comments) {
+      if (comment.id === commentId) {
+        if (comment.replies && comment.replies.length > 0) {
+          for (const reply of comment.replies) {
+            reply.parentCommentId = comment.parentCommentId || undefined;
+            if (reply.parentCommentId) {
+              this.addReplyToTree(this.comments, reply.parentCommentId, reply);
+            } else {
+              this.comments.push(reply);
+            }
+          }
+        }
+    }
+        
+   
+  }
+  return false;
+ }
 
   deleteComment(commentId: string): void {
     Swal.fire({
@@ -279,7 +312,18 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.feedUseCases.deleteComment(commentId).subscribe({
             next: () => {
-              this.loadComments(true);
+              //swap parent id of replies
+              this.swapParentCommentofRepliesofDeletedComment(this.comments, commentId);
+              // Try to remove from top-level comments first
+              const index = this.comments.findIndex(c => c.id === commentId);
+              
+              if (index !== -1) {
+                this.comments.splice(index, 1);
+              } else {
+              
+                // If not found at top level, try to remove from replies
+                this.deleteReplyFromTree(this.comments, commentId);
+              }
               this.onCommentDeleted?.(this.postId);
               Swal.fire('Deleted!', 'Comment deleted successfully', 'success')
                 .then(() => setTimeout(() => Swal.close(), 500));
@@ -294,11 +338,56 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
     });
   }
   toggleShowReplies(commentId: string): void {
-    if (this.expandedReplies.has(commentId)) {
-      this.expandedReplies.delete(commentId);
+    const newSet = new Set(this.expandedReplies);
+    if (newSet.has(commentId)) {
+      newSet.delete(commentId);
     } else {
-      this.expandedReplies.add(commentId);
+      newSet.add(commentId);
+      // Lazily fetch replies from the backend when expanding
+      this.loadRepliesForComment(commentId);
     }
+    this.expandedReplies = newSet;
+    this.cdRef.detectChanges();
+  }
+
+  private loadRepliesForComment(commentId: string): void {
+    // Find the comment in the tree and check if replies are already populated
+    const findComment = (comments: PostComment[]): PostComment | null => {
+      for (const c of comments) {
+        if (c.id === commentId) return c;
+        if (c.replies && c.replies.length > 0) {
+          const found = findComment(c.replies);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const comment = findComment(this.comments);
+    if (!comment) return;
+
+    // Only fetch if replies are not already loaded
+    if (comment.replies && comment.replies.length > 0) return;
+
+    // Fetch replies via the same paginated comments endpoint using parentCommentId
+    this.subscriptions.add(
+      this.feedUseCases.getComments(this.postId, undefined, 100).subscribe({
+        next: (result) => {
+          // Filter all comments that are direct children of this comment
+          const directReplies = (result.items || []).filter(
+            c => c.parentCommentId === commentId
+          );
+          if (directReplies.length > 0) {
+            comment.replies = directReplies;
+            // Trigger change detection
+            this.cdRef.detectChanges();
+          }
+        },
+        error: (err) => {
+          console.error('Failed to load replies for comment', commentId, err);
+        }
+      })
+    );
   }
 
   areRepliesExpanded(commentId: string): boolean {

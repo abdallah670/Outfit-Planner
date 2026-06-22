@@ -7,5 +7,6 @@ public interface IChatSessionRepository : IGenericRepository<ChatSession>
 {
     Task<ChatSession?> GetByIdWithMessagesAsync(Guid id);
     Task<List<ChatSession>> GetByUserIdAsync(string userId);
+    Task<List<ChatMessage>> GetMessagesBySessionIdAsync(Guid sessionId, int skip, int take);
     Task AddMessageAsync(ChatMessage message);
 }

@@ -38,4 +38,30 @@ export class AiEffects {
       )
     )
   );
+
+  selectSession$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AiActions.selectSession),
+      map((action) => AiActions.loadMessages({ sessionId: action.sessionId, page: 1, pageSize: 20 }))
+    )
+  );
+
+  loadMessages$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AiActions.loadMessages),
+      mergeMap((action) =>
+        this.aiUseCases.getSessionMessages(action.sessionId, action.page ?? 1, action.pageSize ?? 20).pipe(
+          map((messages) => AiActions.loadMessagesSuccess({ 
+            messages, 
+            page: action.page ?? 1, 
+            pageSize: action.pageSize ?? 20 
+          })),
+          catchError((error) => {
+            this.snackBar.open('Failed to load messages', 'Close', { duration: 3000 });
+            return of(AiActions.loadMessagesFailure({ error: error.message }));
+          })
+        )
+      )
+    )
+  );
 }
