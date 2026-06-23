@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "JeUl9VaOUB0=",
+  "dgSpecHash": "hZplScenVh4=",
   "success": true,
-  "projectFilePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+  "projectFilePath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\HP\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
@@ -69,9 +69,9 @@
       "code": "NU1510",
       "level": "Warning",
       "message": "PackageReference Microsoft.Extensions.DependencyInjection.Abstractions will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
-      "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "filePath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "libraryId": "Microsoft.Extensions.DependencyInjection.Abstractions",
       "targetGraphs": [
         "net10.0"
@@ -81,9 +81,9 @@
       "code": "NU1603",
       "level": "Warning",
       "message": "OutfitPlanner.Infrastructure depends on Hangfire.AspNetCore (>= 1.8.1.2) but Hangfire.AspNetCore 1.8.1.2 was not found. Hangfire.AspNetCore 1.8.2 was resolved instead.",
-      "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "filePath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "libraryId": "Hangfire.AspNetCore",
       "targetGraphs": [
         "net10.0"
@@ -93,9 +93,9 @@
       "code": "NU1603",
       "level": "Warning",
       "message": "OutfitPlanner.Infrastructure depends on Hangfire.Core (>= 1.8.1.2) but Hangfire.Core 1.8.1.2 was not found. Hangfire.Core 1.8.2 was resolved instead.",
-      "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "filePath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "libraryId": "Hangfire.Core",
       "targetGraphs": [
         "net10.0"
@@ -105,9 +105,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'AutoMapper' 12.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-rvv3-g6hj-g44x",
-      "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "filePath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "libraryId": "AutoMapper",
       "targetGraphs": [
         "net10.0"
@@ -117,9 +117,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'Newtonsoft.Json' 11.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
-      "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "filePath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "libraryId": "Newtonsoft.Json",
       "targetGraphs": [
         "net10.0"
@@ -129,9 +129,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'SQLitePCLRaw.lib.e_sqlite3' 2.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-2m69-gcr7-jv3q",
-      "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
+      "filePath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Infrastructure\\OutfitPlanner.Infrastructure.csproj",
       "libraryId": "SQLitePCLRaw.lib.e_sqlite3",
       "targetGraphs": [
         "net10.0"

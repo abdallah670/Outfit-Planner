@@ -16,9 +16,25 @@ export interface ChatMessage {
   images: File[];
   role: 'user' | 'assistant';
   createdAt: string;
+  metadata?: string;
+  outfitSuggestions?: OutfitSuggestion[];
+  suggestedActions?: string[];
+  data?: any;
 }
 
 export interface ChatResponse {
+  id: string;
+  message: string;
+  success: boolean;
+  errors: string[];
+  data?: {
+    outfitSuggestions?: OutfitSuggestion[];
+    suggestedActions?: string[];
+  };
+}
+
+/** For backward compatibility, also accept the newer shape */
+export interface ChatResponsePayload {
   message: string;
   sessionId: string;
   outfitSuggestions: OutfitSuggestion[];

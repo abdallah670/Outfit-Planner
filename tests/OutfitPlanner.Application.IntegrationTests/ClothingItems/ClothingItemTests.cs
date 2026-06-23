@@ -950,7 +950,8 @@ public class ClothingItemTests : IDisposable
 
         // Act - Record wear
         var recordWearLogger = _serviceProvider.GetRequiredService<ILogger<RecordWearCommandHandler>>();
-        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper);
+        var mediator = _serviceProvider.GetRequiredService<IMediator>();
+        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper, mediator);
         var recordWearCommand = new RecordWearCommand
         {
             UserId = userId,
@@ -999,7 +1000,8 @@ public class ClothingItemTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         var recordWearLogger = _serviceProvider.GetRequiredService<ILogger<RecordWearCommandHandler>>();
-        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper);
+        var mediator = _serviceProvider.GetRequiredService<IMediator>();
+        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper, mediator);
         var recordWearCommand = new RecordWearCommand
         {
             UserId = userId,
@@ -1049,7 +1051,8 @@ public class ClothingItemTests : IDisposable
 
         // Act - Try to record wear for user1's item as user2
         var recordWearLogger = _serviceProvider.GetRequiredService<ILogger<RecordWearCommandHandler>>();
-        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper);
+        var mediator = _serviceProvider.GetRequiredService<IMediator>();
+        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper, mediator);
         var recordWearCommand = new RecordWearCommand
         {
             UserId = userId2,
@@ -1107,7 +1110,8 @@ public class ClothingItemTests : IDisposable
 
         // Act - Try to record wear with future date (invalid)
         var recordWearLogger = _serviceProvider.GetRequiredService<ILogger<RecordWearCommandHandler>>();
-        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper);
+        var mediator = _serviceProvider.GetRequiredService<IMediator>();
+        var recordWearHandler = new RecordWearCommandHandler(_unitOfWork, recordWearLogger, _mapper, mediator);
         var recordWearCommand = new RecordWearCommand
         {
             UserId = userId,

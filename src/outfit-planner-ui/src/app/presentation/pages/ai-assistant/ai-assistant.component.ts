@@ -5,9 +5,11 @@ import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, take } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 import { AiActions } from '../../../core/state/ai/ai.actions';
 import { selectMessages, selectIsSending, selectSessions, selectCurrentSessionId, selectHasMoreMessages, selectCurrentPage } from '../../../core/state/ai/ai.reducer';
 import { selectUser } from '../../../core/state/auth/auth.selectors';
+import { selectUserProfile } from '../../../core/state/user/user.selectors';
 import { selectAllItems } from '../../../core/state/wardrobe/wardrobe.selectors';
 import { selectCurrentWeather, selectWeatherLoading } from '../../../core/state/weather/weather.selectors';
 import { WeatherActions } from '../../../core/state/weather/weather.actions';
@@ -40,6 +42,7 @@ export class AiAssistantComponent implements OnInit {
   hasMoreMessages$: Observable<boolean> = this.store.select(selectHasMoreMessages);
   currentPage$: Observable<number> = this.store.select(selectCurrentPage);
   user$ = this.store.select(selectUser);
+  profile$ = this.store.select(selectUserProfile);
 
   weather$: Observable<Weather | null> = this.store.select(selectCurrentWeather);
   weatherLoading$: Observable<boolean> = this.store.select(selectWeatherLoading);
@@ -57,6 +60,11 @@ export class AiAssistantComponent implements OnInit {
   ngOnInit() {
     this.store.dispatch(AiActions.loadSessions({}));
     this.loadWeather();
+  }
+
+  resolveImageUrl(url: string): string {
+    if (!url) return '';
+    return url.startsWith('http') ? url : `${environment.resourceBaseUrl}/${url}`;
   }
 
   private loadWeather(): void {
@@ -124,6 +132,17 @@ export class AiAssistantComponent implements OnInit {
     this.sendMessage();
   }
 
+  executeAction(action: string) {
+    this.store.select(selectCurrentSessionId).pipe(take(1)).subscribe(sessionId => {
+      this.store.dispatch(AiActions.appendMessage({ role: 'user', content: action }));
+      this.store.dispatch(AiActions.sendMessage({
+        message: action,
+        sessionId: sessionId ?? undefined,
+        images: []
+      }));
+    });
+  }
+
   newSession() {
     this.store.dispatch(AiActions.clearCurrentSession({ userId: '' }));
   }
@@ -146,7 +165,21 @@ export class AiAssistantComponent implements OnInit {
     return item.id;
   }
 
- 
+  getActionIcon(action: string): string {
+    const a = action.toLowerCase();
+    if (a.includes('save')) return 'lucide:bookmark';
+    if (a.includes('wear') || a.includes('event')) return 'lucide:calendar';
+    if (a.includes('outfit')) return 'lucide:shirt';
+    if (a.includes('share') || a.includes('social')) return 'lucide:share-2';
+    if (a.includes('like') || a.includes('favorite')) return 'lucide:heart';
+    return 'lucide:check';
+  }
+
+  shouldShowAction(action: string, suggestionCount: number): boolean {
+    const a = action.toLowerCase();
+    if (a.includes('save') && suggestionCount === 1) return false;
+    return true;
+  }
 
   savesuggetion() {
     alert('Save suggestion functionality is not implemented yet.');

@@ -274,6 +274,7 @@ app.MapGet("/", () => Results.Redirect("/swagger"));
 app.MapGet("/api", () => Results.Redirect("/swagger"));
 
 app.MapHealthChecks("/health");
+app.MapHub<NotificationHub>("/notifications/hub");
 app.MapControllers();
 
 try 

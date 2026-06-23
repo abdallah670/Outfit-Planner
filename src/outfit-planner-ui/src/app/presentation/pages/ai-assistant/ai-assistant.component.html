@@ -24,13 +24,14 @@
     </div>
 
     <div class="sidebar-footer">
-      @if (user$ | async; as user) {
+      @if (profile$ | async; as profile) {
         <div class="user-info">
-          <div class="user-avatar">
-            <img [src]="user.profilePictureUrl || 'assets/default-avatar.png'" [alt]="user.name || user.username" (error)="$event.target.src = 'assets/default-avatar.png'" />
-          </div>
+            <div class="user-avatar" [style.background]="'var(--accent-pink)'">
+              <img *ngIf="profile.profilePictureUrl" [src]="profile.profilePictureUrl" [alt]="profile.name || profile.username" (error)="$event.target.style.display='none'" />
+              <span class="avatar-initials" [style.display]="profile.profilePictureUrl ? 'none' : 'flex'">{{ (profile.name || profile.username || '?').charAt(0).toUpperCase() }}</span>
+            </div>
           <div class="user-details">
-            <span class="user-name">{{ user.name || user.username }}</span>
+            <span class="user-name">{{ profile.name || profile.username }}</span>
             <span class="user-role">Wardrobe Owner</span>
           </div>
         </div>
@@ -59,23 +60,74 @@
         }
         @for (message of messages; track trackById($index, message)) {
           <div class="message-row" [class.user-row]="message.role === 'user'" [class.ai-row]="message.role === 'assistant'">
+            @if (message.role === 'assistant') {
+              <div class="ai-avatar">
+                <img src="/assets/ai-avatar.jpg" alt="AI Avatar" (error)="$event.target.src = '/assets/default-avatar.png'" />
+              </div>
+            }
             @if (message.role === 'user') {
-              @if (user$ | async; as user) {
-                <div class="user-avatar-small">
-                  <img [src]="user.profilePictureUrl || 'assets/default-avatar.png'" [alt]="user.name || user.username" (error)="$event.target.src = 'assets/default-avatar.png'" />
+              @if (profile$ | async; as profile) {
+                <div class="user-avatar-small" [style.background]="'var(--accent-pink)'">
+                  <img *ngIf="profile.profilePictureUrl" [src]="profile.profilePictureUrl" [alt]="profile.name || profile.username" (error)="$event.target.style.display='none'" />
+                  <span class="avatar-initials" [style.display]="profile.profilePictureUrl ? 'none' : 'flex'">{{ (profile.name || profile.username || '?').charAt(0).toUpperCase() }}</span>
                 </div>
               }
             }
 
             <div class="message-bubble" [class.user-bubble]="message.role === 'user'" [class.ai-bubble]="message.role === 'assistant'">
-              {{ message.content }}
+              <p>{{ message.content }}</p>
+              @if (message.data) {
+                @if (message.data.type === 'statistics') {
+                  <div class="statistics-card">
+                    <div class="stat-row"><span>Clothing items</span><strong>{{ message.data.statistics.totalClothingItems }}</strong></div>
+                    <div class="stat-row"><span>Saved outfits</span><strong>{{ message.data.statistics.totalOutfits }}</strong></div>
+                    <div class="stat-row"><span>Wear events</span><strong>{{ message.data.statistics.totalWearEvents }}</strong></div>
+                  </div>
+                }
+                @if (message.data.type === 'style_profile') {
+                  <div class="style-profile-card">
+                    <div class="stat-row"><span>Style</span><strong>{{ message.data.styleProfile.style }}</strong></div>
+                    <div class="stat-row"><span>Colors</span><strong>{{ message.data.styleProfile.preferredColors.join(', ') }}</strong></div>
+                    <div class="stat-row"><span>Fit</span><strong>{{ message.data.styleProfile.preferredFit }}</strong></div>
+                    <div class="stat-row"><span>Comfort</span><strong>{{ message.data.styleProfile.comfortPriority ? 'Yes' : 'No' }}</strong></div>
+                  </div>
+                }
+              }
+              @if ((message.outfitSuggestions && message.outfitSuggestions.length > 0) || (message.suggestedActions && message.suggestedActions.length > 0)) {
+                <div class="outfit-suggestions">
+                  @for (suggestion of message.outfitSuggestions; track suggestion.rank) {
+                    <div class="suggestion-card">
+                      <div class="suggestion-header">
+                        <span class="suggestion-rank">#{{ suggestion.rank }}</span>
+                        <span class="suggestion-score">{{ suggestion.totalScore }}/100</span>
+                      </div>
+                      <div class="suggestion-items">
+                        @for (item of suggestion.items; track item.id) {
+                          <div class="suggestion-item">
+                            <img [src]="resolveImageUrl(item.imageUrl)" [alt]="item.name" class="item-thumb" (error)="$event.target.src = '/assets/clothing-placeholder.png'" />
+                            <span class="item-name">{{ item.name }}</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+                @if (message.suggestedActions && message.suggestedActions.length > 0) {
+                  <div class="suggested-actions">
+                    @for (action of message.suggestedActions; track action) {
+                      @if (shouldShowAction(action, (message.outfitSuggestions?.length ?? 0))) {
+                        <button class="action-chip" (click)="executeAction(action)">
+                          <iconify-icon [icon]="getActionIcon(action)" width="12" height="12"></iconify-icon>
+                          {{ action }}
+                        </button>
+                      }
+                    }
+                  </div>
+                }
+              }
             </div>
 
-            @if (message.role === 'assistant') {
-              <div class="ai-avatar">
-                <iconify-icon icon="lucide:sparkles" width="14" height="14"></iconify-icon>
-              </div>
-            }
+          
           </div>
         }
       } @else {

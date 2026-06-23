@@ -1,7 +1,9 @@
 using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
+using OutfitPlanner.Application.DTOs.Notification;
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
+using OutfitPlanner.Application.Features.Notifications.Requests.Commands;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
@@ -13,15 +15,18 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
     private readonly IFeedPostRepository _feedPostRepository;
     private readonly IPostReactionRepository _reactionRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMediator _mediator;
 
     public AddPostReactionCommandHandler(
         IFeedPostRepository feedPostRepository,
         IPostReactionRepository reactionRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IMediator mediator)
     {
         _feedPostRepository = feedPostRepository;
         _reactionRepository = reactionRepository;
         _unitOfWork = unitOfWork;
+        _mediator = mediator;
     }
 
     public async Task<BaseCommandResponse> Handle(AddPostReactionCommand request, CancellationToken cancellationToken)
@@ -68,6 +73,21 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
         }
 
         await _unitOfWork.SaveChangesAsync();
+
+        if (post.UserId != request.UserId)
+        {
+            await _mediator.Send(new CreateNotificationCommand
+            {
+                UserId = post.UserId,
+                Request = new CreateNotificationDto
+                {
+                    Type = OutfitPlanner.Domain.Enums.NotificationType.Social,
+                    Title = "New like on your outfit",
+                    Message = "Someone reacted to your post.",
+                    ActionUrl = $"/outfits/{post.Id}"
+                }
+            });
+        }
 
         response.Success = true;
         response.Message = "Reaction added successfully";

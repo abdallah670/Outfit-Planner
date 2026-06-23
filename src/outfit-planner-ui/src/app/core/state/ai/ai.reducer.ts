@@ -13,10 +13,17 @@ export const aiFeature = createFeature({
       error: null,
     })),
     on(AiActions.sendMessageSuccess, (state, { response }) => {
-      const isNewSession = !state.sessions?.some(s => s.id === response.sessionId);
+      // response.id is the sessionId (BaseCommandResponse format)
+      // response.data?.outfitSuggestions carries the outfit data
+      const sessionId = response.id || (response as any).sessionId;
+      const outfitSuggestions = response.data?.outfitSuggestions || (response as any).outfitSuggestions;
+      const suggestedActions = response.data?.suggestedActions || (response as any).suggestedActions;
+      const data = response.data;
+      
+      const isNewSession = !state.sessions?.some(s => s.id === sessionId);
       const newSessionObj = {
-        id: response.sessionId,
-        userId: 'temp', // This should be updated on reload, but keeps the sidebar happy
+        id: sessionId,
+        userId: 'temp',
         title: 'New Conversation',
         status: 'Active',
         images: [],
@@ -25,24 +32,27 @@ export const aiFeature = createFeature({
         lastActivityAt: new Date().toISOString()
       };
       
-      const newSessions = isNewSession && response.sessionId 
+      const newSessions = isNewSession && sessionId 
         ? [newSessionObj, ...(state.sessions || [])]
         : state.sessions;
         
       return {
         ...state,
-        currentSessionId: response.sessionId,
+        currentSessionId: sessionId,
         sessions: newSessions,
         messages: [
-          ...state.messages, // Keep the user message that was appended
+          ...state.messages,
           {
             id: crypto.randomUUID(),
-            sessionId: response.sessionId,
+            sessionId: sessionId,
             senderId: 'ai',
             content: response.message,
             images: [],
             role: 'assistant' as const,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            outfitSuggestions,
+            suggestedActions,
+            data,
           },
         ],
         isSending: false,
@@ -89,8 +99,29 @@ export const aiFeature = createFeature({
       // But wait! If we append page 1 to empty, we just set it.
       // If we prepend page 2, we spread new messages then old messages.
       const hasMore = messages.length === pageSize;
-      const newMessages = page === 1 ? messages : [...messages, ...state.messages];
-      
+      const parsedMessages = messages.map(m => {
+        let outfitSuggestions;
+        let suggestedActions;
+        let data;
+        let metadata;
+        try {
+          const parsed = m.metadata ? JSON.parse(m.metadata) : null;
+          outfitSuggestions = parsed?.outfitSuggestions;
+          suggestedActions = parsed?.suggestedActions;
+          data = parsed?.data;
+          metadata = m.metadata;
+        } catch {
+          outfitSuggestions = undefined;
+          suggestedActions = undefined;
+          data = undefined;
+          metadata = m.metadata;
+        }
+        return { ...m, outfitSuggestions, suggestedActions, data, metadata };
+      });
+      const loadedIds = new Set(parsedMessages.map(m => m.id));
+      const dedupedExisting = state.messages.filter(m => !loadedIds.has(m.id));
+      const newMessages = page === 1 ? parsedMessages : [...parsedMessages, ...dedupedExisting];
+
       return {
         ...state,
         messages: newMessages,

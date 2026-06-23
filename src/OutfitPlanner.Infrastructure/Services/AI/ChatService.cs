@@ -1,3 +1,4 @@
+using System.Text.Json;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using Microsoft.Extensions.Logging;
@@ -92,10 +93,23 @@ public class ChatService : IChatService
             Timestamp = DateTimeOffset.UtcNow
         }, cancellationToken);
 
+        // Build structured metadata for persistence (outfit suggestions + actions)
+        var metadata = new
+        {
+            outfitSuggestions = combinations.Combinations.Select(c => new
+            {
+                rank = c.Rank,
+                totalScore = c.TotalScore,
+                scoreBreakdown = c.ScoreBreakdown,
+                items = c.Items.Select(i => new { i.Id, i.Name, i.Type, i.ImageUrl, i.HexColor })
+            }),
+            suggestedActions = llmResponse.SuggestedActions
+        };
+
         // Persist to database with proper error logging
         try
         {
-            await PersistSessionAsync(sessionId, request.UserId, request.Message, llmResponse.Text);
+            await PersistSessionAsync(sessionId, request.UserId, request.Message, llmResponse.Text, metadata);
         }
         catch (Exception ex)
         {
@@ -117,7 +131,7 @@ public class ChatService : IChatService
         };
     }
     
-    private async Task PersistSessionAsync(Guid sessionId, string userId, string userMessage, string aiText)
+    private async Task PersistSessionAsync(Guid sessionId, string userId, string userMessage, string aiText, object? metadata = null)
     {
        
             
@@ -153,12 +167,19 @@ public class ChatService : IChatService
             Role = "user"
         });
 
-        await _sessionRepository.AddMessageAsync(new Domain.Entities.ChatMessage
+        var aiMessage = new Domain.Entities.ChatMessage
         {
             SessionId = sessionId,
             SenderId = "ai",
             Content = aiText,
             Role = "assistant"
-        });
+        };
+
+        if (metadata != null)
+        {
+            aiMessage.Metadata = JsonSerializer.Serialize(metadata);
+        }
+
+        await _sessionRepository.AddMessageAsync(aiMessage);
     }
 }

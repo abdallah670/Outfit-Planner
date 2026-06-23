@@ -114,6 +114,10 @@ public static class DependencyInjection
         // Register Account Unlock Background Job
         services.AddScoped<AccountUnlockBackgroundJob>();
 
+        // Register SignalR Notification Hub
+        services.AddSignalR();
+        services.AddScoped<INotificationHubService, NotificationHubService>();
+
         // Register Infrastructure Services
         services.AddHealthChecks();
         services.AddScoped<IBackupService, BackupService>();

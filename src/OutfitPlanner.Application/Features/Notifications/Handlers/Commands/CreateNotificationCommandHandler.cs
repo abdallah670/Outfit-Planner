@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.DTOs.Notification;
 using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Features.Notifications.Requests.Commands;
@@ -15,15 +16,18 @@ public class CreateNotificationCommandHandler : IRequestHandler<CreateNotificati
     private readonly ILogger<CreateNotificationCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly INotificationHubService _notificationHub;
 
     public CreateNotificationCommandHandler(
         ILogger<CreateNotificationCommandHandler> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper,
+        INotificationHubService notificationHub)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _notificationHub = notificationHub;
     }
 
     public async Task<NotificationDto> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
@@ -65,7 +69,11 @@ public class CreateNotificationCommandHandler : IRequestHandler<CreateNotificati
             _logger.LogInformation("Notification created successfully with ID {NotificationId} for user {UserId}", 
                 notification.Id, request.UserId);
 
-            return _mapper.Map<NotificationDto>(notification);
+            // Push real-time notification via SignalR
+            var dto = _mapper.Map<NotificationDto>(notification);
+            await _notificationHub.SendNotificationAsync(request.UserId, dto);
+
+            return dto;
         }
         catch (NotFoundException)
         {
