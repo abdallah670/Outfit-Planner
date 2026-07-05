@@ -77,6 +77,24 @@ public static class DependencyInjection
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
                 ClockSkew = TimeSpan.FromMinutes(5) // Allow 5 minutes clock skew
             };
+
+            // Read SignalR access_token from query string for WebSocket connections
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var path = context.HttpContext.Request.Path;
+                    if (path.StartsWithSegments("/notifications/hub") || path.StartsWithSegments("/social/hub"))
+                    {
+                        var token = context.Request.Query["access_token"];
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            context.Token = token;
+                        }
+                    }
+                    return Task.CompletedTask;
+                }
+            };
         });
 
         services.AddScoped<IJWTService, JwtService>();
@@ -99,6 +117,7 @@ public static class DependencyInjection
         services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
         services.AddScoped<ITrendingOutfitRepository, TrendingOutfitRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<ISentReminderRepository, SentReminderRepository>();
         services.AddScoped<IAppPreferencesRepository, AppPreferencesRepository>();
         services.AddScoped<INotificationSettingsRepository, NotificationSettingsRepository>();
    

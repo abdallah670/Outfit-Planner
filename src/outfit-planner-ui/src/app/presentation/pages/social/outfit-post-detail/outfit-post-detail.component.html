@@ -62,12 +62,11 @@
 
         <!-- Image -->
         @if (post.outfit) {
-          <div class="outfit-image-wrapper">
-            <img [src]="post.outfit.imageUrl || 'assets/placeholder-outfit.jpg'" [alt]="post.outfit.name" class="outfit-image">
-          </div>
-          
-          <!-- Outfit Items (if any) -->
-          @if (post.outfit.items && post.outfit.items.length > 0) {
+          @if (post.outfit.items?.length === 1 && post.outfit.imageUrl) {
+            <div class="outfit-image-wrapper">
+              <img [src]="post.outfit.imageUrl" [alt]="post.outfit.name" class="outfit-image">
+            </div>
+          } @else if (post.outfit.items && post.outfit.items.length > 1) {
             <div class="outfit-items">
               <h3 class="items-title">Items in this outfit</h3>
               <div class="items-grid">

@@ -109,6 +109,7 @@
                   class="notif-action-link"
                   [routerLink]="notification.actionUrl || $any(notification).ActionUrl"
                   (click)="$event.stopPropagation()"
+
                 >
                   {{ getActionText(notification) }}
                   <mat-icon class="action-arrow">{{ getActionIcon(notification) }}</mat-icon>

@@ -11,7 +11,10 @@ public class IntentClassifier : IIntentClassifier
     {
         ["greeting"] = new[] { "hi", "hello", "hey", "good morning", "good evening", "good afternoon", "howdy", "sup" },
         ["outfit_suggestion"] = new[] { "wear", "outfit", "put on", "dress", "what should", "what to", "suggest", "recommend" },
-        ["outfit_rating"] = new[] { "rate", "rating", "score", "evaluate", "how does", "look good", "review" },
+        ["outfit_rating"] = new[] { "rate", "rating", "score", "evaluate", "how does", "look good", "review",
+                                    "opinion", "think", "what do you think", "thoughts", "feedback",
+                                    "look at", "see this", "check this", "my outfit", "this outfit",
+                                    "image", "photo", "picture", "pic" },
         ["wardrobe_analysis"] = new[] { "missing", "need", "wardrobe", "closet", "analysis", "analyze", "inventory", "have", "statistics", "stats" },
         ["style_query"] = new[] { "style", "trend", "fashion", "color", "match", "go with", "pair", "my style", "style profile" },
         ["weather_query"] = new[] { "weather", "rain", "cold", "hot", "warm", "temperature", "forecast" },

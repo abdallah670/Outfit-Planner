@@ -31,8 +31,15 @@ public class LLMResponseGenerator : ILLMResponseGenerator
         List<string>? images = null,
         CancellationToken cancellationToken = default)
     {
-        // Check for greeting intents first
-        if (intent.Intent is "greeting" or "general" && string.IsNullOrEmpty(intent.Occasion) && string.IsNullOrEmpty(intent.WeatherCondition))
+        // Only short-circuit to a quick greeting if:
+        // 1. The intent is a plain greeting or general query
+        // 2. No occasion/weather context was detected
+        // 3. No images were attached (if images present, always call the LLM so it can analyse them)
+        var hasImages = images != null && images.Any();
+        if (!hasImages &&
+            intent.Intent is "greeting" or "general" &&
+            string.IsNullOrEmpty(intent.Occasion) &&
+            string.IsNullOrEmpty(intent.WeatherCondition))
         {
             return GenerateGreetingResponse();
         }
@@ -220,7 +227,10 @@ public class LLMResponseGenerator : ILLMResponseGenerator
         "Help users with wardrobe, outfit selection, style advice, and fashion questions. " +
         "Be conversational, helpful, and concise. " +
         "When the user has wardrobe items mentioned below, reference them by name. " +
-        "Keep responses under 200 words. Use emojis occasionally.";
+        "When the user sends an image of an outfit or clothing, ALWAYS analyse it in detail: " +
+        "describe what you see, comment on the colour coordination, fit, style, and occasion suitability, " +
+        "and give specific actionable suggestions to improve or complement the look. " +
+        "Keep responses under 250 words. Use emojis occasionally.";
 
     private static string BuildPrompt(
         string userMessage,

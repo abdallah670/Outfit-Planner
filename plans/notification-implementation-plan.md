@@ -62,6 +62,7 @@ User Action (e.g. Follow, Comment, Like)
   - Query `CalendarEvents` where `EventDate` is today or tomorrow
   - For "today" events → notify: "You scheduled \"{Title}\" for today. Did you wear it?"
   - For "tomorrow" events → notify: "You have \"{Title}\" scheduled for tomorrow at {StartTime}"
+  - ActionUrl: "/calendar"
 - **Type**: Reminder
 
 ### 1.3 System Notifications (P1-P2)
@@ -85,20 +86,9 @@ User Action (e.g. Follow, Comment, Like)
   - Most worn item, outfit variety score, comfort avg
   - Title: "Weekly Style Report Ready"
   - Message: "You wore {item} {n} times last week. Your style: {trend}."
-  - ActionUrl: "/profile/stats"
+  - ActionUrl: "/profile/stats" stats page is not existed so add it 
   - Type: System
 
-#### Login / Device Detection
-- **New entity**: `LoginHistory` (device, browser, ip, location, timestamp)
-- **New repo**: `ILoginHistoryRepository`
-- **Trigger**: In `AuthController.Login` (or `LoginHandler`) after successful auth
-- **Logic**:
-  - Compare current device fingerprint with last 3 logins
-  - If new device → notify
-  - Title: "Account Security"
-  - Message: "New login detected from {Browser} on {OS}."
-  - ActionUrl: "/settings/security"
-  - Type: System
 
 ### 1.4 Weather Notifications (P2)
 

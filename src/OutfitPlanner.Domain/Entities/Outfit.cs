@@ -13,7 +13,7 @@ public class Outfit : BaseEntity
     
     public string WeatherCondition { get; set; } = string.Empty;
     public Season Season { get; set; }
-    public int? ComfortRating { get; set; }
+    public int ComfortRating { get; set; } = 5;
     
     public DateTimeOffset? LastWorn { get; set; }
     public int TimesWorn { get; set; }

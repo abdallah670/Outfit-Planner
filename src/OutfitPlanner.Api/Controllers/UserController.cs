@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.Common;
+using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.DTOs.User;
 using OutfitPlanner.Application.Exceptions;
@@ -47,6 +48,31 @@ public class UserController : ControllerBase
         {
             _logger.LogError(ex, "Error retrieving user profile");
             return StatusCode(500, new { message = "Failed to retrieve profile" });
+        }
+    }
+
+    /// <summary>
+    /// Get current user weekly style stats
+    /// </summary>
+    [HttpGet("weekly-style-stats")]
+    public async Task<ActionResult<WeeklyStyleStatsDto>> GetWeeklyStyleStats()
+    {
+        try
+        {
+            var userId = User.FindFirst(OutfitPlanner.Application.Constants.CustomClaimTypes.Uid)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var query = new GetWeeklyStyleStatsQuery { UserId = userId };
+            var stats = await _mediator.Send(query);
+            return Ok(stats);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving weekly style stats");
+            return StatusCode(500, new { message = "Failed to retrieve weekly style stats" });
         }
     }
 

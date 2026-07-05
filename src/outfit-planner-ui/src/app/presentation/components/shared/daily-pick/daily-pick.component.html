@@ -39,7 +39,29 @@
 
       <p class="description">{{ getRecommendationReason() }}</p>
 
-      
+      @if (hasSingleItem() && outfit()?.imageUrl) {
+        <div class="outfit-image-single">
+          <img [src]="outfit()!.imageUrl" [alt]="outfit()!.name" class="outfit-image-preview" />
+        </div>
+      } @else if (hasMultipleItems()) {
+        <div class="items-preview-grid">
+          @for (item of getPrimaryItems(); track item.id) {
+            <div class="pick-item">
+              <div class="item-img">
+                @if (item.clothingItemImageUrl && !failedImages.has(item.id)) {
+                  <img [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" (error)="onImageError(item.id)" />
+                } @else {
+                  <img src="assets/placeholder.jpg" alt="Placeholder" class="item-img-placeholder" />
+                }
+              </div>
+              <div class="item-info">
+                <span class="item-name">{{ item.clothingItemName }}</span>
+                <span class="item-desc">{{ item.clothingItemCategory }} • {{ item.role }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
 
       <!-- Event Context -->
       @if (context()?.todayEvent) {
@@ -49,29 +71,6 @@
           </span>
         </div>
       }
-
-      <!-- Outfit Items -->
-      <div class="items-list">
-        @for (item of getPrimaryItems(); track item.id) {
-          <div class="pick-item">
-            <div class="item-img">
-              @if (item.clothingItemImageUrl && !failedImages.has(item.id)) {
-                <img [src]="item.clothingItemImageUrl" [alt]="item.clothingItemName" (error)="onImageError(item.id)" />
-              } @else {
-                <img src="assets/placeholder.jpg" alt="Placeholder" class="item-img-placeholder" />
-              }
-            </div>
-            <div class="item-info">
-              <span class="item-name">{{ item.clothingItemName }}</span>
-              <span class="item-desc">{{ item.clothingItemCategory }} • {{ item.role }}</span>
-            </div>
-          </div>
-        } @empty {
-          <div class="no-items">
-            <p>No items to display</p>
-          </div>
-        }
-      </div>
 
       <!-- Actions -->
       <div class="actions">

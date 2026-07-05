@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { NotificationHubService } from './notification-hub.service';
 import {
   AuthRequest,
   AuthResponse,
@@ -20,6 +21,7 @@ import {
 export class AuthService{
   private readonly http = inject(HttpClient);
   private readonly cookieService = inject(CookieService);
+  private readonly notificationHubService = inject(NotificationHubService);
 
   private readonly apiUrl = `${environment.baseUrl}/Auth`;
 
@@ -80,6 +82,7 @@ export class AuthService{
   }
 
   logout(): void {
+    this.notificationHubService.disconnect();
     this.cookieService.delete('token', '/');
     this.cookieService.delete('refreshToken', '/');
     this.currentUser.set(null);
@@ -132,6 +135,8 @@ export class AuthService{
     });
     this.isAuthenticated.set(true);
     console.log('[AuthService] isAuthenticated set to:', this.isAuthenticated());
+
+    this.notificationHubService.connect();
   }
 
   private decodeToken(token: string): any {
@@ -188,6 +193,7 @@ export class AuthService{
         });
         
         console.log('[AuthService] Restored session for:', userName);
+        this.notificationHubService.connect();
       } else {
         this.logout();
       }

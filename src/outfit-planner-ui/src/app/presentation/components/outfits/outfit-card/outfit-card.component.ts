@@ -43,10 +43,13 @@ export class OutfitCardComponent implements OnInit {
   }
 
   get showCombinedView(): boolean {
+    if (this.outfit.items && this.outfit.items.length === 1) {
+      return true;
+    }
     return this._showCombinedView && this.hasMultipleItems;
   }
 
-  private _showCombinedView = true;
+  private _showCombinedView = false;
 
   set showCombinedView(value: boolean) {
     this._showCombinedView = value;

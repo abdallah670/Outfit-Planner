@@ -10,8 +10,8 @@ import { ChatSession, ChatMessage, ChatResponse } from '../../domain/entities/ai
 export class AiRepositoryImpl implements AiRepository {
   constructor(private readonly dataSource: AiDataSource) {}
 
-  sendMessage(message: string, sessionId?: string, images?: File[]): Observable<ChatResponse> {
-    return this.dataSource.sendMessage(message, sessionId, images);
+  sendMessage(message: string, sessionId?: string, images?: File[], clothingItemIds?: string[]): Observable<ChatResponse> {
+    return this.dataSource.sendMessage(message, sessionId, images, clothingItemIds);
   }
 
   getSessions(): Observable<ChatSession[]> {
@@ -24,24 +24,29 @@ export class AiRepositoryImpl implements AiRepository {
     );
   }
 
+  deleteSession(sessionId: string): Observable<void> {
+    return this.dataSource.deleteSession(sessionId);
+  }
+
   private enrichMessage(m: ChatMessage): ChatMessage {
     if (m.metadata && typeof m.metadata === 'string') {
       try {
         const parsed = JSON.parse(m.metadata);
-        const outfitSuggestions = parsed.outfitSuggestions?.map((s: any) => ({
-          rank: s.rank,
-          totalScore: s.totalScore,
-          scoreBreakdown: s.scoreBreakdown,
-          items: s.items?.map((item: any) => ({
-            id: item.Id,
-            name: item.Name,
-            type: item.Type,
-            imageUrl: item.ImageUrl,
-            hexColor: item.HexColor
+        const rawSuggestions = parsed.outfitSuggestions || parsed.OutfitSuggestions;
+        const outfitSuggestions = rawSuggestions?.map((s: any) => ({
+          rank: s.rank ?? s.Rank,
+          totalScore: s.totalScore ?? s.TotalScore ?? 0,
+          scoreBreakdown: s.scoreBreakdown ?? s.ScoreBreakdown,
+          items: (s.items || s.Items)?.map((item: any) => ({
+            id: item.id ?? item.Id,
+            name: item.name ?? item.Name ?? '',
+            type: item.type ?? item.Type ?? '',
+            imageUrl: item.imageUrl ?? item.ImageUrl ?? '',
+            hexColor: item.hexColor ?? item.HexColor ?? '#ccc'
           })) ?? []
         })) ?? [];
-        const suggestedActions = parsed.suggestedActions ?? [];
-        return { ...m, outfitSuggestions, suggestedActions };
+        const uploadedImageUrls = parsed.uploadedImageUrls || parsed.UploadedImageUrls;
+        return { ...m, outfitSuggestions, images: uploadedImageUrls ?? m.images };
       } catch {
         return m;
       }

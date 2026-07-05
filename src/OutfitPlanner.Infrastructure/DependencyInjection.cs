@@ -117,9 +117,14 @@ public static class DependencyInjection
         // Register SignalR Notification Hub
         services.AddSignalR();
         services.AddScoped<INotificationHubService, NotificationHubService>();
+        services.AddScoped<ISocialHubService, SocialHubService>();
 
-        // Register Infrastructure Services
+        services.AddSingleton<OutfitPlanner.Application.Contracts.Infrastructure.IClock, SystemClock>();
+
+        // Health Checks - basic health check endpoint
+        // Database health check is available via /health/ready endpoint
         services.AddHealthChecks();
+        
         services.AddScoped<IBackupService, BackupService>();
         services.AddScoped<ICacheManagementService, CacheManagementService>();
         services.AddScoped<ICacheService, CacheService>();

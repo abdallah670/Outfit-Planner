@@ -28,6 +28,7 @@ import { MyPollsComponent } from './presentation/pages/social/my-polls/my-polls.
 import { CreateOutfitPostComponent } from './presentation/pages/social/create-outfit-post/create-outfit-post.component';
 import { OutfitPostDetailComponent } from './presentation/pages/social/outfit-post-detail/outfit-post-detail.component';
 import { AiAssistantComponent } from './presentation/pages/ai-assistant/ai-assistant.component';
+import { ProfileStatsComponent } from './presentation/pages/profile-stats/profile-stats.component';
 
 import { AdminLayoutComponent } from './presentation/layouts/admin-layout/admin-layout.component';
 import { AdminDashboardComponent } from './presentation/pages/admin/dashboard/admin-dashboard.component';
@@ -51,6 +52,7 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+  { path: 'profile/stats', component: ProfileStatsComponent, canActivate: [authGuard] },
   { path: 'wardrobe', component: WardrobeDashboardComponent, canActivate: [authGuard] },
   { path: 'wardrobe/new', component: AddClothingItemComponent, canActivate: [authGuard] },
   { path: 'wardrobe/edit/:id', component: AddClothingItemComponent, canActivate: [authGuard] },

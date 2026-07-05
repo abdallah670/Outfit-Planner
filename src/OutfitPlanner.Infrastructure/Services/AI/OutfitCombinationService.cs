@@ -77,7 +77,19 @@ public class OutfitCombinationService : IOutfitCombinationService
             }
         }
 
-        var ranked = combinations
+        // Deduplicate combinations with the exact same set of items
+        var seen = new HashSet<string>();
+        var deduped = new List<(double Score, List<ClothingItemRef> Items)>();
+        foreach (var combo in combinations)
+        {
+            var key = string.Join("|", combo.Items.Select(i => i.Id).OrderBy(id => id));
+            if (seen.Add(key))
+            {
+                deduped.Add(combo);
+            }
+        }
+
+        var ranked = deduped
             .OrderByDescending(c => c.Score)
             .Take(maxResults)
             .Select((c, i) => new OutfitCombinationItem

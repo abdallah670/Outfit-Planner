@@ -328,7 +328,7 @@ export class CreatePollComponent implements OnInit {
         if (file) {
           // Create outfit from the uploaded image
           const createdOutfit = await new Promise<any>((resolve, reject) => {
-            this.outfitsUseCases.createOutfitWithImage(file).subscribe({
+            this.outfitsUseCases.createOutfitWithImage(file, { name: `Poll Option ${i + 1}`, comfortRating: 5 }).subscribe({
               next: resolve,
               error: reject,
             });

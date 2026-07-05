@@ -67,8 +67,8 @@
       routerLink="/notifications"
       mat-icon-button
       class="nav-icon-btn"
-      [matBadge]="notificationsCount$ | async"
-      [matBadgeHidden]="!(notificationsCount$ | async)"
+      [matBadge]="notificationsCount()"
+      [matBadgeHidden]="notificationsCount() === 0"
       matBadgeColor="warn"
       i18n-aria-label
       i18n="Notifications button|Button to view notifications"

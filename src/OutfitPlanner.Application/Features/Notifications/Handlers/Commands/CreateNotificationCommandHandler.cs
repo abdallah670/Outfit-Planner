@@ -69,9 +69,21 @@ public class CreateNotificationCommandHandler : IRequestHandler<CreateNotificati
             _logger.LogInformation("Notification created successfully with ID {NotificationId} for user {UserId}", 
                 notification.Id, request.UserId);
 
-            // Push real-time notification via SignalR
+            // Map to DTO
             var dto = _mapper.Map<NotificationDto>(notification);
-            await _notificationHub.SendNotificationAsync(request.UserId, dto);
+            
+            // Push real-time notification via SignalR (non-blocking)
+            _logger.LogInformation("Broadcasting notification {NotificationId} to user {UserId} via SignalR", notification.Id, request.UserId);
+            try
+            {
+                await _notificationHub.SendNotificationAsync(request.UserId, dto);
+                _logger.LogInformation("Notification {NotificationId} broadcast complete", notification.Id);
+            }
+            catch (Exception signalREx)
+            {
+                // SignalR failure should not prevent notification creation
+                _logger.LogWarning(signalREx, "Failed to broadcast notification {NotificationId} via SignalR, but notification was saved to database", notification.Id);
+            }
 
             return dto;
         }

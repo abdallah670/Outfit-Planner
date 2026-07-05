@@ -43,6 +43,23 @@ public class ChatService : IChatService
     {
         var intent = await _intentClassifier.ClassifyAsync(request.Message, cancellationToken);
         var sessionId = request.SessionId ?? Guid.NewGuid();
+        var uploadedImageUrls = request.UploadedImageUrls ?? new List<string>();
+
+        var hasImages = request.Images != null && request.Images.Any();
+
+        // When the user attaches an image, their intent is always to get visual feedback on it.
+        // Override vague/unrecognised intents so the full LLM pipeline always runs with the image.
+        if (hasImages && intent.Intent is "general" or "greeting")
+        {
+            intent = new IntentResult
+            {
+                Intent = "outfit_rating",
+                Occasion = intent.Occasion,
+                WeatherCondition = intent.WeatherCondition,
+                Season = intent.Season,
+                MentionedItems = intent.MentionedItems
+            };
+        }
 
         // Save user message to cache
         await _chatHistoryCache.AddMessageAsync(sessionId, new CachedChatMessage
@@ -52,8 +69,10 @@ public class ChatService : IChatService
             Timestamp = DateTimeOffset.UtcNow
         }, cancellationToken);
 
-        var hasImages = request.Images != null && request.Images.Any();
-        var needsWardrobe = !hasImages && (intent.Intent is "outfit_suggestion" or "outfit_rating" or "wardrobe_analysis");
+        // When the user uploads an image they want visual feedback on it — not wardrobe combinations.
+        // Wardrobe context is only needed for text-only outfit suggestion / analysis requests.
+        var needsWardrobe = !hasImages &&
+                            intent.Intent is "outfit_suggestion" or "outfit_rating" or "wardrobe_analysis";
         
         var context = needsWardrobe 
             ? await _wardrobeContextBuilder.BuildContextAsync(request.UserId, intent, cancellationToken)
@@ -93,7 +112,10 @@ public class ChatService : IChatService
             Timestamp = DateTimeOffset.UtcNow
         }, cancellationToken);
 
-        // Build structured metadata for persistence (outfit suggestions + actions)
+        // Build structured metadata for persistence (outfit suggestions only).
+        // NOTE: uploadedImageUrls are now stored on the user message, NOT here,
+        // to prevent images from appearing on the AI bubble when reloaded.
+        // Use camelCase property names to match frontend TypeScript interfaces.
         var metadata = new
         {
             outfitSuggestions = combinations.Combinations.Select(c => new
@@ -101,15 +123,14 @@ public class ChatService : IChatService
                 rank = c.Rank,
                 totalScore = c.TotalScore,
                 scoreBreakdown = c.ScoreBreakdown,
-                items = c.Items.Select(i => new { i.Id, i.Name, i.Type, i.ImageUrl, i.HexColor })
-            }),
-            suggestedActions = llmResponse.SuggestedActions
+                items = c.Items.Select(i => new { id = i.Id, name = i.Name, type = i.Type, imageUrl = i.ImageUrl, hexColor = i.HexColor })
+            })
         };
 
         // Persist to database with proper error logging
         try
         {
-            await PersistSessionAsync(sessionId, request.UserId, request.Message, llmResponse.Text, metadata);
+            await PersistSessionAsync(sessionId, request.UserId, request.Message, llmResponse.Text, metadata, intent.Intent, uploadedImageUrls);
         }
         catch (Exception ex)
         {
@@ -126,17 +147,12 @@ public class ChatService : IChatService
                 TotalScore = c.TotalScore,
                 ScoreBreakdown = c.ScoreBreakdown,
                 Items = c.Items.Select(i => new SuggestedItemDto { Id = i.Id, Name = i.Name, Type = i.Type, ImageUrl = i.ImageUrl, HexColor = i.HexColor }).ToList()
-            }).ToList(),
-            SuggestedActions = llmResponse.SuggestedActions
+            }).ToList()
         };
     }
     
-    private async Task PersistSessionAsync(Guid sessionId, string userId, string userMessage, string aiText, object? metadata = null)
+    private async Task PersistSessionAsync(Guid sessionId, string userId, string userMessage, string aiText, object? metadata = null, string? intent = null, List<string>? uploadedImageUrls = null)
     {
-       
-            
-        
-            
         var session = await _sessionRepository.GetByIdAsync(sessionId);
         if (session == null)
         {
@@ -159,12 +175,20 @@ public class ChatService : IChatService
             await _sessionRepository.UpdateAsync(session);
         }
 
+        // Store uploaded image URLs directly in the user message's Images field
+        // so they are correctly attributed to the user bubble on history reload.
+        var userImagesJson = uploadedImageUrls != null && uploadedImageUrls.Any()
+            ? JsonSerializer.Serialize(uploadedImageUrls)
+            : null;
+
         await _sessionRepository.AddMessageAsync(new Domain.Entities.ChatMessage
         {
             SessionId = sessionId,
             SenderId = userId,
             Content = userMessage,
-            Role = "user"
+            Role = "user",
+            Intent = intent,
+            Images = userImagesJson
         });
 
         var aiMessage = new Domain.Entities.ChatMessage
@@ -172,7 +196,8 @@ public class ChatService : IChatService
             SessionId = sessionId,
             SenderId = "ai",
             Content = aiText,
-            Role = "assistant"
+            Role = "assistant",
+            Intent = "assistant"
         };
 
         if (metadata != null)

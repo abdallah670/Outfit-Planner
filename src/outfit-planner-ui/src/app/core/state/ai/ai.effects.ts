@@ -15,15 +15,25 @@ export class AiEffects {
   sendMessage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AiActions.sendMessage),
-      mergeMap((action: ReturnType<typeof AiActions.sendMessage>) =>
-        this.aiUseCases.sendMessage(action.message, action.sessionId, action.images).pipe(
+      mergeMap((action: ReturnType<typeof AiActions.sendMessage>) => {
+        // Extract clothing item IDs from the outfit suggestion (for Save Outfit).
+        // This avoids sending a complex nested JSON object through [FromForm].
+        const clothingItemIds = action.clothingItemIds
+          ?? action.outfitSuggestion?.items?.map(i => i.id);
+
+        return this.aiUseCases.sendMessage(
+          action.message,
+          action.sessionId,
+          action.images,
+          clothingItemIds
+        ).pipe(
           map((response: ChatResponse) => AiActions.sendMessageSuccess({ response })),
           catchError((error) => {
             this.snackBar.open('Failed to send message', 'Close', { duration: 3000 });
             return of(AiActions.sendMessageFailure({ error: error.message }));
           })
-        )
-      )
+        );
+      })
     )
   );
 
@@ -59,6 +69,21 @@ export class AiEffects {
           catchError((error) => {
             this.snackBar.open('Failed to load messages', 'Close', { duration: 3000 });
             return of(AiActions.loadMessagesFailure({ error: error.message }));
+          })
+        )
+      )
+    )
+  );
+
+  deleteSession$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AiActions.deleteSession),
+      mergeMap((action) =>
+        this.aiUseCases.deleteSession(action.sessionId).pipe(
+          map(() => AiActions.deleteSessionSuccess({ sessionId: action.sessionId })),
+          catchError((error) => {
+            this.snackBar.open('Failed to delete session', 'Close', { duration: 3000 });
+            return of(AiActions.deleteSessionFailure({ error: error.message }));
           })
         )
       )

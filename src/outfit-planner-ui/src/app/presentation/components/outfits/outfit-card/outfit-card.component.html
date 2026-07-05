@@ -90,6 +90,10 @@
       <span class="last-worn" *ngIf="outfit.lastWorn">
         Last: {{ outfit.lastWorn | date: 'shortDate' }}
       </span>
+      <span class="comfort-rating" *ngIf="outfit.comfortRating">
+        <mat-icon>star</mat-icon>
+        {{ outfit.comfortRating }}/5
+      </span>
     </div>
   </div>
 </mat-card>

@@ -1,30 +1,7 @@
 <div class="outfit-builder-container">
   <!-- Top Search Bar -->
   <header class="top-nav">
-    <div class="search-section">
-      <div class="search-bar">
-        <mat-icon class="search-icon">search</mat-icon>
-        <input
-          type="text"
-          placeholder="Search..."
-          class="search-input"
-          [(ngModel)]="searchQuery"
-          (input)="onSearch()"
-        />
-        <button class="ai-badge" title="AI-powered search">🤖</button>
-      </div>
-      <div class="search-tags">
-        <button class="tag" (click)="searchQuery = 'Summer dresses under $100'; onSearch()">
-          Summer dresses under $100
-        </button>
-        <button class="tag" (click)="searchQuery = 'Outfits for rainy weather'; onSearch()">
-          Outfits for rainy weather
-        </button>
-        <button class="tag" (click)="searchQuery = 'Most worn jeans'; onSearch()">
-          Most worn jeans
-        </button>
-      </div>
-    </div>
+ 
   </header>
 
   <div class="main-layout">
@@ -127,7 +104,7 @@
       </div>
 
       <div class="ai-suggestions-section">
-        <h3>AI Suggestions</h3>
+        <h3>Suggestions</h3>
         <div class="suggestions-strip" *ngIf="wardrobeItems$ | async as allItems">
           <div
             *ngFor="let item of $any(allItems).slice(0, 4); let i = index"
@@ -139,12 +116,7 @@
             </div>
             <div class="suggestion-info">
               <span class="s-name">{{ $any(item).name }}</span>
-              <div class="s-meta">
-                <span class="dot" [style.background-color]="$any(item).primaryColor"></span>
-                <span class="likes"
-                  ><mat-icon class="heart-icon">favorite</mat-icon> {{ 11 + i * 3 }}</span
-                >
-              </div>
+              <span class="s-category">{{ $any(item).category }}</span>
             </div>
           </div>
         </div>
@@ -189,6 +161,16 @@
           placeholder="Name your outfit..."
           class="outfit-name-input"
         />
+        <div class="comfort-rating-row">
+          <span class="comfort-label">Comfort</span>
+          <div class="star-picker">
+            @for (star of [1,2,3,4,5]; track star) {
+              <span class="star" [class.active]="star <= (builderForm.value.comfortRating || 5)" (click)="builderForm.patchValue({ comfortRating: star })">
+                <mat-icon>{{ star <= (builderForm.value.comfortRating || 5) ? 'star' : 'star_border' }}</mat-icon>
+              </span>
+            }
+          </div>
+        </div>
         <button class="save-btn" (click)="saveOutfit()" [disabled]="selectedItems.length === 0">
           Save Outfit
         </button>
@@ -220,14 +202,13 @@
               <div class="stat-sub">wears</div>
             </div>
             <div class="most-worn-img">
-              <img [src]="$any(stats.mostWornItem).imageUrl || 'assets/placeholder.jpg'" [alt]="stats.mostWornItem?.name || 'Most worn item'" />
+              <img *ngIf="stats.mostWornItem" [src]="stats.mostWornItem.imageUrl || 'assets/placeholder.jpg'" [alt]="stats.mostWornItem?.name || 'Most worn item'" />
             </div>
           </div>
         </div>
         <div class="stat-card green wide">
           <div class="stat-label">Cost Per Wear <mat-icon>payments</mat-icon></div>
           <div class="stat-value">${{ stats.costPerWear.toFixed(2) }} avg</div>
-          <div class="stat-sub">↓ 3% last month</div>
         </div>
       </div>
     </aside>

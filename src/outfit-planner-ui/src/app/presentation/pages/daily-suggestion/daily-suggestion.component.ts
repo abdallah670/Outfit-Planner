@@ -206,7 +206,7 @@ export class DailySuggestionComponent implements OnInit {
     this.selectedDate.set(prev);
     this.loadDateData(prev);
   }
-
+ 
   goToNextDay(): void {
     const current = this.selectedDate();
     const next = new Date(current);
@@ -368,14 +368,9 @@ export class DailySuggestionComponent implements OnInit {
   getPrimaryItems(): OutfitItem[] {
     const outfit = this.outfit();
     if (!outfit?.items) return [];
-    return outfit.items
-      .filter(item => item.role === 'primary' || item.isEssential)
-      .slice(0, 4);
+    return outfit.items.slice(0, 4);
   }
 
-  hasValidImage(item: OutfitItem): boolean {
-    return !!item.clothingItemImageUrl && item.clothingItemImageUrl.trim().length > 0;
-  }
 
   getItemReason(item: OutfitItem): string {
     const weather = this.weather();

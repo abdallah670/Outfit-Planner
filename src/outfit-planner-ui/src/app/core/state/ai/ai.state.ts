@@ -4,7 +4,7 @@ export interface AiState {
   sessions: ChatSession[];
   currentSessionId: string | null;
   messages: ChatMessage[];
-  images: File[];
+  images: string[];
   currentPage: number;
   hasMoreMessages: boolean;
   isSending: boolean;

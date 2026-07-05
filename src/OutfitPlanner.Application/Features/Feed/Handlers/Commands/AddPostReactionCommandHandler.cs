@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.VisualBasic;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Application.DTOs.Notification;
@@ -44,6 +45,17 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
         var existingReaction = await _reactionRepository.GetReactionAsync(request.PostId, request.UserId);
         if (existingReaction != null)
         {
+            if (existingReaction.IsDeleted)
+            {
+                existingReaction.IsDeleted=false;
+                existingReaction.UpdatedAt=DateTime.UtcNow;
+                await _reactionRepository.UpdateAsync(existingReaction);
+                await _unitOfWork.SaveChangesAsync();
+                
+                response.Success = true;
+                response.Message = "Reaction restored successfully";
+                return response;
+            }
             response.Success = false;
             response.Message = "You have already reacted to this post";
             return response;
@@ -71,26 +83,28 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
                 await _unitOfWork.Repository<Outfit>().UpdateAsync(outfit);
             }
         }
-
         await _unitOfWork.SaveChangesAsync();
 
         if (post.UserId != request.UserId)
         {
+            var url = post.PostType == PostType.Outfit ? $"/social/posts/{post.Id}" : $"/social/polls/{post.Id}";
             await _mediator.Send(new CreateNotificationCommand
             {
+                
                 UserId = post.UserId,
                 Request = new CreateNotificationDto
                 {
                     Type = OutfitPlanner.Domain.Enums.NotificationType.Social,
                     Title = "New like on your outfit",
                     Message = "Someone reacted to your post.",
-                    ActionUrl = $"/outfits/{post.Id}"
+                    ActionUrl = url
                 }
             });
         }
 
         response.Success = true;
         response.Message = "Reaction added successfully";
+        response.Data = new { postOwnerId = post.UserId, likesCount = post.LikesCount };
 
         return response;
     }
@@ -151,6 +165,7 @@ public class RemovePostReactionCommandHandler : IRequestHandler<RemovePostReacti
 
         response.Success = true;
         response.Message = "Reaction removed successfully";
+        response.Data = new { postOwnerId = post?.UserId, likesCount = post?.LikesCount };
 
         return response;
     }

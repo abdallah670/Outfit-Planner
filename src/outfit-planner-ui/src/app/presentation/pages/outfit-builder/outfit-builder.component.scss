@@ -758,6 +758,43 @@
         }
       }
 
+      .comfort-rating-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 4px;
+
+        .comfort-label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #334155;
+        }
+
+        .star-picker {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+
+          .star {
+            cursor: pointer;
+            color: #cbd5e1;
+            transition: color 0.15s;
+
+            &.active {
+              color: #f8b4c4;
+            }
+
+            mat-icon {
+              font-size: 22px;
+              height: 22px;
+              width: 22px;
+            }
+          }
+        }
+      }
+
       .secondary-btns {
         display: flex;
         gap: 12px;

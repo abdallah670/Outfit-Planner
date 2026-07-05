@@ -1,6 +1,7 @@
 using AutoMapper;
 using OutfitPlanner.Application.DTOs.Calendar;
 using OutfitPlanner.Application.DTOs.Feed;
+using OutfitPlanner.Application.DTOs.Notification;
 using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.DTOs.User;
 using OutfitPlanner.Application.DTOs.Wardrobe;
@@ -19,6 +20,20 @@ public class MappingProfile : Profile
         // =====================
         CreateMap<Money, decimal>().ConvertUsing(src => src.Amount);
         CreateMap<decimal, Money>().ConvertUsing(src => Money.From(src, "USD"));
+
+        // ====================
+        // NOTIFICATIONS
+        // ====================
+        CreateMap<Notification, NotificationDto>()
+    .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
+    .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.UserId))
+    .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type.ToString()))
+    .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Title))
+    .ForMember(d => d.Message, opt => opt.MapFrom(s => s.Message))
+    .ForMember(d => d.ActionUrl, opt => opt.MapFrom(s => s.ActionUrl))
+    .ForMember(d => d.IsRead, opt => opt.MapFrom(s => s.IsRead))
+    .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.CreatedAt));
+
 
         // ====================
         // WARDROBE MAPPINGS
@@ -66,7 +81,7 @@ public class MappingProfile : Profile
         CreateMap<CreateOutfitDto, Outfit>()
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => Enum.Parse<OccasionType>(s.Occasion, true)))
             .ForMember(d => d.Season, opt => opt.MapFrom(s => Enum.Parse<Season>(s.Season, true)))
-            
+            .ForMember(d => d.ComfortRating, opt => opt.MapFrom(s => s.ComfortRating))
             .ForMember(d => d.ImageUrl, opt => opt.Ignore());
 
         // Outfit - Update
@@ -78,7 +93,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.CreatedAt, opt => opt.Ignore())
             .ForMember(d => d.TimesWorn, opt => opt.Ignore())
             .ForMember(d => d.LastWorn, opt => opt.Ignore())
-            .ForMember(d => d.ComfortRating, opt => opt.Condition(s => s.ComfortRating.HasValue))
+            .ForMember(d => d.ComfortRating, opt => opt.MapFrom(s => s.ComfortRating ?? 5))
             .ForMember(d => d.Name, opt => opt.Condition(s => !string.IsNullOrEmpty(s.Name)))
             .ForMember(d => d.WeatherCondition, opt => opt.Condition(s => !string.IsNullOrEmpty(s.WeatherCondition)))
             .ForMember(d => d.ImageUrl, opt => opt.Condition(s => !string.IsNullOrEmpty(s.ImageUrl)))

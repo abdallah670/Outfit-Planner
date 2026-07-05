@@ -1,0 +1,1310 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head>
+      <style>
+        /*! tailwindcss v4.3.0 | MIT License | https://tailwindcss.com */
+        @layer properties;
+        @layer theme, base, components, utilities;
+        @layer theme {
+          :root,
+          :root {
+            --font-sans:
+              ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+              "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            --font-mono:
+              ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+              "Liberation Mono", "Courier New", monospace;
+            --spacing: 0.25rem;
+            --container-4xl: 56rem;
+            --text-xs: 11px;
+            --text-xs--line-height: calc(1 / 0.75);
+            --text-sm: 13px;
+            --text-sm--line-height: calc(1.25 / 0.875);
+            --text-base: 15px;
+            --text-base--line-height: calc(1.5 / 1);
+            --text-3xl: 34px;
+            --text-3xl--line-height: calc(2.25 / 1.875);
+            --text-4xl: 42px;
+            --text-4xl--line-height: calc(2.5 / 2.25);
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --tracking-widest: 0.1em;
+            --leading-tight: 1.25;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-xl: 24px;
+            --default-font-family: var(--font-sans);
+            --default-mono-font-family: var(--font-mono);
+            --color-background: #fafafa;
+            --color-foreground: #2d3436;
+            --color-border: #dfe6e9;
+            --color-primary: #f8b4c4;
+            --color-primary-foreground: #7a4050;
+            --color-secondary: #9caf88;
+            --color-secondary-foreground: #3d5230;
+            --color-muted: #f0f0f0;
+            --color-muted-foreground: #636e72;
+            --color-surface: #ffffff;
+            --color-accent-peach: #fddcb5;
+            --color-accent-lavender: #d9d6f0;
+            --font-body: DM Sans;
+            --font-headings: DM Sans;
+          }
+        }
+        @layer base {
+          *,
+          ::after,
+          ::before,
+          ::backdrop,
+          ::file-selector-button {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: 0 solid;
+          }
+          html,
+          :root {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            tab-size: 4;
+            font-family: var(
+              --default-font-family,
+              ui-sans-serif,
+              system-ui,
+              sans-serif,
+              "Apple Color Emoji",
+              "Segoe UI Emoji",
+              "Segoe UI Symbol",
+              "Noto Color Emoji"
+            );
+            font-feature-settings: var(--default-font-feature-settings, normal);
+            font-variation-settings: var(
+              --default-font-variation-settings,
+              normal
+            );
+            -webkit-tap-highlight-color: transparent;
+          }
+          hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px;
+          }
+          abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted;
+          }
+          h1,
+          h2,
+          h3,
+          h4,
+          h5,
+          h6 {
+            font-size: inherit;
+            font-weight: inherit;
+          }
+          a {
+            color: inherit;
+            -webkit-text-decoration: inherit;
+            text-decoration: inherit;
+          }
+          b,
+          strong {
+            font-weight: bolder;
+          }
+          code,
+          kbd,
+          samp,
+          pre {
+            font-family: var(
+              --default-mono-font-family,
+              ui-monospace,
+              SFMono-Regular,
+              Menlo,
+              Monaco,
+              Consolas,
+              "Liberation Mono",
+              "Courier New",
+              monospace
+            );
+            font-feature-settings: var(
+              --default-mono-font-feature-settings,
+              normal
+            );
+            font-variation-settings: var(
+              --default-mono-font-variation-settings,
+              normal
+            );
+            font-size: 1em;
+          }
+          small {
+            font-size: 80%;
+          }
+          sub,
+          sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+          }
+          sub {
+            bottom: -0.25em;
+          }
+          sup {
+            top: -0.5em;
+          }
+          table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse;
+          }
+          :-moz-focusring {
+            outline: auto;
+          }
+          progress {
+            vertical-align: baseline;
+          }
+          summary {
+            display: list-item;
+          }
+          ol,
+          ul,
+          menu {
+            list-style: none;
+          }
+          img,
+          svg,
+          video,
+          canvas,
+          audio,
+          iframe,
+          embed,
+          object {
+            display: block;
+            vertical-align: middle;
+          }
+          img,
+          video {
+            max-width: 100%;
+            height: auto;
+          }
+          button,
+          input,
+          select,
+          optgroup,
+          textarea,
+          ::file-selector-button {
+            font: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            border-radius: 0;
+            background-color: transparent;
+            opacity: 1;
+          }
+          :where(select:is([multiple], [size])) optgroup {
+            font-weight: bolder;
+          }
+          :where(select:is([multiple], [size])) optgroup option {
+            padding-inline-start: 20px;
+          }
+          ::file-selector-button {
+            margin-inline-end: 4px;
+          }
+          ::placeholder {
+            opacity: 1;
+          }
+          @supports (not (-webkit-appearance: -apple-pay-button)) or
+            (contain-intrinsic-size: 1px) {
+            ::placeholder {
+              color: currentcolor;
+              @supports (color: color-mix(in lab, red, red)) {
+                color: color-mix(in oklab, currentcolor 50%, transparent);
+              }
+            }
+          }
+          textarea {
+            resize: vertical;
+          }
+          ::-webkit-search-decoration {
+            -webkit-appearance: none;
+          }
+          ::-webkit-date-and-time-value {
+            min-height: 1lh;
+            text-align: inherit;
+          }
+          ::-webkit-datetime-edit {
+            display: inline-flex;
+          }
+          ::-webkit-datetime-edit-fields-wrapper {
+            padding: 0;
+          }
+          ::-webkit-datetime-edit,
+          ::-webkit-datetime-edit-year-field,
+          ::-webkit-datetime-edit-month-field,
+          ::-webkit-datetime-edit-day-field,
+          ::-webkit-datetime-edit-hour-field,
+          ::-webkit-datetime-edit-minute-field,
+          ::-webkit-datetime-edit-second-field,
+          ::-webkit-datetime-edit-millisecond-field,
+          ::-webkit-datetime-edit-meridiem-field {
+            padding-block: 0;
+          }
+          ::-webkit-calendar-picker-indicator {
+            line-height: 1;
+          }
+          :-moz-ui-invalid {
+            box-shadow: none;
+          }
+          button,
+          input:where([type="button"], [type="reset"], [type="submit"]),
+          ::file-selector-button {
+            appearance: button;
+          }
+          ::-webkit-inner-spin-button,
+          ::-webkit-outer-spin-button {
+            height: auto;
+          }
+          [hidden]:where(:not([hidden="until-found"])) {
+            display: none !important;
+          }
+        }
+        @layer utilities {
+          .mx-auto {
+            margin-inline: auto;
+          }
+          .mt-1 {
+            margin-top: calc(var(--spacing) * 1);
+          }
+          .mb-1 {
+            margin-bottom: calc(var(--spacing) * 1);
+          }
+          .flex {
+            display: flex;
+          }
+          .inline-flex {
+            display: inline-flex;
+          }
+          .h-1 {
+            height: calc(var(--spacing) * 1);
+          }
+          .h-8 {
+            height: calc(var(--spacing) * 8);
+          }
+          .h-20 {
+            height: calc(var(--spacing) * 20);
+          }
+          .h-px {
+            height: 1px;
+          }
+          .min-h-full {
+            min-height: 100%;
+          }
+          .w-8 {
+            width: calc(var(--spacing) * 8);
+          }
+          .w-20 {
+            width: calc(var(--spacing) * 20);
+          }
+          .w-full {
+            width: 100%;
+          }
+          .w-px {
+            width: 1px;
+          }
+          .max-w-4xl {
+            max-width: var(--container-4xl);
+          }
+          .flex-1 {
+            flex: 1;
+          }
+          .flex-shrink-0 {
+            flex-shrink: 0;
+          }
+          .flex-col {
+            flex-direction: column;
+          }
+          .items-center {
+            align-items: center;
+          }
+          .items-end {
+            align-items: flex-end;
+          }
+          .items-stretch {
+            align-items: stretch;
+          }
+          .justify-between {
+            justify-content: space-between;
+          }
+          .justify-center {
+            justify-content: center;
+          }
+          .gap-0 {
+            gap: calc(var(--spacing) * 0);
+          }
+          .gap-0\.5 {
+            gap: calc(var(--spacing) * 0.5);
+          }
+          .gap-1 {
+            gap: calc(var(--spacing) * 1);
+          }
+          .gap-2 {
+            gap: calc(var(--spacing) * 2);
+          }
+          .gap-3 {
+            gap: calc(var(--spacing) * 3);
+          }
+          .gap-4 {
+            gap: calc(var(--spacing) * 4);
+          }
+          .gap-6 {
+            gap: calc(var(--spacing) * 6);
+          }
+          .gap-8 {
+            gap: calc(var(--spacing) * 8);
+          }
+          .gap-10 {
+            gap: calc(var(--spacing) * 10);
+          }
+          .self-stretch {
+            align-self: stretch;
+          }
+          .overflow-hidden {
+            overflow: hidden;
+          }
+          .rounded-md {
+            border-radius: var(--radius-md);
+          }
+          .rounded-xl {
+            border-radius: var(--radius-xl);
+          }
+          .rounded-t-md {
+            border-top-left-radius: var(--radius-md);
+            border-top-right-radius: var(--radius-md);
+          }
+          .rounded-b-md {
+            border-bottom-right-radius: var(--radius-md);
+            border-bottom-left-radius: var(--radius-md);
+          }
+          .border {
+            border-style: var(--tw-border-style);
+            border-width: 1px;
+          }
+          .border-b {
+            border-bottom-style: var(--tw-border-style);
+            border-bottom-width: 1px;
+          }
+          .border-border {
+            border-color: var(--color-border);
+          }
+          .bg-accent-lavender {
+            background-color: var(--color-accent-lavender);
+          }
+          .bg-accent-peach {
+            background-color: var(--color-accent-peach);
+          }
+          .bg-background {
+            background-color: var(--color-background);
+          }
+          .bg-border {
+            background-color: var(--color-border);
+          }
+          .bg-muted {
+            background-color: var(--color-muted);
+          }
+          .bg-primary {
+            background-color: var(--color-primary);
+          }
+          .bg-secondary {
+            background-color: var(--color-secondary);
+          }
+          .bg-surface {
+            background-color: var(--color-surface);
+          }
+          .object-cover {
+            object-fit: cover;
+          }
+          .p-8 {
+            padding: calc(var(--spacing) * 8);
+          }
+          .px-2 {
+            padding-inline: calc(var(--spacing) * 2);
+          }
+          .px-3 {
+            padding-inline: calc(var(--spacing) * 3);
+          }
+          .px-4 {
+            padding-inline: calc(var(--spacing) * 4);
+          }
+          .px-6 {
+            padding-inline: calc(var(--spacing) * 6);
+          }
+          .px-10 {
+            padding-inline: calc(var(--spacing) * 10);
+          }
+          .py-0\.5 {
+            padding-block: calc(var(--spacing) * 0.5);
+          }
+          .py-1 {
+            padding-block: calc(var(--spacing) * 1);
+          }
+          .py-2 {
+            padding-block: calc(var(--spacing) * 2);
+          }
+          .py-4 {
+            padding-block: calc(var(--spacing) * 4);
+          }
+          .py-5 {
+            padding-block: calc(var(--spacing) * 5);
+          }
+          .py-12 {
+            padding-block: calc(var(--spacing) * 12);
+          }
+          .pb-6 {
+            padding-bottom: calc(var(--spacing) * 6);
+          }
+          .font-body {
+            font-family: var(--font-body);
+          }
+          .font-headings {
+            font-family: var(--font-headings);
+          }
+          .text-3xl {
+            font-size: var(--text-3xl);
+            line-height: var(--tw-leading, var(--text-3xl--line-height));
+          }
+          .text-4xl {
+            font-size: var(--text-4xl);
+            line-height: var(--tw-leading, var(--text-4xl--line-height));
+          }
+          .text-base {
+            font-size: var(--text-base);
+            line-height: var(--tw-leading, var(--text-base--line-height));
+          }
+          .text-sm {
+            font-size: var(--text-sm);
+            line-height: var(--tw-leading, var(--text-sm--line-height));
+          }
+          .text-xs {
+            font-size: var(--text-xs);
+            line-height: var(--tw-leading, var(--text-xs--line-height));
+          }
+          .leading-none {
+            --tw-leading: 1;
+            line-height: 1;
+          }
+          .leading-tight {
+            --tw-leading: var(--leading-tight);
+            line-height: var(--leading-tight);
+          }
+          .font-medium {
+            --tw-font-weight: var(--font-weight-medium);
+            font-weight: var(--font-weight-medium);
+          }
+          .font-semibold {
+            --tw-font-weight: var(--font-weight-semibold);
+            font-weight: var(--font-weight-semibold);
+          }
+          .tracking-widest {
+            --tw-tracking: var(--tracking-widest);
+            letter-spacing: var(--tracking-widest);
+          }
+          .text-foreground {
+            color: var(--color-foreground);
+          }
+          .text-muted-foreground {
+            color: var(--color-muted-foreground);
+          }
+          .text-primary-foreground {
+            color: var(--color-primary-foreground);
+          }
+          .text-secondary-foreground {
+            color: var(--color-secondary-foreground);
+          }
+          .uppercase {
+            text-transform: uppercase;
+          }
+          .opacity-60 {
+            opacity: 60%;
+          }
+        }
+        @property --tw-border-style {
+          syntax: "*";
+          inherits: false;
+          initial-value: solid;
+        }
+        @property --tw-leading {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-font-weight {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-tracking {
+          syntax: "*";
+          inherits: false;
+        }
+        @layer properties {
+          @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or
+            ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+            *,
+            ::before,
+            ::after,
+            ::backdrop {
+              --tw-border-style: solid;
+              --tw-leading: initial;
+              --tw-font-weight: initial;
+              --tw-tracking: initial;
+            }
+          }
+        }
+      </style>
+      <link
+        rel="preload"
+        as="image"
+        href="/api/flow-image/1%3A1%0Afolded%20white%20linen%20shirt%20on%20soft%20neutral%20background%2C%20fashion%20product%20photo"
+      />
+    </head>
+    <body>
+      <div
+        class="min-h-full bg-background font-body"
+        data-component="@screens/ProfileStats.jsx"
+      >
+        <div class="h-1 w-full bg-primary opacity-60"></div>
+        <div class="max-w-4xl mx-auto px-10 py-12 flex flex-col gap-10">
+          <div class="flex items-end justify-between">
+            <div class="flex flex-col gap-1">
+              <span
+                class="text-xs font-body text-muted-foreground uppercase tracking-widest"
+                ><span data-file="/screens/ProfileStats.jsx" data-idx="0"
+                  >Profile</span
+                ></span
+              >
+              <h1
+                class="text-4xl font-headings font-semibold text-foreground leading-tight"
+              >
+                <span data-file="/screens/ProfileStats.jsx" data-idx="1"
+                  >Style Stats</span
+                >
+              </h1>
+            </div>
+            <div
+              class="flex items-center gap-2 bg-surface border border-border rounded-md px-4 py-2 text-sm font-body text-foreground"
+              data-component="@components/DateRangeSelector.jsx"
+            >
+              <span
+                class=""
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                data-icon="calendar"
+                data-component="@globalComponents/Icon.jsx"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15px"
+                  height="15px"
+                  viewBox="0 0 24 24"
+                >
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3.2"
+                  >
+                    <path d="M8 2v4m8-4v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </g></svg></span
+              ><span>Jul 6 – Jul 12, 2025</span
+              ><span
+                class=""
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 14px;
+                  height: 14px;
+                "
+                data-icon="chevron-down"
+                data-component="@globalComponents/Icon.jsx"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14px"
+                  height="14px"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3.4285714285714284"
+                    d="m6 9l6 6l6-6"
+                  ></path></svg
+              ></span>
+            </div>
+          </div>
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center gap-3">
+              <span
+                class="text-xs font-body font-semibold text-muted-foreground uppercase tracking-widest"
+                ><span data-file="/screens/ProfileStats.jsx" data-idx="2"
+                  >This Week</span
+                ></span
+              >
+              <div class="flex-1 h-px bg-border"></div>
+            </div>
+            <div
+              class="bg-surface rounded-md border border-border p-8 flex flex-col gap-6"
+              style="box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06)"
+              data-component="@components/WeeklyReportCard.jsx"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span
+                    class="text-base font-headings font-semibold text-foreground"
+                    ><span
+                      data-file="/components/WeeklyReportCard.jsx"
+                      data-idx="0"
+                      >Week of</span
+                    >
+                    <!-- -->Jul 6 – Jul 12</span
+                  ><span
+                    class="bg-primary text-primary-foreground text-xs font-body font-semibold px-2 py-0.5 rounded-xl"
+                    ><span
+                      data-file="/components/WeeklyReportCard.jsx"
+                      data-idx="1"
+                      >NEW</span
+                    ></span
+                  >
+                </div>
+                <span
+                  class="inline-flex items-center px-3 py-1 rounded-xl text-sm font-body font-medium bg-accent-lavender text-primary-foreground"
+                  data-component="@components/StyleTrendBadge.jsx"
+                  >Classic</span
+                >
+              </div>
+              <div class="flex items-stretch gap-8">
+                <div class="flex-shrink-0">
+                  <div
+                    class="flex items-center gap-4"
+                    data-component="@components/MostWornItemCard.jsx"
+                  >
+                    <div
+                      class="w-20 h-20 rounded-md overflow-hidden flex-shrink-0"
+                    >
+                      <img
+                        data-query="folded white linen shirt on soft neutral background, fashion product photo"
+                        data-aspect-ratio="1:1"
+                        style="aspect-ratio: 1/1; object-fit: cover"
+                        src="https://storage.googleapis.com/banani-generated-images/generated-images/8ccd8e1d-951a-4c72-b1ac-f235f316ffda.jpg"
+                        class="w-20 h-20 object-cover"
+                        data-component="@globalComponents/Image.jsx"
+                      />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <span
+                        class="text-xs font-body text-muted-foreground uppercase tracking-widest"
+                        ><span
+                          data-file="/components/MostWornItemCard.jsx"
+                          data-idx="0"
+                          >Most Worn</span
+                        ></span
+                      ><span
+                        class="text-base font-headings font-semibold text-foreground"
+                        >White Linen Shirt</span
+                      ><span class="text-sm font-body text-muted-foreground"
+                        >4<!-- -->
+                        <span
+                          data-file="/components/MostWornItemCard.jsx"
+                          data-idx="1"
+                          >times this week</span
+                        ></span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="w-px bg-border self-stretch"></div>
+                <div class="flex gap-4 flex-1">
+                  <div
+                    class="bg-surface rounded-md border border-border flex flex-col items-center justify-center px-6 py-5 gap-1 flex-1"
+                    data-component="@components/MetricCard.jsx"
+                  >
+                    <span
+                      class="text-xs text-muted-foreground font-body uppercase tracking-widest mb-1"
+                      >◈</span
+                    ><span
+                      class="text-3xl font-headings font-semibold text-foreground leading-none"
+                      >72%</span
+                    ><span class="text-sm font-body text-muted-foreground mt-1"
+                      ><span
+                        data-file="/components/WeeklyReportCard.jsx"
+                        data-idx="2"
+                        >Variety Score</span
+                      ></span
+                    ><span class="text-xs font-body text-muted-foreground"
+                      ><span
+                        data-file="/components/WeeklyReportCard.jsx"
+                        data-idx="3"
+                        >unique ÷ total</span
+                      ></span
+                    >
+                  </div>
+                  <div
+                  <div
+                    class="bg-surface rounded-md border border-border flex flex-col items-center justify-center px-6 py-5 gap-1 flex-1"
+                    data-component="@components/MetricCard.jsx"
+                  >
+                    <span
+                      class="text-xs text-muted-foreground font-body uppercase tracking-widest mb-1"
+                      >◎</span
+                    ><span
+                      class="text-3xl font-headings font-semibold text-foreground leading-none"
+                      >23</span
+                    ><span class="text-sm font-body text-muted-foreground mt-1"
+                      ><span
+                        data-file="/components/WeeklyReportCard.jsx"
+                        data-idx="6"
+                        >Total Wears</span
+                      ></span
+                    ><span class="text-xs font-body text-muted-foreground"
+                      ><span
+                        data-file="/components/WeeklyReportCard.jsx"
+                        data-idx="7"
+                        >this week</span
+                      ></span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center gap-3">
+              <span
+                class="text-xs font-body font-semibold text-muted-foreground uppercase tracking-widest"
+                ><span data-file="/screens/ProfileStats.jsx" data-idx="3"
+                  >Past Reports</span
+                ></span
+              >
+              <div class="flex-1 h-px bg-border"></div>
+            </div>
+            <div
+              class="flex flex-col gap-0"
+              data-component="@components/ReportHistoryList.jsx"
+            >
+              <a
+                class="flex items-center justify-between px-6 py-4 bg-surface border-b border-border rounded-t-md"
+                style="box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06)"
+                data-media-type="banani-button"
+                ><div class="flex items-center gap-4">
+                  <div
+                    class="w-8 h-8 rounded-md bg-muted flex items-center justify-center flex-shrink-0"
+                  >
+                    <span
+                      class=""
+                      style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 15px;
+                        height: 15px;
+                      "
+                      data-icon="calendar-days"
+                      data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15px"
+                        height="15px"
+                        viewBox="0 0 24 24"
+                      >
+                        <g
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="3.2"
+                        >
+                          <path d="M8 2v4m8-4v4"></path>
+                          <rect
+                            width="18"
+                            height="18"
+                            x="3"
+                            y="4"
+                            rx="2"
+                          ></rect>
+                          <path
+                            d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"
+                          ></path>
+                        </g></svg
+                    ></span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span
+                      class="text-sm font-headings font-medium text-foreground"
+                      ><span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="0"
+                        >Week of</span
+                      >
+                      <!-- -->Jun 30 – Jul 6</span
+                    ><span class="text-xs font-body text-muted-foreground"
+                      >65%<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="1"
+                        >variety</span
+                      >
+                      ·
+                      <!-- -->3.8 ★<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="2"
+                        >comfort</span
+                      >
+                      ·
+                      <!-- -->19<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="3"
+                        >wears</span
+                      ></span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span
+                    class="inline-flex items-center px-3 py-1 rounded-xl text-sm font-body font-medium bg-primary text-primary-foreground"
+                    data-component="@components/StyleTrendBadge.jsx"
+                    >Mixed</span
+                  ><span
+                    class=""
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 16px;
+                      height: 16px;
+                    "
+                    data-icon="chevron-right"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16px"
+                      height="16px"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3"
+                        d="m9 18l6-6l-6-6"
+                      ></path></svg
+                  ></span></div></a
+              ><a
+                class="flex items-center justify-between px-6 py-4 bg-surface border-b border-border"
+                data-media-type="banani-button"
+                ><div class="flex items-center gap-4">
+                  <div
+                    class="w-8 h-8 rounded-md bg-muted flex items-center justify-center flex-shrink-0"
+                  >
+                    <span
+                      class=""
+                      style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 15px;
+                        height: 15px;
+                      "
+                      data-icon="calendar-days"
+                      data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15px"
+                        height="15px"
+                        viewBox="0 0 24 24"
+                      >
+                        <g
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="3.2"
+                        >
+                          <path d="M8 2v4m8-4v4"></path>
+                          <rect
+                            width="18"
+                            height="18"
+                            x="3"
+                            y="4"
+                            rx="2"
+                          ></rect>
+                          <path
+                            d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"
+                          ></path>
+                        </g></svg
+                    ></span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span
+                      class="text-sm font-headings font-medium text-foreground"
+                      ><span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="0"
+                        >Week of</span
+                      >
+                      <!-- -->Jun 23 – Jun 29</span
+                    ><span class="text-xs font-body text-muted-foreground"
+                      >80%<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="1"
+                        >variety</span
+                      >
+                      ·
+                      <!-- -->4.5 ★<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="2"
+                        >comfort</span
+                      >
+                      ·
+                      <!-- -->27<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="3"
+                        >wears</span
+                      ></span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span
+                    class="inline-flex items-center px-3 py-1 rounded-xl text-sm font-body font-medium bg-secondary text-secondary-foreground"
+                    data-component="@components/StyleTrendBadge.jsx"
+                    >Versatile</span
+                  ><span
+                    class=""
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 16px;
+                      height: 16px;
+                    "
+                    data-icon="chevron-right"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16px"
+                      height="16px"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3"
+                        d="m9 18l6-6l-6-6"
+                      ></path></svg
+                  ></span></div></a
+              ><a
+                class="flex items-center justify-between px-6 py-4 bg-surface border-b border-border"
+                data-media-type="banani-button"
+                ><div class="flex items-center gap-4">
+                  <div
+                    class="w-8 h-8 rounded-md bg-muted flex items-center justify-center flex-shrink-0"
+                  >
+                    <span
+                      class=""
+                      style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 15px;
+                        height: 15px;
+                      "
+                      data-icon="calendar-days"
+                      data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15px"
+                        height="15px"
+                        viewBox="0 0 24 24"
+                      >
+                        <g
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="3.2"
+                        >
+                          <path d="M8 2v4m8-4v4"></path>
+                          <rect
+                            width="18"
+                            height="18"
+                            x="3"
+                            y="4"
+                            rx="2"
+                          ></rect>
+                          <path
+                            d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"
+                          ></path>
+                        </g></svg
+                    ></span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span
+                      class="text-sm font-headings font-medium text-foreground"
+                      ><span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="0"
+                        >Week of</span
+                      >
+                      <!-- -->Jun 16 – Jun 22</span
+                    ><span class="text-xs font-body text-muted-foreground"
+                      >54%<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="1"
+                        >variety</span
+                      >
+                      ·
+                      <!-- -->4.0 ★<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="2"
+                        >comfort</span
+                      >
+                      ·
+                      <!-- -->15<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="3"
+                        >wears</span
+                      ></span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span
+                    class="inline-flex items-center px-3 py-1 rounded-xl text-sm font-body font-medium bg-accent-peach text-primary-foreground"
+                    data-component="@components/StyleTrendBadge.jsx"
+                    >Focused</span
+                  ><span
+                    class=""
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 16px;
+                      height: 16px;
+                    "
+                    data-icon="chevron-right"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16px"
+                      height="16px"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3"
+                        d="m9 18l6-6l-6-6"
+                      ></path></svg
+                  ></span></div></a
+              ><a
+                class="flex items-center justify-between px-6 py-4 bg-surface rounded-b-md"
+                data-media-type="banani-button"
+                ><div class="flex items-center gap-4">
+                  <div
+                    class="w-8 h-8 rounded-md bg-muted flex items-center justify-center flex-shrink-0"
+                  >
+                    <span
+                      class=""
+                      style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 15px;
+                        height: 15px;
+                      "
+                      data-icon="calendar-days"
+                      data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15px"
+                        height="15px"
+                        viewBox="0 0 24 24"
+                      >
+                        <g
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="3.2"
+                        >
+                          <path d="M8 2v4m8-4v4"></path>
+                          <rect
+                            width="18"
+                            height="18"
+                            x="3"
+                            y="4"
+                            rx="2"
+                          ></rect>
+                          <path
+                            d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"
+                          ></path>
+                        </g></svg
+                    ></span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span
+                      class="text-sm font-headings font-medium text-foreground"
+                      ><span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="0"
+                        >Week of</span
+                      >
+                      <!-- -->Jun 9 – Jun 15</span
+                    ><span class="text-xs font-body text-muted-foreground"
+                      >70%<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="1"
+                        >variety</span
+                      >
+                      ·
+                      <!-- -->4.3 ★<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="2"
+                        >comfort</span
+                      >
+                      ·
+                      <!-- -->21<!-- -->
+                      <span
+                        data-file="/components/ReportHistoryList.jsx"
+                        data-idx="3"
+                        >wears</span
+                      ></span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span
+                    class="inline-flex items-center px-3 py-1 rounded-xl text-sm font-body font-medium bg-accent-lavender text-primary-foreground"
+                    data-component="@components/StyleTrendBadge.jsx"
+                    >Classic</span
+                  ><span
+                    class=""
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 16px;
+                      height: 16px;
+                    "
+                    data-icon="chevron-right"
+                    data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16px"
+                      height="16px"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3"
+                        d="m9 18l6-6l-6-6"
+                      ></path></svg
+                  ></span></div
+              ></a>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-2 text-xs font-body text-muted-foreground pb-6"
+          >
+            <span
+              class=""
+              style="
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                width: 13px;
+                height: 13px;
+              "
+              data-icon="info"
+              data-component="@globalComponents/Icon.jsx"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="13px"
+                height="13px"
+                viewBox="0 0 24 24"
+              >
+                <g
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="3.6923076923076925"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 16v-4m0-4h.01"></path>
+                </g></svg></span
+            ><span
+              ><span data-file="/screens/ProfileStats.jsx" data-idx="4"
+                >Variety Score = unique items worn ÷ total wears × 100. Comfort
+                Average is rated 1–5 per outfit.</span
+              ></span
+            >
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+</div>

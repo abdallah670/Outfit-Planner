@@ -370,6 +370,9 @@ namespace OutfitPlanner.Persistence.Migrations
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Images")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Intent")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -875,8 +878,10 @@ namespace OutfitPlanner.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("ComfortRating")
-                        .HasColumnType("int");
+                    b.Property<int>("ComfortRating")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(5);
 
                     b.Property<int>("CommentsCount")
                         .HasColumnType("int");
@@ -1100,6 +1105,49 @@ namespace OutfitPlanner.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("PostReactions", (string)null);
+                });
+
+            modelBuilder.Entity("OutfitPlanner.Domain.Entities.SentReminder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CalendarEventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReminderType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset>("SentAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "CalendarEventId", "ReminderType", "SentAt");
+
+                    b.ToTable("SentReminders", (string)null);
                 });
 
             modelBuilder.Entity("OutfitPlanner.Domain.Entities.StyleRule", b =>

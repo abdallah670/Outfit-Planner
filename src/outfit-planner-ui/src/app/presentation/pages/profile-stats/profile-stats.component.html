@@ -1,0 +1,161 @@
+<div class="export-wrapper" style="width: 100%; min-height: 100vh; position: relative; font-family: var(--font-body); background-color: var(--color-background);" *ngIf="!loading() && !error(); else loader">
+  <div class="min-h-full bg-background font-body">
+    <div class="h-1 w-full bg-primary opacity-60"></div>
+    <div class="max-w-4xl mx-auto px-10 py-12 flex flex-col gap-10">
+      <div class="flex items-end justify-between">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-body text-muted-foreground uppercase tracking-widest">Profile</span>
+          <h1 class="text-4xl font-headings font-semibold text-foreground leading-tight">Style Stats</h1>
+        </div>
+        <div class="flex items-center gap-2 bg-surface border border-border rounded-md px-4 py-2 text-sm font-body text-foreground">
+          <span style="display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 15px; height: 15px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24">
+              <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2">
+                <path d="M8 2v4m8-4v4"></path>
+                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                <path d="M3 10h18"></path>
+              </g>
+            </svg>
+          </span>
+          <span>{{ dateRange() }}</span>
+          <span style="display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 14px; height: 14px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14px" height="14px" viewBox="0 0 24 24">
+              <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.4285714285714284" d="m6 9l6 6l6-6"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- This Week Section -->
+      <div class="flex flex-col gap-4" *ngIf="currentReport()">
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-body font-semibold text-muted-foreground uppercase tracking-widest">This Week</span>
+          <div class="flex-1 h-px bg-border"></div>
+        </div>
+
+        <div class="bg-surface rounded-md border border-border p-8 flex flex-col gap-6" style="box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06)">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-base font-headings font-semibold text-foreground">Week of {{ currentReport()!.weekStart }} – {{ currentReport()!.weekEnd }}</span>
+              <span class="bg-primary text-primary-foreground text-xs font-body font-semibold px-2 py-0.5 rounded-xl" *ngIf="currentReport()!.isNew">NEW</span>
+            </div>
+            <span class="inline-flex items-center px-3 py-1 rounded-xl text-sm font-body font-medium" [ngClass]="getTrendBackground(currentReport()!.trend) + ' ' + getTrendTextColor(currentReport()!.trend)">
+              {{ currentReport()!.trend }}
+            </span>
+          </div>
+
+          <div class="flex items-stretch gap-8">
+            <div class="flex-shrink-0">
+              <div class="flex items-center gap-4">
+                <div class="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 bg-muted">
+                  <img *ngIf="currentReport()!.mostWornItem.imageUrl" [src]="currentReport()!.mostWornItem.imageUrl" style="aspect-ratio: 1/1; object-fit: cover" class="w-20 h-20 object-cover" />
+                  <div *ngIf="!currentReport()!.mostWornItem.imageUrl" class="w-20 h-20 flex items-center justify-center text-muted-foreground">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <span class="text-xs font-body text-muted-foreground uppercase tracking-widest">Most Worn</span>
+                  <span class="text-base font-headings font-semibold text-foreground">{{ currentReport()!.mostWornItem.name }}</span>
+                  <span class="text-sm font-body text-muted-foreground">{{ currentReport()!.mostWornItem.count }} times this week</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="w-px bg-border self-stretch"></div>
+
+            <div class="flex gap-4 flex-1">
+              <div class="bg-surface rounded-md border border-border flex flex-col items-center justify-center px-6 py-5 gap-1 flex-1">
+                <span class="text-xs text-muted-foreground font-body uppercase tracking-widest mb-1">◈</span>
+                <span class="text-3xl font-headings font-semibold text-foreground leading-none">{{ currentReport()!.varietyScore }}%</span>
+                <span class="text-sm font-body text-muted-foreground mt-1">Variety Score</span>
+                <span class="text-xs font-body text-muted-foreground">unique ÷ total</span>
+              </div>
+
+              <div class="bg-surface rounded-md border border-border flex flex-col items-center justify-center px-6 py-5 gap-1 flex-1">
+                <span class="text-xs text-muted-foreground font-body uppercase tracking-widest mb-1">◎</span>
+                <span class="text-3xl font-headings font-semibold text-foreground leading-none">{{ currentReport()!.totalWears }}</span>
+                <span class="text-sm font-body text-muted-foreground mt-1">Total Wears</span>
+                <span class="text-xs font-body text-muted-foreground">this week</span>
+              </div>
+
+              <div class="bg-surface rounded-md border border-border flex flex-col items-center justify-center px-6 py-5 gap-1 flex-1">
+                <span class="text-xs text-muted-foreground font-body uppercase tracking-widest mb-1">★</span>
+                <span class="text-3xl font-headings font-semibold text-foreground leading-none">{{ currentReport()!.comfortAverage | number:'1.1-1' }}</span>
+                <span class="text-sm font-body text-muted-foreground mt-1">Comfort Avg</span>
+                <span class="text-xs font-body text-muted-foreground">1–5 rating</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Past Reports Section -->
+      <div class="flex flex-col gap-4" *ngIf="pastReports().length">
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-body font-semibold text-muted-foreground uppercase tracking-widest">Past Reports</span>
+          <div class="flex-1 h-px bg-border"></div>
+        </div>
+
+        <div class="flex flex-col gap-0 bg-surface border border-border rounded-md" style="box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06)">
+          @for (report of pastReports(); track report.weekStart; let first = $first; let last = $last) {
+            <a class="flex items-center justify-between px-6 py-4 bg-surface" [ngClass]="{'border-b border-border': !last, 'rounded-t-md': first, 'rounded-b-md': last}" style="cursor: pointer;">
+              <div class="flex items-center gap-4">
+                <div class="w-8 h-8 rounded-md bg-muted flex items-center justify-center flex-shrink-0 text-muted-foreground">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 15px; height: 15px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24">
+                      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2">
+                        <path d="M8 2v4m8-4v4"></path>
+                        <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                        <path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path>
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-sm font-headings font-medium text-foreground">Week of {{ report.weekStart }} – {{ report.weekEnd }}</span>
+                  <span class="text-xs font-body text-muted-foreground">
+                    {{ report.variety }}% variety · {{ report.comfort | number:'1.1-1' }} ★ comfort · {{ report.wears }} wears
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-xl text-sm font-body font-medium" [ngClass]="getTrendBackground(report.trend) + ' ' + getTrendTextColor(report.trend)">
+                  {{ report.trend }}
+                </span>
+                <span style="display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 16px; height: 16px; color: var(--color-muted-foreground)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m9 18l6-6l-6-6"></path>
+                  </svg>
+                </span>
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="flex items-center gap-2 text-xs font-body text-muted-foreground pb-6">
+        <span style="display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 13px; height: 13px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13px" height="13px" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.6923076923076925">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 16v-4m0-4h.01"></path>
+            </g>
+          </svg>
+        </span>
+        <span>Variety Score = unique items worn ÷ total wears × 100. Comfort Average is rated 1–5 per outfit.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loader>
+  <div class="loading-state" *ngIf="loading()">
+    <div class="spinner"></div>
+    <p>Loading style stats...</p>
+  </div>
+  <div class="error-state" *ngIf="error()">
+    <p>{{ error() }}</p>
+    <button mat-stroked-button (click)="loadStats()">Retry</button>
+  </div>
+</ng-template>

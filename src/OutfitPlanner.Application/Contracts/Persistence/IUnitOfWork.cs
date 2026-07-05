@@ -28,7 +28,11 @@ public interface IUnitOfWork : IDisposable
     IUserActivityRepository UserActivities { get; }
      IAuditLogRepository AuditLogs { get; }
     ISystemSettingRepository SystemSettings { get; }
-    IContentReportRepository ContentReports { get; }
+     IContentReportRepository ContentReports { get; }
+     IChatSessionRepository Sessions { get; }
+     ISentReminderRepository SentReminders { get; }
+    
+
    
     Task<int> CompleteAsync(CancellationToken cancellationToken = default);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

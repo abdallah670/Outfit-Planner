@@ -73,4 +73,23 @@ public class AiChatController : ControllerBase
         
         return Ok(messages);
     }
+
+    /// <summary>
+    /// Delete a chat session and all its messages
+    /// </summary>
+    [HttpDelete("sessions/{id}")]
+    public async Task<ActionResult<BaseCommandResponse>> DeleteSession(Guid id)
+    {
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var command = new DeleteSessionCommand { UserId = userId, SessionId = id };
+        var response = await _mediator.Send(command);
+        
+        if (!response.Success)
+            return BadRequest(response);
+
+        return Ok(response);
+    }
 }

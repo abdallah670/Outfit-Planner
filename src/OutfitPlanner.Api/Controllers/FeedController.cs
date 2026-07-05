@@ -9,6 +9,7 @@ using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Enums;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application.Common;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 
 namespace OutfitPlanner.Api.Controllers;
 
@@ -17,13 +18,17 @@ namespace OutfitPlanner.Api.Controllers;
 [Authorize]
 public class FeedController : ControllerBase
 {
+    // Rate limiting is applied globally via UseRateLimiter, 
+    // but we can add endpoint-specific limits if needed using [EnableRateLimiting("Feed")]
     private readonly IMediator _mediator;
     private readonly ILogger<FeedController> _logger;
+    private readonly ISocialHubService _socialHub;
 
-    public FeedController(IMediator mediator, ILogger<FeedController> logger)
+    public FeedController(IMediator mediator, ILogger<FeedController> logger, ISocialHubService socialHub)
     {
         _mediator = mediator;
         _logger = logger;
+        _socialHub = socialHub;
     }
 
     private string GetUserId() => User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -167,6 +172,18 @@ public class FeedController : ControllerBase
         
         if (!response.Success)
             return BadRequest(response);
+        
+        // Notify real-time subscribers
+        if (response.Data is not null)
+        {
+            var data = (dynamic)response.Data;
+            var postOwnerId = data.postOwnerId;
+            var likesCount = data.likesCount;
+            if (postOwnerId is not null && likesCount is not null)
+            {
+                await _socialHub.NotifyReactionUpdateAsync(id.ToString(), (int)likesCount);
+            }
+        }
             
         return Ok(response);
     }
@@ -188,6 +205,17 @@ public class FeedController : ControllerBase
         
         if (!response.Success)
             return BadRequest(response);
+        
+        // Notify real-time subscribers
+        if (response.Data is not null)
+        {
+            var data = (dynamic)response.Data;
+            var likesCount = data.likesCount;
+            if (likesCount is not null)
+            {
+                await _socialHub.NotifyReactionUpdateAsync(id.ToString(), (int)likesCount);
+            }
+        }
             
         return Ok(response);
     }

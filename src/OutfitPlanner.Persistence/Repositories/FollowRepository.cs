@@ -22,6 +22,12 @@ public class FollowRepository : GenericRepository<Follow>, IFollowRepository
         return follow != null;
     }
 
+    public async Task<Follow?> GetFollowRecordIncludingDeletedAsync(string followerId, string followedId)
+    {
+        return await _dbSet.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(f => f.FollowerId == followerId && f.FollowedId == followedId);
+    }
+
     public async Task<List<Follow>> GetFollowersAsync(string userId, int page, int pageSize)
     {
         return await _dbSet

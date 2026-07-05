@@ -9,8 +9,8 @@ import { ChatSession, ChatMessage, ChatResponse } from '../entities/ai.entity';
 export class AiUseCases {
   constructor(@Inject(AI_REPOSITORY) private readonly aiRepository: AiRepository) {}
 
-  sendMessage(message: string, sessionId?: string, images?: File[]): Observable<ChatResponse> {
-    return this.aiRepository.sendMessage(message, sessionId, images);
+  sendMessage(message: string, sessionId?: string, images?: File[], clothingItemIds?: string[]): Observable<ChatResponse> {
+    return this.aiRepository.sendMessage(message, sessionId, images, clothingItemIds);
   }
 
   getSessions(): Observable<ChatSession[]> {
@@ -19,5 +19,9 @@ export class AiUseCases {
 
   getSessionMessages(sessionId: string, page: number = 1, pageSize: number = 20): Observable<ChatMessage[]> {
     return this.aiRepository.getSessionMessages(sessionId, page, pageSize);
+  }
+
+  deleteSession(sessionId: string): Observable<void> {
+    return this.aiRepository.deleteSession(sessionId);
   }
 }

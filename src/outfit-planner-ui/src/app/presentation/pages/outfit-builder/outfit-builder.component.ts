@@ -100,6 +100,7 @@ export class OutfitBuilderComponent implements OnInit, OnDestroy {
     name: [`Outfit - ${new Date().toLocaleDateString()}`, [Validators.required]],
     occasion: [OccasionType.Casual, [Validators.required]],
     season: [this.getCurrentSeason(), [Validators.required]],
+    comfortRating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
   });
 
   selectedItems: ClothingItem[] = [];
@@ -265,6 +266,7 @@ export class OutfitBuilderComponent implements OnInit, OnDestroy {
       name: outfit.name,
       occasion: outfit.occasion,
       season: outfit.season,
+      comfortRating: outfit.comfortRating ?? 5,
     });
 
     this.selectedItems = [];
@@ -363,6 +365,7 @@ export class OutfitBuilderComponent implements OnInit, OnDestroy {
       name: formValues.name!,
       occasion: formValues.occasion as OccasionType,
       season: formValues.season as Season,
+      comfortRating: formValues.comfortRating || 5,
       items: outfitItems as OutfitItem[],
     };
 

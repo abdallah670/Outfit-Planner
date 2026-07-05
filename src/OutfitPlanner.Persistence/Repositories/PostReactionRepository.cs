@@ -16,7 +16,7 @@ public class PostReactionRepository : GenericRepository<PostReaction>, IPostReac
 
     public async Task<PostReaction?> GetReactionAsync(Guid postId, string userId)
     {
-        return await _dbSet
+        return await _dbSet.IgnoreQueryFilters()
             .FirstOrDefaultAsync(r => r.PostId == postId && r.UserId == userId);
     }
 

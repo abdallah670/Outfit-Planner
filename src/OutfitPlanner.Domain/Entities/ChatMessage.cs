@@ -8,6 +8,7 @@ public class ChatMessage : BaseEntity
     public string Role { get; set; } = string.Empty;           // "user" or "assistant"
     public string? Intent { get; set; }                        // Classified intent (optional)
     public string? Metadata { get; set; }                      // JSON: outfit suggestions, scores, etc.
+    public string? Images { get; set; }                        // JSON: array of uploaded image URLs
     
     // Navigation
     public ChatSession Session { get; set; } = null!;

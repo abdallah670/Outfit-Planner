@@ -2,6 +2,7 @@ using OutfitPlanner.Api.Middleware;
 using OutfitPlanner.Api.Converters;
 using OutfitPlanner.Infrastructure;
 using OutfitPlanner.Infrastructure.Services;
+using OutfitPlanner.Persistence;
 using OutfitPlanner.Persistence.Data;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -74,7 +75,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     // Use full names to avoid collisions between DTOs with same names in different namespaces
-    options.CustomSchemaIds(type => type.FullName?.Replace("`", "_").Replace("[", "_").Replace("]", "_").Replace(",", "_").Replace(" ", ""));
+    options.CustomSchemaIds(type => type.FullName?.Replace("`", "_").
+    Replace("[", "_").Replace("]", "_").Replace(",", "_").Replace(" ", ""));
 });
 
 builder.Services.AddApiVersioning(options =>
@@ -162,6 +164,10 @@ builder.Services.AddHangfireServer();
 
 // Register Hangfire job
 builder.Services.AddTransient<TrendingCalculationHangfireJob>();
+
+// Register notification background services
+builder.Services.AddTransient<CalendarReminderService>();
+builder.Services.AddTransient<WeeklyReportService>();
 
 // Identity.Application cookie scheme used automatically by AddIdentity for external login callbacks
 
@@ -275,6 +281,7 @@ app.MapGet("/api", () => Results.Redirect("/swagger"));
 
 app.MapHealthChecks("/health");
 app.MapHub<NotificationHub>("/notifications/hub");
+app.MapHub<SocialHub>("/social/hub");
 app.MapControllers();
 
 try 
@@ -326,6 +333,44 @@ try
         );
         
         Log.Information("Hangfire recurring job 'auto-unlock-accounts' scheduled to run every 5 minutes");
+    }
+
+    // Schedule recurring Hangfire job for calendar event reminders
+    using (var scope = app.Services.CreateScope())
+    {
+        var calendarJob = scope.ServiceProvider.GetRequiredService<CalendarReminderService>();
+        var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+        
+        recurringJobManager.AddOrUpdate(
+            "calendar-event-reminders",
+            () => calendarJob.SendRemindersAsync(),
+            "0 * * * *", // Cron: Every hour
+            new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Utc
+            }
+        );
+        
+        Log.Information("Hangfire recurring job 'calendar-event-reminders' scheduled to run every hour");
+    }
+
+    // Schedule recurring Hangfire job for weekly style report
+    using (var scope = app.Services.CreateScope())
+    {
+        var reportJob = scope.ServiceProvider.GetRequiredService<WeeklyReportService>();
+        var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+        
+        recurringJobManager.AddOrUpdate(
+            "weekly-style-report",
+            () => reportJob.GenerateWeeklyReportAsync(),
+            "0 8 * * 1", // Cron: Monday at 08:00 UTC
+            new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Utc
+            }
+        );
+        
+        Log.Information("Hangfire recurring job 'weekly-style-report' scheduled to run every Monday at 08:00 UTC");
     }
     
     app.Run();

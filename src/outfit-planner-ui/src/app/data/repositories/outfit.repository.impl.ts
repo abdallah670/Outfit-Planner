@@ -32,8 +32,8 @@ export class OutfitRepositoryImpl implements OutfitRepository {
     return this.outfitDataSource.updateOutfit(id, outfit);
   }
 
-  createOutfitWithImage(imageFile: File): Observable<Outfit> {
-    return this.outfitDataSource.createOutfitWithImage(imageFile);
+  createOutfitWithImage(imageFile: File, details?: { name: string; occasion?: string; season?: string; comfortRating?: number }): Observable<Outfit> {
+    return this.outfitDataSource.createOutfitWithImage(imageFile, details);
   }
   deleteOutfit(id: string): Observable<boolean> {
     return this.outfitDataSource.deleteOutfit(id);

@@ -13,12 +13,13 @@ export interface ChatMessage {
   sessionId: string;
   senderId: string;
   content: string;
-  images: File[];
+  images: string[];
   role: 'user' | 'assistant';
   createdAt: string;
   metadata?: string;
   outfitSuggestions?: OutfitSuggestion[];
-  suggestedActions?: string[];
+  clothingItemIds?: string[];
+  outfitIds?: string[];
   data?: any;
 }
 
@@ -27,6 +28,7 @@ export interface ChatResponse {
   message: string;
   success: boolean;
   errors: string[];
+  uploadedImageUrls?: string[];
   data?: {
     outfitSuggestions?: OutfitSuggestion[];
     suggestedActions?: string[];

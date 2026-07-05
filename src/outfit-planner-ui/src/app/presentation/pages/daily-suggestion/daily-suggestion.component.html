@@ -66,8 +66,6 @@
             {{ getMatchPercentage() }}% match
           </div>
 
-        
-
           <button class="primary-btn" (click)="wearToday()" *ngIf="isToday()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 6L9 17l-5-5"/>
@@ -76,7 +74,6 @@
           </button>
 
           <div class="secondary-actions">
-            <button class="secondary-btn" (click)="showAlternatives()">See Alternatives</button>
             <button class="secondary-btn" routerLink="/outfits/build">Build Custom</button>
           </div>
         </div>
@@ -100,7 +97,7 @@
         </div>
 
         <!-- Events Card -->
-        <div class="info-card">
+        <div *ngIf="(todayEvents()?.length ?? 0) > 0" class="info-card">
           <div class="events-title">📅 {{ getDayLabel() }}'s Events</div>
           <div class="events-list">
             <div class="event-item" *ngFor="let event of todayEvents()">
@@ -126,18 +123,20 @@
           <div class="outfit-breakdown" *ngIf="getPrimaryItems().length > 0">
             <div class="breakdown-title">Item breakdown:</div>
             <div class="items-container">
-              <div class="item-reason" *ngFor="let item of getPrimaryItems()">
-                <div class="item-info">
-                 
-                  <img
-                      [src]="item.clothingItemImageUrl?.trim() || 'assets/placeholder.jpg'"
-                      [alt]="item.clothingItemName"
-                      class="item-image"
-                      (error)="$event.target.src = 'assets/placeholder.jpg'"
-                    />
-                  <div class="item-name">{{ item.clothingItemName }}</div>
-                </div>
-              </div>
+             
+                @for (item of getPrimaryItems(); track item.id) {
+                  <div class="item-reason">
+                    <div class="item-info">
+                      <img
+                        [src]="item.clothingItemImageUrl?.trim() || 'assets/placeholder.jpg'"
+                        [alt]="item.clothingItemName"
+                        class="item-image"
+                        (error)="$event.target.src = 'assets/placeholder.jpg'"
+                      />
+                      <div class="item-name">{{ item.clothingItemName }}</div>
+                    </div>
+                  </div>
+                }
             </div>
           </div>
         </div>

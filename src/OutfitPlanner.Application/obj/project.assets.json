@@ -1543,8 +1543,8 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
-              "projectPath": "f:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
+            "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj": {
+              "projectPath": "F:\\Meno\\Outfit-Planner\\src\\OutfitPlanner.Domain\\OutfitPlanner.Domain.csproj"
             }
           }
         }

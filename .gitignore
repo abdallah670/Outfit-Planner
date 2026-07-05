@@ -108,3 +108,5 @@ appsettings.json
 # appsettings.Development.json
 #folder of test photos
 wwwroot/profile_pictures
+.png
+.jpg

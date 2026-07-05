@@ -2,7 +2,7 @@ export interface Outfit {
   id: string;
   userId: string;
   name: string;
-  imageUrl?: string; // URL to the generated outfit preview image
+  imageUrl?: string;
   items: OutfitItem[];
   occasion: OccasionType;
   suitableWeather: WeatherCondition;
@@ -11,6 +11,7 @@ export interface Outfit {
   lastWorn: Date;
   timesWorn: number;
   status: OutfitStatus;
+  comfortRating?: number;
   commentsCount?: number;
   likesCount? : number;
   rank?:number;

@@ -29,6 +29,10 @@ public class CreateOutfitCommandValidator : AbstractValidator<CreateOutfitComman
             .NotNull().WithMessage("Items are required")
             .Must(items => items != null && items.Count >= 1).WithMessage("At least one item is required")
             .When(x => x.Request != null);
+
+        RuleFor(x => x.Request.ComfortRating)
+            .InclusiveBetween(1, 5).WithMessage("Comfort rating must be between 1 and 5")
+            .When(x => x.Request != null);
     }
 
     private bool BeValidOccasion(string occasion)

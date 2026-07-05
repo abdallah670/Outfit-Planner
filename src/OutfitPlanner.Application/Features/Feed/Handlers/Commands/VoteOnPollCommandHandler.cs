@@ -8,6 +8,8 @@ using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
 using Microsoft.Extensions.Logging;
+using OutfitPlanner.Application.Features.Notifications.Requests.Commands;
+using OutfitPlanner.Application.DTOs.Notification;
 
 namespace OutfitPlanner.Application.Features.Feed.Handlers.Commands;
 
@@ -22,6 +24,7 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
     private readonly IUnitOfWork _unitOfWork ;
     private readonly IMapper _mapper;
     private readonly ILogger<VoteOnPollCommandHandler> _logger;
+    private readonly IMediator _mediator;
 
     public VoteOnPollCommandHandler(
         IValidationPollRepository validationPollRepository,
@@ -29,7 +32,8 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
         IVoteRepository voteRepository,
         IUnitOfWork unitOfWork,
         IMapper mapper,
-        ILogger<VoteOnPollCommandHandler> logger)
+        ILogger<VoteOnPollCommandHandler> logger,
+        IMediator mediator)
     {
         _validationPollRepository = validationPollRepository;
         _pollOptionRepository = pollOptionRepository;
@@ -37,6 +41,13 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _logger = logger;
+        _mediator = mediator;
+    
+        _mapper = mapper;
+        _logger = logger;
+        _mediator = mediator;
+    
+    
     }
 
     public async Task<BaseCommandResponse> Handle(VoteOnPollCommand request, CancellationToken cancellationToken)
@@ -138,7 +149,21 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
             response.Id = vote.Id;
             response.Success = true;
             response.Message = "Vote submitted successfully";
-            
+        if (poll.UserId != request.UserId)
+        {
+        
+            await _mediator.Send(new CreateNotificationCommand
+            {
+                UserId = poll.UserId,
+                Request = new CreateNotificationDto
+                {
+                    Type = OutfitPlanner.Domain.Enums.NotificationType.Social,
+                    Title = "New vote on your poll",
+                    Message = "Someone voted on your poll.",
+                    ActionUrl = $"/social/polls/{poll.Id}"
+                }
+            });
+        }
             _logger.LogInformation("Vote {Id} submitted by user {UserId} on poll {PollId}", 
                 vote.Id, request.UserId, request.PollId);
         }

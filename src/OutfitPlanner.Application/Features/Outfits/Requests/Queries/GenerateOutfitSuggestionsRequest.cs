@@ -5,7 +5,7 @@ namespace OutfitPlanner.Application.Features.Outfits.Requests.Queries;
 
 /// <summary>
 /// Query to generate outfit suggestions based on user preferences,
-/// occasion, season, and weather conditions.
+/// occasion, season, and weather conditions
 /// </summary>
 public class GenerateOutfitSuggestionsQuery : IRequest<List<OutfitDto>>
 {

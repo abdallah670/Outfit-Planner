@@ -14,6 +14,9 @@
         <a class="session-item" [class.active]="(currentSessionId$ | async) === session.id" (click)="selectSession(session.id)">
           <iconify-icon icon="lucide:message-circle" width="14" height="14" class="session-icon"></iconify-icon>
           <span class="session-title">{{ session.title }}</span>
+          <button class="session-item-delete" (click)="openDeleteModal(session.id); $event.stopPropagation()" title="Delete conversation">
+            <iconify-icon icon="lucide:trash-2" width="13" height="13"></iconify-icon>
+          </button>
         </a>
       } @empty {
         <div class="empty-sessions">
@@ -76,6 +79,13 @@
 
             <div class="message-bubble" [class.user-bubble]="message.role === 'user'" [class.ai-bubble]="message.role === 'assistant'">
               <p>{{ message.content }}</p>
+              @if (message.images && message.images.length > 0) {
+                <div class="message-images">
+                  @for (img of message.images; track $index) {
+                    <img [src]="resolveImageUrl(img)" class="message-image" alt="Uploaded image" (error)="$event.target.style.display='none'" />
+                  }
+                </div>
+              }
               @if (message.data) {
                 @if (message.data.type === 'statistics') {
                   <div class="statistics-card">
@@ -93,37 +103,49 @@
                   </div>
                 }
               }
-              @if ((message.outfitSuggestions && message.outfitSuggestions.length > 0) || (message.suggestedActions && message.suggestedActions.length > 0)) {
+              @if (message.outfitSuggestions && message.outfitSuggestions.length > 0) {
                 <div class="outfit-suggestions">
-                  @for (suggestion of message.outfitSuggestions; track suggestion.rank) {
+                  @for (suggestion of message.outfitSuggestions; track $index) {
                     <div class="suggestion-card">
                       <div class="suggestion-header">
-                        <span class="suggestion-rank">#{{ suggestion.rank }}</span>
+                        <span class="suggestion-rank">#{{ $index + 1 }}</span>
                         <span class="suggestion-score">{{ suggestion.totalScore }}/100</span>
                       </div>
-                      <div class="suggestion-items">
-                        @for (item of suggestion.items; track item.id) {
-                          <div class="suggestion-item">
-                            <img [src]="resolveImageUrl(item.imageUrl)" [alt]="item.name" class="item-thumb" (error)="$event.target.src = '/assets/clothing-placeholder.png'" />
-                            <span class="item-name">{{ item.name }}</span>
+                      @if (suggestion.items && suggestion.items.length > 0) {
+                        <div class="suggestion-items-grid">
+                          @for (item of suggestion.items; track $index) {
+                            <div class="suggestion-item-card">
+                              <div class="item-thumb-wrapper">
+                                <img [src]="resolveImageUrl(item.imageUrl)" [alt]="item.name" class="item-thumb" (error)="$event.target.src = '/assets/clothing-placeholder.png'" />
+                              </div>
+                              <div class="item-details">
+                                <span class="item-type-label">{{ item.type || 'Item' }}</span>
+                                <span class="item-name">{{ item.name }}</span>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      }
+                      @if (suggestion.scoreBreakdown || suggestion.totalScore) {
+                        <div class="suggestion-footer">
+                          <div class="score-badge">
+                            <div class="score-circle">
+                              <span class="score-value">{{ suggestion.totalScore }}</span>
+                            </div>
+                            <div class="score-info">
+                              <span class="score-label">Style Score</span>
+                              <span class="score-desc">Silhouette & weather match</span>
+                            </div>
                           </div>
-                        }
-                      </div>
+                          <button class="btn-save-outfit"  (click)="executeAction('Save Outfit', suggestion)">
+                            <iconify-icon icon="lucide:bookmark" width="11" height="11"></iconify-icon>
+                            Save Outfit #{{ $index + 1 }}
+                          </button>
+                        </div>
+                      } 
                     </div>
                   }
                 </div>
-                @if (message.suggestedActions && message.suggestedActions.length > 0) {
-                  <div class="suggested-actions">
-                    @for (action of message.suggestedActions; track action) {
-                      @if (shouldShowAction(action, (message.outfitSuggestions?.length ?? 0))) {
-                        <button class="action-chip" (click)="executeAction(action)">
-                          <iconify-icon [icon]="getActionIcon(action)" width="12" height="12"></iconify-icon>
-                          {{ action }}
-                        </button>
-                      }
-                    }
-                  </div>
-                }
               }
             </div>
 
@@ -173,7 +195,7 @@
     </div>
 
     <div class="suggestions-bar">
-      @for (suggestion of quickSuggestions; track suggestion) {
+      @for (suggestion of quickSuggestions; track $index) {
         <button class="suggestion-chip" (click)="sendQuickSuggestion(suggestion)">
           {{ suggestion }}
         </button>
@@ -233,7 +255,7 @@
 
     <div class="tips-card">
       <h4>Quick Tips</h4>
-      @for (tip of tips$ | async; track tip.text) {
+      @for (tip of tips$ | async; track $index) {
         <div class="tip-item">
           <div class="tip-icon"><iconify-icon [icon]="tip.icon" width="13" height="13"></iconify-icon></div>
           <p>{{ tip.text }}</p>
@@ -247,8 +269,23 @@
         <p class="session-meta">{{ (messages$ | async)?.length || 0 }} messages </p>
         <!-- <p class="session-meta">Saved outfits: {{ (savedOutfits$ | async)?.length || 0 }}</p> -->
       </div>
-        
-      
+      @if (currentSessionId$ | async; as sessionId) {
+        <button style="background:#e74c3c;color:#fff;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:6px;" (click)="openDeleteModal(sessionId)" title="Delete this conversation">
+          🗑 Delete Session
+        </button>
+      }
     </div>
   </aside>
 </div>
+
+@if (showDeleteModal) {
+  <div class="modal-backdrop" (click)="cancelDelete()"></div>
+  <div class="modal-window modal-sm">
+    <h3 class="modal-title">Delete Conversation</h3>
+    <p class="modal-text">Are you sure you want to delete this conversation? This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn-outline btn-sm" (click)="cancelDelete()">Cancel</button>
+      <button class="btn-danger btn-sm" (click)="confirmDelete()">Delete</button>
+    </div>
+  </div>
+}

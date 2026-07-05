@@ -140,7 +140,7 @@ export class NotificationService {
   /**
    * Update unread count from current notifications
    */
-  private updateUnreadCount(): void {
+  updateUnreadCount(): void {
     const count = this.notifications().filter((n: any) => {
       const isRead = n.isRead !== undefined ? n.isRead : n.IsRead;
       return !isRead;

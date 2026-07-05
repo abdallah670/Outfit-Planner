@@ -34,6 +34,17 @@ public class CalendarEventRepository : GenericRepository<CalendarEvent>, ICalend
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<CalendarEvent>> GetByDateRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate)
+    {
+        return await _dbSet
+            .Include(e => e.WearEvent)
+                .ThenInclude(we => we!.Outfit)
+            .Where(e => e.EventDate >= startDate && e.EventDate < endDate)
+            .OrderBy(e => e.EventDate)
+            .ThenBy(e => e.StartTime)
+            .ToListAsync();
+    }
+
     public async Task<CalendarEvent?> GetByIdWithDetailsAsync(Guid id)
     {
         return await _dbSet

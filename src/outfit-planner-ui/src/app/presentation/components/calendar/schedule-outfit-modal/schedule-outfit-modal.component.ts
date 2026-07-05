@@ -110,6 +110,7 @@ export class ScheduleOutfitModalComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(2)]],
       occasion: ['Casual', Validators.required],
       season: ['AllSeason'],
+      comfortRating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
       scheduledDate: [this.data.date, Validators.required],
       notes: [''],
     });
@@ -272,9 +273,17 @@ export class ScheduleOutfitModalComponent implements OnInit {
       if (formValue.season) {
         formData.append('season', formValue.season);
       }
+      if (formValue.comfortRating) {
+        formData.append('comfortRating', formValue.comfortRating.toString());
+      }
      
       const response = await firstValueFrom(
-        this.outfitsUseCases.createOutfitWithImage(this.selectedFile()!)
+        this.outfitsUseCases.createOutfitWithImage(this.selectedFile()!, {
+          name: formValue.name,
+          occasion: formValue.occasion,
+          season: formValue.season,
+          comfortRating: formValue.comfortRating,
+        })
       );
 
       // Now schedule the newly created outfit
@@ -314,6 +323,7 @@ export class ScheduleOutfitModalComponent implements OnInit {
         name: formValue.name,
         occasion: formValue.occasion || 'Casual',
         season: formValue.season || 'Spring',
+        comfortRating: formValue.comfortRating || 5,
         weatherCondition: '',
         items,
       };

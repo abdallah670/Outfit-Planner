@@ -40,6 +40,7 @@ public class AppDbContext : IdentityDbContext<User>
     // AI Chat entities
     public DbSet<ChatSession> ChatSessions { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<SentReminder> SentReminders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

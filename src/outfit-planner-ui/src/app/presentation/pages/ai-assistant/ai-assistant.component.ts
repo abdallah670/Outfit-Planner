@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -13,7 +13,7 @@ import { selectUserProfile } from '../../../core/state/user/user.selectors';
 import { selectAllItems } from '../../../core/state/wardrobe/wardrobe.selectors';
 import { selectCurrentWeather, selectWeatherLoading } from '../../../core/state/weather/weather.selectors';
 import { WeatherActions } from '../../../core/state/weather/weather.actions';
-import { ChatMessage } from '../../../domain/entities/ai.entity';
+import { ChatMessage, OutfitSuggestion } from '../../../domain/entities/ai.entity';
 import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
 import { WardrobeHealthComponent } from '../../components/shared/wardrobe-health/wardrobe-health.component';
 import { WeatherDisplayComponent } from '../../components/shared/weather-display/weather-display.component';
@@ -34,6 +34,7 @@ interface WeatherTip {
 })
 export class AiAssistantComponent implements OnInit {
   private store = inject(Store);
+  private cdRef = inject(ChangeDetectorRef);
 
   messages$: Observable<ChatMessage[]> = this.store.select(selectMessages);
   isSending$: Observable<boolean> = this.store.select(selectIsSending);
@@ -43,7 +44,9 @@ export class AiAssistantComponent implements OnInit {
   currentPage$: Observable<number> = this.store.select(selectCurrentPage);
   user$ = this.store.select(selectUser);
   profile$ = this.store.select(selectUserProfile);
-
+  lastMessage$: Observable<ChatMessage | undefined> = this.messages$.pipe(
+    map(messages => messages.length > 0 ? messages[messages.length - 1] : undefined)
+  );
   weather$: Observable<Weather | null> = this.store.select(selectCurrentWeather);
   weatherLoading$: Observable<boolean> = this.store.select(selectWeatherLoading);
 
@@ -62,9 +65,12 @@ export class AiAssistantComponent implements OnInit {
     this.loadWeather();
   }
 
-  resolveImageUrl(url: string): string {
+  resolveImageUrl(url: string): string;
+  resolveImageUrl(url: File): string;
+  resolveImageUrl(url: string | File): string {
     if (!url) return '';
-    return url.startsWith('http') ? url : `${environment.resourceBaseUrl}/${url}`;
+    const urlStr = typeof url === 'string' ? url : url.name;
+    return urlStr.startsWith('http') || urlStr.startsWith('data:') ? urlStr : `${environment.resourceBaseUrl}/${urlStr}`;
   }
 
   private loadWeather(): void {
@@ -100,6 +106,7 @@ export class AiAssistantComponent implements OnInit {
             file: file,
             preview: reader.result as string
           });
+          this.cdRef.detectChanges();
         };
         reader.readAsDataURL(file);
       });
@@ -117,10 +124,11 @@ export class AiAssistantComponent implements OnInit {
     if (!msg && this.attachedFiles.length === 0) return;
 
     const filesToSend = this.attachedFiles.map(f => f.file);
+    const previewsToSend = this.attachedFiles.map(f => f.preview);
 
     // Get the current session ID and dispatch message with it
     this.store.select(selectCurrentSessionId).pipe(take(1)).subscribe(sid => {
-      this.store.dispatch(AiActions.appendMessage({ role: 'user', content: msg || `Attached ${filesToSend.length} image(s)` }));
+      this.store.dispatch(AiActions.appendMessage({ role: 'user', content: msg || `Attached ${filesToSend.length} image(s)`, imagePreviews: previewsToSend }));
       this.store.dispatch(AiActions.sendMessage({ message: msg, sessionId: sid ?? undefined, images: filesToSend }));
       this.attachedFiles = [];
     });
@@ -132,16 +140,18 @@ export class AiAssistantComponent implements OnInit {
     this.sendMessage();
   }
 
-  executeAction(action: string) {
-    this.store.select(selectCurrentSessionId).pipe(take(1)).subscribe(sessionId => {
-      this.store.dispatch(AiActions.appendMessage({ role: 'user', content: action }));
-      this.store.dispatch(AiActions.sendMessage({
-        message: action,
-        sessionId: sessionId ?? undefined,
-        images: []
-      }));
-    });
-  }
+  executeAction(action: string, outfitSuggestion?: OutfitSuggestion) {
+  this.store.select(selectCurrentSessionId).pipe(take(1)).subscribe(sessionId => {
+    this.store.dispatch(AiActions.appendMessage({ role: 'user', content: action }));
+    this.store.dispatch(AiActions.sendMessage({
+      message: action,
+      sessionId: sessionId ?? undefined,
+      outfitSuggestion: outfitSuggestion  // ADD this
+      ,
+      clothingItemIds: outfitSuggestion?.items.map(item => item.id),
+    }));
+  });
+ }
 
   newSession() {
     this.store.dispatch(AiActions.clearCurrentSession({ userId: '' }));
@@ -149,6 +159,26 @@ export class AiAssistantComponent implements OnInit {
 
   selectSession(id: string) {
     this.store.dispatch(AiActions.selectSession({ sessionId: id }));
+  }
+
+  showDeleteModal = false;
+  deleteSessionId: string | null = null;
+
+  openDeleteModal(sessionId: string) {
+    this.deleteSessionId = sessionId;
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete() {
+    this.showDeleteModal = false;
+    this.deleteSessionId = null;
+  }
+
+  confirmDelete() {
+    if (this.deleteSessionId) {
+      this.store.dispatch(AiActions.deleteSession({ sessionId: this.deleteSessionId }));
+    }
+    this.cancelDelete();
   }
 
   loadMoreMessages() {
@@ -181,9 +211,11 @@ export class AiAssistantComponent implements OnInit {
     return true;
   }
 
-  savesuggetion() {
-    alert('Save suggestion functionality is not implemented yet.');
+
+  isString(value: any): boolean {
+    return typeof value === 'string';
   }
+  
 
   private getWeatherTips(condition: string): WeatherTip[] {
     const c = condition.toLowerCase();

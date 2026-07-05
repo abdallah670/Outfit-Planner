@@ -13,8 +13,9 @@ public class OutfitConfiguration : IEntityTypeConfiguration<Outfit>
         builder.Property(o => o.Occasion)
             .HasConversion<string>(); // Store enum as string
 
-      
-        
+        builder.Property(o => o.ComfortRating)
+            .IsRequired()
+            .HasDefaultValue(5);
 
         builder.HasMany(o => o.Items)
             .WithOne(i => i.Outfit)

@@ -9,6 +9,7 @@ import {
   UpdateEmailRequest,
 } from '../../domain/entities/user-profile.entity';
 import { PublicUserProfile } from '../../domain/entities/public-user-profile.entity';
+import { WeeklyStyleStatsDto, WeeklyReportDto } from '../../domain/entities/profile-stats.entity';
 import { environment } from '../../../environments/environment';
 
 interface UploadResponse {
@@ -112,5 +113,9 @@ export class UserDataSource {
         return profile;
       }),
     );
+  }
+
+  getWeeklyStyleStats(): Observable<WeeklyStyleStatsDto> {
+    return this.http.get<WeeklyStyleStatsDto>(`${this.apiUrl}/weekly-style-stats`);
   }
 }

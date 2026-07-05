@@ -22,6 +22,10 @@ public class UpdateOutfitCommandValidator : AbstractValidator<UpdateOutfitComman
             .Must(BeValidSeasonOrNull).WithMessage("Invalid season")
             .When(x => x.Request != null && x.Request.Season != null);
 
+        RuleFor(x => x.Request.ComfortRating)
+            .InclusiveBetween(1, 5).WithMessage("Comfort rating must be between 1 and 5")
+            .When(x => x.Request != null && x.Request.ComfortRating.HasValue);
+
         RuleFor(x => x.Request.Items)
             .Must(items => items == null || items.Count >= 1).WithMessage("At least one item is required when updating items")
             .When(x => x.Request?.Items != null);

@@ -11,5 +11,6 @@ namespace OutfitPlanner.Application.Responses
         public string Message { get; set; } = string.Empty;
         public List<string> Errors { get; set; } = new();
         public object? Data { get; set; }
+        public List<string>? UploadedImageUrls { get; set; }
     }
 }

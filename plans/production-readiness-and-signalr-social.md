@@ -86,7 +86,7 @@ This plan covers two major areas:
 
 #### 2. Lock CORS to production domain
 - **File**: `src/OutfitPlanner.Api/Program.cs`
-- **Change**: Replace `SetIsOriginAllowed(_ => true)` with explicit origins: `https://your-frontend.netlify.app`, `https://your-api.monsterasp.com`
+- **Change**: Replace `SetIsOriginAllowed(_ => true)` with explicit origins: `https://your-frontend.vercel.app`, `https://your-api.monsterasp.com`
 - **Validation**: CORS returns 403 for unauthorized origins in integration test
 
 #### 3. Connection string for MonsterASP SQL Server
@@ -135,19 +135,13 @@ This plan covers two major areas:
 - **Change**: Add `[EnableRateLimiting("Api")]` / `[EnableRateLimiting("Auth")]` / `[EnableRateLimiting("Feed")]`
 - **Validation**: Sending 100 requests/sec → 429 Too Many Requests
 
-#### 10. Netlify frontend deployment config
-- Create `netlify.toml` in project root with:
-  ```toml
-  [build]
-    base = "src/outfit-planner-ui"
-    publish = "dist/outfit-planner-ui/browser"
-    command = "npm run build -- --configuration production"
-
-  [[redirects]]
-    from = "/*"
-    to = "/index.html"
-    status = 200
-  ```
+#### 10. Vercel frontend deployment
+- **File**: `src/outfit-planner-ui/src/environments/environment.prod.ts` (ensure production API URL is configured)
+- **Validation**: Frontend builds successfully with production environment variables
+- Add Vercel project configuration:
+  - **Project**: Connect to GitHub repo, select root directory `src/outfit-planner-ui`
+  - **Build & Output Settings**: Build command `npm run build -- --configuration production`, output directory `dist/outfit-planner-ui/browser`
+  - **Environment Variables**: Set `API_URL` to `https://your-api.monsterasp.com`
 - Add `_redirects` file in `src/outfit-planner-ui/src/` for redundancy
 - **Validation**: After deploy, navigating to any route directly (e.g. `/profile`) works without 404
 
@@ -155,14 +149,10 @@ This plan covers two major areas:
 
 | # | Issue | Location | Fix |
 |---|-------|----------|-----|
-| 11 | **Soft delete** — data is hard-deleted | `AppDbContext.cs` | Add `IsDeleted` property + global query filter |
-| 12 | **Audit logging** — no audit trail on entity changes | Persistence layer | Add `CreatedBy`, `UpdatedBy`, `UpdatedAt` tracking |
-| 13 | **Health checks are minimal** — just `/health` | `Program.cs` | Add DB health check + external API health checks |
-| 14 | **Hangfire dashboard auth** — verify `HangfireAuthorizationFilter` | `Program.cs` | Ensure admin-only access in production |
-| 15 | **No PWA/service worker** despite config being referenced | Frontend | Complete `ngsw-config.json`, register SW in `app.module` |
-| 16 | **Lazy loading** — check all routes for lazy modules | `app-routing.module.ts` | Ensure all feature routes use `loadChildren` |
-| 17 | **Test coverage is thin** (only 7 test files, no social/feed tests) | `tests/` | Add unit tests for social features, notification hub |
-| 18 | **No frontend tests** at all | `src/outfit-planner-ui` | Add at least smoke tests for main components |
+| 11 | **Health checks are minimal** — just `/health` | `Program.cs` | Add DB health check + external API health checks |
+| 12 | **No PWA/service worker** despite config being referenced | Frontend | Complete `ngsw-config.json`, register SW in `app.module` |
+| 13 | **Lazy loading** — check all routes for lazy modules | `app-routing.module.ts` | Ensure all feature routes use `loadChildren` |
+| 14 | **No frontend tests** at all | `src/outfit-planner-ui` | Add at least smoke tests for main components |
 
 
 
@@ -171,11 +161,6 @@ This plan covers two major areas:
 - Add health check for external APIs (Weather, LLM)
 - Expose at `/health/ready` (liveness) and `/health/startup`
 - **Validation**: `curl /health` returns JSON with all component statuses
-
-#### 12. Hangfire dashboard authorization
-- **File**: `src/OutfitPlanner.Api/Middleware/HangfireAuthorizationFilter.cs`
-- **Change**: Ensure it restricts to Admin role only
-- **Validation**: Non-admin user gets 403 at `/hangfire`
 
 #### 13. PWA / Service Worker
 - Complete `ngsw-config.json` (cache strategy for API + static assets)
@@ -189,13 +174,8 @@ This plan covers two major areas:
 - Check: AI assistant, Social feed, Admin panels
 - **Validation**: `ng build --configuration production` separates chunks per feature
 
-#### 14. Social feature unit tests
-- **New files**:
-  - `tests/OutfitPlanner.Application.UnitTests/Social/AddPostCommentCommandHandlerTests.cs`
-  - `tests/OutfitPlanner.Application.UnitTests/Social/AddPostReactionCommandHandlerTests.cs`
-- **Validation**: `dotnet test` passes with >80% coverage on new files
 
-#### 18. Frontend smoke tests
+#### 15. Frontend smoke tests
 - Add Jest/Karma test for: navbar rendering, feed list display, login form
 - **Validation**: `ng test` passes with no failures
 

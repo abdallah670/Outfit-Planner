@@ -51,39 +51,55 @@
               <mat-icon>history</mat-icon>
               <span>{{ $any(outfit).timesWorn }} Wears</span>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="items-section">
-      <div class="section-header">
-        <h2>Outfit Items</h2>
-        <span class="item-count">{{ $any(outfit).items?.length || 0 }} items found</span>
-      </div>
-
-      <div class="items-grid" *ngIf="$any(outfit).items?.length; else emptyItems">
-        <div *ngFor="let item of $any(outfit).items" class="premium-item-card">
-          <div class="item-visual">
-            <img
-              *ngIf="$any(item).clothingItemImageUrl; else itemPlaceholder"
-              [src]="$any(item).clothingItemImageUrl"
-              [alt]="$any(item).clothingItemName"
-            />
-            <ng-template #itemPlaceholder>
-              <img src="assets/placeholder.jpg" alt="No image" class="placeholder-img" />
-            </ng-template>
-            <div class="item-overlay">
-              <span class="role-badge" [class]="'role-' + $any(item).role">{{ $any(item).role }}</span>
+            <div class="stat" title="Comfort Rating">
+              <mat-icon>star</mat-icon>
+              <span>{{ $any(outfit).comfortRating || 'N/A' }}/5</span>
             </div>
           </div>
-          <div class="item-details">
-            <span class="item-category">{{ $any(item).clothingItemCategory }}</span>
-            <h3>{{ $any(item).clothingItemName || 'Nameless Item' }}</h3>
-          </div>
         </div>
       </div>
     </section>
+
+     <section class="items-section">
+       <div class="section-header">
+         <h2>{{ ($any(outfit).items?.length === 1) ? 'Outfit' : 'Outfit Items' }}</h2>
+         <span class="item-count">{{ $any(outfit).items?.length || 0 }} {{ ($any(outfit).items?.length === 1) ? 'item' : 'items' }}</span>
+       </div>
+
+       @if ($any(outfit).items?.length === 1 && $any(outfit).imageUrl) {
+         <div class="single-item-outfit-image">
+           <img [src]="$any(outfit).imageUrl" [alt]="$any(outfit).name" class="outfit-main-image">
+         </div>
+       } @else if ($any(outfit).items?.length) {
+         <div class="items-grid">
+           <div *ngFor="let item of $any(outfit).items" class="premium-item-card">
+             <div class="item-visual">
+               <img
+                 *ngIf="$any(item).clothingItemImageUrl; else itemPlaceholder"
+                 [src]="$any(item).clothingItemImageUrl"
+                 [alt]="$any(item).clothingItemName"
+               />
+               <ng-template #itemPlaceholder>
+                 <img src="assets/placeholder.jpg" alt="No image" class="placeholder-img" />
+               </ng-template>
+               <div class="item-overlay">
+                 <span class="role-badge" [class]="'role-' + $any(item).role">{{ $any(item).role }}</span>
+               </div>
+             </div>
+             <div class="item-details">
+               <span class="item-category">{{ $any(item).clothingItemCategory }}</span>
+               <h3>{{ $any(item).clothingItemName || 'Nameless Item' }}</h3>
+             </div>
+           </div>
+         </div>
+       } @else {
+         <div class="empty-items-state">
+           <mat-icon>inventory_2</mat-icon>
+           <p>No items found in this outfit composition.</p>
+           <button mat-stroked-button (click)="onEdit($any(outfit).id)">Add Items</button>
+         </div>
+       }
+     </section>
  
  
 

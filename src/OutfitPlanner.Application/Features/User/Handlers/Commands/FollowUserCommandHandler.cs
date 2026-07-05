@@ -36,35 +36,54 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, BaseC
             return response;
         }
 
-        var alreadyFollowing = await _unitOfWork.Follows.IsFollowingAsync(request.FollowerId, request.FollowingId);
-        if (alreadyFollowing)
+        var existingFollow = await _unitOfWork.Follows.GetFollowRecordIncludingDeletedAsync(request.FollowerId, request.FollowingId);
+
+        if (existingFollow != null)
         {
-            response.Success = false;
-            response.Message = "You are already following this user";
-            return response;
+            if (!existingFollow.IsDeleted)
+            {
+                response.Success = false;
+                response.Message = "You are already following this user";
+                return response;
+            }
+            else
+            {
+                // Undelete the existing record instead of inserting a duplicate
+                existingFollow.IsDeleted = false;
+                existingFollow.DeletedAt = null;
+            }
         }
-
-        var follow = new Follow
+        else
         {
-            FollowerId = request.FollowerId,
-            FollowedId = request.FollowingId,
-            CreatedAt = DateTimeOffset.UtcNow
-        };
+            var follow = new Follow
+            {
+                FollowerId = request.FollowerId,
+                FollowedId = request.FollowingId,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
 
-        await _unitOfWork.Follows.AddAsync(follow);
+            await _unitOfWork.Follows.AddAsync(follow);
+        }
         await _unitOfWork.CompleteAsync();
         
-        await _mediator.Send(new CreateNotificationCommand
+        try
         {
-            UserId = request.FollowingId,
-            Request = new CreateNotificationDto
+            await _mediator.Send(new CreateNotificationCommand
             {
-                Type = OutfitPlanner.Domain.Enums.NotificationType.Social,
-                Title = "New Follower",
-                Message = "Someone started following you.",
-                ActionUrl = "/community"
-            }
-        });
+                UserId = request.FollowingId,
+                Request = new CreateNotificationDto
+                {
+                    Type = OutfitPlanner.Domain.Enums.NotificationType.Social,
+                    Title = "New Follower",
+                    Message = "Someone started following you.",
+                    ActionUrl = $"/social/profile/{request.FollowerId}"
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send notification for follow action from {FollowerId} to {FollowingId}", request.FollowerId, request.FollowingId);
+        }
 
 
        _logger.LogInformation("User {FollowerId} followed user {FollowingId}", request.FollowerId, request.FollowingId);

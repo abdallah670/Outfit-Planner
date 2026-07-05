@@ -26,12 +26,20 @@ export class NavbarComponent implements OnInit {
 
   profilePictureUrl$!: Observable<string | null>;
   failedImages: Set<string> = new Set();
-  notificationsCount$!: Observable<number>;
   isAdmin: Signal<boolean> = this.authService.isAdmin;
 
   ngOnInit() {
     this.profilePictureUrl$ = this.store.select(selectProfilePictureUrl);
-    this.notificationsCount$ = this.notificationService.getUnreadCount();
+    // Fetch initial count from server
+    this.notificationService.getUnreadCount().subscribe();
+  }
+
+  /**
+   * Get the unread notification count signal for reactive template binding.
+   * Used in the template as: notificationsCount()
+   */
+  notificationsCount(): number {
+    return this.notificationService.unreadCount();
   }
 
   onImageError(event: Event, imageUrl: string | unknown) {

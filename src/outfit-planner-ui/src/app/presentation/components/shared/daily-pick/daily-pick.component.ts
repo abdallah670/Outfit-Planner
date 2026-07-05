@@ -83,9 +83,15 @@ export class DailyPickComponent implements OnInit {
   getPrimaryItems() {
     const outfit = this.outfit();
     if (!outfit?.items) return [];
-    return outfit.items
-      .filter(item => item.role === 'primary' || item.isEssential)
-      .slice(0, 3);
+    return outfit.items.slice(0, 4);
+  }
+
+  hasMultipleItems(): boolean {
+    return (this.outfit()?.items?.length ?? 0) > 1;
+  }
+
+  hasSingleItem(): boolean {
+    return (this.outfit()?.items?.length ?? 0) === 1;
   }
 
   onImageError(itemId: string): void {

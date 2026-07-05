@@ -9,7 +9,8 @@ public interface ICalendarEventRepository : IGenericRepository<CalendarEvent>
 {
     Task<IEnumerable<CalendarEvent>> GetByUserIdAndDateAsync(string userId, DateTimeOffset date);
     Task<IEnumerable<CalendarEvent>> GetByUserIdAndMonthAsync(string userId, int year, int month);
-    
+    Task<IEnumerable<CalendarEvent>> GetByDateRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate);
+
     /// <summary>
     /// Get a calendar event by ID with associated WearEvent and Outfit details
     /// </summary>

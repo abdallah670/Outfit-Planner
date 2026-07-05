@@ -6,6 +6,7 @@ using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Features.Notifications.Requests.Commands;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
+using OutfitPlanner.Domain.Enums;
 
 namespace OutfitPlanner.Application.Features.Feed.Handlers.Commands;
 
@@ -59,6 +60,7 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
         // Notify post owner (skip self-comments)
         if (post.UserId != request.UserId)
         {
+            var url = post.PostType == PostType.Outfit ? $"/social/posts/{post.Id}" : $"/social/polls/{post.Id}";
             await _mediator.Send(new CreateNotificationCommand
             {
                 UserId = post.UserId,
@@ -67,7 +69,7 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
                     Type = OutfitPlanner.Domain.Enums.NotificationType.Social,
                     Title = $"Comment on \"{post.Caption ?? "your post"}\"",
                     Message = "Someone commented: \"" + request.Content + "\"",
-                    ActionUrl = $"/outfits/{post.Id}"
+                    ActionUrl = url
                 }
             });
         }

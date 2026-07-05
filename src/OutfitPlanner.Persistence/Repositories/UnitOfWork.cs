@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Contracts.Persistence;
 using OutfitPlanner.Persistence;
 
@@ -34,7 +35,10 @@ public class UnitOfWork : IUnitOfWork
     public IAuditLogRepository AuditLogs { get; }
     public ISystemSettingRepository SystemSettings { get; }
     public IContentReportRepository ContentReports { get; }
-   
+ 
+
+    public IChatSessionRepository Sessions {get;}
+    public ISentReminderRepository SentReminders { get; }
 
     public UnitOfWork(
         AppDbContext context,
@@ -45,6 +49,7 @@ public class UnitOfWork : IUnitOfWork
         IUserStyleProfileRepository userStyleProfiles,
         IUserRepository users,
         IStyleRuleRepository styleRules,
+        IChatSessionRepository sessions,
         IClothingTagRepository clothingTags,
         IOutfitItemRepository outfitItems,
         IPollOptionRepository pollOptions,
@@ -61,7 +66,9 @@ public class UnitOfWork : IUnitOfWork
         IUserActivityRepository userActivities,
         IAuditLogRepository auditLogs,
         ISystemSettingRepository systemSettings,
-        IContentReportRepository contentReports
+        IContentReportRepository contentReports,
+        ISentReminderRepository sentReminders,
+        IChatSessionRepository chatSessions
        )
     {
         _context = context;
@@ -90,7 +97,10 @@ public class UnitOfWork : IUnitOfWork
         AuditLogs = auditLogs;
         SystemSettings = systemSettings;
         ContentReports = contentReports;
+        Sessions=chatSessions;
+        SentReminders = sentReminders;
     }
+
 
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -224,7 +224,7 @@ export class CreateOutfitPostComponent implements OnInit {
     if (this.isEditMode()) {
       if (this.selectedFile()) {
         this.isUploading.set(true);
-        this.outfitsUseCases.createOutfitWithImage(this.selectedFile()!).subscribe({
+      this.outfitsUseCases.createOutfitWithImage(this.selectedFile()!, { name: 'Custom Outfit', comfortRating: 5 }).subscribe({
           next: (outfit) => {
             this.isUploading.set(false);
             this.currentOutfitId.set(outfit.id);
@@ -245,7 +245,7 @@ export class CreateOutfitPostComponent implements OnInit {
     if (this.selectedFile()) {
       this.isUploading.set(true);
 
-      this.outfitsUseCases.createOutfitWithImage(this.selectedFile()!).subscribe({
+      this.outfitsUseCases.createOutfitWithImage(this.selectedFile()!, { name: 'Custom Outfit', comfortRating: 5 }).subscribe({
         next: (outfit) => {
           this.isUploading.set(false);
           this.dispatchCreatePost(outfit.id);

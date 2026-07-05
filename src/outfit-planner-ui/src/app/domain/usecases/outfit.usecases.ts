@@ -31,8 +31,8 @@ export class OutfitsUseCases {
     return this.outfitRepository.updateOutfit(id, outfit);
   }
 
-  createOutfitWithImage(imageFile: File): Observable<Outfit> {
-    return this.outfitRepository.createOutfitWithImage(imageFile);
+  createOutfitWithImage(imageFile: File, details?: { name: string; occasion?: string; season?: string; comfortRating?: number }): Observable<Outfit> {
+    return this.outfitRepository.createOutfitWithImage(imageFile, details);
   }
   deleteOutfit(id: string): Observable<boolean> {
     return this.outfitRepository.deleteOutfit(id);

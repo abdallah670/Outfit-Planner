@@ -1,9 +1,10 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NotificationService, Notification } from '../../../core/services/notification.service';
+import { NotificationHubService } from '../../../core/services/notification-hub.service';
 
 type NotificationCategory = 'all' | 'unread' | 'social' | 'reminder' | 'system';
 
@@ -19,11 +20,18 @@ interface NotificationGroup {
   templateUrl: './notifications-center.component.html',
   styleUrl: './notifications-center.component.scss'
 })
-export class NotificationsCenterComponent implements OnInit {
+export class NotificationsCenterComponent implements OnInit, OnDestroy {
   private readonly notificationService = inject(NotificationService);
+  private readonly notificationHubService = inject(NotificationHubService);
   
   // Category selection
   selectedCategory: NotificationCategory = 'all';
+  
+  // Hub connection status
+  readonly hubConnected = signal<boolean>(false);
+  
+  // Auto-refresh fallback
+  private refreshInterval?: number;
   
   // Use service signals
   get notifications(): Notification[] {
@@ -41,6 +49,21 @@ export class NotificationsCenterComponent implements OnInit {
   ngOnInit(): void {
     // Load notifications from the backend
     this.notificationService.getNotifications().subscribe();
+
+    // Connect to SignalR hub for real-time notifications
+    this.notificationHubService.connect();
+    this.hubConnected.set(true);
+
+    // Fallback: refresh notifications every 60 seconds
+    this.refreshInterval = window.setInterval(() => {
+      this.notificationService.getNotifications().subscribe();
+    }, 60000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshInterval) {
+      window.clearInterval(this.refreshInterval);
+    }
   }
 
   // Group notifications by time period
@@ -138,15 +161,31 @@ export class NotificationsCenterComponent implements OnInit {
 
   markAsRead(id: any): void {
     if (!id) return;
+    // Optimistically update local state first
+    this.notificationService.notifications.update((notifications) =>
+      notifications.map((n: any) =>
+        (n.id === id || n.Id === id)
+          ? { ...n, isRead: true, IsRead: true }
+          : n
+      )
+    );
+    this.notificationService.updateUnreadCount();
+    // Then sync with server
     this.notificationService.markAsRead(id).subscribe({
       error: (err: unknown) => console.error('Error marking notification as read:', err)
     });
   }
 
   markAllAsRead(): void {
+    // Optimistically update local state first
+    this.notificationService.notifications.update((notifications) =>
+      notifications.map((n: any) => ({ ...n, isRead: true, IsRead: true }))
+    );
+    this.notificationService.unreadCount.set(0);
+    // Then sync with server
     this.notificationService.markAllAsRead().subscribe({
       error: (err: unknown) => console.error('Error marking all notifications as read:', err)
-    });
+    }); 
   }
 
   deleteNotification(id: any): void {
