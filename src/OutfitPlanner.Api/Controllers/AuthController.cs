@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.Contracts.Identity;
 using OutfitPlanner.Application.Models.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("Auth")]
 public class AuthController : ControllerBase
 {
     private readonly IJWTService _authenticationService;

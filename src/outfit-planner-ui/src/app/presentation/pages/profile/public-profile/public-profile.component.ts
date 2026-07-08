@@ -5,13 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import Swal from 'sweetalert2';
-import { UserUseCases } from '../../../domain/usecases/user.usecases';
-import { FeedUseCases } from '../../../domain/usecases/feed.usecases';
-import { FollowUseCases } from '../../../domain/usecases/follow.usecases';
-import { PublicUserProfile } from '../../../domain/entities/public-user-profile.entity';
-import { CursorPagedResult } from '../../../domain/entities/response.entity';
-import { FeedPost } from '../../../domain/entities/feed.entity';
-import { PostItemComponent } from '../../components/shared/post-item/post-item.component';
+import { UserUseCases } from '../../../../domain/usecases/user.usecases';
+import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
+import { FollowUseCases } from '../../../../domain/usecases/follow.usecases';
+import { PublicUserProfile } from '../../../../domain/entities/public-user-profile.entity';
+import { CursorPagedResult } from '../../../../domain/entities/response.entity';
+import { FeedPost } from '../../../../domain/entities/feed.entity';
+import { PostItemComponent } from '../../../components/shared/post-item/post-item.component';
 
 type TabType = 'activity' | 'followers' | 'following';
 

@@ -10,18 +10,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
 
-import { WardrobeActions } from '../../../core/state/wardrobe/wardrobe.actions';
+import { WardrobeActions } from '../../../../core/state/wardrobe/wardrobe.actions';
 import {
   selectAllItems,
   selectWardrobeLoading,
   selectWardrobeStats,
   WardrobeStats,
-} from '../../../core/state/wardrobe/wardrobe.selectors';
-import { ClothingCardComponent } from '../../components/clothing-card/clothing-card.component';
-import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
-import { WardrobeState } from '../../../core/state/wardrobe/wardrobe.reducer';
-import { WardrobeService } from '../../../core/services/wardrobe.service';
-import { PagedResult } from '../../../domain/entities/response.entity';
+} from '../../../../core/state/wardrobe/wardrobe.selectors';
+import { ClothingCardComponent } from '../../../components/clothing-card/clothing-card.component';
+import { ClothingItem } from '../../../../domain/entities/clothing-item.entity';
+import { WardrobeState } from '../../../../core/state/wardrobe/wardrobe.reducer';
+import { WardrobeService } from '../../../../core/services/wardrobe.service';
+import { PagedResult } from '../../../../domain/entities/response.entity';
 
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 

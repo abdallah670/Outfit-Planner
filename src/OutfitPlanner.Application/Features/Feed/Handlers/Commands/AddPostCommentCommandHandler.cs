@@ -1,6 +1,7 @@
 using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.DTOs.Notification;
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Features.Notifications.Requests.Commands;
@@ -16,17 +17,20 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
     private readonly IPostCommentRepository _commentRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMediator _mediator;
+    private readonly ISocialHubService _socialHub;
 
     public AddPostCommentCommandHandler(
         IFeedPostRepository feedPostRepository,
         IPostCommentRepository commentRepository,
         IUnitOfWork unitOfWork,
-        IMediator mediator)
+        IMediator mediator,
+        ISocialHubService socialHub)
     {
         _feedPostRepository = feedPostRepository;
         _commentRepository = commentRepository;
         _unitOfWork = unitOfWork;
         _mediator = mediator;
+        _socialHub = socialHub;
     }
 
     public async Task<BaseCommandResponse> Handle(AddPostCommentCommand request, CancellationToken cancellationToken)
@@ -72,6 +76,17 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
                     ActionUrl = url
                 }
             });
+        }
+
+        // Notify all connected users about the comment count update via SignalR
+        try
+        {
+            await _socialHub.NotifyCommentUpdateAsync(request.PostId.ToString(), post.CommentsCount);
+        }
+        catch (Exception signalREx)
+        {
+            // Log but don't fail the operation
+            System.Diagnostics.Debug.WriteLine($"SignalR comment update failed: {signalREx.Message}");
         }
 
         response.Success = true;

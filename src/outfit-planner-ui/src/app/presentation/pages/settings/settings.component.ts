@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, Renderer2, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, Renderer2, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -19,6 +19,9 @@ import { AppPreferences } from '../../../core/services/app-preferences.service';
 import { NotificationSettings } from '../../../core/services/notification-settings.service';
 import { ConnectedAccount } from '../../../core/services/connected-accounts.service';
 import { environment } from '../../../../environments/environment';
+import { MatConfirmDialogComponent } from '../../components/shared/mat-confirm-dialog/mat-confirm-dialog.component';
+import { DialogRef } from '@angular/cdk/dialog';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-settings',
@@ -80,7 +83,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private sectionIds = ['preferences', 'notifications', 'connected', 'privacy'];
 
   private destroy$ = new Subject<void>();
-
+  private readonly dialog = inject(MatDialog);
   constructor(
     private store: Store,
     private renderer: Renderer2,
@@ -89,7 +92,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     @Inject(DOCUMENT) private document: Document
   ) {}
-
   ngOnInit(): void {
     // Initialize selectors
     this.appPreferences$ = this.store.select(selectAppPreferences);
@@ -398,35 +400,24 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   onDeleteAccount(): void {
-    // Show confirmation dialog
-    const confirmed = confirm(
-      'WARNING: This action cannot be undone!\n\n' +
-      'This will permanently delete:\n' +
-      '- Your account and profile\n' +
-      '- All your clothing items\n' +
-      '- All your outfits\n' +
-      '- All your wear history\n' +
-      '- All your preferences and settings\n\n' +
-      'Are you absolutely sure you want to delete your account?'
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    // Double confirm
-    const doubleConfirmed = confirm(
-      'FINAL WARNING: All your data will be permanently lost!\n\n' +
-      'Type "DELETE" in your mind and click OK to proceed.'
-    );
-
-    if (!doubleConfirmed) {
-      return;
-    }
-
-    this.snackBar.open('Deleting your account...', 'Close', { duration: 2000 });
-
-    // Use Angular HttpClient through the store to properly go through the interceptor
-    this.store.dispatch(UserActions.deleteAccount());
+    // Show confirmation dialog and also user should confirm twice 
+   const dialogRef = this.dialog.open(MatConfirmDialogComponent, {
+        width: '400px',
+        data: {
+          title: 'Delete Account',
+          message:
+            'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.',
+          confirmText: 'Delete Account',
+          cancelText: 'Cancel',
+          isDanger: true,
+        },
+      });
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        if (result) {
+          this.snackBar.open('Deleting your account...', 'Close', { duration: 2000 });
+          // Use Angular HttpClient through the store to properly go through the interceptor
+          this.store.dispatch(UserActions.deleteAccount());
+        }
+      });
   }
 }

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OutfitPlanner.Application.DTOs.Calendar;
 using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Features.Calendar.Requests.Commands;
@@ -15,6 +16,7 @@ namespace OutfitPlanner.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("Api")]
 public class CalendarController : ControllerBase
 {
     private readonly IMediator _mediator;

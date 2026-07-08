@@ -105,7 +105,7 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
                             optionDto.VoteCount = await _unitOfWork.Votes.CountAsync(v => v.OptionId == option.Id, cancellationToken);
                         }
                     }
-                    dto.Poll.TotalVotes = result.Items[i].Poll?.TotalVotes ?? 0;
+                    dto.Poll.TotalVotes = dto.Poll?.Options.Sum(o => o.VoteCount) ?? 0;
                 }
 
                 dto.IsFollowing = viewerFollowedUserIds.Contains(entity.User?.Id);

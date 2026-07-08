@@ -9,12 +9,14 @@ export interface SocialPostDto {
   userId: string;
   userName: string;
   userAvatarUrl?: string;
-  caption: string;
+  caption?: string;
   imageUrl?: string;
   createdAt: string;
   likesCount: number;
   commentsCount: number;
   postType: 'Outfit' | 'Poll';
+  outfitId?: string;
+  pollId?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -92,5 +94,9 @@ export class SocialHubService {
 
   disconnect(): void {
     this.hubConnection?.stop().catch(() => {});
+  }
+
+  isConnected(): boolean {
+    return this.hubConnection?.state === signalR.HubConnectionState.Connected;
   }
 }

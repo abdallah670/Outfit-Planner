@@ -13,6 +13,11 @@ public interface ISocialHubService
     Task NotifyNewPostAsync(string postOwnerId, object postDto);
     
     /// <summary>
+    /// Notify ALL connected users about a new post (for the "All Posts" feed)
+    /// </summary>
+    Task NotifyAllNewPostAsync(object postDto);
+    
+    /// <summary>
     /// Notify followers about comment count update on a post
     /// </summary>
     Task NotifyCommentUpdateAsync(string postId, int commentCount);

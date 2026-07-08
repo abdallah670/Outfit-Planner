@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { WardrobeState } from '../../../core/state/wardrobe/wardrobe.reducer';
-import { WardrobeActions } from '../../../core/state/wardrobe/wardrobe.actions';
-import { selectWardrobeLoading } from '../../../core/state/wardrobe/wardrobe.selectors';
+import { WardrobeState } from '../../../../core/state/wardrobe/wardrobe.reducer';
+import { WardrobeActions } from '../../../../core/state/wardrobe/wardrobe.actions';
+import { selectWardrobeLoading } from '../../../../core/state/wardrobe/wardrobe.selectors';
 import Swal from 'sweetalert2';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,8 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { TitleCasePipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Signal } from '@angular/core';
-import { selectSelectedItem } from '../../../core/state/wardrobe/wardrobe.selectors';
-import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
+import { selectSelectedItem } from '../../../../core/state/wardrobe/wardrobe.selectors';
+import { ClothingItem } from '../../../../domain/entities/clothing-item.entity';
 
 @Component({
   selector: 'app-add-clothing-item',

@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OutfitPlanner.Application.DTOs.Notification;
 using OutfitPlanner.Application.Features.Notifications.Requests.Commands;
 using OutfitPlanner.Application.Features.Notifications.Requests.Queries;
@@ -10,6 +11,7 @@ namespace OutfitPlanner.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("Api")]
 public class NotificationsController : ControllerBase
 {
     private readonly IMediator _mediator;

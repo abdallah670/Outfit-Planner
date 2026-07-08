@@ -9,13 +9,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
 
-import { WardrobeState } from '../../../core/state/wardrobe/wardrobe.reducer';
-import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
-import { WardrobeActions } from '../../../core/state/wardrobe/wardrobe.actions';
+import { WardrobeState } from '../../../../core/state/wardrobe/wardrobe.reducer';
+import { ClothingItem } from '../../../../domain/entities/clothing-item.entity';
+import { WardrobeActions } from '../../../../core/state/wardrobe/wardrobe.actions';
 import {
   selectSelectedItem,
   selectWardrobeLoading,
-} from '../../../core/state/wardrobe/wardrobe.selectors';
+} from '../../../../core/state/wardrobe/wardrobe.selectors';
 
 @Component({
   selector: 'app-clothing-item-detail',

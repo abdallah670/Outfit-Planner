@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.VisualBasic;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Persistence;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.DTOs.Notification;
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Features.Notifications.Requests.Commands;
@@ -17,17 +18,20 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
     private readonly IPostReactionRepository _reactionRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMediator _mediator;
+    private readonly ISocialHubService _socialHub;
 
     public AddPostReactionCommandHandler(
         IFeedPostRepository feedPostRepository,
         IPostReactionRepository reactionRepository,
         IUnitOfWork unitOfWork,
-        IMediator mediator)
+        IMediator mediator,
+        ISocialHubService socialHub)
     {
         _feedPostRepository = feedPostRepository;
         _reactionRepository = reactionRepository;
         _unitOfWork = unitOfWork;
         _mediator = mediator;
+        _socialHub = socialHub;
     }
 
     public async Task<BaseCommandResponse> Handle(AddPostReactionCommand request, CancellationToken cancellationToken)
@@ -50,7 +54,28 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
                 existingReaction.IsDeleted=false;
                 existingReaction.UpdatedAt=DateTime.UtcNow;
                 await _reactionRepository.UpdateAsync(existingReaction);
+                
+                post.LikesCount++;
+                await _feedPostRepository.UpdateAsync(post);
+                
+                // Update Outfit if linked
+                if (post.OutfitId.HasValue)
+                {
+                    var outfit = await _unitOfWork.Repository<Outfit>().GetByIdAsync(post.OutfitId.Value);
+                    if (outfit != null)
+                    {
+                        outfit.LikesCount++;
+                        await _unitOfWork.Repository<Outfit>().UpdateAsync(outfit);
+                    }
+                }
                 await _unitOfWork.SaveChangesAsync();
+
+                // Notify reaction update via SignalR
+                try
+                {
+                    await _socialHub.NotifyReactionUpdateAsync(request.PostId.ToString(), post.LikesCount);
+                }
+                catch { /* ignore SignalR errors */ }
                 
                 response.Success = true;
                 response.Message = "Reaction restored successfully";
@@ -102,6 +127,13 @@ public class AddPostReactionCommandHandler : IRequestHandler<AddPostReactionComm
             });
         }
 
+        // Notify reaction update via SignalR
+        try
+        {
+            await _socialHub.NotifyReactionUpdateAsync(request.PostId.ToString(), post.LikesCount);
+        }
+        catch { /* ignore SignalR errors */ }
+
         response.Success = true;
         response.Message = "Reaction added successfully";
         response.Data = new { postOwnerId = post.UserId, likesCount = post.LikesCount };
@@ -115,15 +147,18 @@ public class RemovePostReactionCommandHandler : IRequestHandler<RemovePostReacti
     private readonly IFeedPostRepository _feedPostRepository;
     private readonly IPostReactionRepository _reactionRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISocialHubService _socialHub;
 
     public RemovePostReactionCommandHandler(
         IFeedPostRepository feedPostRepository,
         IPostReactionRepository reactionRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ISocialHubService socialHub)
     {
         _feedPostRepository = feedPostRepository;
         _reactionRepository = reactionRepository;
         _unitOfWork = unitOfWork;
+        _socialHub = socialHub;
     }
 
     public async Task<BaseCommandResponse> Handle(RemovePostReactionCommand request, CancellationToken cancellationToken)
@@ -162,6 +197,13 @@ public class RemovePostReactionCommandHandler : IRequestHandler<RemovePostReacti
         }
 
         await _unitOfWork.SaveChangesAsync();
+
+        // Notify reaction update via SignalR
+        try
+        {
+            await _socialHub.NotifyReactionUpdateAsync(request.PostId.ToString(), post?.LikesCount ?? 0);
+        }
+        catch { /* ignore SignalR errors */ }
 
         response.Success = true;
         response.Message = "Reaction removed successfully";

@@ -121,16 +121,18 @@ builder.Services.AddCors(options =>
             "http://localhost:5000",
             "https://localhost:5001",
             "http://localhost:5001",
-            "https://localhost:5000")
+            "https://localhost:5000",
+            "https://Outfit-Planner.vercel.app",
+            "https://outfitplanner.runasp.net/"
+            )
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials()
-               .SetIsOriginAllowed(_ => true)); // Allow any origin for development
+             );
 });
 
 // Add Infrastructure Services
 builder.Services.AddInfrastructure(builder.Configuration);
-
 // Add Application Services
 builder.Services.AddApplication(builder.Configuration);
 

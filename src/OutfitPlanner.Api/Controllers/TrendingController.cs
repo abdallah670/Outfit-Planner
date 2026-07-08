@@ -6,6 +6,7 @@ using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Features.Feed.Requests.Queries;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Application.Common;
+using Microsoft.AspNetCore.RateLimiting;
 
 
 namespace OutfitPlanner.Api.Controllers;
@@ -13,6 +14,7 @@ namespace OutfitPlanner.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("Api")]
 public class TrendingController : ControllerBase
 {
     private readonly IMediator _mediator;

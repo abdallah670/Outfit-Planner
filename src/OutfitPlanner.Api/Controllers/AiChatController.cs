@@ -6,12 +6,14 @@ using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Domain.Entities;
 using System.Security.Claims;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/ai")]
 [Authorize]
+[EnableRateLimiting("Api")]
 public class AiChatController : ControllerBase
 {
     private readonly IMediator _mediator;

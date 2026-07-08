@@ -20,23 +20,23 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, first, take } from 'rxjs';
 
-import { selectAllItems } from '../../../core/state/wardrobe/wardrobe.selectors';
-import { WardrobeActions } from '../../../core/state/wardrobe/wardrobe.actions';
-import { WardrobeState } from '../../../core/state/wardrobe/wardrobe.reducer';
-import { OutfitsActions } from '../../../core/state/outfit/outfit.actions';
-import { OutfitState } from '../../../core/state/outfit/outfit.reducer';
-import { ClothingItem } from '../../../domain/entities/clothing-item.entity';
-import { OccasionType, Season, OutfitItem, Outfit } from '../../../domain/entities/outfit.entity';
-import { WeatherDisplayComponent } from '../../components/weather-display/weather-display.component';
-import { WeatherActions } from '../../../core/state/weather/weather.actions';
+import { selectAllItems } from '../../../../core/state/wardrobe/wardrobe.selectors';
+import { WardrobeActions } from '../../../../core/state/wardrobe/wardrobe.actions';
+import { WardrobeState } from '../../../../core/state/wardrobe/wardrobe.reducer';
+import { OutfitsActions } from '../../../../core/state/outfit/outfit.actions';
+import { OutfitState } from '../../../../core/state/outfit/outfit.reducer';
+import { ClothingItem } from '../../../../domain/entities/clothing-item.entity';
+import { OccasionType, Season, OutfitItem, Outfit } from '../../../../domain/entities/outfit.entity';
+import { WeatherDisplayComponent } from '../../../components/weather-display/weather-display.component';
+import { WeatherActions } from '../../../../core/state/weather/weather.actions';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Weather } from '../../../domain/entities/weather.entity';
-import { WardrobeService } from '../../../core/services/wardrobe.service';
+import { Weather } from '../../../../domain/entities/weather.entity';
+import { WardrobeService } from '../../../../core/services/wardrobe.service';
 import {
   selectCurrentWeather,
   selectWeatherLoading,
-} from '../../../core/state/weather/weather.selectors';
-import { selectSelectedItem } from '../../../core/state/outfit/outfit.selectors';
+} from '../../../../core/state/weather/weather.selectors';
+import { selectSelectedItem } from '../../../../core/state/outfit/outfit.selectors';
 
 @Component({
   selector: 'app-outfit-builder',

@@ -24,6 +24,12 @@ public class SocialHubService : ISocialHubService
         _logger.LogInformation("SocialHubService: Notified followers of new post by {UserId}", postOwnerId);
     }
 
+    public async Task NotifyAllNewPostAsync(object postDto)
+    {
+        await _hubContext.Clients.All.SendAsync("NewPost", postDto);
+        _logger.LogInformation("SocialHubService: Notified all users of new post");
+    }
+
     public async Task NotifyCommentUpdateAsync(string postId, int commentCount)
     {
         await _hubContext.Clients.All.SendAsync("CommentUpdate", postId, commentCount);

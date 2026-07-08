@@ -8,15 +8,15 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
-import { OutfitPostsActions } from '../../../core/state/outfit-posts/outfit-posts.actions';
-import { OutfitsActions } from '../../../core/state/outfit/outfit.actions';
+import { OutfitPostsActions } from '../../../../core/state/outfit-posts/outfit-posts.actions';
+import { OutfitsActions } from '../../../../core/state/outfit/outfit.actions';
 import {
   selectSelectedItem,
   selectOutfitLoading,
-} from '../../../core/state/outfit/outfit.selectors';
-import { OutfitState } from '../../../core/state/outfit/outfit.reducer';
-import { Outfit } from '../../../domain/entities/outfit.entity';
-import { OutfitCanvasService } from '../../../core/services/outfit-canvas.service';
+} from '../../../../core/state/outfit/outfit.selectors';
+import { OutfitState } from '../../../../core/state/outfit/outfit.reducer';
+import { Outfit } from '../../../../domain/entities/outfit.entity';
+import { OutfitCanvasService } from '../../../../core/services/outfit-canvas.service';
 
 @Component({
   selector: 'app-outfit-detail',

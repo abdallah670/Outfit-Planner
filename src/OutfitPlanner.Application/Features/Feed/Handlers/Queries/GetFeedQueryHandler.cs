@@ -93,7 +93,7 @@ public class GetFeedQueryHandler : IRequestHandler<GetFeedQuery, CursorPaginatio
             }
 
 
-            if (dto.PostType == PostType.Poll)
+                if (dto.PostType == PostType.Poll)
             {
                 //get votecounts for each option
                 var options = await _unitOfWork.PollOptions.FindAsync(o => o.PollId == entity.PollId, cancellationToken);
@@ -106,7 +106,8 @@ public class GetFeedQueryHandler : IRequestHandler<GetFeedQuery, CursorPaginatio
                         optionDto.VoteCount = await _unitOfWork.Votes.CountAsync(vo => vo.OptionId == option.Id, cancellationToken);
                     }
                 }
-                dto.Poll.TotalVotes = result.Items[i].Poll?.TotalVotes ?? 0;
+                // Derive TotalVotes from actual counted votes (not the stored column which can be stale)
+                dto.Poll.TotalVotes = dto.Poll?.Options.Sum(o => o.VoteCount) ?? 0;
             }
 
             dto.IsFollowing = followedUserIds.Contains(entity.User?.Id);

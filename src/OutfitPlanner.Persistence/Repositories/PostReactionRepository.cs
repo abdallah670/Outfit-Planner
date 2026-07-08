@@ -34,7 +34,7 @@ public class PostReactionRepository : GenericRepository<PostReaction>, IPostReac
 
     public async Task<PostReaction> GetUserReaction(string userId, Guid id)
     {
-        var reaction = await _dbSet
+        var reaction = await _dbSet.IgnoreQueryFilters()
             .FirstOrDefaultAsync(r => r.PostId == id && r.UserId == userId);
         if (reaction is null)
         {

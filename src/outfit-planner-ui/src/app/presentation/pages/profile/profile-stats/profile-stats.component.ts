@@ -2,8 +2,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
-import { WeeklyStyleStatsDto, WeeklyReportDto } from '../../../domain/entities/profile-stats.entity';
+import { environment } from '../../../../../environments/environment';
+import { WeeklyStyleStatsDto, WeeklyReportDto } from '../../../../domain/entities/profile-stats.entity';
 
 export interface WeeklyReport {
   weekStart: string;

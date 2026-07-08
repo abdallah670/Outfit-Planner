@@ -62,25 +62,11 @@
 
         <!-- Image -->
         @if (post.outfit) {
-          @if (post.outfit.items?.length === 1 && post.outfit.imageUrl) {
+        
             <div class="outfit-image-wrapper">
-              <img [src]="post.outfit.imageUrl" [alt]="post.outfit.name" class="outfit-image">
+              <img [src]="post.outfit.imageUrl || 'assets/placeholder-outfit.jpg'" [alt]="post.outfit.name" class="outfit-image">
             </div>
-          } @else if (post.outfit.items && post.outfit.items.length > 1) {
-            <div class="outfit-items">
-              <h3 class="items-title">Items in this outfit</h3>
-              <div class="items-grid">
-                @for (item of post.outfit.items; track item.id) {
-                  <div class="outfit-item">
-                    <div class="item-img-wrap">
-                      <img [src]="item.clothingItemImageUrl || 'assets/placeholder.jpg'" [alt]="item.clothingItemName">
-                    </div>
-                    <span class="item-name">{{ item.clothingItemName || 'Custom Item' }}</span>
-                  </div>
-                }
-              </div>
-            </div>
-          }
+         
         }
 
         <!-- Outfit Summary / Actions -->

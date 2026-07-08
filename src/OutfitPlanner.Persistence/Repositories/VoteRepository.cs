@@ -29,10 +29,17 @@ public class VoteRepository : GenericRepository<Vote>, IVoteRepository
     {
         return await _dbSet.FirstOrDefaultAsync(v => v.VoterId == userId && v.PollId == pollId);
     }
+
     public async Task<Vote?> GetUserVoteByOptionId(string userId, Guid optionId)
     {
         return await _dbSet.FirstOrDefaultAsync(v => v.VoterId == userId && v.OptionId == optionId);
     }
+
+    public async Task<Vote?> GetUserVoteWithDeletedByOptionIdAsync(string userId, Guid optionId)
+    {
+        return await _dbSet.IgnoreQueryFilters().FirstOrDefaultAsync(v => v.VoterId == userId && v.OptionId == optionId);
+    }
+
     //delete vote by option id and voter id
     public async Task DeleteVoteAsync(string voterId, Guid optionId)
     {

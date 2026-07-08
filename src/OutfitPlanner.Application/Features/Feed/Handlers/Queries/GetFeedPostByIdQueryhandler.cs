@@ -64,7 +64,7 @@ public class GetFeedPostByIdQueryHandler : IRequestHandler<GetFeedPostByIdQuery,
         };
         if (postDto.Poll != null)
         {
-            postDto.Poll.TotalVotes = post.Poll?.TotalVotes ?? 0;
+            // TotalVotes will be computed from actual vote counts below
         }
 
         if(!string.IsNullOrEmpty(request.RequesterId)&&post.UserId.ToString()==request.RequesterId)

@@ -1,13 +1,15 @@
-import { Component, OnInit, signal, inject, ViewEncapsulation, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, ViewEncapsulation, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { FeedPost } from '../../../../domain/entities/feed.entity';
+import { FeedPost, PostType } from '../../../../domain/entities/feed.entity';
+import { Subscription } from 'rxjs';
 
 import { FeedUseCases } from '../../../../domain/usecases/feed.usecases';
 import { FollowUseCases } from '../../../../domain/usecases/follow.usecases';
 import { AuthService } from '../../../../core/services/auth.service';
+import { SocialHubService, SocialPostDto } from '../../../../core/services/social-hub.service';
 import { PostItemComponent } from '../../../components/shared/post-item/post-item.component';
 import { TrendingOutfitsComponent } from '../trending-outfits/trending-outfits.component';
 import { CursorPagedResult } from '../../../../domain/entities/response.entity';
@@ -36,12 +38,13 @@ interface FeedTabConfig {
   styleUrl: './community-feed.component.scss',
   encapsulation: ViewEncapsulation.Emulated,
 })
-export class CommunityFeedComponent implements OnInit {
+export class CommunityFeedComponent implements OnInit, OnDestroy {
   private feedUseCases = inject(FeedUseCases);
   private followUseCases = inject(FollowUseCases);
   private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private socialHubService = inject(SocialHubService);
 
   activeTab = signal<FeedTab>('all');
   loading = signal(false);
@@ -59,6 +62,9 @@ export class CommunityFeedComponent implements OnInit {
   // My Posts Filter State
   myPostsFilter = signal<'all' | 'outfit' | 'poll'>('all');
 
+  // SignalR subscriptions
+  private signalRSubscriptions: Subscription[] = [];
+
   feedTabs: FeedTabConfig[] = [
     { value: 'all', label: 'All Posts', icon: 'layout-grid' },
     { value: 'following', label: 'Following', icon: 'users' },
@@ -69,6 +75,9 @@ export class CommunityFeedComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    // Setup SignalR real-time subscriptions
+    this.setupSignalRSubscriptions();
+    
     this.route.queryParams.subscribe(params => {
       const tabParam = params['tab'] as FeedTab;
       if (tabParam && this.feedTabs.some(t => t.value === tabParam)) {
@@ -82,6 +91,71 @@ export class CommunityFeedComponent implements OnInit {
 
       this.loadData(true);
     });
+  }
+
+  ngOnDestroy(): void {
+    // Clean up SignalR subscriptions
+    this.signalRSubscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private setupSignalRSubscriptions(): void {
+    // Subscribe to new posts from SignalR
+    const newPostSub = this.socialHubService.newPost$.subscribe({
+      next: (socialPost) => this.handleNewPost(socialPost)
+    });
+    this.signalRSubscriptions.push(newPostSub);
+
+    // Subscribe to comment updates from SignalR
+    const commentUpdateSub = this.socialHubService.commentUpdate$.subscribe({
+      next: ({ postId, count }) => this.handleCommentUpdate(postId, count)
+    });
+    this.signalRSubscriptions.push(commentUpdateSub);
+
+    // Subscribe to reaction updates from SignalR
+    const reactionUpdateSub = this.socialHubService.reactionUpdate$.subscribe({
+      next: ({ postId, count }) => this.handleReactionUpdate(postId, count)
+    });
+    this.signalRSubscriptions.push(reactionUpdateSub);
+  }
+
+  private handleNewPost(socialPost: SocialPostDto): void {
+    // Convert SocialPostDto to FeedPost format
+    const feedPost: FeedPost = {
+      id: socialPost.id,
+      userId: socialPost.userId,
+      userName: socialPost.userName,
+      userAvatarUrl: socialPost.userAvatarUrl || '',
+      postType: socialPost.postType === 'Outfit' ? PostType.Outfit : PostType.Poll,
+      caption: socialPost.caption,
+      visibility: 2, // Public
+      likesCount: socialPost.likesCount,
+      commentsCount: socialPost.commentsCount,
+      createdAt: new Date(socialPost.createdAt),
+      isLiked: false,
+      isOwner: false,
+      outfitId: socialPost.outfitId,
+      pollId: socialPost.pollId,
+    };
+
+    // Prepend post if it doesn't already exist
+    this.posts.update(current => {
+      if (current.some(p => p.id === feedPost.id)) {
+        return current; // Already exists, don't add duplicate
+      }
+      return [feedPost, ...current];
+    });
+  }
+
+  private handleCommentUpdate(postId: string, count: number): void {
+    this.posts.update(posts => 
+      posts.map(p => p.id === postId ? { ...p, commentsCount: count } : p)
+    );
+  }
+
+  private handleReactionUpdate(postId: string, count: number): void {
+    this.posts.update(posts => 
+      posts.map(p => p.id === postId ? { ...p, likesCount: count } : p)
+    );
   }
 
   setTab(tab: FeedTab): void {
@@ -198,7 +272,15 @@ export class CommunityFeedComponent implements OnInit {
   }
 
   onPostUpdated(updatedPost: FeedPost): void {
-    this.posts.update(posts => posts.map(p => p.id === updatedPost.id ? updatedPost : p));
+    this.posts.update(posts => posts.map(p => {
+      if (p.id !== updatedPost.id) return p;
+      return {
+        ...updatedPost,
+        // Preserve server-authoritative counts — SignalR is the source of truth for these
+        likesCount: p.likesCount,
+        commentsCount: p.commentsCount,
+      };
+    }));
   }
 
   onPostDeleted(postId: string): void {

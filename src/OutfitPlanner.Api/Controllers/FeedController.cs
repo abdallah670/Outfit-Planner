@@ -10,12 +10,14 @@ using OutfitPlanner.Domain.Enums;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.Contracts.Infrastructure;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("Feed")]
 public class FeedController : ControllerBase
 {
     // Rate limiting is applied globally via UseRateLimiter, 
@@ -172,18 +174,6 @@ public class FeedController : ControllerBase
         
         if (!response.Success)
             return BadRequest(response);
-        
-        // Notify real-time subscribers
-        if (response.Data is not null)
-        {
-            var data = (dynamic)response.Data;
-            var postOwnerId = data.postOwnerId;
-            var likesCount = data.likesCount;
-            if (postOwnerId is not null && likesCount is not null)
-            {
-                await _socialHub.NotifyReactionUpdateAsync(id.ToString(), (int)likesCount);
-            }
-        }
             
         return Ok(response);
     }
@@ -205,17 +195,6 @@ public class FeedController : ControllerBase
         
         if (!response.Success)
             return BadRequest(response);
-        
-        // Notify real-time subscribers
-        if (response.Data is not null)
-        {
-            var data = (dynamic)response.Data;
-            var likesCount = data.likesCount;
-            if (likesCount is not null)
-            {
-                await _socialHub.NotifyReactionUpdateAsync(id.ToString(), (int)likesCount);
-            }
-        }
             
         return Ok(response);
     }

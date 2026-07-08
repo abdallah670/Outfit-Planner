@@ -59,15 +59,17 @@ export const feedFeature = createFeature({
     on(FeedActions.addReactionSuccess, (state, { postId }) => ({
       ...state,
       posts: state.posts.map((p) =>
-        p.id === postId ? { ...p, likesCount: p.likesCount + 1, userReaction: 'Heart' } : p
+        p.id === postId ? { ...p, userReaction: 'Heart' } : p
       ),
+      selectedPost: state.selectedPost?.id === postId ? { ...state.selectedPost, userReaction: 'Heart' } : state.selectedPost,
     })),
 
     on(FeedActions.removeReactionSuccess, (state, { postId }) => ({
       ...state,
       posts: state.posts.map((p) =>
-        p.id === postId ? { ...p, likesCount: Math.max(0, p.likesCount - 1), userReaction: undefined } : p
+        p.id === postId ? { ...p, userReaction: undefined } : p
       ),
+      selectedPost: state.selectedPost?.id === postId ? { ...state.selectedPost, userReaction: undefined } : state.selectedPost,
     })),
 
     on(FeedActions.loadCommentsSuccess, (state, { postId, result, append }) => ({
@@ -91,9 +93,6 @@ export const feedFeature = createFeature({
           items: [comment, ...(state.commentsByPost[postId]?.items || [])],
         },
       },
-      posts: state.posts.map((p) =>
-        p.id === postId ? { ...p, commentsCount: p.commentsCount + 1 } : p
-      ),
     })),
 
     on(FeedActions.deleteCommentSuccess, (state, { commentId, postId }) => ({
@@ -105,13 +104,30 @@ export const feedFeature = createFeature({
           items: (state.commentsByPost[postId]?.items || []).filter((c) => c.id !== commentId),
         },
       },
-      posts: state.posts.map((p) =>
-        p.id === postId ? { ...p, commentsCount: Math.max(0, p.commentsCount - 1) } : p
-      ),
     })),
     on(OutfitPostsActions.createOutfitPostSuccess, (state, { post }) => ({
       ...state,
       posts: [post, ...state.posts],
+    })),
+
+    // Real-time SignalR handlers
+    on(FeedActions.realtimePostReceived, (state, { post }) => ({
+      ...state,
+      posts: state.posts.some(p => p.id === post.id) ? state.posts : [post, ...state.posts],
+    })),
+
+    on(FeedActions.realtimeCommentUpdate, (state, { postId, count }) => ({
+      ...state,
+      posts: state.posts.map((p) =>
+        p.id === postId ? { ...p, commentsCount: count } : p
+      ),
+    })),
+
+    on(FeedActions.realtimeReactionUpdate, (state, { postId, count }) => ({
+      ...state,
+      posts: state.posts.map((p) =>
+        p.id === postId ? { ...p, likesCount: count } : p
+      ),
     })),
 
 

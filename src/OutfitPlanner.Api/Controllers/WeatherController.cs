@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutfitPlanner.Application.DTOs.Weather;
 using OutfitPlanner.Application.Features.Weather.Requests.Queries;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [AllowAnonymous]
+[EnableRateLimiting("Api")]
 public class WeatherController : ControllerBase
 {
     private readonly IMediator _mediator;

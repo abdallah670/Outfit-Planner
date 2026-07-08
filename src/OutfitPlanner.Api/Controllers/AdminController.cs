@@ -9,12 +9,15 @@ using OutfitPlanner.Application.Features.Admin.Queries;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Infrastructure.Services;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin")]
+[EnableRateLimiting("Api")]
+
 public class AdminController : ControllerBase
 {
     private readonly IMediator _mediator;

@@ -1,5 +1,6 @@
 using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
 using OutfitPlanner.Application.Responses;
@@ -14,16 +15,19 @@ public class CreatePollPostCommandHandler : IRequestHandler<CreatePollPostComman
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutfitRepository _outfitRepository;
     private readonly ILogger<CreatePollPostCommandHandler> _logger;
+    private readonly ISocialHubService _socialHub;
 
     public CreatePollPostCommandHandler(
         Contracts.Persistence.IValidationPollRepository validationPolls,
         IUnitOfWork unitOfWork,
         IOutfitRepository outfitRepository,
-        ILogger<CreatePollPostCommandHandler> logger)
+        ILogger<CreatePollPostCommandHandler> logger,
+        ISocialHubService socialHub)
     {
         _unitOfWork = unitOfWork;
         _outfitRepository = outfitRepository;
         _logger = logger;
+        _socialHub = socialHub;
     }
 
     public async Task<BaseCommandResponse> Handle(CreatePollPostCommand request, CancellationToken cancellationToken)
@@ -100,6 +104,32 @@ public class CreatePollPostCommandHandler : IRequestHandler<CreatePollPostComman
 
             _logger.LogInformation("Poll post {PostId} with poll {PollId} created by user {UserId}", 
                 feedPost.Id, poll.Id, request.UserId);
+
+            // Notify all connected users about the new poll post via SignalR
+            try
+            {
+                var postDto = new
+                {
+                    id = feedPost.Id.ToString(),
+                    userId = feedPost.UserId,
+                    userName = request.UserId,
+                    userAvatarUrl = "",
+                    caption = feedPost.Caption,
+                    imageUrl = "",
+                    createdAt = feedPost.CreatedAt.ToString("o"),
+                    likesCount = feedPost.LikesCount,
+                    commentsCount = feedPost.CommentsCount,
+                    postType = "Poll",
+                    outfitId = (string?)null,
+                    pollId = feedPost.PollId?.ToString()
+                };
+                await _socialHub.NotifyAllNewPostAsync(postDto);
+                await _socialHub.NotifyNewPostAsync(feedPost.UserId, postDto);
+            }
+            catch (Exception signalREx)
+            {
+                _logger.LogWarning(signalREx, "Failed to send SignalR notification for new poll post {PostId}", feedPost.Id);
+            }
         }
         catch (Exception ex)
         {

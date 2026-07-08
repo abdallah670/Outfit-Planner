@@ -10,12 +10,14 @@ using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Features.User.Requests.Commands;
 using OutfitPlanner.Application.Features.User.Requests.Queries;
 using OutfitPlanner.Application.Features.Feed.Requests.Queries;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("Api")]
 public class UserController : ControllerBase
 {
     private readonly IMediator _mediator;

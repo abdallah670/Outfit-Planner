@@ -30,12 +30,17 @@ export const FeedActions = createActionGroup({
     'Load Comments Success': props<{ postId: string; result: CursorPagedResult<PostComment>; append: boolean }>(),
     'Load Comments Failure': props<{ error: string }>(),
 
-    'Add Comment': props<{ postId: string; content: string; parentCommentId?: string }>(),
-    'Add Comment Success': props<{ postId: string; comment: any }>(),
-    'Add Comment Failure': props<{ error: string }>(),
+  'Add Comment': props<{ postId: string; content: string; parentCommentId?: string }>(),
+  'Add Comment Success': props<{ postId: string; comment: any }>(),
+  'Add Comment Failure': props<{ error: string }>(),
 
-    'Delete Comment': props<{ commentId: string; postId: string }>(),
-    'Delete Comment Success': props<{ commentId: string; postId: string }>(),
-    'Delete Comment Failure': props<{ error: string }>(),
+  'Delete Comment': props<{ commentId: string; postId: string }>(),
+  'Delete Comment Success': props<{ commentId: string; postId: string }>(),
+  'Delete Comment Failure': props<{ error: string }>(),
+
+  // Real-time SignalR events
+  'Realtime Post Received': props<{ post: FeedPost }>(),
+  'Realtime Comment Update': props<{ postId: string; count: number }>(),
+  'Realtime Reaction Update': props<{ postId: string; count: number }>(),
   },
 });

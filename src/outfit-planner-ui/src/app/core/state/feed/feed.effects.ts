@@ -2,17 +2,24 @@ import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { FeedActions } from './feed.actions';
-import { catchError, map, mergeMap, of, Observable, tap } from 'rxjs';
+import { catchError, map, mergeMap, of, tap } from 'rxjs';
 import { FeedUseCases } from '../../../domain/usecases/feed.usecases';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FeedPost, PostComment } from '../../../domain/entities/feed.entity';
+import { FeedPost, PostComment, PostType } from '../../../domain/entities/feed.entity';
 import { CursorPagedResult } from '../../../domain/entities/response.entity';
+import { SocialHubService, SocialPostDto } from '../../../core/services/social-hub.service';
 
 @Injectable()
 export class FeedEffects {
   private actions$ = inject(Actions);
   private feedUseCases = inject(FeedUseCases);
   private snackBar = inject(MatSnackBar);
+  private socialHubService = inject(SocialHubService);
+
+  constructor() {
+    // Auto-connect SignalR on module initialization
+    this.socialHubService.connect();
+  }
 
   loadPosts$ = createEffect(() =>
     this.actions$.pipe(
@@ -25,6 +32,44 @@ export class FeedEffects {
           catchError((error) => of(FeedActions.loadPostsFailure({ error: error.message })))
         )
       )
+    )
+  );
+
+  // SignalR real-time integration effect
+  setupSocialHub$ = createEffect(() =>
+    this.socialHubService.newPost$.pipe(
+      map((socialPost: SocialPostDto) => {
+        // Convert SocialPostDto to FeedPost
+        const feedPost: FeedPost = {
+          id: socialPost.id,
+          userId: socialPost.userId,
+          userName: socialPost.userName,
+          userAvatarUrl: socialPost.userAvatarUrl || '',
+          postType: socialPost.postType === 'Outfit' ? PostType.Outfit : PostType.Poll,
+          caption: socialPost.caption,
+          visibility: 2, // Public
+          likesCount: socialPost.likesCount,
+          commentsCount: socialPost.commentsCount,
+          createdAt: new Date(socialPost.createdAt),
+          isLiked: false,
+          isOwner: false,
+        };
+        return FeedActions.realtimePostReceived({ post: feedPost });
+      })
+    )
+  );
+
+  // SignalR comment update effect
+  commentUpdate$ = createEffect(() =>
+    this.socialHubService.commentUpdate$.pipe(
+      map(({ postId, count }) => FeedActions.realtimeCommentUpdate({ postId, count }))
+    )
+  );
+
+  // SignalR reaction update effect
+  reactionUpdate$ = createEffect(() =>
+    this.socialHubService.reactionUpdate$.pipe(
+      map(({ postId, count }) => FeedActions.realtimeReactionUpdate({ postId, count }))
     )
   );
 

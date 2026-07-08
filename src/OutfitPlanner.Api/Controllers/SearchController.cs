@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.DTOs.Search;
 using System.Security.Claims;
@@ -9,6 +10,7 @@ namespace OutfitPlanner.Api.Controllers;
 [ApiController]
 [Route("api/search")]
 [Authorize]
+[EnableRateLimiting("Api")]
 public class SearchController : ControllerBase
 {
     private readonly ISearchService _searchService;

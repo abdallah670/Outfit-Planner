@@ -45,7 +45,6 @@ export class OutfitPostDetailComponent implements OnInit {
       this.feedUseCases.getPostById(id).subscribe({
         next: (post) => {
           this.outfitPost.set(post as FeedPostWithComments);
-          
           if (this.currentUser && post.userId === this.currentUser.id) {
             this.authorName = this.currentUser.userName || 'You';
             this.authorAvatar = this.currentUser.avatarUrl || 'assets/default-avatar.png';

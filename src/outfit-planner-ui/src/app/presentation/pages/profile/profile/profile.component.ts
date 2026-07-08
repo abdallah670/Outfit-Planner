@@ -12,15 +12,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { UserDataSource } from '../../../data/datasources/user.datasource';
-import { MatConfirmDialogComponent } from '../../components/shared/mat-confirm-dialog/mat-confirm-dialog.component';
-import { EditProfileModalComponent } from '../../components/shared/modals/edit-profile-modal/edit-profile-modal.component';
-import { EditProfilePictureModalComponent } from '../../components/shared/modals/edit-profile-picture-modal/edit-profile-picture-modal.component';
-import { EditStyleProfileModalComponent } from '../../components/shared/modals/edit-style-profile-modal/edit-style-profile-modal.component';
-import { EditPreferencesModalComponent } from '../../components/shared/modals/edit-preferences-modal/edit-preferences-modal.component';
-import { ChangePasswordModalComponent } from '../../components/shared/modals/change-password-modal/change-password-modal.component';
-import { EditEmailModalComponent } from '../../components/shared/modals/edit-email-modal/edit-email-modal.component';
-import { EditStyleRulesModalComponent } from '../../components/shared/modals/edit-style-rules-modal/edit-style-rules-modal.component';
+import { UserDataSource } from '../../../../data/datasources/user.datasource';
+import { MatConfirmDialogComponent } from '../../../components/shared/mat-confirm-dialog/mat-confirm-dialog.component';
+import { EditProfileModalComponent } from '../../../components/shared/modals/edit-profile-modal/edit-profile-modal.component';
+import { EditProfilePictureModalComponent } from '../../../components/shared/modals/edit-profile-picture-modal/edit-profile-picture-modal.component';
+import { EditStyleProfileModalComponent } from '../../../components/shared/modals/edit-style-profile-modal/edit-style-profile-modal.component';
+import { EditPreferencesModalComponent } from '../../../components/shared/modals/edit-preferences-modal/edit-preferences-modal.component';
+import { ChangePasswordModalComponent } from '../../../components/shared/modals/change-password-modal/change-password-modal.component';
+import { EditEmailModalComponent } from '../../../components/shared/modals/edit-email-modal/edit-email-modal.component';
+import { EditStyleRulesModalComponent } from '../../../components/shared/modals/edit-style-rules-modal/edit-style-rules-modal.component';
 import {
   UserProfile,
   StylePreference,
@@ -28,8 +28,8 @@ import {
   UserStyleProfile,
   UserPreferences,
   StyleRule,
-} from '../../../domain/entities/user-profile.entity';
-import { UserActions } from '../../../core/state/user/user.actions';
+} from '../../../../domain/entities/user-profile.entity';
+import { UserActions } from '../../../../core/state/user/user.actions';
 import {
   selectUserProfile,
   selectUserLoading,
@@ -37,9 +37,9 @@ import {
   selectStyleProfile,
   selectUserPreferences,
   selectStyleRules,
-} from '../../../core/state/user/user.selectors';
-import { AuthService } from '../../../core/services/auth.service';
-import { UserUseCases } from '../../../domain/usecases/user.usecases';
+} from '../../../../core/state/user/user.selectors';
+import { AuthService } from '../../../../core/services/auth.service';
+import { UserUseCases } from '../../../../domain/usecases/user.usecases';
 
 @Component({
   selector: 'app-profile',
@@ -349,9 +349,10 @@ export class ProfileComponent implements OnInit {
   }
 
   exportData(): void {
-    this.snackBar.open('Data export feature coming soon', 'Close', {
-      duration: 3000,
-    });
+     this.snackBar.open('Preparing your data export...', 'Close', { duration: 2000 });
+
+    // Use Angular HttpClient to properly go through the interceptor
+    this.store.dispatch(UserActions.exportUserData());
   }
 
   onLogout(): void {
@@ -389,11 +390,9 @@ export class ProfileComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        // TODO: Add delete account API call and action when backend supports it
-        // For now, show a message
-        this.snackBar.open('Account deletion is not yet implemented', 'Close', {
-          duration: 5000,
-        });
+        this.snackBar.open('Deleting your account...', 'Close', { duration: 2000 });
+        // Use Angular HttpClient through the store to properly go through the interceptor
+        this.store.dispatch(UserActions.deleteAccount());
       }
     });
   }

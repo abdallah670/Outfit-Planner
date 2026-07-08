@@ -12,12 +12,14 @@ using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("Feed")]
 public class PollsController : ControllerBase
 {
     private readonly IMediator _mediator;

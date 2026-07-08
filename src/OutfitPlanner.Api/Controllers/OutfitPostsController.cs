@@ -9,12 +9,14 @@ using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Enums;
 using OutfitPlanner.Application.Common;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("Feed")]
 public class OutfitPostsController : ControllerBase
 {
     private readonly IMediator _mediator;

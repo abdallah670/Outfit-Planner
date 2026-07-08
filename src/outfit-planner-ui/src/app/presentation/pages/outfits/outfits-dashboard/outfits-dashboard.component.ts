@@ -11,14 +11,14 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 
-import { OutfitsActions } from '../../../core/state/outfit/outfit.actions';
-import { selectAllOutfits, selectOutfitLoading } from '../../../core/state/outfit/outfit.selectors';
-import { OutfitState } from '../../../core/state/outfit/outfit.reducer';
-import { OutfitCardComponent } from '../../components/outfits/outfit-card/outfit-card.component';
-import { Outfit } from '../../../domain/entities/outfit.entity';
-import { OccasionType, Season } from '../../../domain/entities/outfit.entity';
-import { OutfitsUseCases } from '../../../domain/usecases/outfit.usecases';
-import { PagedResult } from '../../../domain/entities/response.entity';
+import { OutfitsActions } from '../../../../core/state/outfit/outfit.actions';
+import { selectAllOutfits, selectOutfitLoading } from '../../../../core/state/outfit/outfit.selectors';
+import { OutfitState } from '../../../../core/state/outfit/outfit.reducer';
+import { OutfitCardComponent } from '../../../components/outfits/outfit-card/outfit-card.component';
+import { Outfit } from '../../../../domain/entities/outfit.entity';
+import { OccasionType, Season } from '../../../../domain/entities/outfit.entity';
+import { OutfitsUseCases } from '../../../../domain/usecases/outfit.usecases';
+import { PagedResult } from '../../../../domain/entities/response.entity';
 
 @Component({
   selector: 'app-outfits-dashboard',

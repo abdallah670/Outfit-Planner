@@ -13,12 +13,14 @@ using OutfitPlanner.Application.DTOs.Outfit;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Exceptions;
 using OutfitPlanner.Application.Responses;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OutfitPlanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("Api")]
 public class OutfitsController : ControllerBase
 {
     private readonly IMediator _mediator;
