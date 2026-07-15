@@ -47,13 +47,6 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
             return response;
         }
 
-        // The DB stores only user IDs; the API command carries MentionedUserDto (with names) for display.
-        var mentionedUserIds = request.MentionedUsers?
-            .Select(m => m.UserId)
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Distinct()
-            .ToList() ?? new List<string>();
-
         var comment = new PostComment
         {
             PostId = request.PostId,
@@ -61,7 +54,7 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
             Content = request.Content,
             ParentCommentId = request.ParentCommentId,
             CreatedAt = DateTimeOffset.UtcNow,
-            MentionedUsers = mentionedUserIds
+            MentionedUsers = request.MentionedUsers?.Select(m=>m.UserId).ToList() ?? new List<string>()
         };
 
         await _commentRepository.AddAsync(comment);
@@ -75,10 +68,14 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
                 await _commentRepository.UpdateAsync(parentComment);
 
                 // First mention is always the parent comment's author (reply rule).
-                if (!comment.MentionedUsers.Contains(parentComment.UserId))
+                if (!comment.MentionedUsers.Any(m => m== parentComment.UserId))
                 {
-                    comment.MentionedUsers.Add(parentComment.UserId);
+                    var parentUser = await _unitOfWork.Users.GetByIdAsync(parentComment.UserId);
+                    comment.MentionedUsers.Add(
+                        parentComment.UserId
+                    );
                 }
+                
             }
         }
 
@@ -96,7 +93,7 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
                 UserId = post.UserId,
                 Request = new CreateNotificationDto
                 {
-                    Type = NotificationType.Social,
+                    Type = OutfitPlanner.Domain.Enums.NotificationType.Social,
                     Title = $"Comment on \"{post.Caption ?? "your post"}\"",
                     Message = "Someone commented: \"" + request.Content + "\"",
                     ActionUrl = url
@@ -105,7 +102,7 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
         }
 
         // Notify users mentioned directly in the comment, plus users tagged in the post.
-        var mentionedIds = comment.MentionedUsers
+        var mentionedIds = comment.MentionedUsers 
             .Where(id => !string.IsNullOrWhiteSpace(id) && id != request.UserId)
             .Distinct()
             .ToList();
@@ -152,13 +149,12 @@ public class AddPostCommentCommandHandler : IRequestHandler<AddPostCommentComman
         return response;
     }
 }
-
 public class DeletePostCommentCommandHandler : IRequestHandler<DeletePostCommentCommand, BaseCommandResponse>
 {
     private readonly IPostCommentRepository _commentRepository;
     private readonly IFeedPostRepository _feedPostRepository;
     private readonly IUnitOfWork _unitOfWork;
-   
+  
     private readonly IMediator _mediator;
     private readonly ISocialHubService _socialHub;
     public DeletePostCommentCommandHandler(
