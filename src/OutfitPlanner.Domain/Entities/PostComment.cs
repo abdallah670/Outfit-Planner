@@ -21,6 +21,12 @@ public class PostComment : BaseEntity
     
     
     public int TotalReplies { get; set; }
-    
+
+    /// <summary>
+    /// User IDs mentioned in this comment (stored as a JSON list of strings).
+    /// The parent comment author is always included for replies.
+    /// </summary>
+    public List<string> MentionedUsers { get; set; } = new();
+
     public ICollection<PostComment> Replies { get; set; } = new List<PostComment>();
 }

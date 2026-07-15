@@ -72,8 +72,8 @@ export class FeedUseCases {
     return this.feedRepository.getComments(postId, cursor, pageSize);
   }
 
-  addComment(postId: string, content: string, parentCommentId?: string): Observable<CommandResponse> {
-    return this.feedRepository.addComment(postId, content, parentCommentId);
+  addComment(postId: string, content: string, parentCommentId?: string, mentionedUsers?: any[]): Observable<CommandResponse> {
+    return this.feedRepository.addComment(postId, content, parentCommentId, mentionedUsers);
   }
 
   deleteComment(commentId: string): Observable<void> {

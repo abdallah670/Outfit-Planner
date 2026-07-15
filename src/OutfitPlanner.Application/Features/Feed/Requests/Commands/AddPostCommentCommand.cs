@@ -1,4 +1,5 @@
 using MediatR;
+using OutfitPlanner.Application.DTOs.Feed;
 using OutfitPlanner.Application.Responses;
 
 namespace OutfitPlanner.Application.Features.Feed.Requests.Commands;
@@ -9,4 +10,5 @@ public class AddPostCommentCommand : IRequest<BaseCommandResponse>
     public string UserId { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public Guid? ParentCommentId { get; set; }
+    public List<MentionedUserDto> MentionedUsers { get; set; } = new();
 }

@@ -51,30 +51,6 @@ public class ImageProcessingService : IImageProcessingService
                 Metadata = ExtractMetadata(originalImage, imageStream.Length)
             };
 
-            // Generate thumbnail
-            result.Thumbnail = await ResizeToStreamAsync(
-                originalImage,
-                _settings.Thumbnails.ThumbnailSize,
-                _settings.Thumbnails.ThumbnailSize,
-                _settings.Thumbnails.ThumbnailQuality,
-                cancellationToken);
-
-            // Generate medium
-            result.Medium = await ResizeToStreamAsync(
-                originalImage,
-                _settings.Thumbnails.MediumSize,
-                _settings.Thumbnails.MediumSize,
-                _settings.Thumbnails.MediumQuality,
-                cancellationToken);
-
-            // Generate large
-            result.Large = await ResizeToStreamAsync(
-                originalImage,
-                _settings.Thumbnails.LargeSize,
-                _settings.Thumbnails.LargeSize,
-                _settings.Thumbnails.LargeQuality,
-                cancellationToken);
-
             // Store original - convert to JPEG for consistency
             result.Original = await ConvertToJpegAsync(
                 imageStream,

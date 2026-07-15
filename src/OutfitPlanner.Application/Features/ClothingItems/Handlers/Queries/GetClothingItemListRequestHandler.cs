@@ -34,7 +34,7 @@ public class GetClothingItemListRequestHandler : IRequestHandler<GetClothingItem
                 PrimaryColor = ci.PrimaryColor,
                 ImageUrl = ci.ImageUrl,
                 Type = ci.Type.ToString(),
-                ThumbnailUrl = ci.ThumbnailUrl,
+                ThumbnailUrl = ci.ImageUrl,
                 CreatedAt = ci.CreatedAt,
                 WearCount = ci.WearCount,
                 LastWorn = ci.LastWorn,

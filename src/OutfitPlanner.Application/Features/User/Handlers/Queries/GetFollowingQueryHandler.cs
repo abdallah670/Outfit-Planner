@@ -34,7 +34,8 @@ public class GetFollowingQueryHandler : IRequestHandler<GetFollowingQuery, Curso
             AvatarUrl = f.Followed?.ProfilePictureUrl,
             CreatedAt = f.CreatedAt.DateTime,
             IsFollowing = followedUserIds.Contains(f.FollowedId),
-            IsOwner = f.FollowedId == request.RequesterId
+            IsOwner = f.FollowedId == request.RequesterId,
+            FullName = f.Followed?.Name ?? f.Followed?.UserName ?? "Unknown"
 
         }).ToList();
 

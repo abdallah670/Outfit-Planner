@@ -112,7 +112,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.Occasion, opt => opt.MapFrom(s => s.Occasion.ToString()))
             .ForMember(d => d.Season, opt => opt.MapFrom(s => s.Season.ToString()))
             .ForMember(d => d.ItemCount, opt => opt.MapFrom(s => s.Items.Count))
-            .ForMember(d => d.ThumbnailUrl, opt => opt.MapFrom(s => s.Items.FirstOrDefault() != null ? s.Items.FirstOrDefault().ClothingItem.ThumbnailUrl : string.Empty));
+            .ForMember(d => d.ThumbnailUrl, opt => opt.MapFrom(s => s.Items.FirstOrDefault() != null ? s.Items.FirstOrDefault().ClothingItem.ImageUrl : string.Empty));
 
         // OutfitItem mappings
         CreateMap<OutfitItem, OutfitItemDto>()
@@ -285,7 +285,8 @@ CreateMap<PostComment, PostCommentDto>()
     .ForMember(d => d.Replies, opt => opt.MapFrom(s => s.Replies)).
     ForMember(d=>d.ParentCommentId, opt => opt.MapFrom(s => s.ParentCommentId.HasValue ? s.ParentCommentId.Value.ToString() : null))
     .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.CreatedAt))
-    .ForMember(d => d.TotalReplies, opt => opt.MapFrom(s => s.TotalReplies));
+    .ForMember(d => d.TotalReplies, opt => opt.MapFrom(s => s.TotalReplies))
+    .ForMember(d => d.MentionedUsers, opt => opt.MapFrom(s => s.MentionedUsers));
 
 CreateMap<User, TaggedUserDto>()
     .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.Id))

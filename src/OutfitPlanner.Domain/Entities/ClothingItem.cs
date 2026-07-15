@@ -20,7 +20,7 @@ public class ClothingItem : BaseEntity
     public string Size { get; set; } = string.Empty;
     public string Condition { get; set; } = "good"; // Enum or string? Diagram says string with default 'good'
     public string ImageUrl { get; set; } = string.Empty;
-    public string ThumbnailUrl { get; set; } = string.Empty;
+
     
     public bool IsActive { get; set; } = true;
     public DateTimeOffset? LastWorn { get; set; }

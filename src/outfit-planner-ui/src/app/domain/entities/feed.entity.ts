@@ -24,6 +24,12 @@ export interface TaggedUser {
   profilePictureUrl?: string;
 }
 
+export interface MentionedUser {
+  userId: string;
+  userName: string;
+  profilePictureUrl?: string;
+}
+
 export interface FeedPost {
   id: string;
   userId: string;
@@ -65,8 +71,8 @@ export interface PostComment {
   createdAt: Date;
   isDeleted: boolean;
   parentCommentId?: string;
-  replies?: PostComment[];
-  totalReplies?: number;
+  mentionedUsers?: MentionedUser[];
+  replies?: PostComment[];  totalReplies?: number;
 }
 /**
  * likes

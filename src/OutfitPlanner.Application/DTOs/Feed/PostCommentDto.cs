@@ -17,6 +17,9 @@ public class PostCommentDto
     public DateTimeOffset CreatedAt { get; set; }
     public int TotalReplies { get; set; }
     public List<PostCommentDto> Replies { get; set; } = new();
+    // Mentioned user IDs (stored as JSON). Names are resolved client-side.
+    public List<string> MentionedUsers { get; set; } = new();
+
 }
 
 public class PostCommentsResponse

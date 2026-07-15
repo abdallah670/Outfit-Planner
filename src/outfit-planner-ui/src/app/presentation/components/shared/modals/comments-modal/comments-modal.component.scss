@@ -3,6 +3,46 @@
   height: 100%;
 }
 
+.mention-dropdown {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: absolute;
+  z-index: 20;
+  width: calc(100% - 32px);
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+  }
+
+  &__avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__name {
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
 .comments-modal {
   display: flex;
   flex-direction: column;

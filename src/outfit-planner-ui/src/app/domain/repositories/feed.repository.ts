@@ -40,7 +40,7 @@ export interface FeedRepository {
 
   getComments(postId: string, cursor?: string, pageSize?: number): Observable<CursorPagedResult<PostComment>>;
 
-  addComment(postId: string, content: string, parentCommentId?: string): Observable<CommandResponse>;
+  addComment(postId: string, content: string, parentCommentId?: string, mentionedUsers?: any[]): Observable<CommandResponse>;
 
   deleteComment(commentId: string): Observable<void>;
   

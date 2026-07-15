@@ -17,9 +17,6 @@ namespace OutfitPlanner.Infrastructure.Services
 
     // Size suffixes for file naming
     private const string OriginalSuffix = "";
-    private const string ThumbnailSuffix = "_thumb";
-    private const string MediumSuffix = "_medium";
-    private const string LargeSuffix = "_large";
 
     public LocalFileStorageService(
         IImageProcessingService imageProcessor,
@@ -65,31 +62,13 @@ namespace OutfitPlanner.Infrastructure.Services
 
             Directory.CreateDirectory(uploadFolder);
 
-            // Save all image variants
+            // Save the original image only (variants are generated on demand if needed)
             var baseFileName = processedImage.FileName;
 
             var originalPath = await SaveImageAsync(
                 processedImage.Original,
                 uploadFolder,
                 $"{baseFileName}{OriginalSuffix}.jpg",
-                cancellationToken);
-
-            var thumbnailPath = await SaveImageAsync(
-                processedImage.Thumbnail,
-                uploadFolder,
-                $"{baseFileName}{ThumbnailSuffix}.jpg",
-                cancellationToken);
-
-            var mediumPath = await SaveImageAsync(
-                processedImage.Medium,
-                uploadFolder,
-                $"{baseFileName}{MediumSuffix}.jpg",
-                cancellationToken);
-
-            var largePath = await SaveImageAsync(
-                processedImage.Large,
-                uploadFolder,
-                $"{baseFileName}{LargeSuffix}.jpg",
                 cancellationToken);
 
             // Return relative paths for database storage
@@ -101,9 +80,6 @@ namespace OutfitPlanner.Infrastructure.Services
 
             return ImageUploadResult.Successful(
                 originalPath: $"{relativeBase}/{baseFileName}.jpg",
-                thumbnailPath: $"{relativeBase}/{baseFileName}{ThumbnailSuffix}.jpg",
-                mediumPath: $"{relativeBase}/{baseFileName}{MediumSuffix}.jpg",
-                largePath: $"{relativeBase}/{baseFileName}{LargeSuffix}.jpg",
                 fileSize: processedImage.Metadata.SizeBytes,
                 width: processedImage.Metadata.Width,
                 height: processedImage.Metadata.Height,
@@ -168,18 +144,6 @@ namespace OutfitPlanner.Infrastructure.Services
         return $"/{imagePath}";
     }
 
-
-    public string GetThumbnailUrl(string imagePath)
-    {
-        if (string.IsNullOrEmpty(imagePath))
-            return string.Empty;
-
-        // Replace the filename to point to thumbnail version
-        var directory = Path.GetDirectoryName(imagePath)?.Replace("\\", "/");
-        var fileName = Path.GetFileNameWithoutExtension(imagePath);
-
-        return $"{directory}/{fileName}{ThumbnailSuffix}.jpg";
-    }
 
       public Task<bool> ImageExistsAsync(
         string imagePath,

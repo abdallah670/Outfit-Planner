@@ -39,7 +39,8 @@ public class GetFollowersQueryHandler : IRequestHandler<GetFollowersQuery, Curso
             AvatarUrl = f.Follower?.ProfilePictureUrl,
             CreatedAt = f.CreatedAt.DateTime,
             IsFollowing = followedUserIds.Contains(f.FollowerId),
-            IsOwner = f.FollowerId == request.RequesterId
+            IsOwner = f.FollowerId == request.RequesterId,
+            FullName = f.Follower?.Name ?? f.Follower?.UserName ?? "Unknown"
         }).ToList();
 
         return new CursorPagination.CursorPagedResult<FollowerDto>

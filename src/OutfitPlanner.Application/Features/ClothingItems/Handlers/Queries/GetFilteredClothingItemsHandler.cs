@@ -133,7 +133,7 @@ public class GetFilteredClothingItemsHandler : IRequestHandler<GetFilteredClothi
                 Id = c.Id,
                 Name = c.Name,
                 ImageUrl = c.ImageUrl,
-                ThumbnailUrl = c.ThumbnailUrl,
+                ThumbnailUrl = c.ImageUrl,
                 Category = c.Category,
                 Type = c.Type.ToString(),
                 PrimaryColor = c.PrimaryColor,

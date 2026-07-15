@@ -17,8 +17,7 @@ namespace OutfitPlanner.Application.Contracts.Infrastructure{
         string imagePath,
         CancellationToken cancellationToken = default);
      string GetImageUrl(string imagePath);
-     string GetThumbnailUrl(string imagePath);
-         Task<bool> ImageExistsAsync(
+     Task<bool> ImageExistsAsync(
         string imagePath,
         CancellationToken cancellationToken = default);
     ImageValidationResult ValidateImage(Stream imageStream, string fileName);

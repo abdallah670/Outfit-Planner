@@ -28,5 +28,8 @@ public class FollowerDto
     public DateTime CreatedAt { get; set; }
     public bool IsFollowing { get; set; } = false;
     public bool IsOwner { get; set; } = false;
-
+    /// <summary>
+    /// Full/display name (User.Name). Used for @mentions so the picker inserts the name, not the @handle.
+    /// </summary>
+    public string FullName { get; set; } = string.Empty;
 }

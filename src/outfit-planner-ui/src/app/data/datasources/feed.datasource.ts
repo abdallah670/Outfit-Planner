@@ -117,10 +117,11 @@ export class FeedDataSource {
     );
   }
 
-  addComment(postId: string, content: string, parentCommentId?: string): Observable<CommandResponse> {
+  addComment(postId: string, content: string, parentCommentId?: string, mentionedUsers?: any[]): Observable<CommandResponse> {
     return this.http.post<CommandResponse>(`${this.apiUrl}/${postId}/comments`, {
       content,
-      parentCommentId
+      parentCommentId,
+      mentionedUsers
     });
   }
 
@@ -213,6 +214,7 @@ export class FeedDataSource {
     return {
       ...comment,
       createdAt: new Date(comment.createdAt),
+      mentionedUsers: comment.mentionedUsers || [],
       replies: comment.replies ? comment.replies.map((r: any) => this.mapPostComment(r)) : []
     };
   }

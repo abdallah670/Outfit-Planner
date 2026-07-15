@@ -4,8 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { FeedUseCases } from '../../../../../domain/usecases/feed.usecases';
+import { FollowUseCases } from '../../../../../domain/usecases/follow.usecases';
 import { AuthService } from '../../../../../core/services/auth.service';
-import { PostComment } from '../../../../../domain/entities/feed.entity';
+import { PostComment, MentionedUser } from '../../../../../domain/entities/feed.entity';
+import { Follower } from '../../../../../domain/entities/follow.entity';
 import { CursorPagedResult } from '../../../../../domain/entities/response.entity';
 import Swal from 'sweetalert2';
 
@@ -37,6 +39,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
   @Input() onCommentDeleted?: (postId: string) => void;
 
   private feedUseCases = inject(FeedUseCases);
+  private followUseCases = inject(FollowUseCases);
   private authService = inject(AuthService);
   private router = inject(Router);
   private cdRef = inject(ChangeDetectorRef);
@@ -56,6 +59,12 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
   editingCommentId: string | null = null;
   editContent = '';
   expandedReplies = new Set<string>();
+
+  // @mention state
+  mentionedUsers = new Map<string, MentionedUser>();
+  mentionDropdownOpen = false;
+  mentionMatches: Follower[] = [];
+  activeMentionField: 'new' | 'reply' | null = null;
 
   private subscriptions = new Subscription();
 
@@ -148,6 +157,84 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
     );
   }
 
+  // ----- @mention picker -----
+
+  mentionSearch = '';
+
+  onMentionInput(event: Event, field: 'new' | 'reply'): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    const caret = textarea.selectionStart ?? textarea.value.length;
+    const before = textarea.value.substring(0, caret);
+    const atIndex = before.lastIndexOf('@');
+    if (atIndex === -1) {
+      this.closeMentionPicker();
+      return;
+    }
+    const token = before.substring(atIndex + 1);
+    if (/\s/.test(token)) {
+      this.closeMentionPicker();
+      return;
+    }
+    this.activeMentionField = field;
+    this.mentionSearch = token;
+    this.loadMentionSuggestions(token);
+  }
+
+  loadMentionSuggestions(query: string): void {
+    const currentUserId = this.getCurrentUserId();
+    if (!currentUserId) {
+      this.closeMentionPicker();
+      return;
+    }
+    this.subscriptions.add(
+      this.followUseCases.getFollowers(currentUserId, undefined, 20, query).subscribe({
+        next: (res) => {
+          this.mentionMatches = res.items || [];
+          this.mentionDropdownOpen = this.mentionMatches.length > 0;
+          this.cdRef.detectChanges();
+        },
+        error: () => this.closeMentionPicker()
+      })
+    );
+  }
+
+  selectMention(follower: Follower, textarea: HTMLTextAreaElement): void {
+    const caret = textarea.selectionStart ?? textarea.value.length;
+    const value = textarea.value;
+    const before = value.substring(0, caret);
+    const after = value.substring(caret);
+    const atIndex = before.lastIndexOf('@');
+    const newBefore = before.substring(0, atIndex) + '@' + (follower.fullName || follower.userName) + ' ';
+    const newValue = newBefore + after;
+
+    if (this.activeMentionField === 'new') {
+      this.newCommentContent = newValue;
+    } else {
+      this.replyContent = newValue;
+    }
+
+    this.mentionedUsers.set(follower.userId, {
+      userId: follower.userId,
+      userName: follower.fullName || follower.userName,
+      profilePictureUrl: follower.userAvatarUrl
+    });
+
+    this.closeMentionPicker();
+    this.cdRef.detectChanges();
+
+    setTimeout(() => {
+      textarea.focus();
+      const pos = newBefore.length;
+      textarea.setSelectionRange(pos, pos);
+    }, 0);
+  }
+
+  closeMentionPicker(): void {
+    this.mentionDropdownOpen = false;
+    this.mentionMatches = [];
+    this.activeMentionField = null;
+  }
+
   submitComment(): void {
     const trimmed = this.newCommentContent.trim();
     if (!trimmed || !this.postId) return;
@@ -156,7 +243,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
     if (!currentUser) return;
 
     this.subscriptions.add(
-      this.feedUseCases.addComment(this.postId, trimmed).subscribe({
+      this.feedUseCases.addComment(this.postId, trimmed, undefined, Array.from(this.mentionedUsers.values())).subscribe({
         next: (response) => {
           // Create local comment for immediate feedback
           const newComment: PostComment = {
@@ -172,6 +259,8 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
 
           this.comments = [newComment, ...this.comments];
           this.newCommentContent = '';
+          this.mentionedUsers.clear();
+          this.closeMentionPicker();
           this.onCommentAdded?.(this.postId);
           this.cdRef.detectChanges();
         },
@@ -187,6 +276,12 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
   startReplying(comment: PostComment): void {
     this.replyingToCommentId = comment.id;
     this.replyContent = `@${comment.userName} `;
+    // First mention is always the parent comment's author.
+    this.mentionedUsers.set(comment.userId, {
+      userId: comment.userId,
+      userName: comment.userName,
+      profilePictureUrl: comment.userAvatarUrl
+    });
     // Auto expand if it's not already
     this.expandedReplies.add(comment.id);
     this.cdRef.detectChanges();
@@ -219,7 +314,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
     }
 
     this.subscriptions.add(
-      this.feedUseCases.addComment(this.postId, trimmed, parentCommentId).subscribe({
+      this.feedUseCases.addComment(this.postId, trimmed, parentCommentId, Array.from(this.mentionedUsers.values())).subscribe({
         next: (response) => {
           // Find the parent comment in the tree and add the reply
           const newReply: PostComment = {
@@ -238,6 +333,8 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
           
           this.replyContent = '';
           this.replyingToCommentId = null;
+          this.mentionedUsers.clear();
+          this.closeMentionPicker();
           this.onCommentAdded?.(this.postId);
           this.cdRef.detectChanges();
         },
@@ -255,6 +352,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
       if (comment.id === parentId) {
         comment.replies = comment.replies || [];
         comment.replies.push(newReply);
+        comment.totalReplies = (comment.totalReplies || 0) + 1;
         this.expandedReplies.add(comment.id);
         return true;
       }
@@ -270,6 +368,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
         const index = comment.replies.findIndex(r => r.id === commentId);
         if (index !== -1) {
           comment.replies.splice(index, 1);
+          comment.totalReplies = Math.max(0, (comment.totalReplies || 0) - 1);
           return true;
         }
         if (this.deleteReplyFromTree(comment.replies, commentId)) return true;

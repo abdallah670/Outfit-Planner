@@ -80,7 +80,17 @@
               <!-- Reply Input -->
               @if (replyingToCommentId === comment.id) {
                 <div class="reply-input-box">
-                  <textarea class="reply-textarea" [(ngModel)]="replyContent" placeholder="Write a reply..." rows="2"></textarea>
+                  <textarea #replyInput class="reply-textarea" [(ngModel)]="replyContent" placeholder="Write a reply... use @ to mention" rows="2" (input)="onMentionInput($event, 'reply')"></textarea>
+                  @if (mentionDropdownOpen && activeMentionField === 'reply') {
+                    <ul class="mention-dropdown">
+                      @for (f of mentionMatches; track f.userId) {
+                        <li class="mention-dropdown__item" (click)="selectMention(f, replyInput)">
+                          <img [src]="f.userAvatarUrl" alt="" class="mention-dropdown__avatar" />
+                          <span class="mention-dropdown__name">{{ f.fullName || f.userName }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
                   <div class="reply-actions">
                     <button class="reply-btn reply-btn--cancel" (click)="cancelReplying()">Cancel</button>
                     <button class="reply-btn reply-btn--post" [disabled]="!replyContent.trim()" (click)="submitReply(comment.id)">Reply</button>
@@ -123,7 +133,17 @@
 
   <!-- Add Comment Footer -->
   <div class="comments-modal__footer">
-    <textarea class="comment-input" placeholder="Add a comment..." [(ngModel)]="newCommentContent" rows="2"></textarea>
+    <textarea #commentInput class="comment-input" placeholder="Add a comment... use @ to mention" [(ngModel)]="newCommentContent" rows="2" (input)="onMentionInput($event, 'new')"></textarea>
+    @if (mentionDropdownOpen && activeMentionField === 'new') {
+      <ul class="mention-dropdown">
+        @for (f of mentionMatches; track f.userId) {
+          <li class="mention-dropdown__item" (click)="selectMention(f, commentInput)">
+            <img [src]="f.userAvatarUrl" alt="" class="mention-dropdown__avatar" />
+            <span class="mention-dropdown__name">{{ f.fullName || f.userName }}</span>
+          </li>
+        }
+      </ul>
+    }
     <button class="post-btn" [disabled]="!newCommentContent.trim()" (click)="submitComment()">
       <iconify-icon icon="lucide:send" style="font-size: 16px;"></iconify-icon>
       Post

@@ -63,8 +63,8 @@ export class FeedRepositoryImpl implements FeedRepository {
     return this.feedDataSource.getComments(postId, cursor, pageSize);
   }
 
-  addComment(postId: string, content: string, parentCommentId?: string): Observable<CommandResponse> {
-    return this.feedDataSource.addComment(postId, content, parentCommentId);
+  addComment(postId: string, content: string, parentCommentId?: string, mentionedUsers?: any[]): Observable<CommandResponse> {
+    return this.feedDataSource.addComment(postId, content, parentCommentId, mentionedUsers);
   }
 
   deleteComment(commentId: string): Observable<void> {

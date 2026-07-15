@@ -58,7 +58,7 @@ export class AiAssistantComponent implements OnInit {
 
   userMessage = '';
   attachedFiles: { file: File, preview: string }[] = [];
-  quickSuggestions = ['Date night?', 'Casual Friday', 'Beach trip', "What's missing?"];
+  
 
   ngOnInit() {
     this.store.dispatch(AiActions.loadSessions({}));

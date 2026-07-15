@@ -139,7 +139,7 @@ public class WardrobeController : ControllerBase
             if (uploadResult.Success)
             {
                 request.ImageUrl = uploadResult.OriginalPath;
-                request.ThumbnailUrl = uploadResult.ThumbnailPath;
+                request.ThumbnailUrl = uploadResult.OriginalPath;
             }
         }
 
@@ -179,7 +179,7 @@ public class WardrobeController : ControllerBase
             if (uploadResult.Success)
             {
                 request.ImageUrl = uploadResult.OriginalPath;
-                request.ThumbnailUrl = uploadResult.ThumbnailPath;
+                request.ThumbnailUrl = uploadResult.OriginalPath;
             }
         }
 

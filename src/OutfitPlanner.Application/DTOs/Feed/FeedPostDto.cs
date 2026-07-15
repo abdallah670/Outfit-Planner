@@ -37,7 +37,7 @@ public class GetFeedPostByIdDto : FeedPostDto
 
 public class TaggedUserDto
 {
-    public Guid UserId { get; set; }
+    public string UserId { get; set; }
     public string UserName { get; set; } = string.Empty;
     public string? ProfilePictureUrl { get; set; }
 }

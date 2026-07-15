@@ -126,7 +126,7 @@ export class OutfitBuilderComponent implements OnInit, OnDestroy {
   occasions = Object.values(OccasionType);
   seasons = Object.values(Season);
 
-  categories = ['Tops', 'Bottoms', 'Outerwear', 'Shoes', 'Accessories'];
+  categories = ['Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Shoes', 'Activewear', 'Swimwear', 'Undergarments', 'Accessories'];
   expandedCategories = new Set<string>(['Tops']);
   onSearch() {
     // Triggers re-computation via the computed signal since searchQuery changed
@@ -160,6 +160,14 @@ export class OutfitBuilderComponent implements OnInit, OnDestroy {
           cat === 'bottom' ||
           type === 'pants'
         );
+      if (catLower === 'dresses')
+        return type === 'dress' || type === 'dresses' || cat === 'dress' || cat === 'dresses';
+      if (catLower === 'activewear')
+        return type === 'activewear' || cat === 'activewear' || type === 'active' || cat === 'active';
+      if (catLower === 'swimwear')
+        return type === 'swimwear' || cat === 'swimwear' || type === 'swim' || cat === 'swim';
+      if (catLower === 'undergarments')
+        return type === 'undergarment' || type === 'undergarments' || cat === 'undergarment' || cat === 'undergarments' || type === 'underwear';
 
       return type.includes(catLower.replace(/s$/, ''));
     });

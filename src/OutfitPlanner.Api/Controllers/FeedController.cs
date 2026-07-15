@@ -231,7 +231,8 @@ public class FeedController : ControllerBase
             PostId = id,
             UserId = userId,
             Content = request.Content,
-            ParentCommentId = request.ParentCommentId
+            ParentCommentId = request.ParentCommentId,
+            MentionedUsers = request.MentionedUsers
         };
         
         var response = await _mediator.Send(command);
@@ -274,7 +275,8 @@ public class FeedController : ControllerBase
         {
             CommentId = commentId,
             UserId = userId,
-            Content = request.Content
+            Content = request.Content,
+            MentionedUsers = request.MentionedUsers
         };
         
         var response = await _mediator.Send(command);

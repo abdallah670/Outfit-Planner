@@ -8,6 +8,7 @@ export interface Follower {
   userId: string;
   userName: string;
   userAvatarUrl: string;
+  fullName?: string;
   createdAt: Date;
   isFollowing: boolean;
   isOwner: boolean;
@@ -18,6 +19,7 @@ export interface Following {
   userId: string;
   userName: string;
   userAvatarUrl: string;
+  fullName?: string;
   createdAt: Date;
   isFollowing: boolean;
   isOwner: boolean;

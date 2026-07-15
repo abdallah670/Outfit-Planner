@@ -2,6 +2,7 @@ using MediatR;
 using OutfitPlanner.Application.Common.Interfaces.Persistence;
 using OutfitPlanner.Application.Contracts.Infrastructure;
 using OutfitPlanner.Application.Features.Feed.Requests.Commands;
+using OutfitPlanner.Application.Features.Notifications;
 using OutfitPlanner.Application.Responses;
 using OutfitPlanner.Domain.Entities;
 using OutfitPlanner.Domain.Enums;
@@ -14,15 +15,18 @@ public class CreateOutfitPostCommandHandler : IRequestHandler<CreateOutfitPostCo
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateOutfitPostCommandHandler> _logger;
     private readonly ISocialHubService _socialHub;
+    private readonly IMediator _mediator;
 
     public CreateOutfitPostCommandHandler(
         IUnitOfWork unitOfWork,
         ILogger<CreateOutfitPostCommandHandler> logger,
-        ISocialHubService socialHub)
+        ISocialHubService socialHub,
+        IMediator mediator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _socialHub = socialHub;
+        _mediator = mediator;
     }
 
     public async Task<BaseCommandResponse> Handle(CreateOutfitPostCommand request, CancellationToken cancellationToken)
@@ -58,6 +62,29 @@ public class CreateOutfitPostCommandHandler : IRequestHandler<CreateOutfitPostCo
             response.Id = feedPost.Id;
             response.Success = true;
             response.Message = "Outfit post created successfully";
+
+            // Notify users tagged in the post (skip self)
+            if (feedPost.Tags.Any())
+            {
+                var taggedUsers = await _unitOfWork.Users.GetTaggedUsersAsync(feedPost.Tags);
+                var taggedIds = taggedUsers
+                    .Select(t => t.UserId)
+                    .Where(id => !string.IsNullOrWhiteSpace(id) && id != request.UserId)
+                    .Distinct()
+                    .ToList();
+
+                if (taggedIds.Any())
+                {
+                    var tagUrl = $"/social/posts/{feedPost.Id}";
+                    await _mediator.NotifyMentionedUsersAsync(
+                        taggedIds,
+                        request.UserId,
+                        feedPost.Caption ?? "",
+                        tagUrl,
+                        title: "You were tagged",
+                        verb: "tagged");
+                }
+            }
 
             _logger.LogInformation("Outfit post {PostId} for outfit {OutfitId} created by user {UserId}", 
                 feedPost.Id, request.OutfitId, request.UserId);
