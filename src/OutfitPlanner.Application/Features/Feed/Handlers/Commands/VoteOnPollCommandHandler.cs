@@ -135,7 +135,14 @@ public class VoteOnPollCommandHandler : IRequestHandler<VoteOnPollCommand, BaseC
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            try { await _socialHub.NotifyReactionUpdateAsync(feedPost.Id.ToString(), feedPost.LikesCount); } catch { }
+            var options = await _pollOptionRepository.GetByPollIdAsync(poll.Id);
+            var optionVotes = new Dictionary<string, int>();
+            foreach (var opt in options)
+            {
+                optionVotes[opt.Id.ToString()] = await _voteRepository.CountAsync(v => v.OptionId == opt.Id, cancellationToken);
+            }
+
+            try { await _socialHub.NotifyPollVoteUpdateAsync(feedPost.Id.ToString(), poll.TotalVotes, optionVotes); } catch { }
 
             response.Id = voteId;
             response.Success = true;
@@ -238,7 +245,16 @@ public class UnVoteOnPollCommandhandler : IRequestHandler<UnVoteOnPollCommand, B
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            try { await _socialHub.NotifyReactionUpdateAsync(feedPost?.Id.ToString() ?? pollId.ToString(), feedPost?.LikesCount ?? 0); } catch { }
+            if (poll != null)
+            {
+                var options = await _pollOptionRepository.GetByPollIdAsync(poll.Id);
+                var optionVotes = new Dictionary<string, int>();
+                foreach (var opt in options)
+                {
+                    optionVotes[opt.Id.ToString()] = await _voteRepository.CountAsync(v => v.OptionId == opt.Id, cancellationToken);
+                }
+                try { await _socialHub.NotifyPollVoteUpdateAsync(feedPost?.Id.ToString() ?? pollId.ToString(), poll.TotalVotes, optionVotes); } catch { }
+            }
 
             response.Success = true;
             response.Message = "Vote uncast successfully";

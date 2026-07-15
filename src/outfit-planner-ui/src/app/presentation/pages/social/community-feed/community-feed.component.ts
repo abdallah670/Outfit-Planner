@@ -116,6 +116,12 @@ export class CommunityFeedComponent implements OnInit, OnDestroy {
       next: ({ postId, count }) => this.handleReactionUpdate(postId, count)
     });
     this.signalRSubscriptions.push(reactionUpdateSub);
+
+    // Subscribe to poll vote updates from SignalR
+    const pollVoteUpdateSub = this.socialHubService.pollVoteUpdate$.subscribe({
+      next: ({ postId, totalVotes, optionVotes }) => this.handlePollVoteUpdate(postId, totalVotes, optionVotes)
+    });
+    this.signalRSubscriptions.push(pollVoteUpdateSub);
   }
 
   private handleNewPost(socialPost: SocialPostDto): void {
@@ -155,6 +161,25 @@ export class CommunityFeedComponent implements OnInit, OnDestroy {
   private handleReactionUpdate(postId: string, count: number): void {
     this.posts.update(posts => 
       posts.map(p => p.id === postId ? { ...p, likesCount: count } : p)
+    );
+  }
+
+  private handlePollVoteUpdate(postId: string, totalVotes: number, optionVotes: { [optionId: string]: number }): void {
+    this.posts.update(posts =>
+      posts.map(p => {
+        if (p.id !== postId || !p.poll) return p;
+        return {
+          ...p,
+          poll: {
+            ...p.poll,
+            totalVotes,
+            options: p.poll.options.map(o => ({
+              ...o,
+              voteCount: optionVotes[o.id] ?? o.voteCount,
+            })),
+          },
+        };
+      })
     );
   }
 

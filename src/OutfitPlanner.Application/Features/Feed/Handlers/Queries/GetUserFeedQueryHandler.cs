@@ -87,7 +87,7 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
                     if (viewerVotesByPollId.TryGetValue(entity.PollId.Value, out var vote) && vote != null)
                     {
                         dto.HasVoted = true;
-                        dto.Poll.UserVotedOptionId = vote.OptionId;
+                        dto.Poll?.UserVotedOptionId = vote.OptionId;
 
                     }
                 }
@@ -105,7 +105,7 @@ public class GetUserFeedQueryHandler : IRequestHandler<GetUserFeedQuery, CursorP
                             optionDto.VoteCount = await _unitOfWork.Votes.CountAsync(v => v.OptionId == option.Id, cancellationToken);
                         }
                     }
-                    dto.Poll.TotalVotes = dto.Poll?.Options.Sum(o => o.VoteCount) ?? 0;
+                    dto.Poll?.TotalVotes = dto.Poll?.Options.Sum(o => o.VoteCount) ?? 0;
                 }
 
                 dto.IsFollowing = viewerFollowedUserIds.Contains(entity.User?.Id);

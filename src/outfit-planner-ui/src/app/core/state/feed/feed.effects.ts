@@ -73,6 +73,15 @@ export class FeedEffects {
     )
   );
 
+  // SignalR poll vote update effect
+  pollVoteUpdate$ = createEffect(() =>
+    this.socialHubService.pollVoteUpdate$.pipe(
+      map(({ postId, totalVotes, optionVotes }) =>
+        FeedActions.realtimePollVoteUpdate({ postId, totalVotes, optionVotes })
+      )
+    )
+  );
+
   loadPostById$ = createEffect(() =>
     this.actions$.pipe(
       ofType(FeedActions.loadPostById),

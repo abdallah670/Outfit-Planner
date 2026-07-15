@@ -28,11 +28,13 @@ export class SocialHubService {
   private newPostSubject = new Subject<SocialPostDto>();
   private commentUpdateSubject = new Subject<{ postId: string; count: number }>();
   private reactionUpdateSubject = new Subject<{ postId: string; count: number }>();
+  private pollVoteUpdateSubject = new Subject<{ postId: string; totalVotes: number; optionVotes: { [optionId: string]: number } }>();
 
   // Public observables
   newPost$ = this.newPostSubject.asObservable();
   commentUpdate$ = this.commentUpdateSubject.asObservable();
   reactionUpdate$ = this.reactionUpdateSubject.asObservable();
+  pollVoteUpdate$ = this.pollVoteUpdateSubject.asObservable();
 
   connect(): void {
     if (this.hubConnection?.state === signalR.HubConnectionState.Connected) return;
@@ -65,6 +67,11 @@ export class SocialHubService {
     this.hubConnection.on('ReactionUpdate', (postId: string, count: number) => {
       console.log('[SocialHub] Reaction update for post', postId, ':', count);
       this.reactionUpdateSubject.next({ postId, count });
+    });
+
+    this.hubConnection.on('PollVoteUpdate', (postId: string, totalVotes: number, optionVotes: { [optionId: string]: number }) => {
+      console.log('[SocialHub] Poll vote update for post', postId, '- totalVotes:', totalVotes, 'optionVotes:', optionVotes);
+      this.pollVoteUpdateSubject.next({ postId, totalVotes, optionVotes });
     });
 
     // Connection lifecycle handlers

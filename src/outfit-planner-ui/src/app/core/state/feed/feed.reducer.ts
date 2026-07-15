@@ -130,6 +130,27 @@ export const feedFeature = createFeature({
       ),
     })),
 
+    on(FeedActions.realtimePollVoteUpdate, (state, { postId, totalVotes, optionVotes }) => {
+      const updatePost = (p: FeedPost) => {
+        if (p.id !== postId || !p.poll) return p;
+        return {
+          ...p,
+          poll: {
+            ...p.poll,
+            totalVotes,
+            options: p.poll.options.map(o => ({
+              ...o,
+              voteCount: optionVotes[o.id] ?? o.voteCount,
+            })),
+          },
+        };
+      };
+      return {
+        ...state,
+        posts: state.posts.map(updatePost),
+        selectedPost: state.selectedPost ? updatePost(state.selectedPost) : null,
+      };
+    }),
 
   ),
 });

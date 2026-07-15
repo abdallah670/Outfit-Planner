@@ -11,6 +11,7 @@ SET fp.CommentsCount = (
     WHERE pc.PostId = fp.Id AND pc.IsDeleted = 0
 )
 FROM FeedPosts fp
+WHERE fp.IsDeleted = 0
 
 PRINT 'Updated CommentsCount from actual PostComments data'
 
@@ -21,9 +22,10 @@ UPDATE fp
 SET fp.LikesCount = (
     SELECT COUNT(*)
     FROM PostReactions pr
-    WHERE pr.PostId = fp.Id AND pr.ReactionType = 0
+    WHERE pr.PostId = fp.Id AND pr.ReactionType = 0 AND pr.IsDeleted = 0
 )
 FROM FeedPosts fp
+WHERE fp.IsDeleted = 0
 
 PRINT 'Updated LikesCount from actual PostReactions data (Heart reactions)'
 
@@ -36,6 +38,7 @@ SELECT
     LikesCount AS CurrentLikes,
     CommentsCount AS CurrentComments
 FROM FeedPosts
+WHERE IsDeleted = 0
 ORDER BY PostType, CreatedAt DESC
 
 PRINT ''
@@ -59,25 +62,26 @@ PRINT '=== Fixing Outfits.LikesCount and Outfits.CommentsCount ===';
 -- An outfit can have multiple posts (outfit post + poll posts), so we SUM them
 UPDATE o
 SET
-    o.LikesCount = sub.TotalLikes,
-    o.CommentsCount = sub.TotalComments
+    o.LikesCount = ISNULL(sub.TotalLikes, 0),
+    o.CommentsCount = ISNULL(sub.TotalComments, 0)
 FROM Outfits o
-INNER JOIN (
+LEFT JOIN (
     SELECT
         fp.OutfitId,
         SUM(fp.LikesCount) AS TotalLikes,
         SUM(fp.CommentsCount) AS TotalComments
     FROM FeedPosts fp
-    WHERE fp.OutfitId IS NOT NULL
+    WHERE fp.OutfitId IS NOT NULL AND fp.IsDeleted = 0
     GROUP BY fp.OutfitId
-) sub ON o.Id = sub.OutfitId;
+) sub ON o.Id = sub.OutfitId
+WHERE o.IsDeleted = 0;
 
 -- For outfits with no FeedPosts at all, reset counts to 0
 UPDATE Outfits
 SET LikesCount = 0, CommentsCount = 0
 WHERE Id NOT IN (
-    SELECT DISTINCT OutfitId FROM FeedPosts WHERE OutfitId IS NOT NULL
-);
+    SELECT DISTINCT OutfitId FROM FeedPosts WHERE OutfitId IS NOT NULL AND IsDeleted = 0
+) AND IsDeleted = 0;
 
 PRINT CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' outfits updated';
 
@@ -95,9 +99,8 @@ SET
     t.CommentsCount = fp.CommentsCount,
     t.TrendingScore = (fp.LikesCount * 5) + (fp.CommentsCount * 2) + 1.0
 FROM TrendingOutfits t
-INNER JOIN FeedPosts fp ON 
-    (t.PollId IS NOT NULL AND t.PollId = fp.PollId)
-    OR (t.PollId IS NULL AND t.OutfitId = fp.OutfitId AND fp.PollId IS NULL);
+INNER JOIN FeedPosts fp ON t.FeedPostId = fp.Id
+WHERE fp.IsDeleted = 0 AND t.IsDeleted = 0;
 
 PRINT CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' trending outfits updated';
 
@@ -112,22 +115,24 @@ SELECT
     LEFT(o.Name, 30) AS OutfitName,
     o.LikesCount,
     o.CommentsCount,
-    (SELECT COUNT(*) FROM FeedPosts fp WHERE fp.OutfitId = o.Id) AS RelatedPosts
+    (SELECT COUNT(*) FROM FeedPosts fp WHERE fp.OutfitId = o.Id AND fp.IsDeleted = 0) AS RelatedPosts
 FROM Outfits o
+WHERE o.IsDeleted = 0
 ORDER BY o.LikesCount DESC;
 
 PRINT '';
 PRINT '=== Verification: Corrected TrendingOutfits ===';
 SELECT 
     t.Id AS TrendingId,
-    t.OutfitId,
-    t.PollId,
+    t.FeedPostId,
+    t.PostType,
     t.LikesCount,
     t.CommentsCount,
     t.TrendingScore,
     t.RankPosition,
     t.Date
 FROM TrendingOutfits t
+WHERE t.IsDeleted = 0
 ORDER BY t.Date DESC, t.RankPosition ASC;
 
 PRINT '';
@@ -144,6 +149,7 @@ INNER JOIN (
         Id,
         ROW_NUMBER() OVER (PARTITION BY VoterId, PollId ORDER BY CreatedAt DESC) AS rn
     FROM Votes
+    WHERE IsDeleted = 0
 ) ranked ON v.Id = ranked.Id
 WHERE ranked.rn > 1
 
@@ -154,10 +160,13 @@ FROM ValidationPolls vp
 INNER JOIN (
     SELECT v.PollId, COUNT(DISTINCT v.VoterId) AS ActualVoteCount
     FROM Votes v
+    WHERE v.IsDeleted = 0
     GROUP BY v.PollId
 ) vote_counts ON vp.Id = vote_counts.PollId
+WHERE vp.IsDeleted = 0
 
 -- Step 3: For polls that have no votes at all, set TotalVotes to 0
 UPDATE ValidationPolls
 SET TotalVotes = 0
-WHERE Id NOT IN (SELECT DISTINCT PollId FROM Votes)
+WHERE Id NOT IN (SELECT DISTINCT PollId FROM Votes WHERE IsDeleted = 0)
+AND IsDeleted = 0

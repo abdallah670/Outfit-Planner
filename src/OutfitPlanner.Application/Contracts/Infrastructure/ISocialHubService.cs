@@ -26,4 +26,9 @@ public interface ISocialHubService
     /// Notify followers about reaction count update on a post
     /// </summary>
     Task NotifyReactionUpdateAsync(string postId, int reactionCount);
+
+    /// <summary>
+    /// Notify followers about poll vote update on a post
+    /// </summary>
+    Task NotifyPollVoteUpdateAsync(string postId, int totalVotes, Dictionary<string, int> optionVotes);
 }

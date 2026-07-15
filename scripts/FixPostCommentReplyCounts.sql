@@ -25,7 +25,7 @@ WITH CommentHierarchy AS (
         ParentCommentId AS RootParentId,
         1 AS Level
     FROM PostComments
-    WHERE ParentCommentId IS NOT NULL
+    WHERE ParentCommentId IS NOT NULL AND IsDeleted = 0
 
     UNION ALL
 
@@ -36,6 +36,7 @@ WITH CommentHierarchy AS (
         ch.Level + 1
     FROM PostComments pc
     INNER JOIN CommentHierarchy ch ON pc.ParentCommentId = ch.DescendantId
+    WHERE pc.IsDeleted = 0
 )
 -- Update TotalReplies with the total descendant count per comment
 UPDATE pc
@@ -47,15 +48,16 @@ INNER JOIN (
         COUNT(*) AS TotalDescendants
     FROM CommentHierarchy
     GROUP BY RootParentId
-) sub ON pc.Id = sub.CommentId;
+) sub ON pc.Id = sub.CommentId
+WHERE pc.IsDeleted = 0;
 
 -- For comments with no descendants (not covered by the UPDATE above),
 -- ensure TotalReplies stays at 0 (or reset any incorrectly set values)
 UPDATE PostComments
 SET TotalReplies = 0
 WHERE Id NOT IN (
-    SELECT DISTINCT RootParentId FROM CommentHierarchy
-);
+    SELECT DISTINCT ParentCommentId FROM PostComments WHERE ParentCommentId IS NOT NULL AND IsDeleted = 0
+) AND IsDeleted = 0;
 
 COMMIT TRANSACTION;
 
@@ -77,6 +79,7 @@ SELECT
         ELSE CAST(pc.TotalReplies AS NVARCHAR(10)) + ' total replies'
     END AS ReplySummary
 FROM PostComments pc
+WHERE pc.IsDeleted = 0
 ORDER BY pc.TotalReplies DESC;
 
 -- Show summary stats
@@ -84,7 +87,8 @@ SELECT
     COUNT(*) AS TotalComments,
     SUM(TotalReplies) AS TotalReplyRelationships,
     MAX(TotalReplies) AS MaxRepliesOnSingleComment
-FROM PostComments;
+FROM PostComments
+WHERE IsDeleted = 0;
 
 PRINT '';
 PRINT '=== Done ===';

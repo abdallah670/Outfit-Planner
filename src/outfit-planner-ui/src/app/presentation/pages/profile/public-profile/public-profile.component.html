@@ -21,10 +21,12 @@
         <ng-template #emptyBio>
           <p class="user-info__bio user-info__bio--empty">No bio provided.</p>
         </ng-template>
-        <button [hidden]="publicProfile()?.isOwner" class="follow-btn" [class.follow-btn--following]="publicProfile()?.isFollowing" [disabled]="followLoading()" (click)="onFollowToggle()">
+        @if (!publicProfile()?.isOwner) {
+        <button class="follow-btn" [class.follow-btn--following]="publicProfile()?.isFollowing" [disabled]="followLoading()" (click)="onFollowToggle()">
           <iconify-icon [icon]="publicProfile()?.isFollowing ? 'lucide:user-check' : 'lucide:user-plus'" style="font-size: 16px"></iconify-icon>
           <span>{{ publicProfile()?.isFollowing ? 'Following' : 'Follow' }}</span>
         </button>
+        }
       </div>
     </div>
     <div class="stats-row">
@@ -43,10 +45,12 @@
         <span class="stat__label">Followers</span>
       </div>
       <div class="stat-divider"></div>
+      @if (!publicProfile()?.isOwner) {
       <div class="stat clickable" (click)="setTab('following')">
         <span class="stat__value">{{ formatCount(stats().following) }}</span>
         <span class="stat__label">Following</span>
       </div>
+      }
     </div>
   </div>
 
@@ -104,12 +108,14 @@
               <div class="user-list__name">{{ follower.userName || 'Unknown' }}</div>
               <div class="user-list__handle">@{{ (follower.userName || 'unknown') | lowercase }}</div>
             </div>
-            <button [hidden]="follower.isOwner" class="user-list__follow-btn" 
+            @if (!follower.isOwner) {
+            <button class="user-list__follow-btn" 
                     [style.background]="follower.isFollowing ? '#f3f4f6' : ''"
                     [style.color]="follower.isFollowing ? '#1f2937' : ''"
                     (click)="toggleUserFollow(follower.userId, $event, 'followers')">
               {{ follower.isFollowing ? 'Following' : 'Follow' }}
             </button>
+            }
           </div>
         }
         @if (followersHasMore()) {
@@ -139,12 +145,14 @@
               <div class="user-list__name">{{ following.userName || 'Unknown' }}</div>
               <div class="user-list__handle">@{{ (following.userName || 'unknown') | lowercase }}</div>
             </div>
-            <button [hidden]="following.isOwner"  class="user-list__follow-btn" 
+            @if (!following.isOwner) {
+            <button class="user-list__follow-btn" 
                     [style.background]="following.isFollowing ? '#f3f4f6' : ''"
                     [style.color]="following.isFollowing ? '#1f2937' : ''"
                     (click)="toggleUserFollow(following.userId, $event, 'following')">
               {{ following.isFollowing ? 'Following' : 'Follow' }}
             </button>
+            }
           </div>
         }
         @if (followingHasMore()) {

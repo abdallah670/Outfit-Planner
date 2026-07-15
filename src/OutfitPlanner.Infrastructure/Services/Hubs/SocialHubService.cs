@@ -43,4 +43,11 @@ public class SocialHubService : ISocialHubService
         _logger.LogInformation("SocialHubService: Sent reaction update for post {PostId}: {Count} reactions", 
             postId, reactionCount);
     }
+
+    public async Task NotifyPollVoteUpdateAsync(string postId, int totalVotes, Dictionary<string, int> optionVotes)
+    {
+        await _hubContext.Clients.All.SendAsync("PollVoteUpdate", postId, totalVotes, optionVotes);
+        _logger.LogInformation("SocialHubService: Sent poll vote update for post {PostId}: {Count} total votes", 
+            postId, totalVotes);
+    }
 }

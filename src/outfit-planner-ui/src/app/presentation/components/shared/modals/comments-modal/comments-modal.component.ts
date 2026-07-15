@@ -310,7 +310,7 @@ export class CommentsModalComponent implements OnInit, OnDestroy {
     if (!currentUser) return;
 
     if (replyToUser) {
-      trimmed = `@${replyToUser} ${trimmed}`;
+      trimmed = `@$${trimmed}`;
     }
 
     this.subscriptions.add(

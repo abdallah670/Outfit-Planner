@@ -42,5 +42,6 @@ export const FeedActions = createActionGroup({
   'Realtime Post Received': props<{ post: FeedPost }>(),
   'Realtime Comment Update': props<{ postId: string; count: number }>(),
   'Realtime Reaction Update': props<{ postId: string; count: number }>(),
+  'Realtime Poll Vote Update': props<{ postId: string; totalVotes: number; optionVotes: { [optionId: string]: number } }>(),
   },
 });
