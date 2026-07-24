@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "npm run build -- --configuration production",
   "outputDirectory": "dist/outfit-planner-ui/browser",
-  "installCommand": "npm ci",
+  "installCommand": "npm install --legacy-peer-deps",
   "framework": "angular",
   "rewrites": [
     {
