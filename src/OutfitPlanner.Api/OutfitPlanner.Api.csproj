@@ -30,4 +30,8 @@
     <ProjectReference Include="..\OutfitPlanner.Infrastructure\OutfitPlanner.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\uploads\**" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
 </Project>
