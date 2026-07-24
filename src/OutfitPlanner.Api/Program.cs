@@ -123,6 +123,7 @@ builder.Services.AddCors(options =>
             "http://localhost:5001",
             "https://localhost:5000",
             "https://Outfit-Planner.vercel.app",
+            "https://outfit-planner-meno.vercel.app",
             "https://outfitplanner.runasp.net/"
             )
                .AllowAnyMethod()
