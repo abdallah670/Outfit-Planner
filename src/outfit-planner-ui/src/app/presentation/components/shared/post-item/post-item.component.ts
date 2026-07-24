@@ -36,8 +36,8 @@ export class PostItemComponent {
     if (this.post.isLiked) {
       this.feedUseCases.removeReaction(this.post.id).subscribe({
         next: () => {
-          // Only toggle the liked flag locally; count will be updated via SignalR
-          this.post = { ...this.post, isLiked: false };
+          // Update flag and decrement count locally so all parent pages stay in sync
+          this.post = { ...this.post, isLiked: false, likesCount: Math.max(0, this.post.likesCount - 1) };
           this.postUpdated.emit(this.post);
           this.cdRef.detectChanges();
         }
@@ -45,8 +45,8 @@ export class PostItemComponent {
     } else {
       this.feedUseCases.addReaction(this.post.id).subscribe({
         next: () => {
-          // Only toggle the liked flag locally; count will be updated via SignalR
-          this.post = { ...this.post, isLiked: true };
+          // Update flag and increment count locally so all parent pages stay in sync
+          this.post = { ...this.post, isLiked: true, likesCount: this.post.likesCount + 1 };
           this.postUpdated.emit(this.post);
           this.cdRef.detectChanges();
         }
@@ -99,11 +99,15 @@ export class PostItemComponent {
     event.stopPropagation();
     const componentRef = this.viewContainerRef.createComponent(CommentsModalComponent);
     componentRef.instance.postId = this.post.id;
-    // Count updates for comments are handled via SignalR — no local increment needed
+    // Increment count locally so parent pages (e.g. profile) stay in sync immediately
     componentRef.instance.onCommentAdded = () => {
+      this.post = { ...this.post, commentsCount: this.post.commentsCount + 1 };
+      this.postUpdated.emit(this.post);
       this.cdRef.detectChanges();
     };
     componentRef.instance.onCommentDeleted = () => {
+      this.post = { ...this.post, commentsCount: Math.max(0, this.post.commentsCount - 1) };
+      this.postUpdated.emit(this.post);
       this.cdRef.detectChanges();
     };
 
